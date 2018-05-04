@@ -9,248 +9,163 @@ module VCAP::CloudController
     let(:space) { VCAP::CloudController::Space.make(organization: org) }
     let(:object) { VCAP::CloudController::ProcessModelFactory.make(space: space) }
 
-    before do
-      SecurityContext.set(user, token)
-    end
+    let(:flag) { FeatureFlag.make(name: 'app_scaling', enabled: false) }
 
-    after do
-      SecurityContext.clear
-    end
+    index_table = {
+      unauthenticated: true,
+      reader_and_writer: true,
+      reader: true,
+      writer: true,
 
-    context 'admin' do
-      include_context :admin_setup
+      admin: true,
+      admin_read_only: true,
+      global_auditor: true,
+    }
 
-      before { FeatureFlag.make(name: 'app_bits_upload', enabled: false) }
+    read_table = {
+      unauthenticated: false,
+      reader_and_writer: true,
+      reader: true,
+      writer: false,
 
-      it_behaves_like :full_access
+      admin: true,
+      admin_read_only: true,
+      global_auditor: true,
+    }
 
-      it 'admin always allowed' do
-        expect(subject).to allow_op_on_object(:read_env, object)
-        expect(subject).to allow_op_on_object(:upload, object)
+    write_table = {
+      unauthenticated: false,
+      reader_and_writer: false,
+      reader: false,
+      writer: false,
+
+      admin: true,
+      admin_read_only: false,
+      global_auditor: false,
+    }
+
+    restricted_read_table = read_table.clone.merge({
+
+    })
+
+    restricted_write_table = write_table.clone.merge({
+      space_developer: false,
+    })
+
+    it_behaves_like('an access control', :index, index_table)
+    it_behaves_like('an access control', :read, read_table)
+    it_behaves_like('an access control', :read_env, restricted_read_table)
+
+    describe 'when the app is in a suspended org' do
+      before(:each) do
+        org.status = VCAP::CloudController::Organization::SUSPENDED
+        org.save
       end
 
-      it 'allows the user to :read_permissions' do
-        expect(subject).to allow_op_on_object(:read_permissions, object)
-      end
-    end
+      describe 'when the "app_scaling" feature flag is enabled' do
+        before(:each) do
+          flag.enabled = true
+          flag.save
+        end
 
-    context 'global auditor only' do
-      include_context :global_auditor_setup
+        it_behaves_like('an access control', :create, restricted_write_table)
+        it_behaves_like('an access control', :delete, restricted_write_table)
+        it_behaves_like('an access control', :read_for_update, restricted_write_table)
+        it_behaves_like('an access control', :update, restricted_write_table)
 
-      before { FeatureFlag.make(name: 'app_bits_upload', enabled: false) }
+        [:instances, :memory, :disk_quota].each do |param|
+          describe "when setting #{param}" do
+            let(:op_params) do
+              params = {}
+              params[param] = 'foo'
+              params
+            end
 
-      it_behaves_like :read_only_access
+            it_behaves_like('an access control', :read_for_update, restricted_write_table)
+          end
+        end
 
-      it 'does NOT allow the user to :read_permissions' do
-        expect(subject).not_to allow_op_on_object(:read_permissions, object)
-      end
+        describe 'when setting something else' do
+          let(:op_params) { { foo: 'bar' } }
 
-      it 'does NOT allow global_auditor to :read_env' do
-        expect(subject).not_to allow_op_on_object(:read_env, object)
-      end
-    end
-
-    context 'admin read only' do
-      include_context :admin_read_only_setup
-
-      before { FeatureFlag.make(name: 'app_bits_upload', enabled: false) }
-
-      it_behaves_like :read_only_access
-
-      it 'allows the user to :read_permissions' do
-        expect(subject).to allow_op_on_object(:read_permissions, object)
-      end
-
-      it 'does allows admin_read_only to :read_env' do
-        expect(subject).to allow_op_on_object(:read_env, object)
-      end
-    end
-
-    context 'space developer' do
-      before do
-        org.add_user(user)
-        space.add_developer(user)
-      end
-      it_behaves_like :full_access
-
-      it 'allows user to :read_env' do
-        expect(subject).to allow_op_on_object(:read_env, object)
-      end
-
-      it 'allows user change the diego flag' do
-        expect { subject.read_for_update?(object, { 'diego' => true }) }.not_to raise_error
-      end
-
-      it 'allows the user to :read_permissions' do
-        expect(subject).to allow_op_on_object(:read_permissions, object)
-      end
-
-      context 'app_bits_upload FeatureFlag' do
-        it 'disallows when enabled' do
-          FeatureFlag.make(name: 'app_bits_upload', enabled: false, error_message: nil)
-          expect { subject.upload?(object) }.to raise_error(CloudController::Errors::ApiError, /app_bits_upload/)
+          it_behaves_like('an access control', :read_for_update, restricted_write_table)
         end
       end
 
-      context 'when the organization is suspended' do
-        before { object.space.organization.status = VCAP::CloudController::Organization::SUSPENDED }
-        it_behaves_like :read_only_access
-      end
+      describe 'when the "app_scaling" feature flag is disabled' do
+        it_behaves_like('an access control', :read_for_update, restricted_write_table)
 
-      context 'when the app_scaling feature flag is disabled' do
-        before { FeatureFlag.make(name: 'app_scaling', enabled: false, error_message: nil) }
+        [:instances, :memory, :disk_quota].each do |param|
+          describe "when setting #{param}" do
+            let(:op_params) do
+              params = {}
+              params[param] = 'foo'
+              params
+            end
 
-        it 'cannot scale' do
-          expect { subject.read_for_update?(object, { 'memory' => 2 }) }.to raise_error(CloudController::Errors::ApiError, /app_scaling/)
-          expect { subject.read_for_update?(object, { 'disk_quota' => 2 }) }.to raise_error(CloudController::Errors::ApiError, /app_scaling/)
-          expect { subject.read_for_update?(object, { 'instances' => 2 }) }.to raise_error(CloudController::Errors::ApiError, /app_scaling/)
+            it_behaves_like('an access control', :read_for_update, restricted_write_table)
+          end
         end
 
-        it 'allows unchanged fields to be specified' do
-          expect { subject.read_for_update?(object, { 'instances' => 1 }) }.to_not raise_error
-        end
+        describe 'when setting something else' do
+          let(:op_params) { { foo: 'bar' } }
 
-        it 'allows changing other fields' do
-          expect(subject.read_for_update?(object, { 'buildpack' => 'http://foo.git' })).to be_truthy
+          it_behaves_like('an access control', :read_for_update, write_table)
         end
       end
     end
 
-    context 'organization manager' do
-      before { org.add_manager(user) }
-      it_behaves_like :read_only_access
+    describe 'when the app is not in a suspended org' do
+      describe 'when the "app_scaling" feature flag is enabled' do
+        before(:each) do
+          flag.enabled = true
+          flag.save
+        end
 
-      it 'does not allow user to :read_env' do
-        expect(subject).not_to allow_op_on_object(:read_env, object)
+        it_behaves_like('an access control', :create, write_table)
+        it_behaves_like('an access control', :delete, write_table)
+        it_behaves_like('an access control', :read_for_update, write_table)
+        it_behaves_like('an access control', :update, write_table)
+
+        [:instances, :memory, :disk_quota].each do |param|
+          describe "when setting #{param}" do
+            let(:op_params) do
+              params = {}
+              params[param] = 'foo'
+              params
+            end
+
+            it_behaves_like('an access control', :read_for_update, write_table)
+          end
+        end
+
+        describe 'when setting something else' do
+          let(:op_params) { { foo: 'bar' } }
+
+          it_behaves_like('an access control', :read_for_update, write_table)
+        end
       end
 
-      it 'does not allow the user to :read_permissions' do
-        expect(subject).to_not allow_op_on_object(:read_permissions, object)
-      end
-    end
+      describe 'when the "app_scaling" feature flag is disabled' do
+        it_behaves_like('an access control', :read_for_update, write_table)
 
-    context 'organization user' do
-      before { org.add_user(user) }
-      it_behaves_like :no_access
+        [:instances, :memory, :disk_quota].each do |param|
+          describe "when setting #{param}" do
+            let(:op_params) do
+              params = {}
+              params[param] = 'foo'
+              params
+            end
 
-      it 'does not allow user to :read_env' do
-        expect(subject).not_to allow_op_on_object(:read_env, object)
-      end
+            it_behaves_like('an access control', :read_for_update, restricted_write_table)
+          end
+        end
 
-      it 'does not allow the user to :read_permissions' do
-        expect(subject).to_not allow_op_on_object(:read_permissions, object)
-      end
-    end
+        describe 'when setting something else' do
+          let(:op_params) { { foo: 'bar' } }
 
-    context 'organization auditor' do
-      before { org.add_auditor(user) }
-      it_behaves_like :no_access
-
-      it 'does not allow user to :read_env' do
-        expect(subject).not_to allow_op_on_object(:read_env, object)
-      end
-
-      it 'does not allow the user to :read_permissions' do
-        expect(subject).to_not allow_op_on_object(:read_permissions, object)
-      end
-    end
-
-    context 'billing manager' do
-      before { org.add_billing_manager(user) }
-      it_behaves_like :no_access
-
-      it 'does not allow user to :read_env' do
-        expect(subject).not_to allow_op_on_object(:read_env, object)
-      end
-
-      it 'does not allow the user to :read_permissions' do
-        expect(subject).to_not allow_op_on_object(:read_permissions, object)
-      end
-    end
-
-    context 'space manager' do
-      before do
-        org.add_user(user)
-        space.add_manager(user)
-      end
-      it_behaves_like :read_only_access
-
-      it 'does not allow user to :read_env' do
-        expect(subject).not_to allow_op_on_object(:read_env, object)
-      end
-
-      it 'does not allow the user to :read_permissions' do
-        expect(subject).to_not allow_op_on_object(:read_permissions, object)
-      end
-    end
-
-    context 'space auditor' do
-      before do
-        org.add_user(user)
-        space.add_auditor(user)
-      end
-      it_behaves_like :read_only_access
-
-      it 'does not allow user to :read_env' do
-        expect(subject).not_to allow_op_on_object(:read_env, object)
-      end
-
-      it 'does not allow the user to :read_permissions' do
-        expect(subject).to_not allow_op_on_object(:read_permissions, object)
-      end
-    end
-
-    context 'any user using client without cloud_controller.write' do
-      let(:token) { { 'scope' => ['cloud_controller.read'] } }
-
-      before do
-        org.add_user(user)
-        org.add_manager(user)
-        org.add_billing_manager(user)
-        org.add_auditor(user)
-        space.add_manager(user)
-        space.add_developer(user)
-        space.add_auditor(user)
-      end
-
-      it_behaves_like :read_only_access
-    end
-
-    context 'any user using client without cloud_controller.read' do
-      let(:token) { { 'scope' => [] } }
-
-      before do
-        org.add_user(user)
-        org.add_manager(user)
-        org.add_billing_manager(user)
-        org.add_auditor(user)
-        space.add_manager(user)
-        space.add_developer(user)
-        space.add_auditor(user)
-      end
-
-      it_behaves_like :no_access
-    end
-
-    context 'handles concurrent deletion of app' do
-      let(:object) { VCAP::CloudController::ProcessModelFactory.make(space: nil) }
-      # only using global_auditor as an example of a non-admin user
-      include_context :global_auditor_setup
-
-      before do
-        allow(object).to receive(:in_suspended_org?).and_return(false)
-      end
-
-      it 'does NOT allow global_auditor to create' do
-        expect(subject.create?(object)).to be_falsey
-      end
-
-      it 'does NOT allow global_auditor to :read_env' do
-        expect(subject).not_to allow_op_on_object(:read_env, object)
-      end
-
-      it 'does NOT allow the user to :read_permissions' do
-        expect(subject).not_to allow_op_on_object(:read_permissions, object)
+          it_behaves_like('an access control', :read_for_update, write_table)
+        end
       end
     end
   end
