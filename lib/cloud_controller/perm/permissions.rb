@@ -162,6 +162,12 @@ module VCAP
           ])
         end
 
+        def can_read_objects_from_route?(route_guid)
+          return true if can_read_globally?
+          route = Route.find(guid: route_guid) or return false
+          can_read_route?(route.space.guid, route.space.organization.guid)
+        end
+
         private
 
         attr_reader :perm_client, :user_id, :roles, :issuer

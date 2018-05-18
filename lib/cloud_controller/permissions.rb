@@ -98,6 +98,11 @@ class VCAP::CloudController::Permissions
       @user.audited_organizations.include?(org)
   end
 
+  def can_read_objects_from_route?(route_guid)
+    route = VCAP::CloudController::Route.where(guid: route_guid).first
+    can_read_route?(route.space.guid, route.space.organization.guid)
+  end
+
   private
 
   def membership

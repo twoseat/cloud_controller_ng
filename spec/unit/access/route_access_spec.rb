@@ -40,8 +40,8 @@ module VCAP::CloudController
 
     read_table = {
       unauthenticated: false,
-      reader_and_writer: false,
-      reader: false,
+      reader_and_writer: true,
+      reader: true,
       writer: false,
 
       admin: true,
@@ -91,7 +91,48 @@ module VCAP::CloudController
       space_developer: false,
     })
 
-    it_behaves_like('an access control', :index, index_table)
+    describe '#index' do
+      let(:scopes) { [] }
+      describe 'with no params' do
+        it_behaves_like('an access control', :index, index_table)
+      end
+
+      describe 'with no related_model' do
+        let(:op_params) { {} }
+        it_behaves_like('an access control', :index, index_table)
+      end
+
+      describe 'with AppModel as the related_model' do
+        let(:op_params) { { related_model: VCAP::CloudController::AppModel } }
+        it_behaves_like('an access control', :index, read_table)
+      end
+
+      describe 'with something else as the related_model' do
+        let(:op_params) { { related_model: VCAP::CloudController::User } }
+
+        admin_only_index_table = {
+          unauthenticated: false,
+          reader_and_writer: false,
+          reader: false,
+          writer: false,
+
+          admin: true,
+          admin_read_only: true,
+          global_auditor: false,
+
+          space_developer: false,
+          space_manager: false,
+          space_auditor: false,
+          org_user: false,
+          org_manager: false,
+          org_auditor: false,
+          org_billing_manager: false,
+        }
+
+        it_behaves_like('an access control', :index, admin_only_index_table)
+      end
+    end
+
     it_behaves_like('an access control', :read, read_table)
     it_behaves_like('an access control', :reserved, reserved_table)
 

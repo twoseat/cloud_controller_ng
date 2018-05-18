@@ -8,6 +8,7 @@ module VCAP::CloudController::Perm
     let(:roles) { instance_double(VCAP::CloudController::Roles) }
     let(:org_id) { 'test-org-id' }
     let(:space_id) { 'test-space-id' }
+    let(:route_id) { 'test-route-id' }
     subject(:permissions) {
       VCAP::CloudController::Perm::Permissions.new(perm_client: perm_client, user_id: user_id, issuer: issuer, roles: roles)
     }
@@ -701,6 +702,67 @@ module VCAP::CloudController::Perm
 
       it 'returns false otherwise' do
         has_permission = permissions.can_read_route?(space_id, org_id)
+
+        expect(has_permission).to equal(false)
+      end
+    end
+
+    describe '#can_read_objects_from_route?' do
+      let(:org) { VCAP::CloudController::Organization.make }
+      let(:space) { VCAP::CloudController::Space.make(organization: org) }
+      let(:route) { VCAP::CloudController::Route.make(space: space) }
+      let(:space_guid) { route.space.guid }
+      let(:org_guid) { route.space.organization.guid }
+
+      before do
+        allow(roles).to receive(:admin?).and_return(false)
+        allow(roles).to receive(:admin_read_only?).and_return(false)
+        allow(roles).to receive(:global_auditor?).and_return(false)
+        allow(perm_client).to receive(:has_any_permission?).with(permissions: anything, user_id: anything, issuer: anything).and_return(false)
+      end
+
+      it 'returns true when the user is an admin' do
+        allow(roles).to receive(:admin?).and_return(true)
+
+        has_permission = permissions.can_read_objects_from_route?(route_id)
+
+        expect(has_permission).to equal(true)
+      end
+
+      it 'returns true when the user is a read-only admin' do
+        allow(roles).to receive(:admin_read_only?).and_return(true)
+
+        has_permission = permissions.can_read_objects_from_route?(route_id)
+
+        expect(has_permission).to equal(true)
+      end
+
+      it 'returns true when the user is a global auditor' do
+        allow(roles).to receive(:global_auditor?).and_return(true)
+
+        has_permission = permissions.can_read_objects_from_route?(route_id)
+
+        expect(has_permission).to equal(true)
+      end
+
+      it 'returns true when the user has any relevant permission' do
+        expected_permissions = [
+          { action: 'space.developer', resource: space_guid },
+          { action: 'space.manager', resource: space_guid },
+          { action: 'space.auditor', resource: space_guid },
+          { action: 'org.manager', resource: org_guid },
+          { action: 'org.auditor', resource: org_guid },
+        ]
+
+        allow(perm_client).to receive(:has_any_permission?).with(permissions: expected_permissions, user_id: user_id, issuer: issuer).and_return(true)
+
+        has_permission = permissions.can_read_objects_from_route?(route.guid)
+
+        expect(has_permission).to equal(true)
+      end
+
+      it 'returns false otherwise' do
+        has_permission = permissions.can_read_objects_from_route?(route.guid)
 
         expect(has_permission).to equal(false)
       end

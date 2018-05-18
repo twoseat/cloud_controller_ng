@@ -12,6 +12,7 @@ module VCAP::CloudController
 
     let(:space_guid) { 'some-space-guid' }
     let(:org_guid) { 'some-organization-guid' }
+    let(:route_guid) { 'some-route-guid' }
 
     subject do
       Permissions::Queryer.new(
@@ -771,6 +772,76 @@ module VCAP::CloudController
           {
             space_guid: space_guid,
             org_guid: org_guid
+          }
+      end
+    end
+
+    describe '#can_read_objects_from_route?' do
+      before do
+        allow(perm_permissions).to receive(:can_read_objects_from_route?)
+
+        allow(db_permissions).to receive(:can_read_objects_from_route?).and_return(true)
+        allow(db_permissions).to receive(:can_read_globally?).and_return(false)
+      end
+
+      it 'asks for #can_read_objects_from_route? on behalf of the current user' do
+        allow(perm_permissions).to receive(:can_read_objects_from_route?).and_return(true)
+
+        subject.can_read_objects_from_route?(route_guid)
+
+        expect(db_permissions).to have_received(:can_read_objects_from_route?).with(route_guid)
+        expect(perm_permissions).to have_received(:can_read_objects_from_route?).with(route_guid)
+      end
+
+      it 'skips the experiment if the user is a global reader' do
+        allow(db_permissions).to receive(:can_read_globally?).and_return(true)
+
+        subject.can_read_objects_from_route?(route_guid)
+
+        expect(perm_permissions).not_to have_received(:can_read_objects_from_route?)
+      end
+
+      it 'uses the expected branch from the experiment' do
+        allow(perm_permissions).to receive(:can_read_objects_from_route?).and_return('not-expected')
+
+        response = subject.can_read_objects_from_route?(route_guid)
+
+        expect(response).to eq(true)
+      end
+
+      context 'when the control and candidate are the same' do
+        route_guid = SecureRandom.uuid
+
+        before do
+          allow(db_permissions).to receive(:can_read_objects_from_route?).and_return(true)
+          allow(perm_permissions).to receive(:can_read_objects_from_route?).and_return(true)
+        end
+
+        it_behaves_like 'match recorder',
+          proc { |queryer| queryer.can_read_objects_from_route?(route_guid) },
+          'can_read_objects_from_route',
+          true,
+          true,
+          {
+            route_guid: route_guid
+          }
+      end
+
+      context 'when the control and candidate are different' do
+        route_guid = SecureRandom.uuid
+
+        before do
+          allow(db_permissions).to receive(:can_read_objects_from_route?).and_return(true)
+          allow(perm_permissions).to receive(:can_read_objects_from_route?).and_return('something wrong')
+        end
+
+        it_behaves_like 'mismatch recorder',
+          proc { |queryer| queryer.can_read_objects_from_route?(route_guid) },
+          'can_read_objects_from_route',
+          true,
+          'something wrong',
+          {
+            route_guid: route_guid
           }
       end
     end

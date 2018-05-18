@@ -152,6 +152,16 @@ class VCAP::CloudController::Permissions::Queryer
     end
   end
 
+  def can_read_objects_from_route?(route_guid)
+    science 'can_read_objects_from_route' do |e|
+      e.context(route_guid: route_guid)
+      e.use { db_permissions.can_read_objects_from_route?(route_guid) }
+      e.try { perm_permissions.can_read_objects_from_route?(route_guid) }
+
+      e.run_if { !db_permissions.can_read_globally? }
+    end
+  end
+
   private
 
   attr_reader :perm_permissions, :db_permissions, :statsd_client, :enabled, :current_user_guid

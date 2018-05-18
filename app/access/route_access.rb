@@ -12,6 +12,14 @@ module VCAP::CloudController
       context.queryer.can_read_route?(route.space.guid, route.space.organization.guid)
     end
 
+    def index?(route, params=nil)
+      return true if admin_user? || admin_read_only_user?
+      related_model = params && params[:related_model]
+      return true if related_model.nil?
+      return false unless context.queryer.can_read_objects_from_route?(route.guid)
+      !context.user.nil? && related_model == VCAP::CloudController::AppModel
+    end
+
     def read_for_update?(route, params=nil)
       can_write_to_route(route)
     end

@@ -5,7 +5,7 @@ RSpec.shared_examples 'an access control' do |operation, table, expected_error=n
         o = respond_to?(:org) ? org : nil
         s = respond_to?(:space) ? space : nil
 
-        set_current_user_as_role(role: role, org: o, space: s, user: user)
+        set_current_user_as_role(role: role, org: o, space: s, user: user, scopes:[])
 
         if respond_to?(:queryer)
           can_read_globally = role == :admin || role == :admin_read_only || role == :global_auditor
@@ -13,7 +13,8 @@ RSpec.shared_examples 'an access control' do |operation, table, expected_error=n
 
           can_write_to_space = can_write_globally || space.has_developer?(user)
 
-          can_read_route = can_read_globally
+          can_read_route = can_read_globally || VCAP::CloudController::SecurityContext.scopes.include?("cloud_controller.read")
+          can_read_objects_from_route = can_read_globally ||  VCAP::CloudController::SecurityContext.scopes.include?("cloud_controller.read")
 
           if o
             can_read_route = can_read_route || user.managed_organizations.include?(o) ||
@@ -22,6 +23,7 @@ RSpec.shared_examples 'an access control' do |operation, table, expected_error=n
 
           if s
             can_read_route ||= space.has_member?(user)
+            can_read_objects_from_route ||= space.has_member?(user)
           end
 
           allow(queryer).to receive(:can_read_globally?).and_return(can_read_globally)
@@ -30,6 +32,7 @@ RSpec.shared_examples 'an access control' do |operation, table, expected_error=n
           allow(queryer).to receive(:can_write_to_space?).and_return(can_write_to_space)
 
           allow(queryer).to receive(:can_read_route?).and_return(can_read_route)
+          allow(queryer).to receive(:can_read_objects_from_route?).and_return(can_read_objects_from_route)
         end
 
         saved_error = nil
