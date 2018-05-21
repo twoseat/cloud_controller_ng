@@ -137,7 +137,7 @@ module VCAP::CloudController::RestController
       filtered_dataset =
         querier.filtered_dataset_from_query_params(
           associated_model,
-          obj.user_visible_relationship_dataset(name, @access_context.user, @access_context.admin_override),
+          user_visible_relationship_dataset(name, obj),
           associated_controller.query_parameters,
           @opts
         )
@@ -259,6 +259,10 @@ module VCAP::CloudController::RestController
     end
 
     private
+
+    def user_visible_relationship_dataset(name, obj)
+      obj.user_visible_relationship_dataset(name, @access_context.user, @access_context.admin_override)
+    end
 
     def enumerate_dataset
       qp = self.class.query_parameters

@@ -660,6 +660,7 @@ module VCAP::CloudController
         let(:model) { TestModel.make }
         let(:associated_model1) { TestModelManyToMany.make }
         let(:associated_model2) { TestModelManyToMany.make }
+        let!(:associated_model3) { TestModelManyToMany.make }
 
         describe 'update' do
           it 'allows associating nested models' do

@@ -384,6 +384,24 @@ module VCAP::CloudController
       end
     end
 
+    def user_visible_relationship_dataset(related_model_name, route)
+      dataset = route.relationship_dataset(related_model_name)
+
+      if queryer.can_read_globally?
+        dataset
+      else
+        related_singular_name = related_model_name.to_s.singularize
+        associated_model_class = route.class.association_reflection(related_model_name).associated_class
+        related_model_guids = queryer.send("readable_#{related_singular_name}_guids".to_sym)
+
+        filter_key = "#{associated_model_class.table_name}__#{related_singular_name}_guid".to_sym
+        if associated_model_class.table_name == related_model_name
+          filter_key = "#{associated_model_class.table_name}__guid".to_sym
+        end
+        dataset.filter({ filter_key => associated_model_class.where(guid: related_model_guids).select(:guid) })
+      end
+    end
+
     private_class_method :path_errors
   end
 end
