@@ -310,4 +310,10 @@ RSpec.describe 'Routes' do
       )
     end
   end
+
+  describe 'GET /v2/routes/:guid/apps' do
+    it 'lists the associated apps' do
+      expect("implement me!").to eq("blah")
+    end
+  end
 end
