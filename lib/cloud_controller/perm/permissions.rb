@@ -35,7 +35,7 @@ module VCAP
 
         def readable_org_guids
           if can_read_globally?
-            VCAP::CloudController::Organization.select(:guid).all.map(&:guid)
+            VCAP::CloudController::Organization.select(:guid)
           else
             perm_client.list_resource_patterns(
               user_id: user_id,
@@ -156,8 +156,7 @@ module VCAP
 
             Space.where("#{Space.table_name}__guid".to_sym => app_space_guids).
               join(AppModel.table_name.to_sym, space_guid: :guid).
-              select("#{AppModel.table_name}__guid".to_sym).
-              all.map(&:guid)
+              select("#{AppModel.table_name}__guid".to_sym)
           end
         end
 
@@ -178,8 +177,7 @@ module VCAP
             Space.where("#{Space.table_name}__guid".to_sym => route_mapping_space_guids).
               join(AppModel.table_name.to_sym, space_guid: :guid).
               join(RouteMappingModel.table_name.to_sym, app_guid: :guid).
-              select("#{RouteMappingModel.table_name}__guid".to_sym).
-              all.map(&:guid)
+              select("#{RouteMappingModel.table_name}__guid".to_sym)
           end
         end
 
