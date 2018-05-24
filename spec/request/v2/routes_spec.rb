@@ -4,9 +4,16 @@ RSpec.describe 'Routes' do
   let(:user) { VCAP::CloudController::User.make }
   let(:space) { VCAP::CloudController::Space.make }
 
+  let(:perm_client) { instance_double(VCAP::CloudController::Perm::Client) }
+
   before do
+    allow(CloudController::DependencyLocator.instance).to receive(:perm_client).and_return(perm_client)
+
     space.organization.add_user(user)
     space.add_developer(user)
+
+    allow(perm_client).to receive(:has_any_permission?).and_return(true)
+    allow(perm_client).to receive(:list_resource_patterns).and_return([space.guid], [])
 
     stub_request(:get, 'http://localhost:3000/routing/v1/router_groups').
       to_return(status: 200, body: '{}', headers: {})

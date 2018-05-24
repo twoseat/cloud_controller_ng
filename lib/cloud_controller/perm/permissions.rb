@@ -111,7 +111,7 @@ module VCAP
 
         def readable_route_guids
           if can_read_globally?
-            VCAP::CloudController::Route.select(:guid).all.map(&:guid)
+            VCAP::CloudController::Route.select(:guid)
           else
             route_space_guids = space_guids_for_actions(
               [
@@ -126,8 +126,7 @@ module VCAP
 
             Space.where("#{Space.table_name}__guid".to_sym => route_space_guids).
               join(Route.table_name.to_sym, space_id: :id).
-              select("#{Route.table_name}__guid".to_sym).
-              all.map(&:guid)
+              select("#{Route.table_name}__guid".to_sym)
           end
         end
 
@@ -204,9 +203,15 @@ module VCAP
             actions: org_actions
           )
 
-          space_guids + Organization.where("#{Organization.table_name}__guid".to_sym => org_guids).
-                        join(Space.table_name.to_sym, organization_id: :id).
-                        select("#{Space.table_name}__guid".to_sym).all.map(&:guid)
+          space_guid_sym = "#{Space.table_name}__guid".to_sym
+
+          Space.where(space_guid_sym => space_guids).
+            select(space_guid_sym).
+            union(
+              Organization.where("#{Organization.table_name}__guid".to_sym => org_guids).
+                join(Space.table_name.to_sym, organization_id: :id).
+                select(space_guid_sym)
+            )
         end
       end
     end
