@@ -28,6 +28,7 @@ module VCAP::CloudController
     ]
 
     HEALTH_CHECK_TYPE_MAPPING = { 'none' => 'process' }.freeze
+    PRIVATE_DATA_HIDDEN = 'PRIVATE DATA HIDDEN'.freeze
 
     def self.create_from_yml(parsed_yaml)
       AppManifestMessage.new(underscore_keys(parsed_yaml.deep_symbolize_keys))
@@ -84,7 +85,34 @@ module VCAP::CloudController
       @manifest_routes_update_message ||= ManifestRoutesUpdateMessage.new(routes_attribute_mapping)
     end
 
+    def audit_hash
+      app_attributes = hyphenate_keys(super)
+      app_attributes['env'] = PRIVATE_DATA_HIDDEN
+
+      base_hash = { result: { 'applications' => [] } }
+      base_hash[:result]['applications'] << app_attributes
+
+      base_hash[:result].to_yaml
+    end
+
     private
+
+    def hyphenate_keys(request_attributes)
+      request_attributes.inject({}) do |memo, (key, val)|
+        new_key = need_to_hyphenate?(key) ? key.to_s.dasherize : key
+        memo[new_key] = if key == 'processes' && val.is_a?(Array)
+                          val.map { |process| hyphenate_keys(process) }
+                        else
+                          val
+                        end
+        memo
+      end
+    end
+
+    def need_to_hyphenate?(key)
+      keys_to_hyphenate = ['health_check_type', 'health_check_http_endpoint']
+      keys_to_hyphenate.include?(key)
+    end
 
     def manifest_buildpack_message
       @manifest_buildpack_message ||= ManifestBuildpackMessage.new(buildpack: buildpack)

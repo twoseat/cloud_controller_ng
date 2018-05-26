@@ -721,6 +721,58 @@ module VCAP::CloudController
       end
     end
 
+    describe '#audit_hash' do
+      let(:parsed_yaml) do
+        {
+          'disk_quota' => '1000GB',
+          'memory' => '200GB',
+          'instances' => 5,
+          'env' => { 'foo' => 'bar' },
+          'health-check-type' => 'port',
+          'health-check-http-endpoint' => '/health',
+          'routes' => [
+            { 'route' => 'existing.example.com' },
+            { 'route' => 'another.example.com' },
+          ],
+          'processes' => [{
+            'type' => 'type',
+            'command' => 'command',
+            'health-check-type' => 'http',
+            'health-check-http-endpoint' => '/healthier',
+          }]
+        }
+      end
+
+      it 'returns a ManifestProcessScaleMessage containing mapped attributes with "env" data hidden' do
+        message = AppManifestMessage.create_from_yml(parsed_yaml)
+
+        expected_yaml = {
+          'applications' => [
+            {
+              'disk_quota' => '1000GB',
+              'memory' => '200GB',
+              'instances' => 5,
+              'env' => 'PRIVATE DATA HIDDEN',
+              'health-check-type' => 'port',
+              'health-check-http-endpoint' => '/health',
+              'routes' => [
+                { 'route' => 'existing.example.com' },
+                { 'route' => 'another.example.com' },
+              ],
+              'processes' => [{
+                'type' => 'type',
+                'command' => 'command',
+                'health-check-type' => 'http',
+                'health-check-http-endpoint' => '/healthier',
+              }],
+            }
+          ]
+        }.to_yaml
+
+        expect(message.audit_hash).to eq(expected_yaml)
+      end
+    end
+
     describe '#process_scale_message' do
       context 'from app-level attributes' do
         let(:parsed_yaml) { { 'disk_quota' => '1000GB', 'memory' => '200GB', instances: 5 } }

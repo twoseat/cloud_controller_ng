@@ -9,6 +9,7 @@ module VCAP::CloudController
     let(:route_mapping_delete) { instance_double(RouteMappingDelete) }
     let(:app_update) { instance_double(AppUpdate) }
     let(:app_patch_env) { instance_double(AppPatchEnvironmentVariables) }
+    let(:app_event_repository) { instance_double(Repositories::AppEventRepository) }
     let(:process_update) { instance_double(ProcessUpdate) }
     let(:process_create) { instance_double(ProcessCreate) }
     let(:service_binding_create) { instance_double(ServiceBindingCreate) }
@@ -47,6 +48,22 @@ module VCAP::CloudController
         allow(AppPatchEnvironmentVariables).
           to receive(:new).and_return(app_patch_env)
         allow(app_patch_env).to receive(:patch)
+
+        allow(Repositories::AppEventRepository).
+          to receive(:new).and_return(app_event_repository)
+        allow(app_event_repository).to receive(:record_app_apply_manifest)
+      end
+
+      describe 'emitting an audit event' do
+        let(:message) { AppManifestMessage.new({ name: 'blah', routes: [{ 'route': 'http://tater.tots.com/tabasco' }] }) }
+        let(:process) { ProcessModel.make }
+        let(:app) { process.app }
+
+        it 'calls ManifestRouteUpdate with the correct arguments' do
+          app_apply_manifest.apply(app.guid, message)
+          expect(app_event_repository).to have_received(:record_app_apply_manifest).
+            with(app, app.space, user_audit_info, message.audit_hash)
+        end
       end
 
       describe 'scaling instances' do
@@ -71,7 +88,13 @@ module VCAP::CloudController
 
         context 'when process scale raises an exception' do
           let(:manifest_process_scale_message) { instance_double(ManifestProcessScaleMessage, { type: nil, to_process_scale_message: nil }) }
-          let(:message) { instance_double(AppManifestMessage, manifest_process_scale_messages: [manifest_process_scale_message], manifest_process_update_messages: []) }
+          let(:message) do
+            instance_double(AppManifestMessage,
+              manifest_process_scale_messages: [manifest_process_scale_message],
+              manifest_process_update_messages: [],
+              audit_hash: {}
+            )
+          end
 
           before do
             allow(process_scale).
@@ -109,7 +132,13 @@ module VCAP::CloudController
 
         context 'when process scale raises an exception' do
           let(:manifest_process_scale_message) { instance_double(ManifestProcessScaleMessage, { type: nil, to_process_scale_message: nil }) }
-          let(:message) { instance_double(AppManifestMessage, manifest_process_scale_messages: [manifest_process_scale_message], manifest_process_update_messages: []) }
+          let(:message) do
+            instance_double(AppManifestMessage,
+              manifest_process_scale_messages: [manifest_process_scale_message],
+              manifest_process_update_messages: [],
+              audit_hash: {}
+            )
+          end
 
           before do
             allow(process_scale).

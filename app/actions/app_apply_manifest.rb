@@ -18,6 +18,8 @@ module VCAP::CloudController
     def apply(app_guid, message)
       app = AppModel.find(guid: app_guid)
 
+      Repositories::AppEventRepository.new.record_app_apply_manifest(app, app.space, @user_audit_info, message.audit_hash)
+
       message.manifest_process_update_messages.each do |manifest_process_update_msg|
         process_type = manifest_process_update_msg.type
         process = find_process(app, process_type) || create_process(app, manifest_process_update_msg, process_type)
