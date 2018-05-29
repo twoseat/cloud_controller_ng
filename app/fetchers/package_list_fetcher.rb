@@ -8,7 +8,8 @@ module VCAP::CloudController
     def fetch_for_spaces(message:, space_guids:)
       app_dataset = AppModel.select(:id).where(space_guid: space_guids)
 
-      filter(message, app_dataset)
+      result = filter(message, app_dataset)
+      result
     end
 
     def fetch_for_app(message:)

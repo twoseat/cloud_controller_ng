@@ -79,7 +79,7 @@ module VCAP::CloudController
     class NoAdditionalParamsValidator < ActiveModel::Validator
       def validate(record)
         if record.extra_keys.any?
-          record.errors[:base] << "Unknown query parameter(s): '#{record.extra_keys.join("', '")}'"
+          record.errors[:base] << "XXX:Unknown query parameter(s): '#{record.extra_keys.join("', '")}'"
         end
       end
     end
