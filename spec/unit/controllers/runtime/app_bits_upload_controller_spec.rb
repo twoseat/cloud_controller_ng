@@ -113,6 +113,16 @@ module VCAP::CloudController
             end
           end
 
+          context 'with at least one resource and an application' do
+            let(:req_body) { { resources: JSON.dump([{ 'fn' => 'lol', 'sha1' => 'abc', 'size' => 2048 }]), application: valid_zip } }
+
+            it 'succeeds to upload' do
+              make_request
+              expect(last_response.status).to eq(201)
+              expect(process.refresh.package_hash).to_not be_nil
+            end
+          end
+
           context 'with no resources and application' do
             let(:req_body) { { application: valid_zip } }
 
