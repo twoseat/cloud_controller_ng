@@ -39,7 +39,7 @@ class PackagesController < ApplicationController
   def upload
     FeatureFlag.raise_unless_enabled!(:app_bits_upload)
 
-    message = wrap_package_upload_message
+    message = PackageUploadMessage.create_from_params(params[:body])
     unprocessable!(message.errors.full_messages) unless message.valid?
 
     package = PackageModel.where(guid: params[:guid]).eager(:space, space: :organization).all.first
@@ -159,20 +159,5 @@ class PackagesController < ApplicationController
 
   def unprocessable_source_package!
     unprocessable!('Source package is invalid. Ensure it exists and you have access to it.')
-  end
-
-  # v2 expects a required argument called :resources but maps it to
-  # :cached_resources. This endpoint passes the params directly to
-  # the message builder so it needs to be massaged
-
-  def wrap_package_upload_message
-    body = params['body']
-    cached_resources = body.delete('cached_resources')
-    resources = body.delete('resources')
-    body['cached_resources'] = resources || []
-
-    message = PackageUploadMessage.create_from_params(params[:body])
-    message.extra_keys << :cached_resources if cached_resources
-    message
   end
 end

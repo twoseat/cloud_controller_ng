@@ -31,7 +31,6 @@ RSpec.describe PackagesController, type: :controller do
       context 'with unsupported options' do
         let(:new_options) do {
           cached_resources: [{ 'fn' => 'lol', 'sha1' => 'abc', 'size' => 2048 }],
-          fozzie_bear: 'also not allowed'
         }
         end
         it 'returns a 422 and the package' do
@@ -58,7 +57,7 @@ RSpec.describe PackagesController, type: :controller do
           expect(MultiJson.load(response.body)['guid']).to eq(package.guid)
           expect(package.reload.state).to eq(VCAP::CloudController::PackageModel::CREATED_STATE)
           expect(uploader).to have_received(:upload_async) do |args|
-            expect(args[:message].cached_resources).to match_array([{ fn: 'lol', sha1: 'abc', size: '2048' }])
+            expect(args[:message].resources).to match_array([{ fn: 'lol', sha1: 'abc', size: '2048' }])
           end
         end
       end
