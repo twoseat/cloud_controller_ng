@@ -1,12 +1,12 @@
 require 'presenters/v3/base_presenter'
+require 'presenters/helpers/censorship'
 
 module VCAP::CloudController
   module Presenters
     module V3
       class PackagePresenter < BasePresenter
-        REDACTED_MESSAGE = '***'.freeze
 
-        def initialize(resource, show_secrets: false, censored_message: REDACTED_MESSAGE)
+        def initialize(resource, show_secrets: false, censored_message: Censorship::REDACTED_CREDENTIAL)
           super
         end
 
@@ -36,7 +36,7 @@ module VCAP::CloudController
           {
             image: package.image,
             username: package.docker_username,
-            password: package.docker_username && REDACTED_MESSAGE,
+            password: package.docker_username && Censorship::REDACTED_CREDENTIAL,
           }
         end
 
