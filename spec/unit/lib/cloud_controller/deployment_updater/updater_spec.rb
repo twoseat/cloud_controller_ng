@@ -92,15 +92,15 @@ module VCAP::CloudController
             expect(after_webish_process).to be_nil
           end
 
-          it 'maps the routes to the new web process' do
+          it "keeps the web process's routes and spurns the webish process'" do
             # This just here to show what we expect
             expect(web_process.route_mappings.map {|route_mapping| route_mapping.route.host}).to match_array(%w/hostname1/)
             expect(webish_process.route_mappings.map {|route_mapping| route_mapping.route.host}).to match_array(%w/hostname2/)
             
             deployer.update
             deployment.reload
-            
-            expect(deployment.app.web_process.route_mappings.map {|route_mapping| route_mapping.route.host}).to match_array(%w/hostname2/)
+
+            expect(deployment.app.web_process.route_mappings.map {|route_mapping| route_mapping.route.host}).to match_array(%w/hostname1/)
           end
         end
       end
