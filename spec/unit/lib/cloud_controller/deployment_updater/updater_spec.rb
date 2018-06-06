@@ -66,6 +66,12 @@ module VCAP::CloudController
         end
 
         context 'deployments where web process is at zero' do
+          let!(:space) { web_process.space }
+          let(:web_process) { ProcessModel.make(instances: 2, ) }
+          let!(:route1) { Route.make(space: space, host: 'hostname1') }
+          let!(:route_mapping1) { RouteMappingModel.make(app: web_process.app, route: route1, process_type: web_process.type) }
+          let!(:route2) { Route.make(space: space, host: 'hostname2') }
+          let!(:route_mapping2) { RouteMappingModel.make(app: webish_process.app, route: route2, process_type: webish_process.type) }
           before do
             web_process.update(instances: 0)
           end
@@ -76,13 +82,25 @@ module VCAP::CloudController
 
             deployer.update
 
-            after_web_process = deployment.reload.app.web_process
-            after_webish_process = deployment.reload.webish_process
+            deployment.reload
+            after_web_process = deployment.app.web_process
+            after_webish_process = deployment.webish_process
 
             expect(after_web_process.guid).to eq(before_webish_guid)
             expect(after_web_process.instances).to eq(5)
             expect(ProcessModel.find(guid: before_web_guid)).to be_nil
             expect(after_webish_process).to be_nil
+          end
+
+          it 'maps the routes to the new web process' do
+            # This just here to show what we expect
+            expect(web_process.route_mappings.map {|route_mapping| route_mapping.route.host}).to match_array(%w/hostname1/)
+            expect(webish_process.route_mappings.map {|route_mapping| route_mapping.route.host}).to match_array(%w/hostname2/)
+            
+            deployer.update
+            deployment.reload
+            
+            expect(deployment.app.web_process.route_mappings.map {|route_mapping| route_mapping.route.host}).to match_array(%w/hostname2/)
           end
         end
       end

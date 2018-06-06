@@ -22,9 +22,16 @@ module VCAP::CloudController
 
         if web_process.instances == 0
           ProcessModel.db.transaction do
+            uai = UserAuditInfo.from_context(SecurityContext)
+            old_webish_route_mappings = webish_process.route_mappings
+            web_process.routes.each do |web_process_route|
+              RouteMappingCreate.add(uai, web_process_route, webish_process)
+            end
             web_process.update(type: 'web-old')
             webish_process.update(type: ProcessTypes::WEB)
 
+            RouteMappingDelete.new(uai).delete(old_webish_route_mappings)
+            
             web_process.delete
             deployment.update(webish_process: nil, state: DeploymentModel::DEPLOYED_STATE)
           end
