@@ -93,7 +93,6 @@ module VCAP::CloudController
           end
 
           it "keeps the web process's routes and spurns the webish process'" do
-            # This just here to show what we expect
             expect(web_process.route_mappings.map {|route_mapping| route_mapping.route.host}).to match_array(%w/hostname1/)
             expect(webish_process.route_mappings.map {|route_mapping| route_mapping.route.host}).to match_array(%w/hostname2/)
             
