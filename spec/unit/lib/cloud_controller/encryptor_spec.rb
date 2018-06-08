@@ -181,6 +181,8 @@ module VCAP::CloudController
         def self.columns
           raise '<dynamic class>.columns: not implemented'
         end
+
+        #self.class.const_set(klass, 'TestModel')
       end
     end
 
@@ -227,6 +229,12 @@ module VCAP::CloudController
         it 'creates a salt generation method' do
           klass.send :set_field_as_encrypted, :name
           expect(klass.instance_methods).to include(:generate_salt)
+        end
+
+        it 'stores its classname' do
+          Object.const_set('TestModel', klass)
+          klass.send :set_field_as_encrypted, :size
+          expect(Encryptor.encrypted_classes).to contain_exactly(klass.name)
         end
 
         context 'explicit name' do
