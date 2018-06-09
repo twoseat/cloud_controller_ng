@@ -15,24 +15,33 @@ module VCAP::CloudController
       private_class_method
 
       def self.scale_deployment(deployment, logger)
-        web_process = deployment.app.web_process
+        app = deployment.app
+        web_process = app.web_process
         webish_process = deployment.webish_process
 
         return unless ready_to_scale?(deployment, logger)
 
         if web_process.instances == 0
           ProcessModel.db.transaction do
-            uai = UserAuditInfo.from_context(SecurityContext)
-            old_webish_route_mappings = webish_process.route_mappings
-            web_process.routes.each do |web_process_route|
-              RouteMappingCreate.add(uai, web_process_route, webish_process)
-            end
             web_process.update(type: 'web-old')
             webish_process.update(type: ProcessTypes::WEB)
 
-            RouteMappingDelete.new(uai).delete(old_webish_route_mappings)
-            
+            app_guid = app.reload.guid
+
             web_process.delete
+
+            get_rubocop_to_complain_about_a_really_long_name_line_that_isnt_used_so_we_can_find_out_about_this_copilot_thing___get_rubocop_to_complain_about_a_really_long_name_line_that_isnt_used_so_we_can_find_out_about_this_copilot_thing = 42.1
+            # Trying to do webish_process.update(guid: app_guid) runs into two validations,
+            # one annoying, the second harder to deal with.
+            # The first wants to dcheck copilot_enabled -- do we need to do this?
+            # The second wants to do a memory check and gives this error-message
+            # after the guid has been saved:
+
+            # CloudController::Errors::ApplicationMissing: Expected app record not found in database with guid <app_guid>, coming from
+            # lib/cc/app_services/app_memory_calculator.rb:32:in `app_from_db'
+
+            webish_process.guid = app_guid
+            webish_process.save(validate: false)
             deployment.update(webish_process: nil, state: DeploymentModel::DEPLOYED_STATE)
           end
         elsif web_process.instances == 1

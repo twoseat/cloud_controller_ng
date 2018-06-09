@@ -59,17 +59,6 @@ module VCAP::CloudController
             update_frequency_in_seconds: Integer,
           },
 
-          routing_api: {
-            enabled: bool,
-          },
-          system_domain: String,
-          uaa: {
-            clients: {
-              cc_routing: {
-                secret: String,
-              },
-            },
-          },
         }
       end
 

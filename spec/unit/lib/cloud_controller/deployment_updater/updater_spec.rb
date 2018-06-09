@@ -46,7 +46,7 @@ module VCAP::CloudController
 
         context 'the last iteration of deployments in progress' do
           let(:web_process) { ProcessModel.make(instances: 1) }
-          let(:webish_process) { ProcessModel.make(app: web_process.app, type: 'web-deployment-guid-1', instances: 5) }
+          let(:webish_process) { ProcessModel.make(app: web_process.app, type: 'web-deployment-guid-1', instances: 5, guid: "I'm just a webish guid") }
 
           it 'scales the web process down by one' do
             expect {
@@ -67,39 +67,38 @@ module VCAP::CloudController
 
         context 'deployments where web process is at zero' do
           let!(:space) { web_process.space }
-          let(:web_process) { ProcessModel.make(instances: 2, ) }
+
+          let(:app_guid) { "I'm the real web guid" }
+          let(:the_best_app) { AppModel.make(name: 'clem', guid: app_guid) }
+          let(:web_process) { ProcessModel.make(app: the_best_app, guid: app_guid, instances: 2) }
+
           let!(:route1) { Route.make(space: space, host: 'hostname1') }
           let!(:route_mapping1) { RouteMappingModel.make(app: web_process.app, route: route1, process_type: web_process.type) }
           let!(:route2) { Route.make(space: space, host: 'hostname2') }
           let!(:route_mapping2) { RouteMappingModel.make(app: webish_process.app, route: route2, process_type: webish_process.type) }
+
           before do
             web_process.update(instances: 0)
           end
 
           it 'replaces the existing web process with the webish process' do
             before_webish_guid = webish_process.guid
-            before_web_guid = web_process.guid
+            expect(ProcessModel.map(&:type)).to match_array(['web', 'web-deployment-guid-1'])
 
+            expect(webish_process.instances).to eq(5)
             deployer.update
 
             deployment.reload
-            after_web_process = deployment.app.web_process
+            the_best_app.reload
+            after_web_process = the_best_app.web_process
+
             after_webish_process = deployment.webish_process
-
-            expect(after_web_process.guid).to eq(before_webish_guid)
-            expect(after_web_process.instances).to eq(5)
-            expect(ProcessModel.find(guid: before_web_guid)).to be_nil
             expect(after_webish_process).to be_nil
-          end
 
-          it "keeps the web process's routes and spurns the webish process'" do
-            expect(web_process.route_mappings.map {|route_mapping| route_mapping.route.host}).to match_array(%w/hostname1/)
-            expect(webish_process.route_mappings.map {|route_mapping| route_mapping.route.host}).to match_array(%w/hostname2/)
-            
-            deployer.update
-            deployment.reload
-
-            expect(deployment.app.web_process.route_mappings.map {|route_mapping| route_mapping.route.host}).to match_array(%w/hostname1/)
+            expect(after_web_process.guid).to eq(the_best_app.guid)
+            expect(after_web_process.instances).to eq(5)
+            expect(ProcessModel.find(guid: before_webish_guid)).to be_nil
+            expect(ProcessModel.map(&:type)).to match_array(['web'])
           end
         end
       end
