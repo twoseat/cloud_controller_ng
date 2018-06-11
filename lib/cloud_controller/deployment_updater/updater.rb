@@ -23,25 +23,22 @@ module VCAP::CloudController
 
         if web_process.instances == 0
           ProcessModel.db.transaction do
-            web_process.update(type: 'web-old')
             webish_process.update(type: ProcessTypes::WEB)
+            logger.info("*** web_process.type is now web-old")
+            logger.info("*** Try running cf curl /v2/apps/${app.guid}")
+            logger.info("*** webish_process.type is now web")
+            sleep 60
+            web_process.update(type: 'web-old') # was 'web'
 
             app_guid = app.reload.guid
 
-            web_process.delete
-
-            get_rubocop_to_complain_about_a_really_long_name_line_that_isnt_used_so_we_can_find_out_about_this_copilot_thing___get_rubocop_to_complain_about_a_really_long_name_line_that_isnt_used_so_we_can_find_out_about_this_copilot_thing = 42.1
-            # Trying to do webish_process.update(guid: app_guid) runs into two validations,
-            # one annoying, the second harder to deal with.
-            # The first wants to dcheck copilot_enabled -- do we need to do this?
-            # The second wants to do a memory check and gives this error-message
-            # after the guid has been saved:
-
-            # CloudController::Errors::ApplicationMissing: Expected app record not found in database with guid <app_guid>, coming from
-            # lib/cc/app_services/app_memory_calculator.rb:32:in `app_from_db'
-
             webish_process.guid = app_guid
             webish_process.save(validate: false)
+
+            web_process.delete
+            logger.info("*** web_process is deleted")
+            logger.info("*** webish_process is now the web_process ,with the old web_process is GUID")
+            sleep 60
             deployment.update(webish_process: nil, state: DeploymentModel::DEPLOYED_STATE)
           end
         elsif web_process.instances == 1
