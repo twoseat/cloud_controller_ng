@@ -24,25 +24,8 @@ module VCAP::CloudController
         if web_process.instances == 0
           ProcessModel.db.transaction do
             webish_process.update(type: ProcessTypes::WEB)
-            logger.info("*** web_process.type is now web-old")
-            logger.info("*** Try running cf curl /v2/apps/${app.guid}")
-            logger.info("*** webish_process.type is now web")
-            sleep 60
-            web_process.update(type: 'web-old') # was 'web'
-
-            app_guid = app.reload.guid
-
             web_process.delete
-            logger.info("*** web_process is deleted")
-            logger.info("*** webish_process is not yet the web_process -- missing the app GUID")
-            sleep 60
-
-            # Don't do webish_process.update(guid: app_guid) because that has a validation that is going
-            # to look for a process with guid = app_guid, and we're trying to set it!
-            webish_process.guid = app_guid
-            webish_process.save(validate: false)
-            logger.info("*** webish_process now has the web_process GUID")
-            sleep 60
+            webish_process.update(guid: app.guid)
 
             deployment.update(webish_process: nil, state: DeploymentModel::DEPLOYED_STATE)
           end

@@ -20,5 +20,9 @@ module VCAP::CloudController
       key: :webish_process_guid,
       primary_key: :guid,
       without_guid_generation: true
+
+    def self.deployment_for?(app_guid)
+      !!find(app_guid: app_guid, state: DEPLOYING_STATE)
+    end
   end
 end
