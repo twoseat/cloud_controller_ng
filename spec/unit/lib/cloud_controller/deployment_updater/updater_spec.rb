@@ -99,6 +99,47 @@ module VCAP::CloudController
             expect(after_web_process.instances).to eq(5)
             expect(ProcessModel.find(guid: before_webish_guid)).to be_nil
             expect(ProcessModel.map(&:type)).to match_array(['web'])
+            expect(deployment.state).to eq(DeploymentModel::DEPLOYED_STATE)
+          end
+
+
+          it 'can see the app during final update' do
+            before_webish_guid = webish_process.guid
+            expect(ProcessModel.map(&:type)).to match_array(['web', 'web-deployment-guid-1'])
+
+            expect(webish_process.instances).to eq(5)
+
+            expect(the_best_app).to eq(deployment.app)
+            expect(web_process.id).to eq(the_best_app.web_process.id)
+            expect(webish_process.id).to eq(deployment.webish_process.id)
+
+            expect(web_process.instances).to eq(0)
+
+            webish_process.update(type: ProcessTypes::WEB)
+            expect(ProcessModel.find(guid: the_best_app.guid)).not_to be_nil # v2
+            expect(AppModel.find(guid: the_best_app.guid)).not_to be_nil # v3
+            expect(AppModel.find(guid: the_best_app.guid).web_process).not_to be_nil # v3
+
+            web_process.update(type: 'web-old')
+            # Verify cf curl /v2/apps/${the_best_app.guid} finds something
+            expect(ProcessModel.find(guid: the_best_app.guid)).not_to be_nil # v2
+            # Verify cf curl /v3/apps/${the_best_app.guid} finds something
+            expect(AppModel.find(guid: the_best_app.guid)).not_to be_nil # v3
+            expect(AppModel.find(guid: the_best_app.guid).web_process).not_to be_nil # v3
+
+            the_best_app.reload
+            app_guid = the_best_app.guid
+            web_process.delete
+            expect(ProcessModel.find(guid: the_best_app.guid)).to be_nil # v2 - *BLINK*
+            expect(AppModel.find(guid: the_best_app.guid)).not_to be_nil # v3
+            expect(AppModel.find(guid: the_best_app.guid).web_process).not_to be_nil # v3
+
+            webish_process.guid = app_guid
+            webish_process.save(validate: false)
+            expect(ProcessModel.find(guid: the_best_app.guid)).not_to be_nil # v2
+            expect(AppModel.find(guid: the_best_app.guid)).not_to be_nil # v3
+            expect(AppModel.find(guid: the_best_app.guid).web_process).not_to be_nil # v3
+
           end
         end
       end

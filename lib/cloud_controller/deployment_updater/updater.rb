@@ -32,13 +32,18 @@ module VCAP::CloudController
 
             app_guid = app.reload.guid
 
-            webish_process.guid = app_guid
-            webish_process.save(validate: false)
-
             web_process.delete
             logger.info("*** web_process is deleted")
-            logger.info("*** webish_process is now the web_process ,with the old web_process is GUID")
+            logger.info("*** webish_process is not yet the web_process -- missing the app GUID")
             sleep 60
+
+            # Don't do webish_process.update(guid: app_guid) because that has a validation that is going
+            # to look for a process with guid = app_guid, and we're trying to set it!
+            webish_process.guid = app_guid
+            webish_process.save(validate: false)
+            logger.info("*** webish_process now has the web_process GUID")
+            sleep 60
+
             deployment.update(webish_process: nil, state: DeploymentModel::DEPLOYED_STATE)
           end
         elsif web_process.instances == 1
