@@ -15,19 +15,28 @@ module VCAP::CloudController
       private_class_method
 
       def self.scale_deployment(deployment, logger)
+        return unless ready_to_scale?(deployment, logger)
+
         app = deployment.app
         web_process = app.web_process
         webish_process = deployment.webish_process
+        final_web_process = deployment.final_web_process
 
-        return unless ready_to_scale?(deployment, logger)
-
-        if web_process.instances == 0
+        if final_web_process
+          if webish_process.instance == 0
+            webish_process.delete
+            deployment.update(final_web_process:nil, state: DeploymentModel::DEPLOYED_STATE)
+          else
+            ProcessModel.db.transaction do
+              webish_process.update(instances: webish_process.instances - 1)
+              deployment.final_web_process.update(instances: final_web_process.instances + 1)
+            end
+          end
+        elsif web_process.instances == 0
           ProcessModel.db.transaction do
-            webish_process.update(type: ProcessTypes::WEB)
             web_process.delete
-            webish_process.update(guid: app.guid)
-
-            deployment.update(webish_process: nil, state: DeploymentModel::DEPLOYED_STATE)
+            process_values = webish_process.values.delete(:id)
+            deployment.final_web_process = ProcessModel.create(process_values.merge({guid: app.guid, type: ProcessTypes::WEB})
           end
         elsif web_process.instances == 1
           web_process.update(instances: web_process.instances - 1)
