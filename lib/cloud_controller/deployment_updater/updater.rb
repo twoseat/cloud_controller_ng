@@ -37,6 +37,7 @@ module VCAP::CloudController
             web_process.delete
             process_values = webish_process.values.delete(:id)
             deployment.final_web_process = ProcessModel.create(process_values.merge({guid: app.guid, type: ProcessTypes::WEB})
+	    # probably need to copy the routes too, like in DeploymentCreate
           end
         elsif web_process.instances == 1
           web_process.update(instances: web_process.instances - 1)
