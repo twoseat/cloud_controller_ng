@@ -25,6 +25,30 @@ module VCAP::CloudController
         allow(instances_reporters).to receive(:all_instances_for_app).and_return(all_instances_results)
       end
 
+      context 'when deploying multiple apps', isolation: :truncation do
+        let!(:deployment) { DeploymentModel.make(app: web_process.app, webish_process: webish_process, state: 'DEPLOYING') }
+        let!(:second_deployment) { DeploymentModel.make(app: web_process.app, webish_process: webish_process, state: 'DEPLOYING') }
+
+
+        before do
+          allow(instances_reporters).to receive(:all_instances_for_app) {
+            sleep 10
+            all_instances_results
+          }
+        end
+
+        it 'deploys them concurrently' do
+          original_instance_count = webish_process.reload.instances
+
+          time1 = Benchmark.realtime do
+            deployer.update
+          end
+
+          expect(webish_process.reload.instances).to eq(original_instance_count + 1)
+          expect(time1).to be_within(0.5).of(10)
+        end
+      end
+
       context 'when all new webish processes are running' do
         context 'deployments in progress' do
           it 'scales the web process down by one' do
@@ -137,6 +161,8 @@ module VCAP::CloudController
         }
 
         it 'does not scales the process' do
+          allow(instances_reporters).to receive(:all_instances_for_app).and_return(all_instances_results)
+
           expect {
             deployer.update
           }.not_to change {

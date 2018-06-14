@@ -6,10 +6,17 @@ module VCAP::CloudController
         logger.info('run-deployment-update')
 
         deployments = DeploymentModel.where(state: DeploymentModel::DEPLOYING_STATE)
+        @workpool = WorkPool.new(50)
+
 
         deployments.each do |deployment|
-          scale_deployment(deployment, logger)
+          # scale_deployment(deployment, logger)
+          @workpool.submit(deployment, logger) do |d,l|
+            scale_deployment(d, l)
+          end
         end
+
+        @workpool.drain
       end
 
       private_class_method
@@ -55,3 +62,10 @@ module VCAP::CloudController
     end
   end
 end
+
+## 2 containers for old process
+##
+
+
+## 2 containers -- stop all
+## create 2 new containers
