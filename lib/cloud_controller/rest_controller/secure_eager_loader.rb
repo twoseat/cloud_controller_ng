@@ -31,9 +31,13 @@ module VCAP::CloudController::RestController
       end
 
       eager_load_hash = {}
+      ap all_relationships
       all_relationships.each do |relationship_name, association|
         association_name = association.association_name
 
+        p '---------'
+        p "Model: #{model_class}"
+        p "Association Name: #{association_name}"
         association_model_class = model_class.association_reflection(association_name)
         unless association_model_class
           # Since we are using STI in some models (e.g. Domain, ServiceInstance)
@@ -58,6 +62,7 @@ module VCAP::CloudController::RestController
 
         unless association.link_only?
           if depth > 0
+            p "Associated class: #{association_model_class.associated_class}"
             eager_load_hash[association_name] = {
               visibility_filter => build_eager_load_hash(
                 nil,

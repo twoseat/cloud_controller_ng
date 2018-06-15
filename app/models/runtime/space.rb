@@ -24,12 +24,12 @@ module VCAP::CloudController
 
     one_to_many :app_models, primary_key: :guid, key: :space_guid
 
-    one_to_many :processes, class: 'VCAP::CloudController::ProcessModel', dataset: -> { ProcessModel.filter(app: app_models) }
+    # one_to_many :processes, class: 'VCAP::CloudController::ProcessModel', dataset: -> { ProcessModel.filter(app: app_models) }
 
     many_through_many :apps, [
       [:spaces, :id, :guid],
       [:apps, :space_guid, :guid]
-    ], class: 'VCAP::CloudController::ProcessModel', right_primary_key: :app_guid, conditions: { type: ProcessTypes::WEB }
+    ], class: 'VCAP::CloudController::AppModel', right_primary_key: :app_guid, conditions: { type: ProcessTypes::WEB }
 
     one_to_many :events, primary_key: :guid, key: :space_guid
     one_to_many :service_instances
@@ -129,7 +129,7 @@ module VCAP::CloudController
 
     add_association_dependencies(
       default_users: :nullify,
-      processes: :destroy,
+      # processes: :destroy,
       routes: :destroy,
       security_groups: :nullify,
       staging_security_groups: :nullify,

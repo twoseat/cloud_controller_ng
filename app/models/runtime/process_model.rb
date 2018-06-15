@@ -35,10 +35,14 @@ module VCAP::CloudController
     one_to_many :service_bindings, key: :app_guid, primary_key: :app_guid, without_guid_generation: true
     one_to_many :events, class: VCAP::CloudController::AppEvent, key: :app_id
 
-    one_through_one :space,
-      join_table:        AppModel.table_name,
-      left_primary_key:  :app_guid, left_key: :guid,
-      right_primary_key: :guid, right_key: :space_guid
+    # one_through_one :space,
+    #   join_table:        AppModel.table_name,
+    #   left_primary_key:  :app_guid, left_key: :guid,
+    #   right_primary_key: :guid, right_key: :space_guid
+    #
+    def space
+      app.space
+    end
 
     one_through_one :stack,
       join_table:        BuildpackLifecycleDataModel.table_name,
@@ -518,7 +522,7 @@ module VCAP::CloudController
     end
 
     def to_hash(opts={})
-      opts[:redact] = if !VCAP::CloudController::Security::AccessContext.new.can?(:read_env, self)
+      opts[:redact] = if !VCAP::CloudController::Security::AccessContext.new.can?(:read_env, self.app)
                         %w(environment_json system_env_json)
                       end
       super(opts)
