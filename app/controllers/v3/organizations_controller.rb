@@ -38,7 +38,7 @@ class OrganizationsV3Controller < ApplicationController
   end
 
   def create
-    unauthorized! unless can_write_globally? || user_org_creation_enabled?
+    unauthorized! unless permission_queryer.can_write_globally? || user_org_creation_enabled?
 
     message = VCAP::CloudController::OrganizationCreateMessage.new(params[:body])
     unprocessable!(message.errors.full_messages) unless message.valid?

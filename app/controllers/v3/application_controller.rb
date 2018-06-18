@@ -113,10 +113,6 @@ class ApplicationController < ActionController::Base
   ### PERMISSIONS
   ###
 
-  def can_write_globally?
-    permission_queryer.can_write_globally?
-  end
-
   def can_read_globally?
     permission_queryer.can_read_globally?
   end
