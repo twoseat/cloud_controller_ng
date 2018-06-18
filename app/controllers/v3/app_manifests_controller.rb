@@ -17,7 +17,7 @@ class AppManifestsController < ApplicationController
 
     app, space, org = AppFetcher.new.fetch(params[:guid])
 
-    app_not_found! unless app && can_read?(space.guid, org.guid)
+    app_not_found! unless app && permission_queryer.can_read_from_space?(space.guid, org.guid)
     unauthorized! unless can_write?(space.guid)
     unsupported_for_docker_apps!(message) if incompatible_with_buildpacks(app.lifecycle_type, message)
     raise CloudController::Errors::ApiError.new_from_details('RouteServiceNotBindableToApp') if has_route_services(message)
@@ -35,7 +35,7 @@ class AppManifestsController < ApplicationController
   def show
     app, space, org = AppFetcher.new.fetch(params[:guid])
 
-    app_not_found! unless app && can_read?(space.guid, org.guid)
+    app_not_found! unless app && permission_queryer.can_read_from_space?(space.guid, org.guid)
     unauthorized! unless can_see_secrets?(space)
 
     manifest_presenter = Presenters::V3::AppManifestPresenter.new(app, app.service_bindings, app.routes)

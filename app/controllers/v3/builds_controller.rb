@@ -29,7 +29,7 @@ class BuildsController < ApplicationController
 
     package = PackageModel.where(guid: message.package_guid).
               eager(:app, :space, space: :organization, app: :buildpack_lifecycle_data).all.first
-    unprocessable_package! unless package && can_read?(package.space.guid, package.space.organization.guid) && can_write?(package.space.guid)
+    unprocessable_package! unless package && permission_queryer.can_read_from_space?(package.space.guid, package.space.organization.guid) && can_write?(package.space.guid)
 
     FeatureFlag.raise_unless_enabled!(:diego_docker) if package.type == PackageModel::DOCKER_TYPE
 
@@ -56,7 +56,7 @@ class BuildsController < ApplicationController
   def show
     build = BuildModel.find(guid: params[:guid])
 
-    build_not_found! unless build && can_read?(build.package.space.guid, build.package.space.organization.guid)
+    build_not_found! unless build && permission_queryer.can_read_from_space?(build.package.space.guid, build.package.space.organization.guid)
 
     render status: :ok, json: Presenters::V3::BuildPresenter.new(build)
   end

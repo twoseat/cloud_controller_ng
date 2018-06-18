@@ -12,7 +12,7 @@ class SpacesV3Controller < ApplicationController
   def show
     space = SpaceFetcher.new.fetch(params[:guid])
 
-    space_not_found! unless space && can_read?(space.guid, space.organization.guid)
+    space_not_found! unless space && permission_queryer.can_read_from_space?(space.guid, space.organization.guid)
 
     render status: :ok, json: Presenters::V3::SpacePresenter.new(space)
   end
@@ -51,7 +51,7 @@ class SpacesV3Controller < ApplicationController
     space_not_found! unless space
     org = space.organization
     org_not_found! unless org
-    space_not_found! unless can_read?(space.guid, org.guid)
+    space_not_found! unless permission_queryer.can_read_from_space?(space.guid, org.guid)
     unauthorized! unless roles.admin? || space.organization.managers.include?(current_user)
 
     message = SpaceUpdateIsolationSegmentMessage.new(params[:body])
@@ -75,7 +75,7 @@ class SpacesV3Controller < ApplicationController
     space_not_found! unless space
 
     org = space.organization
-    space_not_found! unless can_read?(space.guid, org.guid)
+    space_not_found! unless permission_queryer.can_read_from_space?(space.guid, org.guid)
 
     isolation_segment = fetch_isolation_segment(space.isolation_segment_guid)
     render status: :ok, json: Presenters::V3::ToOneRelationshipPresenter.new(

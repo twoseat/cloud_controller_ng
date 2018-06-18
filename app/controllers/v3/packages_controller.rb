@@ -19,7 +19,7 @@ class PackagesController < ApplicationController
 
     if app_nested?
       app, dataset = PackageListFetcher.new.fetch_for_app(message: message)
-      app_not_found! unless app && can_read?(app.space.guid, app.organization.guid)
+      app_not_found! unless app && permission_queryer.can_read_from_space?(app.space.guid, app.organization.guid)
     else
       dataset = if can_read_globally?
                   PackageListFetcher.new.fetch_all(message: message)
@@ -50,7 +50,7 @@ class PackagesController < ApplicationController
     unprocessable!(message.errors.full_messages) unless message.valid?
 
     package = PackageModel.where(guid: params[:guid]).eager(:space, space: :organization).all.first
-    package_not_found! unless package && can_read?(package.space.guid, package.space.organization.guid)
+    package_not_found! unless package && permission_queryer.can_read_from_space?(package.space.guid, package.space.organization.guid)
     unauthorized! unless can_write?(package.space.guid)
 
     unprocessable!('Package type must be bits.') unless package.type == 'bits'
@@ -72,7 +72,7 @@ class PackagesController < ApplicationController
 
   def download
     package = PackageModel.where(guid: params[:guid]).eager(:space, space: :organization).all.first
-    package_not_found! unless package && can_read?(package.space.guid, package.space.organization.guid)
+    package_not_found! unless package && permission_queryer.can_read_from_space?(package.space.guid, package.space.organization.guid)
     unauthorized! unless can_see_secrets?(package.space)
 
     unprocessable!('Package type must be bits.') unless package.type == 'bits'
@@ -88,14 +88,14 @@ class PackagesController < ApplicationController
 
   def show
     package = PackageModel.where(guid: params[:guid]).eager(:space, space: :organization).all.first
-    package_not_found! unless package && can_read?(package.space.guid, package.space.organization.guid)
+    package_not_found! unless package && permission_queryer.can_read_from_space?(package.space.guid, package.space.organization.guid)
 
     render status: :ok, json: Presenters::V3::PackagePresenter.new(package)
   end
 
   def destroy
     package = PackageModel.where(guid: params[:guid]).eager(:space, space: :organization).all.first
-    package_not_found! unless package && can_read?(package.space.guid, package.space.organization.guid)
+    package_not_found! unless package && permission_queryer.can_read_from_space?(package.space.guid, package.space.organization.guid)
     unauthorized! unless can_write?(package.space.guid)
 
     delete_action = PackageDelete.new(user_audit_info)
@@ -122,7 +122,7 @@ class PackagesController < ApplicationController
 
     app = AppModel.where(guid: message.app_guid).eager(:space, :organization).all.first
     unprocessable_app! unless app &&
-      can_read?(app.space.guid, app.organization.guid) &&
+      permission_queryer.can_read_from_space?(app.space.guid, app.organization.guid) &&
       can_write?(app.space.guid)
 
     PackageCreate.create(message: message, user_audit_info: user_audit_info)
@@ -132,12 +132,12 @@ class PackagesController < ApplicationController
     app_guid = HashUtils.dig(params, :body, :relationships, :app, :data, :guid)
     destination_app = AppModel.where(guid: app_guid).eager(:space, :organization).all.first
     unprocessable_app! unless destination_app &&
-      can_read?(destination_app.space.guid, destination_app.organization.guid) &&
+      permission_queryer.can_read_from_space?(destination_app.space.guid, destination_app.organization.guid) &&
       can_write?(destination_app.space.guid)
 
     source_package = PackageModel.where(guid: params[:source_guid]).eager(:app, :space, space: :organization).all.first
     unprocessable_source_package! unless source_package &&
-      can_read?(source_package.space.guid, source_package.space.organization.guid) &&
+      permission_queryer.can_read_from_space?(source_package.space.guid, source_package.space.organization.guid) &&
       can_write?(source_package.space.guid)
 
     PackageCopy.new.copy(

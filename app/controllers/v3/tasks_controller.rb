@@ -20,7 +20,7 @@ class TasksController < ApplicationController
 
     if app_nested?
       app, dataset = TaskListFetcher.new.fetch_for_app(message: message)
-      app_not_found! unless app && can_read?(app.space.guid, app.organization.guid)
+      app_not_found! unless app && permission_queryer.can_read_from_space?(app.space.guid, app.organization.guid)
       show_secrets = can_see_secrets?(app.space)
     else
       dataset = if can_read_globally?
@@ -47,7 +47,7 @@ class TasksController < ApplicationController
 
     app, space, org, droplet = TaskCreateFetcher.new.fetch(app_guid: params[:app_guid], droplet_guid: message.droplet_guid)
 
-    app_not_found! unless app && can_read?(space.guid, org.guid)
+    app_not_found! unless app && permission_queryer.can_read_from_space?(space.guid, org.guid)
     unauthorized! unless can_write?(space.guid)
     droplet_not_found! if message.requested?(:droplet_guid) && droplet.nil?
 
@@ -60,7 +60,7 @@ class TasksController < ApplicationController
 
   def cancel
     task, space, org = TaskFetcher.new.fetch(task_guid: params[:task_guid])
-    task_not_found! unless task && can_read?(space.guid, org.guid)
+    task_not_found! unless task && permission_queryer.can_read_from_space?(space.guid, org.guid)
 
     unauthorized! unless can_write?(space.guid)
     TaskCancel.new(configuration).cancel(task: task, user_audit_info: user_audit_info)
@@ -72,7 +72,7 @@ class TasksController < ApplicationController
 
   def show
     task, space, org = TaskFetcher.new.fetch(task_guid: params[:task_guid])
-    task_not_found! unless task && can_read?(space.guid, org.guid)
+    task_not_found! unless task && permission_queryer.can_read_from_space?(space.guid, org.guid)
 
     render status: :ok, json: Presenters::V3::TaskPresenter.new(task, show_secrets: can_see_secrets?(space))
   end

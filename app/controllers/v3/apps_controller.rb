@@ -60,7 +60,7 @@ class AppsV3Controller < ApplicationController
 
     app, space, org = AppFetcher.new.fetch(params[:guid])
 
-    app_not_found! unless app && can_read?(space.guid, org.guid)
+    app_not_found! unless app && permission_queryer.can_read_from_space?(space.guid, org.guid)
 
     decorators = []
     decorators << IncludeAppSpaceDecorator if message.include == 'space'
@@ -77,7 +77,7 @@ class AppsV3Controller < ApplicationController
     unprocessable!(message.errors.full_messages) unless message.valid?
 
     space = Space.where(guid: message.space_guid).first
-    unprocessable_space! unless space && can_read?(space.guid, space.organization_guid) && can_write?(space.guid)
+    unprocessable_space! unless space && permission_queryer.can_read_from_space?(space.guid, space.organization_guid) && can_write?(space.guid)
 
     if message.lifecycle_type == VCAP::CloudController::PackageModel::DOCKER_TYPE
       FeatureFlag.raise_unless_enabled!(:diego_docker)
@@ -99,7 +99,7 @@ class AppsV3Controller < ApplicationController
 
     app, space, org = AppFetcher.new.fetch(params[:guid])
 
-    app_not_found! unless app && can_read?(space.guid, org.guid)
+    app_not_found! unless app && permission_queryer.can_read_from_space?(space.guid, org.guid)
     unauthorized! unless can_write?(space.guid)
 
     lifecycle = AppLifecycleProvider.provide_for_update(message, app)
@@ -117,7 +117,7 @@ class AppsV3Controller < ApplicationController
   def destroy
     app, space, org = AppDeleteFetcher.new.fetch(params[:guid])
 
-    app_not_found! unless app && can_read?(space.guid, org.guid)
+    app_not_found! unless app && permission_queryer.can_read_from_space?(space.guid, org.guid)
     unauthorized! unless can_write?(space.guid)
 
     delete_action = AppDelete.new(user_audit_info)
@@ -131,7 +131,7 @@ class AppsV3Controller < ApplicationController
 
   def start
     app, space, org = AppFetcher.new.fetch(params[:guid])
-    app_not_found! unless app && can_read?(space.guid, org.guid)
+    app_not_found! unless app && permission_queryer.can_read_from_space?(space.guid, org.guid)
     unprocessable_lacking_droplet! unless app.droplet
     unauthorized! unless can_write?(space.guid)
     if app.droplet.lifecycle_type == DockerLifecycleDataModel::LIFECYCLE_TYPE
@@ -147,7 +147,7 @@ class AppsV3Controller < ApplicationController
 
   def stop
     app, space, org = AppFetcher.new.fetch(params[:guid])
-    app_not_found! unless app && can_read?(space.guid, org.guid)
+    app_not_found! unless app && permission_queryer.can_read_from_space?(space.guid, org.guid)
     unauthorized! unless can_write?(space.guid)
 
     AppStop.stop(app: app, user_audit_info: user_audit_info)
@@ -159,7 +159,7 @@ class AppsV3Controller < ApplicationController
 
   def restart
     app, space, org = AppFetcher.new.fetch(params[:guid])
-    app_not_found! unless app && can_read?(space.guid, org.guid)
+    app_not_found! unless app && permission_queryer.can_read_from_space?(space.guid, org.guid)
     unprocessable_lacking_droplet! unless app.droplet
     unauthorized! unless can_write?(space.guid)
     if app.droplet.lifecycle_type == DockerLifecycleDataModel::LIFECYCLE_TYPE
@@ -180,7 +180,7 @@ class AppsV3Controller < ApplicationController
     message = AppBuildsListMessage.from_params(query_params)
     invalid_param!(message.errors.full_messages) unless message.valid?
     app, space, org = AppFetcher.new.fetch(params[:guid])
-    app_not_found! unless app && can_read?(space.guid, org.guid)
+    app_not_found! unless app && permission_queryer.can_read_from_space?(space.guid, org.guid)
     dataset = AppBuildsListFetcher.new(app.guid, message).fetch_all
     render status: :ok, json: Presenters::V3::PaginatedListPresenter.new(
       presenter: Presenters::V3::BuildPresenter,
@@ -195,7 +195,7 @@ class AppsV3Controller < ApplicationController
 
     FeatureFlag.raise_unless_enabled!(:env_var_visibility)
 
-    app_not_found! unless app && can_read?(space.guid, org.guid)
+    app_not_found! unless app && permission_queryer.can_read_from_space?(space.guid, org.guid)
     unauthorized! unless can_see_secrets?(space)
 
     FeatureFlag.raise_unless_enabled!(:space_developer_env_var_visibility)
@@ -208,7 +208,7 @@ class AppsV3Controller < ApplicationController
 
     app, space, org = AppFetcher.new.fetch(params[:guid])
 
-    app_not_found! unless app && can_read?(space.guid, org.guid)
+    app_not_found! unless app && permission_queryer.can_read_from_space?(space.guid, org.guid)
     unauthorized! unless can_see_secrets?(space)
 
     FeatureFlag.raise_unless_enabled!(:space_developer_env_var_visibility)
@@ -219,7 +219,7 @@ class AppsV3Controller < ApplicationController
   def update_environment_variables
     app, space, org = AppFetcher.new.fetch(params[:guid])
 
-    app_not_found! unless app && can_read?(space.guid, org.guid)
+    app_not_found! unless app && permission_queryer.can_read_from_space?(space.guid, org.guid)
     unauthorized! unless can_write?(space.guid)
 
     message = AppUpdateEnvironmentVariablesMessage.new(params[:body])
@@ -236,7 +236,7 @@ class AppsV3Controller < ApplicationController
     cannot_remove_droplet! if params[:body].key?('data') && droplet_guid.nil?
     app, space, org, droplet = AssignCurrentDropletFetcher.new.fetch(app_guid, droplet_guid)
 
-    app_not_found! unless app && can_read?(space.guid, org.guid)
+    app_not_found! unless app && permission_queryer.can_read_from_space?(space.guid, org.guid)
     unauthorized! unless can_write?(space.guid)
 
     SetCurrentDroplet.new(user_audit_info).update_to(app, droplet)
@@ -254,7 +254,7 @@ class AppsV3Controller < ApplicationController
 
   def current_droplet_relationship
     app, space, org = AppFetcher.new.fetch(params[:guid])
-    app_not_found! unless app && can_read?(space.guid, org.guid)
+    app_not_found! unless app && permission_queryer.can_read_from_space?(space.guid, org.guid)
     droplet = DropletModel.where(guid: app.droplet_guid).eager(:space, space: :organization).all.first
 
     droplet_not_found! unless droplet
@@ -269,7 +269,7 @@ class AppsV3Controller < ApplicationController
 
   def current_droplet
     app, space, org = AppFetcher.new.fetch(params[:guid])
-    app_not_found! unless app && can_read?(space.guid, org.guid)
+    app_not_found! unless app && permission_queryer.can_read_from_space?(space.guid, org.guid)
     droplet = DropletModel.where(guid: app.droplet_guid).eager(:space, space: :organization).all.first
 
     droplet_not_found! unless droplet
