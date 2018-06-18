@@ -23,7 +23,7 @@ class DropletsController < ApplicationController
       package, dataset = DropletListFetcher.new(message: message).fetch_for_package
       package_not_found! unless package && permission_queryer.can_read_from_space?(package.space.guid, package.space.organization.guid)
     else
-      dataset = if can_read_globally?
+      dataset = if permission_queryer.can_read_globally?
                   DropletListFetcher.new(message: message).fetch_all
                 else
                   DropletListFetcher.new(message: message).fetch_for_spaces(space_guids: readable_space_guids)

@@ -9,7 +9,7 @@ class BuildsController < ApplicationController
     message = BuildsListMessage.from_params(query_params)
     invalid_param!(message.errors.full_messages) unless message.valid?
     build_list_fetcher = BuildListFetcher.new(message: message)
-    dataset = if can_read_globally?
+    dataset = if permission_queryer.can_read_globally?
                 build_list_fetcher.fetch_all
               else
                 build_list_fetcher.fetch_for_spaces(space_guids: readable_space_guids)

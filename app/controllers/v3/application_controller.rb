@@ -113,10 +113,6 @@ class ApplicationController < ActionController::Base
   ### PERMISSIONS
   ###
 
-  def can_read_globally?
-    permission_queryer.can_read_globally?
-  end
-
   def can_read_from_isolation_segment?(isolation_segment)
     permission_queryer.can_read_from_isolation_segment?(isolation_segment)
   end

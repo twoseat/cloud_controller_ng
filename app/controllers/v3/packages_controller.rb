@@ -21,7 +21,7 @@ class PackagesController < ApplicationController
       app, dataset = PackageListFetcher.new.fetch_for_app(message: message)
       app_not_found! unless app && permission_queryer.can_read_from_space?(app.space.guid, app.organization.guid)
     else
-      dataset = if can_read_globally?
+      dataset = if permission_queryer.can_read_globally?
                   PackageListFetcher.new.fetch_all(message: message)
                 else
                   PackageListFetcher.new.fetch_for_spaces(message: message, space_guids: readable_space_guids)

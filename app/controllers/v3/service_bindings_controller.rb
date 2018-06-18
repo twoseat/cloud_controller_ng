@@ -44,7 +44,7 @@ class ServiceBindingsController < ApplicationController
     message = ServiceBindingsListMessage.from_params(query_params)
     invalid_param!(message.errors.full_messages) unless message.valid?
 
-    dataset = if can_read_globally?
+    dataset = if permission_queryer.can_read_globally?
                 ServiceBindingListFetcher.new(message).fetch_all
               else
                 ServiceBindingListFetcher.new(message).fetch(space_guids: readable_space_guids)

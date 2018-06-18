@@ -109,7 +109,7 @@ class SpacesV3Controller < ApplicationController
   end
 
   def readable_spaces(message:)
-    if can_read_globally?
+    if permission_queryer.can_read_globally?
       SpaceListFetcher.new.fetch_all(message: message)
     else
       SpaceListFetcher.new.fetch(message: message, guids: readable_space_guids)

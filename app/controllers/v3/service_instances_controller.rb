@@ -13,7 +13,7 @@ class ServiceInstancesV3Controller < ApplicationController
     message = ServiceInstancesListMessage.from_params(query_params)
     invalid_param!(message.errors.full_messages) unless message.valid?
 
-    dataset = if can_read_globally?
+    dataset = if permission_queryer.can_read_globally?
                 ManagedServiceInstanceListFetcher.new.fetch_all(message: message)
               else
                 ManagedServiceInstanceListFetcher.new.fetch(message: message, readable_space_guids: readable_space_guids)

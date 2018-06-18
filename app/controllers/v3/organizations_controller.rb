@@ -109,7 +109,7 @@ class OrganizationsV3Controller < ApplicationController
   end
 
   def fetch_orgs(message)
-    if can_read_globally?
+    if permission_queryer.can_read_globally?
       OrgListFetcher.new.fetch_all(message: message)
     else
       OrgListFetcher.new.fetch(message: message, guids: readable_org_guids)
@@ -117,7 +117,7 @@ class OrganizationsV3Controller < ApplicationController
   end
 
   def fetch_orgs_for_isolation_segment(message)
-    if can_read_globally?
+    if permission_queryer.can_read_globally?
       isolation_segment, dataset = OrgListFetcher.new.fetch_all_for_isolation_segment(message: message)
     else
       isolation_segment, dataset = OrgListFetcher.new.fetch_for_isolation_segment(message: message, guids: readable_org_guids)

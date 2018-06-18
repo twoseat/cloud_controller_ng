@@ -8,7 +8,7 @@ class DeploymentsController < ApplicationController
     message = DeploymentsListMessage.from_params(query_params)
     invalid_param!(message.errors.full_messages) unless message.valid?
     deployment_list_fetcher = DeploymentListFetcher.new(message: message)
-    dataset = if can_read_globally?
+    dataset = if permission_queryer.can_read_globally?
                 deployment_list_fetcher.fetch_all
               else
                 deployment_list_fetcher.fetch_for_spaces(space_guids: readable_space_guids)

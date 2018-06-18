@@ -34,7 +34,7 @@ class AppsV3Controller < ApplicationController
     message = AppsListMessage.from_params(query_params)
     invalid_param!(message.errors.full_messages) unless message.valid?
 
-    dataset = if can_read_globally?
+    dataset = if permission_queryer.can_read_globally?
                 AppListFetcher.new.fetch_all(message)
               else
                 AppListFetcher.new.fetch(message, readable_space_guids)
