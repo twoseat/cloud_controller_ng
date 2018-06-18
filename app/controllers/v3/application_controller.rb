@@ -113,10 +113,6 @@ class ApplicationController < ActionController::Base
   ### PERMISSIONS
   ###
 
-  def can_read_from_org?(org_guid)
-    permission_queryer.can_read_from_org?(org_guid)
-  end
-
   def can_write_globally?
     permission_queryer.can_write_globally?
   end

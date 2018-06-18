@@ -173,7 +173,7 @@ class IsolationSegmentsController < ApplicationController
   end
 
   def can_list_organizations?(isolation_segment)
-    can_read_globally? || isolation_segment.organizations.any? { |org| can_read_from_org?(org.guid) }
+    can_read_globally? || isolation_segment.organizations.any? { |org| permission_queryer.can_read_from_org?(org.guid) }
   end
 
   def find_isolation_segment(guid)

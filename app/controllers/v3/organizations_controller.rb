@@ -14,7 +14,7 @@ class OrganizationsV3Controller < ApplicationController
 
   def show
     org = fetch_org(params[:guid])
-    org_not_found! unless org && can_read_from_org?(org.guid)
+    org_not_found! unless org && permission_queryer.can_read_from_org?(org.guid)
 
     render status: :ok, json: Presenters::V3::OrganizationPresenter.new(org)
   end
@@ -52,7 +52,7 @@ class OrganizationsV3Controller < ApplicationController
 
   def show_default_isolation_segment
     org = fetch_org(params[:guid])
-    org_not_found! unless org && can_read_from_org?(org.guid)
+    org_not_found! unless org && permission_queryer.can_read_from_org?(org.guid)
 
     isolation_segment = fetch_isolation_segment(org.default_isolation_segment_guid)
 
@@ -69,7 +69,7 @@ class OrganizationsV3Controller < ApplicationController
     unprocessable!(message.errors.full_messages) unless message.valid?
 
     org = fetch_org(params[:guid])
-    org_not_found! unless org && can_read_from_org?(org.guid)
+    org_not_found! unless org && permission_queryer.can_read_from_org?(org.guid)
     unauthorized! unless roles.admin? || org.managers.include?(current_user)
     iso_seg_guid = message.default_isolation_segment_guid
     isolation_segment = fetch_isolation_segment(iso_seg_guid)
