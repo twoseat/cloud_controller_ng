@@ -73,7 +73,7 @@ class PackagesController < ApplicationController
   def download
     package = PackageModel.where(guid: params[:guid]).eager(:space, space: :organization).all.first
     package_not_found! unless package && permission_queryer.can_read_from_space?(package.space.guid, package.space.organization.guid)
-    unauthorized! unless can_see_secrets?(package.space)
+    unauthorized! unless permission_queryer.can_read_secrets_in_space?(package.space.guid, package.space.organization.guid)
 
     unprocessable!('Package type must be bits.') unless package.type == 'bits'
     unprocessable!('Package has no bits to download.') unless package.state == 'READY'

@@ -37,7 +37,11 @@ class ServiceBindingsController < ApplicationController
     service_binding = VCAP::CloudController::ServiceBinding.find(guid: params[:guid])
 
     binding_not_found! unless service_binding && permission_queryer.can_read_from_space?(service_binding.space.guid, service_binding.space.organization.guid)
-    render status: :ok, json: Presenters::V3::ServiceBindingPresenter.new(service_binding, show_secrets: can_see_secrets?(service_binding.space))
+    render status: :ok,
+           json: Presenters::V3::ServiceBindingPresenter.new(
+             service_binding,
+        show_secrets: permission_queryer.can_read_secrets_in_space?(service_binding.space.guid, service_binding.space.organization.guid
+      ))
   end
 
   def index

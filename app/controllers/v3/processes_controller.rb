@@ -44,7 +44,7 @@ class ProcessesController < ApplicationController
   end
 
   def show
-    render status: :ok, json: Presenters::V3::ProcessPresenter.new(@process, show_secrets: can_see_secrets?(@space))
+    render status: :ok, json: Presenters::V3::ProcessPresenter.new(@process, show_secrets: permission_queryer.can_read_secrets_in_space?(@space.guid, @space.organization.guid))
   end
 
   def update

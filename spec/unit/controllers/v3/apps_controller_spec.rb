@@ -1370,16 +1370,19 @@ RSpec.describe AppsV3Controller, type: :controller do
     let(:space) { app_model.space }
     let(:org) { space.organization }
     let(:user) { VCAP::CloudController::User.make }
+    let(:queryer) { instance_spy(VCAP::CloudController::Permissions::Queryer) }
 
     before do
       set_current_user(user)
       allow_user_read_access_for(user, spaces: [space])
       allow_user_write_access(user, space: space)
       VCAP::CloudController::BuildpackLifecycleDataModel.make(app: app_model, buildpacks: nil, stack: VCAP::CloudController::Stack.default.name)
+
+      allow(VCAP::CloudController::Permissions::Queryer).to receive(:build).and_return(queryer)
     end
 
     it 'returns 200 and the environment variables' do
-      allow(controller).to receive(:can_see_secrets?).and_return(true)
+      allow(queryer).to receive(:can_read_secrets_in_space?).and_return(true)
       get :show_env, guid: app_model.guid
 
       expect(response.status).to eq 200
@@ -1415,7 +1418,7 @@ RSpec.describe AppsV3Controller, type: :controller do
 
       context 'when user can see secrets' do
         before do
-          allow(controller).to receive(:can_see_secrets?).and_return(true)
+          allow(queryer).to receive(:can_read_secrets_in_space?).and_return(true)
         end
 
         it 'succeeds' do
@@ -1426,7 +1429,7 @@ RSpec.describe AppsV3Controller, type: :controller do
 
       context 'when user can not see secrets' do
         before do
-          allow(controller).to receive(:can_see_secrets?).and_return(false)
+          allow(queryer).to receive(:can_read_secrets_in_space?).and_return(false)
         end
 
         it 'raises ApiError NotAuthorized' do
@@ -1439,7 +1442,7 @@ RSpec.describe AppsV3Controller, type: :controller do
 
       context 'when the space_developer_env_var_visibility feature flag is disabled' do
         before do
-          allow(controller).to receive(:can_see_secrets?).and_return(true)
+          allow(queryer).to receive(:can_read_secrets_in_space?).and_return(true)
           VCAP::CloudController::FeatureFlag.make(name: 'space_developer_env_var_visibility', enabled: false, error_message: nil)
         end
 
@@ -1467,7 +1470,7 @@ RSpec.describe AppsV3Controller, type: :controller do
 
         context 'when user can not see secrets' do
           before do
-            allow(controller).to receive(:can_see_secrets?).and_return(false)
+            allow(queryer).to receive(:can_read_secrets_in_space?).and_return(false)
           end
 
           it 'raises ApiError NotAuthorized as opposed to FeatureDisabled' do
@@ -1481,7 +1484,7 @@ RSpec.describe AppsV3Controller, type: :controller do
 
       context 'when the env_var_visibility feature flag is disabled' do
         before do
-          allow(controller).to receive(:can_see_secrets?).and_return(true)
+          allow(queryer).to receive(:can_read_secrets_in_space?).and_return(true)
           VCAP::CloudController::FeatureFlag.make(name: 'env_var_visibility', enabled: false, error_message: nil)
         end
 

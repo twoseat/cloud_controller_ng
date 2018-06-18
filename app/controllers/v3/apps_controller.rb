@@ -67,7 +67,7 @@ class AppsV3Controller < ApplicationController
 
     render status: :ok, json: Presenters::V3::AppPresenter.new(
       app,
-      show_secrets: can_see_secrets?(space),
+      show_secrets: permission_queryer.can_read_secrets_in_space?(space.guid, org.guid),
       decorators: decorators
     )
   end
@@ -196,7 +196,7 @@ class AppsV3Controller < ApplicationController
     FeatureFlag.raise_unless_enabled!(:env_var_visibility)
 
     app_not_found! unless app && permission_queryer.can_read_from_space?(space.guid, org.guid)
-    unauthorized! unless can_see_secrets?(space)
+    unauthorized! unless permission_queryer.can_read_secrets_in_space?(space.guid, org.guid)
 
     FeatureFlag.raise_unless_enabled!(:space_developer_env_var_visibility)
 
@@ -209,7 +209,7 @@ class AppsV3Controller < ApplicationController
     app, space, org = AppFetcher.new.fetch(params[:guid])
 
     app_not_found! unless app && permission_queryer.can_read_from_space?(space.guid, org.guid)
-    unauthorized! unless can_see_secrets?(space)
+    unauthorized! unless permission_queryer.can_read_secrets_in_space?(space.guid, org.guid)
 
     FeatureFlag.raise_unless_enabled!(:space_developer_env_var_visibility)
 
