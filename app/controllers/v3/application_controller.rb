@@ -113,10 +113,6 @@ class ApplicationController < ActionController::Base
   ### PERMISSIONS
   ###
 
-  def can_read_from_isolation_segment?(isolation_segment)
-    permission_queryer.can_read_from_isolation_segment?(isolation_segment)
-  end
-
   def can_see_secrets?(space)
     permission_queryer.can_read_secrets_in_space?(space.guid, space.organization.guid)
   end
