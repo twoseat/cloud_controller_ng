@@ -22,7 +22,7 @@ class SpacesV3Controller < ApplicationController
     missing_org = 'Invalid organization. Ensure the organization exists and you have access to it.'
 
     unprocessable!(missing_org) unless can_read_from_org?(message.organization_guid)
-    unauthorized! unless can_write_to_org?(message.organization_guid)
+    unauthorized! unless permission_queryer.can_write_to_org?(message.organization_guid)
     unprocessable!(message.errors.full_messages) unless message.valid?
 
     org = fetch_organization(message.organization_guid)
