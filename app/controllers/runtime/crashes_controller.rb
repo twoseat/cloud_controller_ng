@@ -24,5 +24,15 @@ module VCAP::CloudController
       super
       @instances_reporters = dependencies[:instances_reporters]
     end
+
+    def find_guid(guid, model=ProcessModel)
+      if model == ProcessModel
+        obj = AppModel.find(guid: guid).try(:web_process)
+        raise self.class.not_found_exception(guid, AppModel) if obj.nil?
+        obj
+      else
+        super
+      end
+    end
   end
 end

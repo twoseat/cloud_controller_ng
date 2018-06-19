@@ -403,12 +403,12 @@ module VCAP::CloudController
     end
 
     def find_guid(guid, model=ProcessModel)
-      if model == AppModel || model == ProcessModel
+      if model == ProcessModel
         obj = AppModel.find(guid: guid).try(:web_process)
         raise self.class.not_found_exception(guid, AppModel) if obj.nil?
         obj
       else
-        super # method(:find_guid).super_method.call(guid, model)
+        super
       end
     end
 

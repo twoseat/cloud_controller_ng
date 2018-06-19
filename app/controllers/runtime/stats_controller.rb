@@ -34,6 +34,16 @@ module VCAP::CloudController
 
     protected
 
+    def find_guid(guid, model=ProcessModel)
+      if model == ProcessModel
+        obj = AppModel.find(guid: guid).try(:web_process)
+        raise self.class.not_found_exception(guid, AppModel) if obj.nil?
+        obj
+      else
+        super
+      end
+    end
+
     attr_reader :instances_reporters
 
     def inject_dependencies(dependencies)

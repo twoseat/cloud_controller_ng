@@ -85,6 +85,16 @@ module VCAP::CloudController
 
     private
 
+    def find_guid(guid, model=ProcessModel)
+      if model == ProcessModel
+        obj = AppModel.find(guid: guid).try(:web_process)
+        raise self.class.not_found_exception(guid, AppModel) if obj.nil?
+        obj
+      else
+        super
+      end
+    end
+
     def record_upload_bits(package)
       Repositories::PackageEventRepository.record_app_upload_bits(
         package,

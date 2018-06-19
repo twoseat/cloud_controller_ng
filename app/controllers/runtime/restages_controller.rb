@@ -50,6 +50,16 @@ module VCAP::CloudController
 
     private
 
+    def find_guid(guid, model=ProcessModel)
+      if model == ProcessModel
+        obj = AppModel.find(guid: guid).try(:web_process)
+        raise self.class.not_found_exception(guid, AppModel) if obj.nil?
+        obj
+      else
+        super
+      end
+    end
+
     def validate_process!(process)
       unless process.web?
         raise CloudController::Errors::ApiError.new_from_details('AppNotFound', process.guid)

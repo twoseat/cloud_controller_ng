@@ -53,6 +53,16 @@ module CloudController
 
         private
 
+        def metadata_hash(obj, controller)
+          metadata_hash = {
+            'guid'       => obj.app_guid,
+            'url'        => controller.url_for_guid(obj.app_guid, obj),
+            'created_at' => obj.created_at,
+          }
+          metadata_hash['updated_at'] = obj.updated_at if obj.respond_to?(:updated_at)
+          metadata_hash
+        end
+
         def logger
           @logger ||= Steno.logger('cc.presenter.app')
         end
