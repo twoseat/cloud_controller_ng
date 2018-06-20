@@ -185,6 +185,12 @@ module VCAP::CloudController
         def self.name
           'MyClass'
         end
+
+        def self.table_name
+          :table_name
+        end
+
+        def db; end
       end
     end
 
@@ -269,7 +275,7 @@ module VCAP::CloudController
     describe 'field-specific methods' do
       let(:columns) { [:sekret, :salt, :encryption_key_label] }
       let(:klass2) { Class.new(klass) do
-                       def db; end
+
                      end
       }
       let(:subject) { klass2.new }
@@ -399,14 +405,15 @@ module VCAP::CloudController
               end
 
               it 'updates encryption_key_label in the record when encrypting' do
+                expect(subject.encryption_key_label).to eq('foo')
                 subject.sekret = 'nu'
                 expect(subject.sekret).to eq('nu')
-                expect(subject.encryption_key_label).to eq(Encryptor.current_encryption_key_label)
+                expect(subject.encryption_key_label).to eq('bar')
               end
 
               context 'and the field is serialized (and/or has other alias method chains)' do
                 let(:klass3) do
-                  Class.new(klass2) do
+                  Class.new(klass) do
                     set_field_as_encrypted :sekret
 
                     def sekret_with_serialization
@@ -438,6 +445,8 @@ module VCAP::CloudController
                 let(:unencrypted_string2) { 'announce presence with authority' }
 
                 before do
+                  allow(Encryptor).to receive(:current_encryption_key_label) { 'foo' }
+
                   klass.class_eval do
                     def underlying_sekret2=(value)
                       @sekret2 = value
@@ -447,15 +456,47 @@ module VCAP::CloudController
                       @sekret2
                     end
                   end
-                  klass2.send :set_field_as_encrypted, :sekret2, encryption_args
+                  klass.send :set_field_as_encrypted, :sekret2, {salt: 'sekret2_salt'}
                   subject.sekret2_salt = Encryptor.generate_salt
                   subject.sekret2 = unencrypted_string2
                 end
 
-                it 'reencrypts that field with the new key' do
+                it 're-encrypts that field with the new key' do
                   allow(Encryptor).to receive(:current_encryption_key_label) { 'bar' }
                   subject.sekret = 'nu'
-                  expect(Encryptor.decrypt(subject.underlying_sekret2, subject.salt, 'bar')).to eq(unencrypted_string2)
+                  expect(Encryptor.decrypt(subject.underlying_sekret2, subject.sekret2_salt, 'bar')).to eq(unencrypted_string2)
+                end
+              end
+
+              context 'and the model is a subclass of the class with the encrypted field' do
+                let(:sti_klass) do
+                  Class.new(klass) do
+                    set_field_as_encrypted :sekret
+
+                    def db
+                    end
+
+                    def self.name
+                      'StiClass'
+                    end
+                  end
+                end
+
+                before do
+                  allow(Encryptor).to receive(:encrypt).and_call_original
+                  allow(Encryptor).to receive(:current_encryption_key_label) { 'foo' }
+                  subject.sekret = unencrypted_string
+                  allow(Encryptor).to receive(:current_encryption_key_label) { 'bar' }
+                end
+
+                let(:subject) { sti_klass.new }
+
+                it 're-encrypts the fields on the subclass' do
+                  expect(subject.encryption_key_label).to eq('foo')
+                  subject.sekret = 'nu'
+
+                  expect(subject.sekret).to eq('nu')
+                  expect(subject.encryption_key_label).to eq('bar')
                 end
               end
             end

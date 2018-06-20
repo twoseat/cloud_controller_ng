@@ -1,0 +1,4 @@
+1. store table name and stuff on Encyptor or other global
+    a. This has difficulties for multiple sub classes
+2. make some kind of recursive getter that walks up class tree
+3. big step back and redesign encryptor (!)

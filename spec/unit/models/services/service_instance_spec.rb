@@ -13,6 +13,20 @@ module VCAP::CloudController
 
     it { is_expected.to have_timestamp_columns }
 
+    it 'asdfasdf' do
+      Encryptor.database_encryption_keys = {
+        foo: 'fooencryptionkey',
+        bar: 'headbangingdeathmetalkey'
+      }
+      allow(Encryptor).to receive(:current_encryption_key_label) { 'foo' }
+
+      service_instance = ManagedServiceInstance.make(credentials: {test: 'creds'})
+
+      allow(Encryptor).to receive(:current_encryption_key_label) { 'bar' }
+
+      service_instance.reload.credentials = {other: 'creds'}
+    end
+
     describe 'Associations' do
       describe 'service_plan_sti_eager_load' do
         it 'eager loads successfuly' do
