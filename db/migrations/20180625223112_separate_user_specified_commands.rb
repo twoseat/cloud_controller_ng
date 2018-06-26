@@ -5,6 +5,8 @@ Sequel.migration do
     processes.each do |process|
       app = self[:apps].where(guid: process[:app_guid]).first
       current_droplet = self[:droplets].where(guid: app[:droplet_guid]).first
+      next unless current_droplet.present?
+
       process_types_as_string = current_droplet[:process_types]
 
       begin
@@ -18,6 +20,7 @@ Sequel.migration do
       end
     end
   end
+
   down do
   end
 end
