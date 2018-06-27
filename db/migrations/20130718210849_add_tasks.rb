@@ -1,7 +1,7 @@
 Sequel.migration do
   change do
     create_table :tasks do
-      VCAP::Migration.common(self)
+      Migration.common(self)
 
       Integer :app_id, null: false
 

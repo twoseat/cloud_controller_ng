@@ -1,7 +1,7 @@
 Sequel.migration do
   change do
     create_table :buildpack_lifecycle_buildpacks do
-      VCAP::Migration.common(self, :buildpack_lifecycle_buildpacks)
+      Migration.common(self, :buildpack_lifecycle_buildpacks)
 
       String :admin_buildpack_name
       String :encrypted_buildpack_url, size: 16_000

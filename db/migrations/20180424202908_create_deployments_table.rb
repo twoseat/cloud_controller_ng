@@ -1,7 +1,7 @@
 Sequel.migration do
   change do
     create_table :deployments do
-      VCAP::Migration.common(self)
+      Migration.common(self)
       String :state, size: 255
       String :app_guid, size: 255
       index :app_guid, name: :deployments_app_guid_index

@@ -1,7 +1,7 @@
 Sequel.migration do
   change do
     create_table :v3_service_bindings do
-      VCAP::Migration.common(self)
+      Migration.common(self)
 
       String :credentials, text: true, null: false, size: 2048
       String :salt

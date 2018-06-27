@@ -3,7 +3,7 @@ Sequel.migration do
     drop_table(:apps_v3_routes)
 
     create_table :route_mappings do
-      VCAP::Migration.common(self, :route_mappings)
+      Migration.common(self, :route_mappings)
 
       String :app_guid
       index :app_guid

@@ -2,7 +2,7 @@ Sequel.migration do
   change do
     create_table :app_usage_events do
       primary_key :id
-      VCAP::Migration.guid(self, nil)
+      Migration.guid(self, nil)
       Timestamp :created_at, null: false
       index :created_at, name: 'usage_events_created_at_index'.to_sym
       Integer :instance_count, null: false

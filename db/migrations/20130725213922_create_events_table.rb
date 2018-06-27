@@ -1,7 +1,7 @@
 Sequel.migration do
   change do
     create_table :events do
-      VCAP::Migration.common(self)
+      Migration.common(self)
 
       DateTime :timestamp, null: false
       String :type, null: false

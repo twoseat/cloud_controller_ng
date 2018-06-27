@@ -2,7 +2,7 @@ Sequel.migration do
   change do
     create_table :service_usage_events do
       primary_key :id
-      VCAP::Migration.guid(self, 'usage_events')
+      Migration.guid(self, 'usage_events')
       Timestamp :created_at, null: false
       index :created_at, name: 'created_at_index'.to_sym
       String :state, null: false

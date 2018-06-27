@@ -1,7 +1,7 @@
 Sequel.migration do
   up do
     create_table :droplets do
-      VCAP::Migration.common(self)
+      Migration.common(self)
       Integer :app_id, null: false
       String :droplet_hash, null: false
       index :app_id

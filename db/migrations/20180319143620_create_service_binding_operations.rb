@@ -1,7 +1,7 @@
 Sequel.migration do
   change do
     create_table :service_binding_operations do
-      VCAP::Migration.timestamps(self, :service_binding_operations)
+      Migration.timestamps(self, :service_binding_operations)
 
       Integer :service_binding_id
       String :state, size: 255, null: false

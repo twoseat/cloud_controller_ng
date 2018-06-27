@@ -24,7 +24,7 @@ module RuboCop
         end
 
         def has_vcap_migration_call?(node)
-          node.each_descendant(:send).any? { |n| n.children[0]&.const_name == 'VCAP::Migration' && n.children[1] == :common }
+          node.each_descendant(:send).any? { |n| n.children[0]&.const_name == 'Migration' && n.children[1] == :common }
         end
 
         def creating_table?(node)

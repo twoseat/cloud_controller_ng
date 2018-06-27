@@ -2,7 +2,7 @@ Sequel.migration do
   change do
     create_table :service_dashboard_clients do
       primary_key :id
-      VCAP::Migration.timestamps(self, 's_d_clients')
+      Migration.timestamps(self, 's_d_clients')
       String :service_id_on_broker, null: false
       String :uaa_id,               null: false
 

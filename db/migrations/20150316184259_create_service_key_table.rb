@@ -1,7 +1,7 @@
 Sequel.migration do
   change do
     create_table(:service_keys) do
-      VCAP::Migration.common(self, :sk)
+      Migration.common(self, :sk)
       String :name, null: false
       String :salt
       String :credentials, null: false, size: 2048

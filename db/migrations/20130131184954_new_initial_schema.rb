@@ -29,7 +29,7 @@ Sequel.migration do
     # We don't use foreign keys here because the objects may get deleted after
     # the billing records are generated, and that should be allowed.
     create_table :billing_events do
-      VCAP::Migration.common(self, :be)
+      Migration.common(self, :be)
       DateTime :timestamp, null: false
       String :kind, null: false
       String :organization_guid, null: false
@@ -55,7 +55,7 @@ Sequel.migration do
     end
 
     create_table :quota_definitions do
-      VCAP::Migration.common(self, :qd)
+      Migration.common(self, :qd)
 
       String :name, null: false, unique: true, case_insensitive: true
       Boolean :non_basic_services_allowed, null: false
@@ -66,7 +66,7 @@ Sequel.migration do
     end
 
     create_table :service_auth_tokens do
-      VCAP::Migration.common(self, :sat)
+      Migration.common(self, :sat)
 
       String :label,         null: false, case_insensitive: true
       String :provider,      null: false, case_insensitive: true
@@ -76,7 +76,7 @@ Sequel.migration do
     end
 
     create_table :services do
-      VCAP::Migration.common(self)
+      Migration.common(self)
 
       String :label,       null: false, case_insensitive: true
       String :provider,    null: false, case_insensitive: true
@@ -94,7 +94,7 @@ Sequel.migration do
     end
 
     create_table :organizations do
-      VCAP::Migration.common(self)
+      Migration.common(self)
       String :name, null: false, case_insensitive: true
       TrueClass :billing_enabled, null: false, default: false
       Integer :quota_definition_id, null: false
@@ -104,7 +104,7 @@ Sequel.migration do
     end
 
     create_table :frameworks do
-      VCAP::Migration.common(self)
+      Migration.common(self)
 
       String :name,        null: false, case_insenstive: true
       String :description, null: false
@@ -114,7 +114,7 @@ Sequel.migration do
     end
 
     create_table :runtimes do
-      VCAP::Migration.common(self)
+      Migration.common(self)
 
       String :name,        null: false, case_insensitive: true
       String :description, null: false
@@ -124,7 +124,7 @@ Sequel.migration do
     end
 
     create_table :service_plans do
-      VCAP::Migration.common(self)
+      Migration.common(self)
 
       String :name,        null: false, case_insensitive: true
       String :description, null: false
@@ -136,7 +136,7 @@ Sequel.migration do
     end
 
     create_table :domains do
-      VCAP::Migration.common(self)
+      Migration.common(self)
 
       String :name, null: false, case_insensitive: true
       TrueClass :wildcard, default: true, null: false
@@ -147,7 +147,7 @@ Sequel.migration do
     end
 
     create_table :spaces do
-      VCAP::Migration.common(self)
+      Migration.common(self)
 
       String :name, null: false, case_insensitive: true
       Integer :organization_id, null: false
@@ -157,7 +157,7 @@ Sequel.migration do
     end
 
     create_table :apps do
-      VCAP::Migration.common(self)
+      Migration.common(self)
 
       String :name, null: false, case_insensitive: true
 
@@ -229,7 +229,7 @@ Sequel.migration do
     end
 
     create_table :routes do
-      VCAP::Migration.common(self)
+      Migration.common(self)
 
       String :host, null: false, default: '', case_insensitive: true
 
@@ -243,7 +243,7 @@ Sequel.migration do
     end
 
     create_table :service_instances do
-      VCAP::Migration.common(self, :si)
+      Migration.common(self, :si)
 
       String :name, null: false, case_insensitive: true
       String :credentials, null: false, size: 2048
@@ -261,7 +261,7 @@ Sequel.migration do
     end
 
     create_table :users do
-      VCAP::Migration.common(self)
+      Migration.common(self)
 
       Integer :default_space_id
       foreign_key [:default_space_id], :spaces, name: :fk_users_default_space_id
@@ -282,11 +282,11 @@ Sequel.migration do
 
     # Organization permissions
     [:users, :managers, :billing_managers, :auditors].each do |perm|
-      VCAP::Migration.create_permission_table(self, :organization, :org, perm)
+      Migration.create_permission_table(self, :organization, :org, perm)
     end
 
     create_table(:service_bindings) do
-      VCAP::Migration.common(self, :sb)
+      Migration.common(self, :sb)
 
       String :credentials, null: false, size: 2048
       String :binding_options
@@ -306,7 +306,7 @@ Sequel.migration do
 
     # App Space permissions
     [:developers, :managers, :auditors].each do |perm|
-      VCAP::Migration.create_permission_table(self, :space, :space, perm)
+      Migration.create_permission_table(self, :space, :space, perm)
     end
   end
 end

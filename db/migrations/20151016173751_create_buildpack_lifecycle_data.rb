@@ -38,7 +38,7 @@ Sequel.migration do
     end
 
     create_table :buildpack_lifecycle_data do
-      VCAP::Migration.common(self, :buildpack_lifecycle_data)
+      Migration.common(self, :buildpack_lifecycle_data)
 
       String :app_guid
       index :app_guid, name: :buildpack_lifecycle_data_app_guid

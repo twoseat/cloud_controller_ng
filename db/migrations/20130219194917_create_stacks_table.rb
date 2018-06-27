@@ -4,7 +4,7 @@ require 'securerandom'
 Sequel.migration do
   change do
     create_table :stacks do
-      VCAP::Migration.common(self)
+      Migration.common(self)
 
       String :name, null: false, case_insenstive: true
       String :description, null: false

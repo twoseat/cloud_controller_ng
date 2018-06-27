@@ -3,7 +3,7 @@ Sequel.migration do
     drop_table?(:ar_delayed_jobs)
 
     create_table :delayed_jobs do
-      VCAP::Migration.common(self, :dj)
+      Migration.common(self, :dj)
 
       Integer :priority, default: 0
       Integer :attempts, default: 0

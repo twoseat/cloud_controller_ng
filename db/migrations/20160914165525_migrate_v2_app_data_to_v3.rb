@@ -142,7 +142,7 @@ Sequel.migration do
     end
 
     create_table :tasks do
-      VCAP::Migration.common(self)
+      Migration.common(self)
 
       String :name, case_insensitive: true, null: false
       index :name, name: :tasks_name_index

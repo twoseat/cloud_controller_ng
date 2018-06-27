@@ -1,7 +1,7 @@
 Sequel.migration do
   change do
     create_table :packages do
-      VCAP::Migration.common(self)
+      Migration.common(self)
       String :space_guid
       index :space_guid
       String :type

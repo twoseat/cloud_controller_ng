@@ -1,7 +1,7 @@
 Sequel.migration do
   change do
     create_table :package_docker_data do
-      VCAP::Migration.common(self, :package_docker_data)
+      Migration.common(self, :package_docker_data)
 
       String :image
 

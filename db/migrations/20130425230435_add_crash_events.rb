@@ -3,7 +3,7 @@
 Sequel.migration do
   change do
     create_table :crash_events do
-      VCAP::Migration.common(self)
+      Migration.common(self)
 
       Integer :app_id, null: false
       String :instance_guid, null: false

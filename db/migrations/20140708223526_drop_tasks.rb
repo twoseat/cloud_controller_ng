@@ -5,7 +5,7 @@ Sequel.migration do
 
   down do
     create_table :tasks do
-      VCAP::Migration.common(self)
+      Migration.common(self)
 
       Integer :app_id, null: false
       String :salt

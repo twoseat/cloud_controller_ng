@@ -3,7 +3,7 @@ Sequel.migration do
     create_table :service_instance_dashboard_clients do
       primary_key :id
 
-      VCAP::Migration.timestamps(self, 's_i_d_clients')
+      Migration.timestamps(self, 's_i_d_clients')
 
       String :uaa_id, null: false
       Integer :managed_service_instance_id

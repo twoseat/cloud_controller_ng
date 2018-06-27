@@ -1,7 +1,7 @@
 Sequel.migration do
   change do
     create_table :tasks do
-      VCAP::Migration.common(self)
+      Migration.common(self)
 
       String :name, case_insensitive: true, null: false
       String :command, null: false

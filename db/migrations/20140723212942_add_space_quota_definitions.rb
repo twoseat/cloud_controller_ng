@@ -1,7 +1,7 @@
 Sequel.migration do
   change do
     create_table :space_quota_definitions do
-      VCAP::Migration.common(self, :sqd)
+      Migration.common(self, :sqd)
 
       String :name, null: false
       Boolean :non_basic_services_allowed, null: false

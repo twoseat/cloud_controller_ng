@@ -26,8 +26,8 @@ RSpec.describe RuboCop::Cop::Migration::RequirePrimaryKey do
     expect(cop.offenses.size).to eq(0)
   end
 
-  it 'does not register an offense if create_table is called with a call VCAP::Migration.common' do
-    inspect_source(['create_table :foobar do', 'VCAP::Migration.common(self)', 'String :carly', 'end'])
+  it 'does not register an offense if create_table is called with a call Migration.common' do
+    inspect_source(['create_table :foobar do', 'Migration.common(self)', 'String :carly', 'end'])
 
     expect(cop.offenses.size).to eq(0)
   end

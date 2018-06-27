@@ -1,7 +1,7 @@
 Sequel.migration do
   change do
     create_table :jobs do
-      VCAP::Migration.common(self)
+      Migration.common(self)
       String :state
       String :operation
       String :resource_guid
