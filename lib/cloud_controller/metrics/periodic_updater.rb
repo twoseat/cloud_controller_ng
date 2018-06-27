@@ -102,7 +102,7 @@ module CloudController::Metrics
         cpu_load_avg:   Stats.cpu_load_average,
         mem_used_bytes: Stats.memory_used_bytes,
         mem_free_bytes: Stats.memory_free_bytes,
-        num_cores:      VCAP::HostSystem.new.num_cores,
+        num_cores:      HostSystem.new.num_cores,
       }
 
       @updaters.each { |u| u.update_vitals(vitals) }

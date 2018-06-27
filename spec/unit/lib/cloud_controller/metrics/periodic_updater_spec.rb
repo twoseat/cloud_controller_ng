@@ -355,7 +355,7 @@ module CloudController::Metrics
         allow(Stats).to receive(:cpu_load_average).and_return(0.5)
         allow(Stats).to receive(:memory_used_bytes).and_return(542)
         allow(Stats).to receive(:memory_free_bytes).and_return(927)
-        allow_any_instance_of(VCAP::HostSystem).to receive(:num_cores).and_return(4)
+        allow_any_instance_of(HostSystem).to receive(:num_cores).and_return(4)
       end
 
       it 'update the vitals on all updaters' do

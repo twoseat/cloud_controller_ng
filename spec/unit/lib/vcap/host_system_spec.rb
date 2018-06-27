@@ -1,7 +1,7 @@
 require 'spec_helper'
 require 'vcap/host_system'
 
-RSpec.describe VCAP::HostSystem do
+RSpec.describe HostSystem do
   describe '.process_running?' do
     before do
       `echo 'setting $? to 0'`
