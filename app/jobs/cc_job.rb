@@ -1,4 +1,4 @@
-module VCAP::CloudController
+module CloudController
   module Jobs
     class CCJob
       def reschedule_at(time, attempts)

@@ -6,7 +6,7 @@ ENV['RAILS_ENV'] ||= 'production'
 
 require 'cloud_controller'
 begin
-  VCAP::CloudController::Runner.new(ARGV).run!
+  CloudController::Runner.new(ARGV).run!
 rescue => e
   puts e
   exit 1

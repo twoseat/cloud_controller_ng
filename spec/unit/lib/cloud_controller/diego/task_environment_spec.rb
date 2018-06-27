@@ -1,17 +1,17 @@
 require 'spec_helper'
 require 'cloud_controller/diego/task_environment'
 
-module VCAP::CloudController::Diego
+module CloudController::Diego
   RSpec.describe TaskEnvironment do
     let(:app_env_vars) { { 'ENV_VAR_2' => 'jeff' } }
-    let(:app) { VCAP::CloudController::AppModel.make(environment_variables: app_env_vars, name: 'utako') }
-    let(:task) { VCAP::CloudController::TaskModel.make(name: 'my-task', command: 'echo foo', memory_in_mb: 1024) }
+    let(:app) { CloudController::AppModel.make(environment_variables: app_env_vars, name: 'utako') }
+    let(:task) { CloudController::TaskModel.make(name: 'my-task', command: 'echo foo', memory_in_mb: 1024) }
     let(:space) { app.space }
     let(:staging_disk_in_mb) { 512 }
-    let(:service) { VCAP::CloudController::Service.make(label: 'elephantsql-n/a') }
-    let(:service_plan) { VCAP::CloudController::ServicePlan.make(service: service) }
-    let(:service_instance) { VCAP::CloudController::ManagedServiceInstance.make(space: space, service_plan: service_plan, name: 'elephantsql-vip-uat', tags: ['excellent']) }
-    let!(:service_binding) { VCAP::CloudController::ServiceBinding.make(app: app, service_instance: service_instance, syslog_drain_url: 'logs.go-here.com') }
+    let(:service) { CloudController::Service.make(label: 'elephantsql-n/a') }
+    let(:service_plan) { CloudController::ServicePlan.make(service: service) }
+    let(:service_instance) { CloudController::ManagedServiceInstance.make(space: space, service_plan: service_plan, name: 'elephantsql-vip-uat', tags: ['excellent']) }
+    let!(:service_binding) { CloudController::ServiceBinding.make(app: app, service_instance: service_instance, syslog_drain_url: 'logs.go-here.com') }
 
     let(:expected_vcap_application) do
       {
@@ -77,7 +77,7 @@ module VCAP::CloudController::Diego
       end
 
       context 'when the task is for a buildpack app' do
-        let(:app) { VCAP::CloudController::AppModel.make(:buildpack) }
+        let(:app) { CloudController::AppModel.make(:buildpack) }
 
         it 'sets the LANG environment variable' do
           constructed_envs = TaskEnvironment.new(app, task, space).build
@@ -86,7 +86,7 @@ module VCAP::CloudController::Diego
       end
 
       context 'when the task is for a docker app' do
-        let(:app) { VCAP::CloudController::AppModel.make(:docker) }
+        let(:app) { CloudController::AppModel.make(:docker) }
 
         it 'does not set the LANG environment variable' do
           constructed_envs = TaskEnvironment.new(app, task, space).build
@@ -115,12 +115,12 @@ module VCAP::CloudController::Diego
             users:               nil
           }
         end
-        let(:route1) { VCAP::CloudController::Route.make(space: space) }
-        let(:route2) { VCAP::CloudController::Route.make(space: space) }
+        let(:route1) { CloudController::Route.make(space: space) }
+        let(:route2) { CloudController::Route.make(space: space) }
 
         before do
-          VCAP::CloudController::RouteMappingModel.make(app: app, route: route1)
-          VCAP::CloudController::RouteMappingModel.make(app: app, route: route2)
+          CloudController::RouteMappingModel.make(app: app, route: route1)
+          CloudController::RouteMappingModel.make(app: app, route: route2)
         end
 
         it 'includes the uris as part of vcap application' do

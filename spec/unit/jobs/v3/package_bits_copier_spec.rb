@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-module VCAP::CloudController
+module CloudController
   module Jobs::V3
     RSpec.describe PackageBitsCopier, job_context: :worker do
       subject(:job) { PackageBitsCopier.new(source_package.guid, destination_package.guid) }
@@ -42,14 +42,14 @@ module VCAP::CloudController
         it 'updates the destination package_hash, sha256_checksum and state' do
           expect(destination_package.package_hash).not_to eq(source_package.package_hash)
           expect(destination_package.sha256_checksum).not_to eq(source_package.sha256_checksum)
-          expect(destination_package.state).not_to eq(VCAP::CloudController::PackageModel::READY_STATE)
+          expect(destination_package.state).not_to eq(CloudController::PackageModel::READY_STATE)
 
           job.perform
 
           destination_package.reload
           expect(destination_package.package_hash).to eq(source_package.package_hash)
           expect(destination_package.sha256_checksum).to eq(source_package.sha256_checksum)
-          expect(destination_package.state).to eq(VCAP::CloudController::PackageModel::READY_STATE)
+          expect(destination_package.state).to eq(CloudController::PackageModel::READY_STATE)
         end
 
         it 'knows its job name' do
@@ -63,13 +63,13 @@ module VCAP::CloudController
 
           it 'marks the package as failed and saves the message and raises the error' do
             expect(destination_package.error).not_to eq('failed to copy - ba boom!')
-            expect(destination_package.state).not_to eq(VCAP::CloudController::PackageModel::FAILED_STATE)
+            expect(destination_package.state).not_to eq(CloudController::PackageModel::FAILED_STATE)
 
             expect { job.perform }.to raise_error('ba boom!')
 
             destination_package.reload
             expect(destination_package.error).to eq('failed to copy - ba boom!')
-            expect(destination_package.state).to eq(VCAP::CloudController::PackageModel::FAILED_STATE)
+            expect(destination_package.state).to eq(CloudController::PackageModel::FAILED_STATE)
           end
         end
 
@@ -78,13 +78,13 @@ module VCAP::CloudController
 
           it 'marks the package as failed and saves the message and raises the error' do
             expect(destination_package.error).not_to eq('failed to copy - source package does not exist')
-            expect(destination_package.state).not_to eq(VCAP::CloudController::PackageModel::FAILED_STATE)
+            expect(destination_package.state).not_to eq(CloudController::PackageModel::FAILED_STATE)
 
             expect { job.perform }.to raise_error('source package does not exist')
 
             destination_package.reload
             expect(destination_package.error).to eq('failed to copy - source package does not exist')
-            expect(destination_package.state).to eq(VCAP::CloudController::PackageModel::FAILED_STATE)
+            expect(destination_package.state).to eq(CloudController::PackageModel::FAILED_STATE)
           end
         end
 

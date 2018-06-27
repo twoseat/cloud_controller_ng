@@ -1,7 +1,7 @@
 require 'spec_helper'
 require 'cloud_controller/diego/process_guid'
 
-module VCAP::CloudController
+module CloudController
   RSpec.describe Runners do
     subject(:runners) { Runners.new(config) }
 

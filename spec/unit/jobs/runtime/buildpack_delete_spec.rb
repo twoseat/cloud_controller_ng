@@ -1,13 +1,13 @@
 require 'spec_helper'
 
-module VCAP::CloudController
+module CloudController
   module Jobs::Runtime
     RSpec.describe BuildpackDelete, job_context: :worker do
       subject(:job) { BuildpackDelete.new(guid: buildpack_guid, timeout: timeout) }
       let(:buildpack_guid) { buildpack.guid }
       let(:timeout) { 90000 }
 
-      let(:buildpack) { VCAP::CloudController::Buildpack.make }
+      let(:buildpack) { CloudController::Buildpack.make }
 
       before do
         allow(BuildpackBitsDelete).to receive(:delete_when_safe)

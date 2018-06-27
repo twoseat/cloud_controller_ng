@@ -1,4 +1,4 @@
-module VCAP::CloudController
+module CloudController
   module Repositories
     class OrphanedBlobEventRepository
       def self.record_delete(directory_key, blob_key)

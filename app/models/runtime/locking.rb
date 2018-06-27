@@ -1,4 +1,4 @@
-module VCAP::CloudController
+module CloudController
   class Locking < Sequel::Model
   end
 end

@@ -1,7 +1,7 @@
 require 'actions/routing/route_delete'
 require 'actions/v2/route_create'
 
-module VCAP::CloudController
+module CloudController
   class RoutesController < RestController::ModelController
     define_attributes do
       attribute :host, String, default: ''
@@ -260,11 +260,11 @@ module VCAP::CloudController
 
       begin
         V2::RouteMappingCreate.new(UserAuditInfo.from_context(SecurityContext), route, process, request_attrs, logger).add
-      rescue ::VCAP::CloudController::V2::RouteMappingCreate::DuplicateRouteMapping
+      rescue ::CloudController::V2::RouteMappingCreate::DuplicateRouteMapping
         # the route is already mapped, consider the request successful
-      rescue ::VCAP::CloudController::V2::RouteMappingCreate::RoutingApiDisabledError
+      rescue ::CloudController::V2::RouteMappingCreate::RoutingApiDisabledError
         raise CloudController::Errors::ApiError.new_from_details('RoutingApiDisabled')
-      rescue ::VCAP::CloudController::V2::RouteMappingCreate::SpaceMismatch => e
+      rescue ::CloudController::V2::RouteMappingCreate::SpaceMismatch => e
         raise CloudController::Errors::InvalidAppRelation.new(e.message)
       end
 

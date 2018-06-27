@@ -2,7 +2,7 @@ require 'spec_helper'
 require 'actions/staging_cancel'
 require 'actions/build_delete'
 
-module VCAP::CloudController
+module CloudController
   RSpec.describe BuildDelete do
     subject(:build_delete) { BuildDelete.new(cancel_action) }
     let(:cancel_action) { instance_double(StagingCancel, cancel: nil) }

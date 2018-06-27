@@ -1,7 +1,7 @@
 require 'actions/services/service_key_delete'
 require 'actions/services/service_key_create'
 
-module VCAP::CloudController
+module CloudController
   class ServiceKeyManager
     class ServiceInstanceNotFound < StandardError; end
     class ServiceInstanceNotBindable < StandardError; end

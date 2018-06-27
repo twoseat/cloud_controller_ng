@@ -1,4 +1,4 @@
-module VCAP::CloudController
+module CloudController
   class IsolationSegmentUnassign
     def unassign(isolation_segment, org)
       isolation_segment.db.transaction do

@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-module VCAP::CloudController
+module CloudController
   RSpec.describe BlobDispatcher do
     subject(:dispatcher) { BlobDispatcher.new(blobstore: blobstore, controller: controller) }
 

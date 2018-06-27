@@ -1,7 +1,7 @@
 require 'spec_helper'
 require 'messages/route_mappings_list_message'
 
-module VCAP::CloudController
+module CloudController
   RSpec.describe RouteMappingsListMessage do
     describe '.from_params' do
       let(:params) do

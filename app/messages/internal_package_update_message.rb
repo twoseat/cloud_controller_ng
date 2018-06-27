@@ -1,6 +1,6 @@
 require 'messages/base_message'
 
-module VCAP::CloudController
+module CloudController
   class InternalPackageUpdateMessage < BaseMessage
     register_allowed_keys [:state, :checksums, :error]
 
@@ -52,7 +52,7 @@ module VCAP::CloudController
     end
   end
 
-  class Checksum < ::VCAP::CloudController::BaseMessage
+  class Checksum < ::CloudController::BaseMessage
     register_allowed_keys [:type, :value]
     SHA1         = 'sha1'.freeze
     SHA256       = 'sha256'.freeze

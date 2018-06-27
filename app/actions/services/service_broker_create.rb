@@ -1,6 +1,6 @@
 require 'actions/services/mixins/service_broker_registration_error_parser'
 
-module VCAP::CloudController
+module CloudController
   class ServiceBrokerCreate
     class SpaceNotFound < StandardError; end
 

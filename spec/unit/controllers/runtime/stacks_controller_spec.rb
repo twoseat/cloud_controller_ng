@@ -1,7 +1,7 @@
 require 'spec_helper'
 
-module VCAP::CloudController
-  RSpec.describe VCAP::CloudController::StacksController do
+module CloudController
+  RSpec.describe CloudController::StacksController do
     let(:user) { User.make }
 
     before do
@@ -9,12 +9,12 @@ module VCAP::CloudController
     end
 
     describe 'Query Parameters' do
-      it { expect(VCAP::CloudController::StacksController).to be_queryable_by(:name) }
+      it { expect(CloudController::StacksController).to be_queryable_by(:name) }
     end
 
     describe 'Attributes' do
       it do
-        expect(VCAP::CloudController::StacksController).to have_creatable_attributes({
+        expect(CloudController::StacksController).to have_creatable_attributes({
           name: { type: 'string', required: true },
           description: { type: 'string', required: false }
         })

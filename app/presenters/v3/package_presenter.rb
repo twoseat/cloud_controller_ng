@@ -1,7 +1,7 @@
 require 'presenters/v3/base_presenter'
 require 'presenters/helpers/censorship'
 
-module VCAP::CloudController
+module CloudController
   module Presenters
     module V3
       class PackagePresenter < BasePresenter
@@ -47,12 +47,12 @@ module VCAP::CloudController
         end
 
         def build_links
-          url_builder = VCAP::CloudController::Presenters::ApiUrlBuilder.new
+          url_builder = CloudController::Presenters::ApiUrlBuilder.new
 
           upload_link   = nil
           download_link = nil
           if package.type == 'bits'
-            upload_link = if VCAP::CloudController::Config.config.get(:bits_service, :enabled)
+            upload_link = if CloudController::Config.config.get(:bits_service, :enabled)
                             { href: bits_service_client.blob(package.guid).public_upload_url, method: 'PUT' }
                           else
                             { href: url_builder.build_url(path: "/v3/packages/#{package.guid}/upload"), method: 'POST' }

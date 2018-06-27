@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-module VCAP::CloudController
+module CloudController
   RSpec.describe RouteMappingCreate do
     let(:space) { app.space }
     let(:app) { AppModel.make }

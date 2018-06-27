@@ -1,13 +1,13 @@
 require 'spec_helper'
 
-module VCAP::CloudController
+module CloudController
   module Diego
     RSpec.describe EgressRules do
       subject(:egress_rules) { EgressRules.new }
 
       describe '#staging' do
-        let(:space) { VCAP::CloudController::Space.make }
-        let(:process) { VCAP::CloudController::ProcessModelFactory.make(space: space) }
+        let(:space) { CloudController::Space.make }
+        let(:process) { CloudController::ProcessModelFactory.make(space: space) }
 
         before do
           SecurityGroup.make(guid: 'guid1', rules: [{ 'protocol' => 'udp', 'ports' => '8080-9090', 'destination' => '198.41.191.47/1' }], staging_default: true)

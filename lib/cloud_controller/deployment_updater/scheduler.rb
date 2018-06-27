@@ -1,6 +1,6 @@
 require 'cloud_controller/deployment_updater/updater'
 
-module VCAP::CloudController
+module CloudController
   module DeploymentUpdater
     class Scheduler
       def self.start

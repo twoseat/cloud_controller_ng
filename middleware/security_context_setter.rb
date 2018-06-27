@@ -11,13 +11,13 @@ module CloudFoundry
 
         @security_context_configurer.configure(header_token)
 
-        if VCAP::CloudController::SecurityContext.valid_token?
-          env['cf.user_guid'] = VCAP::CloudController::SecurityContext.token['user_id']
-          env['cf.user_name'] = VCAP::CloudController::SecurityContext.token['user_name']
+        if CloudController::SecurityContext.valid_token?
+          env['cf.user_guid'] = CloudController::SecurityContext.token['user_id']
+          env['cf.user_name'] = CloudController::SecurityContext.token['user_name']
         end
 
         @app.call(env)
-      rescue VCAP::CloudController::UaaUnavailable => e
+      rescue CloudController::UaaUnavailable => e
         logger.error("Failed communicating with UAA: #{e.message}")
         [502, { 'Content-Type:' => 'application/json' }, [error_message(env)]]
       end

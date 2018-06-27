@@ -3,7 +3,7 @@ require 'jobs/runtime/model_deletion'
 require 'models/runtime/process_model'
 require 'models/runtime/space'
 
-module VCAP::CloudController
+module CloudController
   module Jobs::Runtime
     RSpec.describe ModelDeletion, job_context: :worker do
       let!(:space) { Space.make }

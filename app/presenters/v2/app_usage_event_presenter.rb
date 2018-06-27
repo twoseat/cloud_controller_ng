@@ -4,7 +4,7 @@ module CloudController
       class AppUsageEventPresenter < BasePresenter
         extend PresenterProvider
 
-        present_for_class 'VCAP::CloudController::AppUsageEvent'
+        present_for_class 'CloudController::AppUsageEvent'
 
         def entity_hash(controller, app_usage_event, opts, depth, parents, orphans=nil)
           entity = {

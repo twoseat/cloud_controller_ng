@@ -1,4 +1,4 @@
-module VCAP::CloudController
+module CloudController
   class SequelPaginator
     def get_page(sequel_dataset, pagination_options)
       page = pagination_options.page

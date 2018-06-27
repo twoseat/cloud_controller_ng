@@ -16,10 +16,10 @@ module CloudController::Presenters::V2
         allow(RelationsPresenter).to receive(:new).and_return(relations_presenter)
       end
 
-      let(:space) { VCAP::CloudController::Space.make }
-      let(:stack) { VCAP::CloudController::Stack.make }
+      let(:space) { CloudController::Space.make }
+      let(:stack) { CloudController::Stack.make }
       let(:process) do
-        VCAP::CloudController::ProcessModelFactory.make(
+        CloudController::ProcessModelFactory.make(
           name:             'utako',
           space:            space,
           stack:            stack,
@@ -39,7 +39,7 @@ module CloudController::Presenters::V2
       let(:buildpacks) { [buildpack] }
 
       before do
-        VCAP::CloudController::Buildpack.make(name: 'schmuby')
+        CloudController::Buildpack.make(name: 'schmuby')
         process.app.lifecycle_data.update(
           buildpacks: buildpacks
         )
@@ -47,7 +47,7 @@ module CloudController::Presenters::V2
           buildpack_receipt_detect_output:  'detected buildpack',
           buildpack_receipt_buildpack_guid: 'i am a buildpack guid',
         )
-        VCAP::CloudController::DropletModel.make(app: process.app, package: process.latest_package, error_description: 'because')
+        CloudController::DropletModel.make(app: process.app, package: process.latest_package, error_description: 'because')
       end
 
       it 'returns the app entity and associated urls' do
@@ -161,7 +161,7 @@ module CloudController::Presenters::V2
       describe 'docker' do
         context 'with no credentials' do
           before do
-            VCAP::CloudController::PackageModel.make(:docker, app: process.app, docker_image: 'someimage')
+            CloudController::PackageModel.make(:docker, app: process.app, docker_image: 'someimage')
             process.reload
           end
 
@@ -177,7 +177,7 @@ module CloudController::Presenters::V2
 
         context 'with credentials' do
           before do
-            VCAP::CloudController::PackageModel.make(:docker, app: process.app, docker_image: 'someimage', docker_username: 'user', docker_password: 'secret')
+            CloudController::PackageModel.make(:docker, app: process.app, docker_image: 'someimage', docker_username: 'user', docker_password: 'secret')
             process.reload
           end
 
@@ -194,7 +194,7 @@ module CloudController::Presenters::V2
 
       describe 'ports' do
         before do
-          allow_any_instance_of(VCAP::CloudController::Diego::Protocol::OpenProcessPorts).to receive(:to_a).and_return('expected-ports')
+          allow_any_instance_of(CloudController::Diego::Protocol::OpenProcessPorts).to receive(:to_a).and_return('expected-ports')
         end
 
         it 'delegates to OpenProcessPorts' do

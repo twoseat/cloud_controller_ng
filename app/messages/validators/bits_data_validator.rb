@@ -1,6 +1,6 @@
 require 'messages/nested_message_validator'
 
-module VCAP::CloudController
+module CloudController
   class BitsDataValidator < NestedMessageValidator
     validates :data, inclusion: { in: [{}],
                                   message: 'must be empty if provided for bits packages',

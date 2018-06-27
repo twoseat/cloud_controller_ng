@@ -1,4 +1,4 @@
-module VCAP::CloudController
+module CloudController
   class TaskListFetcher
     def fetch_for_spaces(message:, space_guids:)
       app_dataset = AppModel.select(:id).where(space_guid: space_guids)

@@ -1,10 +1,10 @@
 require 'spec_helper'
 require 'presenters/v3/app_presenter'
 
-module VCAP::CloudController::Presenters::V3
+module CloudController::Presenters::V3
   RSpec.describe AppPresenter do
     let(:app) do
-      VCAP::CloudController::AppModel.make(
+      CloudController::AppModel.make(
         name: 'Davis',
         environment_variables: { 'some' => 'stuff' },
         desired_state: 'STOPPED',
@@ -12,7 +12,7 @@ module VCAP::CloudController::Presenters::V3
     end
 
     before do
-      VCAP::CloudController::Buildpack.make(name: 'limabean')
+      CloudController::Buildpack.make(name: 'limabean')
       app.lifecycle_data.update(
         buildpacks: ['git://user:pass@github.com/repo', 'limabean'],
         stack: 'the-happiest-stack',

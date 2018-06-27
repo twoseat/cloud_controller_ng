@@ -1,4 +1,4 @@
-module VCAP::CloudController
+module CloudController
   module Diego
     STAGING_DOMAIN                   = 'cf-app-staging'.freeze
     STAGING_TRUSTED_SYSTEM_CERT_PATH = '/etc/cf-system-certificates'.freeze

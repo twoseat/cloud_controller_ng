@@ -1,4 +1,4 @@
-module VCAP::CloudController
+module CloudController
   shared_examples 'a stager' do
     it 'defines #stage' do
       expect(subject).to respond_to(:stage)

@@ -1,6 +1,6 @@
 require 'palm_civet'
 
-module VCAP::CloudController
+module CloudController
   class ByteConverter
     class InvalidUnitsError < StandardError; end
     class NonNumericError < StandardError; end

@@ -1,6 +1,6 @@
 require 'presenters/v3/to_one_relationship_presenter'
 
-module VCAP::CloudController
+module CloudController
   module Presenters
     module V3
       class AppDropletRelationshipPresenter < ToOneRelationshipPresenter

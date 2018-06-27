@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-module VCAP::CloudController
+module CloudController
   module Jobs
     RSpec.describe CCJob, job_context: :worker do
       describe '#reschedule_at' do

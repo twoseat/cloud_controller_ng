@@ -1,7 +1,7 @@
 require 'messages/base_message'
 require 'messages/buildpack_lifecycle_data_message'
 
-module VCAP::CloudController
+module CloudController
   class AppUpdateMessage < BaseMessage
     register_allowed_keys [:name, :lifecycle]
 

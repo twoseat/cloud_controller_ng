@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-module VCAP::CloudController
+module CloudController
   RSpec.describe ProcessModel, type: :model do
     let(:org) { Organization.make }
     let(:space) { Space.make(organization: org) }
@@ -27,7 +27,7 @@ module VCAP::CloudController
     end
 
     before do
-      VCAP::CloudController::Seeds.create_seed_stacks
+      CloudController::Seeds.create_seed_stacks
     end
 
     describe 'Creation' do
@@ -362,10 +362,10 @@ module VCAP::CloudController
 
         context 'app update' do
           def act_as_cf_admin
-            allow(VCAP::CloudController::SecurityContext).to receive_messages(admin?: true)
+            allow(CloudController::SecurityContext).to receive_messages(admin?: true)
             yield
           ensure
-            allow(VCAP::CloudController::SecurityContext).to receive(:admin?).and_call_original
+            allow(CloudController::SecurityContext).to receive(:admin?).and_call_original
           end
 
           let(:org) { Organization.make(quota_definition: quota) }
@@ -625,7 +625,7 @@ module VCAP::CloudController
           DropletModel.make(
             app:                parent_app,
             execution_metadata: 'some-other-metadata',
-            state:              VCAP::CloudController::DropletModel::STAGED_STATE
+            state:              CloudController::DropletModel::STAGED_STATE
           )
         end
 
@@ -1137,10 +1137,10 @@ module VCAP::CloudController
             # Need to get the app in a state where diego is true but ports are
             # nil. This would only occur on deployments that existed before we
             # added the default port value.
-            default_ports = VCAP::CloudController::ProcessModel::DEFAULT_PORTS
-            stub_const('VCAP::CloudController::ProcessModel::DEFAULT_PORTS', nil)
+            default_ports = CloudController::ProcessModel::DEFAULT_PORTS
+            stub_const('CloudController::ProcessModel::DEFAULT_PORTS', nil)
             process.update(diego: true)
-            stub_const('VCAP::CloudController::ProcessModel::DEFAULT_PORTS', default_ports)
+            stub_const('CloudController::ProcessModel::DEFAULT_PORTS', default_ports)
           end
 
           context 'when changing fields that do not update the version' do

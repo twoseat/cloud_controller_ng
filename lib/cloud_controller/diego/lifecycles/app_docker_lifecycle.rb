@@ -1,4 +1,4 @@
-module VCAP::CloudController
+module CloudController
   class AppDockerLifecycle
     def initialize(*_); end
 

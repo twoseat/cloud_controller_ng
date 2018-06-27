@@ -1,6 +1,6 @@
 require 'actions/services/service_instance_delete'
 
-module VCAP::CloudController
+module CloudController
   class SpaceDelete
     def initialize(user_audit_info, services_event_repository, space_roles_deleter)
       @user_audit_info = user_audit_info

@@ -1,7 +1,7 @@
 require 'spec_helper'
 require 'fetchers/service_binding_create_fetcher'
 
-module VCAP::CloudController
+module CloudController
   RSpec.describe ServiceBindingCreateFetcher do
     describe '#fetch' do
       let(:app_model) { AppModel.make(name: 'my-app') }

@@ -1,7 +1,7 @@
 require 'spec_helper'
 
-module VCAP::CloudController
-  RSpec.describe VCAP::CloudController::Space, type: :model do
+module CloudController
+  RSpec.describe CloudController::Space, type: :model do
     it { is_expected.to have_timestamp_columns }
 
     describe 'Validations' do
@@ -292,7 +292,7 @@ module VCAP::CloudController
       end
 
       describe 'isolation_segment_models' do
-        let(:assigner) { VCAP::CloudController::IsolationSegmentAssign.new }
+        let(:assigner) { CloudController::IsolationSegmentAssign.new }
         let(:space) { Space.make }
         let(:isolation_segment_model) { IsolationSegmentModel.make }
 
@@ -679,7 +679,7 @@ module VCAP::CloudController
             space.space_quota_definition_guid = space_quota_definition_guid
             space.save
           }.to raise_error(CloudController::Errors::ApiError,
-            /Could not find VCAP::CloudController::SpaceQuotaDefinition with guid: #{space_quota_definition_guid}/)
+            /Could not find CloudController::SpaceQuotaDefinition with guid: #{space_quota_definition_guid}/)
         end
       end
     end

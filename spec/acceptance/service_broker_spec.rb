@@ -1,7 +1,7 @@
 require 'spec_helper'
 
 RSpec.describe 'Service Broker' do
-  include VCAP::CloudController::BrokerApiHelper
+  include CloudController::BrokerApiHelper
 
   let(:catalog_with_no_plans) { {
     services:
@@ -299,7 +299,7 @@ RSpec.describe 'Service Broker' do
           auth_password: 'password'
         }.to_json, admin_headers)
 
-        expect(VCAP::CloudController::ServiceDashboardClient.count).to eq(0)
+        expect(CloudController::ServiceDashboardClient.count).to eq(0)
       end
     end
 
@@ -854,7 +854,7 @@ RSpec.describe 'Service Broker' do
           auth_password: 'password'
         }.to_json, admin_headers)
 
-        guid = VCAP::CloudController::ServiceBroker.first.guid
+        guid = CloudController::ServiceBroker.first.guid
 
         stub_catalog_fetch(200, {
           services: [{
@@ -942,7 +942,7 @@ RSpec.describe 'Service Broker' do
           auth_password: 'password'
         }.to_json, admin_headers)
 
-        guid = VCAP::CloudController::ServiceBroker.first.guid
+        guid = CloudController::ServiceBroker.first.guid
 
         stub_catalog_fetch(200, {
           services: [
@@ -1051,7 +1051,7 @@ RSpec.describe 'Service Broker' do
           auth_password: 'password'
         }.to_json, admin_headers)
 
-        guid = VCAP::CloudController::ServiceBroker.first.guid
+        guid = CloudController::ServiceBroker.first.guid
 
         stub_catalog_fetch(200, {
           services: [
@@ -1128,7 +1128,7 @@ RSpec.describe 'Service Broker' do
           update_broker(catalog_with_large_plan)
           expect(last_response).to have_status_code(200)
 
-          expect(VCAP::CloudController::ServicePlan.find(unique_id: 'plan1-guid-here')[:active]).to be false
+          expect(CloudController::ServicePlan.find(unique_id: 'plan1-guid-here')[:active]).to be false
         end
 
         it 'returns a warning to the operator' do

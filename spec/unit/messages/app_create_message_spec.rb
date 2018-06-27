@@ -1,7 +1,7 @@
 require 'spec_helper'
 require 'messages/app_create_message'
 
-module VCAP::CloudController
+module CloudController
   RSpec.describe AppCreateMessage do
     describe 'validations' do
       context 'when unexpected keys are requested' do

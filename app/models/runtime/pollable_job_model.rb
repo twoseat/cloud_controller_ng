@@ -1,4 +1,4 @@
-module VCAP::CloudController
+module CloudController
   class PollableJobModel < Sequel::Model(:jobs)
     PROCESSING_STATE = 'PROCESSING'.freeze
     COMPLETE_STATE   = 'COMPLETE'.freeze
@@ -7,7 +7,7 @@ module VCAP::CloudController
     RESOURCE_TYPE = { APP: 'app', PACKAGE: 'package', DROPLET: 'droplet' }.freeze
 
     def complete?
-      state == VCAP::CloudController::PollableJobModel::COMPLETE_STATE
+      state == CloudController::PollableJobModel::COMPLETE_STATE
     end
 
     def resource_exists?

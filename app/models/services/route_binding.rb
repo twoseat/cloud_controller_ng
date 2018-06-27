@@ -1,4 +1,4 @@
-module VCAP::CloudController
+module CloudController
   class RouteBinding < Sequel::Model
     plugin :after_initialize
 

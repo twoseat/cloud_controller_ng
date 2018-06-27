@@ -23,7 +23,7 @@ class PortsPolicy
   def verify_ports
     @process.route_mappings.each do |m|
       if m.app_port.blank?
-        return false unless @process.ports.include?(VCAP::CloudController::ProcessModel::DEFAULT_HTTP_PORT)
+        return false unless @process.ports.include?(CloudController::ProcessModel::DEFAULT_HTTP_PORT)
       elsif !@process.ports.include?(m.app_port)
         return false
       end

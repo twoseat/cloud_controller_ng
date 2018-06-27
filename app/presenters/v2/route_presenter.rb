@@ -4,7 +4,7 @@ module CloudController
       class RoutePresenter < BasePresenter
         extend PresenterProvider
 
-        present_for_class 'VCAP::CloudController::Route'
+        present_for_class 'CloudController::Route'
 
         def entity_hash(controller, obj, opts, depth, parents, orphans=nil)
           route = obj
@@ -31,9 +31,9 @@ module CloudController
         end
 
         def domain_path_prefix(route)
-          if route.domain.is_a?(VCAP::CloudController::SharedDomain)
+          if route.domain.is_a?(CloudController::SharedDomain)
             'shared_domains'
-          elsif route.domain.is_a?(VCAP::CloudController::PrivateDomain)
+          elsif route.domain.is_a?(CloudController::PrivateDomain)
             'private_domains'
           else
             'domains'

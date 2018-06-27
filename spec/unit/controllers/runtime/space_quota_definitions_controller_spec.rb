@@ -1,12 +1,12 @@
 require 'spec_helper'
 
-module VCAP::CloudController
-  RSpec.describe VCAP::CloudController::SpaceQuotaDefinitionsController do
+module CloudController
+  RSpec.describe CloudController::SpaceQuotaDefinitionsController do
     before { set_current_user_as_admin }
 
     describe 'Attributes' do
       it do
-        expect(VCAP::CloudController::SpaceQuotaDefinitionsController).to have_creatable_attributes({
+        expect(CloudController::SpaceQuotaDefinitionsController).to have_creatable_attributes({
           name:                       { type: 'string', required: true },
           non_basic_services_allowed: { type: 'bool', required: true },
           total_services:             { type: 'integer', required: true },
@@ -22,7 +22,7 @@ module VCAP::CloudController
       end
 
       it do
-        expect(VCAP::CloudController::SpaceQuotaDefinitionsController).to have_updatable_attributes({
+        expect(CloudController::SpaceQuotaDefinitionsController).to have_updatable_attributes({
           name:                       { type: 'string' },
           non_basic_services_allowed: { type: 'bool' },
           total_services:             { type: 'integer' },
@@ -144,7 +144,7 @@ module VCAP::CloudController
 
     describe 'Associations' do
       it do
-        expect(VCAP::CloudController::SpaceQuotaDefinitionsController).to have_nested_routes({ spaces: [:get, :put, :delete] })
+        expect(CloudController::SpaceQuotaDefinitionsController).to have_nested_routes({ spaces: [:get, :put, :delete] })
       end
     end
 

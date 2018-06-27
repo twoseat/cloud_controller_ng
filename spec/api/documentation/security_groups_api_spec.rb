@@ -3,10 +3,10 @@ require 'rspec_api_documentation/dsl'
 
 RSpec.resource 'Security Groups', type: [:api, :legacy_api] do
   let(:admin_auth_header) { admin_headers['HTTP_AUTHORIZATION'] }
-  let(:security_group) { VCAP::CloudController::SecurityGroup.first }
+  let(:security_group) { CloudController::SecurityGroup.first }
   let(:guid) { security_group.guid }
   before do
-    3.times { VCAP::CloudController::SecurityGroup.make }
+    3.times { CloudController::SecurityGroup.make }
   end
 
   authenticated_request
@@ -37,7 +37,7 @@ DESC
   end
 
   describe 'Standard endpoints' do
-    standard_model_list :security_group, VCAP::CloudController::SecurityGroupsController
+    standard_model_list :security_group, CloudController::SecurityGroupsController
     standard_model_get :security_group
     standard_model_delete :security_group
 
@@ -71,14 +71,14 @@ DESC
       before do
         security_group.add_space associated_space
       end
-      let!(:associated_space) { VCAP::CloudController::Space.make }
+      let!(:associated_space) { CloudController::Space.make }
       let(:associated_space_guid) { associated_space.guid }
-      let(:space) { VCAP::CloudController::Space.make }
+      let(:space) { CloudController::Space.make }
       let(:space_guid) { space.guid }
 
       parameter :space_guid, 'The guid of the space'
 
-      standard_model_list :space, VCAP::CloudController::SpacesController, outer_model: :security_group
+      standard_model_list :space, CloudController::SpacesController, outer_model: :security_group
       describe 'with space_guid' do
         nested_model_associate :space, :security_group
         nested_model_remove :space, :security_group

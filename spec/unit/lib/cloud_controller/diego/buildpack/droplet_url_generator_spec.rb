@@ -1,7 +1,7 @@
 require 'spec_helper'
 require 'cloud_controller/diego/buildpack/droplet_url_generator'
 
-module VCAP::CloudController
+module CloudController
   module Diego
     module Buildpack
       RSpec.describe DropletUrlGenerator do

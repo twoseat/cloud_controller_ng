@@ -1,4 +1,4 @@
-module VCAP::CloudController
+module CloudController
   module Repositories
     class DropletEventRepository
       def self.record_create_by_staging(droplet, user_audit_info, v3_app_name, space_guid, org_guid)

@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-module VCAP::CloudController
+module CloudController
   RSpec.describe Permissions do
     let(:user) { User.make }
     let(:space) { Space.make(organization: org) }
@@ -114,7 +114,7 @@ module VCAP::CloudController
         membership = instance_double(Membership, org_guids_for_roles: org_guids)
         expect(Membership).to receive(:new).with(user).and_return(membership)
         expect(permissions.readable_org_guids).to eq(org_guids)
-        expect(membership).to have_received(:org_guids_for_roles).with(VCAP::CloudController::Permissions::ROLES_FOR_ORG_READING)
+        expect(membership).to have_received(:org_guids_for_roles).with(CloudController::Permissions::ROLES_FOR_ORG_READING)
       end
     end
 
@@ -277,7 +277,7 @@ module VCAP::CloudController
         membership = instance_double(Membership, space_guids_for_roles: space_guids)
         expect(Membership).to receive(:new).with(user).and_return(membership)
         expect(permissions.readable_space_guids).to eq(space_guids)
-        expect(membership).to have_received(:space_guids_for_roles).with(VCAP::CloudController::Permissions::ROLES_FOR_SPACE_READING)
+        expect(membership).to have_received(:space_guids_for_roles).with(CloudController::Permissions::ROLES_FOR_SPACE_READING)
       end
     end
 

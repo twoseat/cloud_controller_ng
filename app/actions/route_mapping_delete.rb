@@ -1,4 +1,4 @@
-module VCAP::CloudController
+module CloudController
   class RouteMappingDelete
     def initialize(user_audit_info, manifest_triggered: false)
       @user_audit_info = user_audit_info

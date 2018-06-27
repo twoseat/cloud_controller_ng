@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-module VCAP::CloudController
+module CloudController
   RSpec.describe ServiceBrokersController, :services do
     let(:broker) { ServiceBroker.make }
     let(:catalog_json) do

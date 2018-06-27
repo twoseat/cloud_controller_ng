@@ -1,6 +1,6 @@
 require 'repositories/task_event_repository'
 
-module VCAP::CloudController
+module CloudController
   class TaskCreate
     class InvalidTask < StandardError; end
     class TaskCreateError < StandardError; end

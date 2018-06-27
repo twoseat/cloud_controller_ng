@@ -7,7 +7,7 @@ require 'cloud_controller/strategies/manifest_strategy'
 require 'cloud_controller/app_manifest/manifest_route'
 require 'cloud_controller/random_route_generator'
 
-module VCAP::CloudController
+module CloudController
   class AppApplyManifest
     SERVICE_BINDING_TYPE = 'app'.freeze
 
@@ -107,7 +107,7 @@ module VCAP::CloudController
     end
 
     def volume_services_enabled?
-      VCAP::CloudController::Config.config.get(:volume_services_enabled)
+      CloudController::Config.config.get(:volume_services_enabled)
     end
 
     def logger

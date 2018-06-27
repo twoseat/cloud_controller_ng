@@ -3,11 +3,11 @@ require 'actions/service_binding_create'
 
 RSpec.describe ServiceBindingsController, type: :controller do
   describe '#create' do
-    let(:app_model) { VCAP::CloudController::AppModel.make }
+    let(:app_model) { CloudController::AppModel.make }
     let(:space) { app_model.space }
     let(:org_guid) { space.organization.guid }
     let(:service_binding_type) { 'app' }
-    let(:service_instance) { VCAP::CloudController::ManagedServiceInstance.make(space: space, syslog_drain_url: 'syslog://syslog-drain.com') }
+    let(:service_instance) { CloudController::ManagedServiceInstance.make(space: space, syslog_drain_url: 'syslog://syslog-drain.com') }
     let(:req_body) do
       {
         type: service_binding_type,
@@ -27,14 +27,14 @@ RSpec.describe ServiceBindingsController, type: :controller do
       }.to_json
     end
     let(:service_binding_url_pattern) { %r{/v2/service_instances/#{service_instance.guid}/service_bindings/} }
-    let(:fake_service_binding) { VCAP::CloudController::ServiceBinding.new(service_instance: service_instance, guid: '') }
+    let(:fake_service_binding) { CloudController::ServiceBinding.new(service_instance: service_instance, guid: '') }
     let(:opts) do
       {
         fake_service_binding: fake_service_binding,
         body: body
       }
     end
-    let(:user) { set_current_user(VCAP::CloudController::User.make) }
+    let(:user) { set_current_user(CloudController::User.make) }
 
     before do
       allow_user_read_access_for(user, spaces: [space])
@@ -257,7 +257,7 @@ RSpec.describe ServiceBindingsController, type: :controller do
 
       context 'when attempting to bind an unbindable service' do
         before do
-          allow_any_instance_of(VCAP::CloudController::ManagedServiceInstance).
+          allow_any_instance_of(CloudController::ManagedServiceInstance).
             to receive(:bindable?).and_return(false)
         end
 
@@ -271,7 +271,7 @@ RSpec.describe ServiceBindingsController, type: :controller do
 
       context 'when the instance operation is in progress' do
         before do
-          VCAP::CloudController::ServiceInstanceOperation.make(
+          CloudController::ServiceInstanceOperation.make(
             service_instance_id: service_instance.id,
             state: 'in progress')
         end
@@ -286,7 +286,7 @@ RSpec.describe ServiceBindingsController, type: :controller do
 
       context 'when attempting to bind and the service binding already exists' do
         before do
-          VCAP::CloudController::ServiceBinding.make(
+          CloudController::ServiceBinding.make(
             service_instance: service_instance,
             app: app_model
           )
@@ -318,9 +318,9 @@ RSpec.describe ServiceBindingsController, type: :controller do
   end
 
   describe '#show' do
-    let(:service_binding) { VCAP::CloudController::ServiceBinding.make(syslog_drain_url: 'syslog://syslog-drain.com') }
+    let(:service_binding) { CloudController::ServiceBinding.make(syslog_drain_url: 'syslog://syslog-drain.com') }
     let(:space) { service_binding.space }
-    let(:user) { set_current_user(VCAP::CloudController::User.make) }
+    let(:user) { set_current_user(CloudController::User.make) }
 
     before do
       allow_user_read_access_for(user, spaces: [space])
@@ -392,14 +392,14 @@ RSpec.describe ServiceBindingsController, type: :controller do
   end
 
   describe '#index' do
-    let!(:allowed_binding_1) { VCAP::CloudController::ServiceBinding.make(syslog_drain_url: 'syslog://syslog-drain.com') }
-    let!(:allowed_binding_2) { VCAP::CloudController::ServiceBinding.make(syslog_drain_url: 'syslog://syslog-drain.com', service_instance: service_instance) }
-    let!(:allowed_binding_3) { VCAP::CloudController::ServiceBinding.make(syslog_drain_url: 'syslog://syslog-drain.com', service_instance: service_instance) }
-    let!(:binding_in_unauthorized_space) { VCAP::CloudController::ServiceBinding.make(syslog_drain_url: 'syslog://syslog-drain.com') }
-    let(:service_instance) { VCAP::CloudController::ManagedServiceInstance.make(space: allowed_space) }
+    let!(:allowed_binding_1) { CloudController::ServiceBinding.make(syslog_drain_url: 'syslog://syslog-drain.com') }
+    let!(:allowed_binding_2) { CloudController::ServiceBinding.make(syslog_drain_url: 'syslog://syslog-drain.com', service_instance: service_instance) }
+    let!(:allowed_binding_3) { CloudController::ServiceBinding.make(syslog_drain_url: 'syslog://syslog-drain.com', service_instance: service_instance) }
+    let!(:binding_in_unauthorized_space) { CloudController::ServiceBinding.make(syslog_drain_url: 'syslog://syslog-drain.com') }
+    let(:service_instance) { CloudController::ManagedServiceInstance.make(space: allowed_space) }
     let(:allowed_space) { allowed_binding_1.space }
     let(:unauthorized_space) { binding_in_unauthorized_space.space }
-    let(:user) { set_current_user(VCAP::CloudController::User.make) }
+    let(:user) { set_current_user(CloudController::User.make) }
 
     before do
       stub_readable_space_guids_for(user, [allowed_space])
@@ -487,9 +487,9 @@ RSpec.describe ServiceBindingsController, type: :controller do
   end
 
   describe '#destroy' do
-    let(:service_binding) { VCAP::CloudController::ServiceBinding.make(syslog_drain_url: 'syslog://syslog-drain.com') }
+    let(:service_binding) { CloudController::ServiceBinding.make(syslog_drain_url: 'syslog://syslog-drain.com') }
     let(:space) { service_binding.space }
-    let(:user) { set_current_user(VCAP::CloudController::User.make) }
+    let(:user) { set_current_user(CloudController::User.make) }
 
     before do
       allow_user_read_access_for(user, spaces: [space])

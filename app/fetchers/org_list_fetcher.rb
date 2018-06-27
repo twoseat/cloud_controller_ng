@@ -1,7 +1,7 @@
 require 'cloud_controller/paging/sequel_paginator'
 require 'cloud_controller/paging/paginated_result'
 
-module VCAP::CloudController
+module CloudController
   class OrgListFetcher
     def fetch(message:, guids:)
       dataset = Organization.where(guid: guids)

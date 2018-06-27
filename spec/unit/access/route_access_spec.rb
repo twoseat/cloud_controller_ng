@@ -1,17 +1,17 @@
 require 'spec_helper'
 
-module VCAP::CloudController
+module CloudController
   RSpec.describe RouteAccess, type: :access do
     let(:queryer) { instance_spy(Permissions::Queryer) }
 
     subject(:access) { RouteAccess.new(Security::AccessContext.new(queryer)) }
 
-    let(:user) { VCAP::CloudController::User.make }
-    let(:org) { VCAP::CloudController::Organization.make }
-    let(:space) { VCAP::CloudController::Space.make(organization: org) }
-    let(:domain) { VCAP::CloudController::PrivateDomain.make(owning_organization: org) }
+    let(:user) { CloudController::User.make }
+    let(:org) { CloudController::Organization.make }
+    let(:space) { CloudController::Space.make(organization: org) }
+    let(:domain) { CloudController::PrivateDomain.make(owning_organization: org) }
     let(:flag) { FeatureFlag.make(name: 'route_creation', enabled: false) }
-    let(:object) { VCAP::CloudController::Route.make(domain: domain, space: space) }
+    let(:object) { CloudController::Route.make(domain: domain, space: space) }
 
     before do
       flag.save
@@ -95,7 +95,7 @@ module VCAP::CloudController
 
     describe 'in a suspended org' do
       before(:each) do
-        org.status = VCAP::CloudController::Organization::SUSPENDED
+        org.status = CloudController::Organization::SUSPENDED
         org.save
       end
 

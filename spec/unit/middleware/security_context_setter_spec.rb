@@ -13,8 +13,8 @@ module CloudFoundry
           'PATH_INFO' => path_info,
         }
       end
-      let(:token_decoder) { instance_double(VCAP::CloudController::UaaTokenDecoder) }
-      let(:security_context_configurer) { VCAP::CloudController::Security::SecurityContextConfigurer.new(token_decoder) }
+      let(:token_decoder) { instance_double(CloudController::UaaTokenDecoder) }
+      let(:security_context_configurer) { CloudController::Security::SecurityContextConfigurer.new(token_decoder) }
 
       describe '#call' do
         let(:token_information) { { 'user_id' => 'user-id-1', 'user_name' => 'mrpotato' } }
@@ -25,8 +25,8 @@ module CloudFoundry
 
         it 'sets the security context token and the raw token' do
           middleware.call(env)
-          expect(VCAP::CloudController::SecurityContext.token).to eq(token_information)
-          expect(VCAP::CloudController::SecurityContext.auth_token).to eq('auth-token')
+          expect(CloudController::SecurityContext.token).to eq(token_information)
+          expect(CloudController::SecurityContext.auth_token).to eq('auth-token')
         end
 
         it 'sets user name and guid on the env' do
@@ -40,7 +40,7 @@ module CloudFoundry
 
         context 'when Uaa is unavailable' do
           before do
-            allow(VCAP::CloudController::SecurityContext).to receive(:valid_token?).and_raise(VCAP::CloudController::UaaUnavailable)
+            allow(CloudController::SecurityContext).to receive(:valid_token?).and_raise(CloudController::UaaUnavailable)
           end
 
           it 'returns a 502' do

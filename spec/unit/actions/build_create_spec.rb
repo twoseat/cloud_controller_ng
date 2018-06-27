@@ -3,7 +3,7 @@ require 'actions/build_create'
 require 'isolation_segment_assign'
 require 'isolation_segment_unassign'
 
-module VCAP::CloudController
+module CloudController
   RSpec.describe BuildCreate do
     subject(:action) do
       BuildCreate.new(
@@ -155,11 +155,11 @@ module VCAP::CloudController
         end
 
         describe 'isolation segments' do
-          let(:assigner) { VCAP::CloudController::IsolationSegmentAssign.new }
-          let(:isolation_segment_model) { VCAP::CloudController::IsolationSegmentModel.make }
-          let(:isolation_segment_model_2) { VCAP::CloudController::IsolationSegmentModel.make }
+          let(:assigner) { CloudController::IsolationSegmentAssign.new }
+          let(:isolation_segment_model) { CloudController::IsolationSegmentModel.make }
+          let(:isolation_segment_model_2) { CloudController::IsolationSegmentModel.make }
           let(:shared_isolation_segment) {
-            VCAP::CloudController::IsolationSegmentModel.first(guid: VCAP::CloudController::IsolationSegmentModel::SHARED_ISOLATION_SEGMENT_GUID)
+            CloudController::IsolationSegmentModel.first(guid: CloudController::IsolationSegmentModel::SHARED_ISOLATION_SEGMENT_GUID)
           }
 
           context 'when the org has a default' do

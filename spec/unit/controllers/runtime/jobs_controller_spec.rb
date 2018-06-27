@@ -1,7 +1,7 @@
 require 'spec_helper'
 
-module VCAP::CloudController
-  RSpec.describe VCAP::CloudController::JobsController do
+module CloudController
+  RSpec.describe CloudController::JobsController do
     let(:job) { Delayed::Job.enqueue double(perform: nil) }
     let(:job_request_id) { job.guid }
     let(:user) { User.make }

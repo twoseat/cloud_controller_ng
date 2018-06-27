@@ -3,8 +3,8 @@ require 'rspec_api_documentation/dsl'
 
 RSpec.resource 'Service Keys', type: [:api, :legacy_api] do
   let(:admin_auth_header) { admin_headers['HTTP_AUTHORIZATION'] }
-  let(:service_instance) { VCAP::CloudController::ManagedServiceInstance.make }
-  let(:service_key) { VCAP::CloudController::ServiceKey.make }
+  let(:service_instance) { CloudController::ManagedServiceInstance.make }
+  let(:service_key) { CloudController::ServiceKey.make }
   let(:guid) { service_key.guid }
   authenticated_request
 
@@ -14,7 +14,7 @@ RSpec.resource 'Service Keys', type: [:api, :legacy_api] do
     stub_unbind(service_key)
   end
 
-  standard_model_list :service_key, VCAP::CloudController::ServiceKeysController
+  standard_model_list :service_key, CloudController::ServiceKeysController
   standard_model_get :service_key, nested_associations: [:service_instance]
   standard_model_delete :service_key, async: false
 

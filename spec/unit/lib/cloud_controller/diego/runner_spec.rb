@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-module VCAP::CloudController
+module CloudController
   module Diego
     RSpec.describe Runner do
       let(:messenger) { instance_double(Messenger) }

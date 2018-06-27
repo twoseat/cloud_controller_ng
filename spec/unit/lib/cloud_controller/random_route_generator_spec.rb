@@ -1,7 +1,7 @@
 require 'spec_helper'
 require 'set'
 
-module VCAP::CloudController
+module CloudController
   RSpec.describe RandomRouteGenerator do
     let(:generator) { RandomRouteGenerator.new }
 

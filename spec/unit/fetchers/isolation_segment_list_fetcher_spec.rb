@@ -3,21 +3,21 @@ require 'isolation_segment_assign'
 require 'messages/isolation_segments_list_message'
 require 'fetchers/isolation_segment_list_fetcher'
 
-module VCAP::CloudController
+module CloudController
   RSpec.describe IsolationSegmentListFetcher do
     let(:filters) { {} }
     let(:message) { IsolationSegmentsListMessage.new(filters) }
     subject(:fetcher) { IsolationSegmentListFetcher.new(message: message) }
 
-    let!(:isolation_segment_model_1) { VCAP::CloudController::IsolationSegmentModel.make }
-    let!(:isolation_segment_model_2) { VCAP::CloudController::IsolationSegmentModel.make(name: 'frank') }
-    let!(:isolation_segment_model_3) { VCAP::CloudController::IsolationSegmentModel.make }
+    let!(:isolation_segment_model_1) { CloudController::IsolationSegmentModel.make }
+    let!(:isolation_segment_model_2) { CloudController::IsolationSegmentModel.make(name: 'frank') }
+    let!(:isolation_segment_model_3) { CloudController::IsolationSegmentModel.make }
 
-    let(:org1) { VCAP::CloudController::Organization.make }
-    let(:org2) { VCAP::CloudController::Organization.make }
-    let(:org3) { VCAP::CloudController::Organization.make }
+    let(:org1) { CloudController::Organization.make }
+    let(:org2) { CloudController::Organization.make }
+    let(:org3) { CloudController::Organization.make }
 
-    let(:assigner) { VCAP::CloudController::IsolationSegmentAssign.new }
+    let(:assigner) { CloudController::IsolationSegmentAssign.new }
 
     before do
       assigner.assign(isolation_segment_model_1, [org1])
@@ -34,7 +34,7 @@ module VCAP::CloudController
       it 'returns all isolation segments' do
         isolation_segment_models = fetcher.fetch_all.all
 
-        shared_isolation_segment_model = VCAP::CloudController::IsolationSegmentModel[guid: VCAP::CloudController::IsolationSegmentModel::SHARED_ISOLATION_SEGMENT_GUID]
+        shared_isolation_segment_model = CloudController::IsolationSegmentModel[guid: CloudController::IsolationSegmentModel::SHARED_ISOLATION_SEGMENT_GUID]
         expect(isolation_segment_models).to match_array([shared_isolation_segment_model, isolation_segment_model_1, isolation_segment_model_2, isolation_segment_model_3])
       end
 

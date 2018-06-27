@@ -1,7 +1,7 @@
 require 'spec_helper'
 require 'cloud_controller/metrics/request_metrics'
 
-module VCAP::CloudController::Metrics
+module CloudController::Metrics
   RSpec.describe RequestMetrics do
     let(:statsd_client) { double(:statsd_client) }
     let!(:request_metrics) { RequestMetrics.new(statsd_client) } # TODO: probably doesn't need to be a let!, just a let

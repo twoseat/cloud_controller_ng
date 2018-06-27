@@ -22,12 +22,12 @@ class AppManifestsController < ApplicationController
     unsupported_for_docker_apps!(message) if incompatible_with_buildpacks(app.lifecycle_type, message)
 
     apply_manifest_action = AppApplyManifest.new(user_audit_info)
-    apply_manifest_job = VCAP::CloudController::Jobs::ApplyManifestActionJob.new(app.guid, message, apply_manifest_action)
+    apply_manifest_job = CloudController::Jobs::ApplyManifestActionJob.new(app.guid, message, apply_manifest_action)
 
     record_apply_manifest_audit_event(app, message, space)
     job = Jobs::Enqueuer.new(apply_manifest_job, queue: 'cc-generic').enqueue_pollable
 
-    url_builder = VCAP::CloudController::Presenters::ApiUrlBuilder.new
+    url_builder = CloudController::Presenters::ApiUrlBuilder.new
     head HTTP::ACCEPTED, 'Location' => url_builder.build_url(path: "/v3/jobs/#{job.guid}")
   end
 

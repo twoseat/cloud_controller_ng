@@ -1,7 +1,7 @@
 require 'spec_helper'
 require 'actions/services/service_key_delete'
 
-module VCAP::CloudController
+module CloudController
   RSpec.describe ServiceKeyDelete do
     let(:guid_pattern) { '[[:alnum:]-]+' }
     subject(:service_key_delete) { ServiceKeyDelete.new }

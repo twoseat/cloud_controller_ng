@@ -1,7 +1,7 @@
 require 'spec_helper'
 require 'jobs/pollable_job_wrapper'
 
-module VCAP::CloudController::Jobs
+module CloudController::Jobs
   RSpec.describe PollableJobWrapper, job_context: :worker do
     let(:job) { double(job_name_in_configuration: 'my-job', max_attempts: 2, perform: nil) }
     let(:pollable_job) { PollableJobWrapper.new(job) }
@@ -15,13 +15,13 @@ module VCAP::CloudController::Jobs
 
     describe 'delayed job hooks' do
       # using a real job as DelayedJob has trouble marshalling doubles
-      let(:delete_action) { VCAP::CloudController::DropletDelete.new('fake') }
-      let(:job) { DeleteActionJob.new(VCAP::CloudController::DropletModel, 'fake', delete_action) }
+      let(:delete_action) { CloudController::DropletDelete.new('fake') }
+      let(:job) { DeleteActionJob.new(CloudController::DropletModel, 'fake', delete_action) }
 
       it 'creates a job record and marks the job model as completed' do
-        enqueued_job = VCAP::CloudController::Jobs::Enqueuer.new(pollable_job).enqueue
+        enqueued_job = CloudController::Jobs::Enqueuer.new(pollable_job).enqueue
 
-        job_record = VCAP::CloudController::PollableJobModel.find(delayed_job_guid: enqueued_job.guid)
+        job_record = CloudController::PollableJobModel.find(delayed_job_guid: enqueued_job.guid)
         expect(job_record).to_not be_nil, "Expected to find PollableJobModel with delayed_job_guid '#{enqueued_job.guid}', but did not"
         expect(job_record.state).to eq('PROCESSING')
         expect(job_record.operation).to eq('droplet.delete')
@@ -36,14 +36,14 @@ module VCAP::CloudController::Jobs
 
       context 'when the job fails' do
         before do
-          allow_any_instance_of(VCAP::CloudController::Jobs::DeleteActionJob).
+          allow_any_instance_of(CloudController::Jobs::DeleteActionJob).
             to receive(:perform).and_raise(CloudController::Blobstore::BlobstoreError.new('some-error'))
         end
 
         context 'when there is an associated job model' do
           it 'marks the job model failed and records errors' do
-            enqueued_job = VCAP::CloudController::Jobs::Enqueuer.new(pollable_job).enqueue
-            job_model = VCAP::CloudController::PollableJobModel.make(delayed_job_guid: enqueued_job.guid, state: 'PROCESSING')
+            enqueued_job = CloudController::Jobs::Enqueuer.new(pollable_job).enqueue
+            job_model = CloudController::PollableJobModel.make(delayed_job_guid: enqueued_job.guid, state: 'PROCESSING')
 
             execute_all_jobs(expected_successes: 0, expected_failures: 1)
 
@@ -60,7 +60,7 @@ module VCAP::CloudController::Jobs
 
         context 'when there is NOT an associated job model' do
           it 'does NOT choke' do
-            VCAP::CloudController::Jobs::Enqueuer.new(pollable_job).enqueue
+            CloudController::Jobs::Enqueuer.new(pollable_job).enqueue
 
             execute_all_jobs(expected_successes: 0, expected_failures: 1)
           end

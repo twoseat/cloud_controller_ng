@@ -1,4 +1,4 @@
-module VCAP::CloudController
+module CloudController
   class PackageStateCalculator
     def initialize(process)
       @latest_build = process.latest_build

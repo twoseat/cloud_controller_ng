@@ -1,4 +1,4 @@
-module VCAP::CloudController
+module CloudController
   module Diego
     class LifecycleBundleUriGenerator
       class InvalidStack < StandardError; end

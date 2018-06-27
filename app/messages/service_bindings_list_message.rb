@@ -1,6 +1,6 @@
 require 'messages/list_message'
 
-module VCAP::CloudController
+module CloudController
   class ServiceBindingsListMessage < ListMessage
     register_allowed_keys [:app_guids, :service_instance_guids, :order_by, :page, :per_page]
 

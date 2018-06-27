@@ -1,7 +1,7 @@
 require 'spec_helper'
 require 'messages/manifest_buildpack_message'
 
-module VCAP::CloudController
+module CloudController
   RSpec.describe ManifestBuildpackMessage do
     subject(:message) { ManifestBuildpackMessage.new(params) }
 

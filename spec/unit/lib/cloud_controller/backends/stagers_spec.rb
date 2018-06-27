@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-module VCAP::CloudController
+module CloudController
   RSpec.describe Stagers do
     subject(:stagers) { Stagers.new(config) }
     let(:config) { TestConfig.config_instance }

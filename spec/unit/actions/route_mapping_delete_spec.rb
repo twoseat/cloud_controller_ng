@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-module VCAP::CloudController
+module CloudController
   RSpec.describe RouteMappingDelete do
     subject(:route_mapping_delete) { RouteMappingDelete.new(user_audit_info) }
     let(:logger) { instance_double(Steno::Logger) }

@@ -5,7 +5,7 @@ module ProgrammerMistake
   class MissingMethod < StandardError; end
 end
 
-module VCAP::CloudController
+module CloudController
   class NestedMessageValidator < ActiveModel::Validator
     include ActiveModel::Model
     include Validators

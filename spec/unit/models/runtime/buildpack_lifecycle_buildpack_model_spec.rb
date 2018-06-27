@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-module VCAP::CloudController
+module CloudController
   RSpec.describe BuildpackLifecycleBuildpackModel do
     subject(:buildpack) { BuildpackLifecycleBuildpackModel.new }
 

@@ -1,4 +1,4 @@
-module VCAP::CloudController
+module CloudController
   class QuotaDefinition < Sequel::Model
     UNLIMITED = -1
 

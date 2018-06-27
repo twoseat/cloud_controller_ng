@@ -3,7 +3,7 @@ require 'actions/services/route_binding_delete'
 require 'actions/services/locks/deleter_lock'
 require 'actions/service_instance_unshare'
 
-module VCAP::CloudController
+module CloudController
   class ServiceInstanceDelete
     def initialize(accepts_incomplete: false, event_repository:)
       @accepts_incomplete = accepts_incomplete
@@ -95,7 +95,7 @@ module VCAP::CloudController
     end
 
     def build_fetch_job(service_instance)
-      VCAP::CloudController::Jobs::Services::ServiceInstanceStateFetch.new(
+      CloudController::Jobs::Services::ServiceInstanceStateFetch.new(
         'service-instance-state-fetch',
         service_instance.guid,
         @event_repository.user_audit_info,

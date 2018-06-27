@@ -2,7 +2,7 @@ require 'spec_helper'
 require_relative 'lifecycle_protocol_shared'
 require 'isolation_segment_assign'
 
-module VCAP::CloudController
+module CloudController
   module Diego
     class FakeLifecycleProtocol
       def lifecycle_data(_)
@@ -96,7 +96,7 @@ module VCAP::CloudController
             memory_mb:           staging_details.staging_memory_in_mb,
             disk_mb:             staging_details.staging_disk_in_mb,
             file_descriptors:    30,
-            environment:         VCAP::CloudController::Diego::NormalEnvHashToDiegoEnvArrayPhilosopher.muse(staging_details.environment_variables),
+            environment:         CloudController::Diego::NormalEnvHashToDiegoEnvArrayPhilosopher.muse(staging_details.environment_variables),
             egress_rules:        ['staging_egress_rule'],
             timeout:             90,
             lifecycle:           lifecycle_type,
@@ -149,7 +149,7 @@ module VCAP::CloudController
 
           allow(egress_rules).to receive(:running).with(process).and_return(['running_egress_rule'])
           allow(LifecycleProtocol).to receive(:protocol_for_type).and_return(fake_lifecycle_protocol)
-          allow(VCAP::CloudController::IsolationSegmentSelector).to receive(:for_space).and_return('segment-from-selector')
+          allow(CloudController::IsolationSegmentSelector).to receive(:for_space).and_return('segment-from-selector')
         end
 
         it 'is a message desired app information' do

@@ -2,7 +2,7 @@ require 'actions/v2/route_mapping_create'
 require 'models/helpers/process_types'
 require 'fetchers/queries/route_mapping_query'
 
-module VCAP::CloudController
+module CloudController
   class RouteMappingsController < RestController::ModelController
     define_attributes do
       to_one :app, exclude_in: [:update], association_name: :process
@@ -45,13 +45,13 @@ module VCAP::CloudController
         { 'Location' => "#{self.class.path}/#{route_mapping.guid}" },
         object_renderer.render_json(self.class, route_mapping, @opts)
       ]
-    rescue ::VCAP::CloudController::V2::RouteMappingCreate::DuplicateRouteMapping
+    rescue ::CloudController::V2::RouteMappingCreate::DuplicateRouteMapping
       raise CloudController::Errors::ApiError.new_from_details('RouteMappingTaken', route_mapping_taken_message(request_attrs))
-    rescue ::VCAP::CloudController::V2::RouteMappingCreate::UnavailableAppPort
+    rescue ::CloudController::V2::RouteMappingCreate::UnavailableAppPort
       raise CloudController::Errors::ApiError.new_from_details('RoutePortNotEnabledOnApp')
-    rescue ::VCAP::CloudController::V2::RouteMappingCreate::RoutingApiDisabledError
+    rescue ::CloudController::V2::RouteMappingCreate::RoutingApiDisabledError
       raise CloudController::Errors::ApiError.new_from_details('RoutingApiDisabled')
-    rescue ::VCAP::CloudController::V2::RouteMappingCreate::SpaceMismatch => e
+    rescue ::CloudController::V2::RouteMappingCreate::SpaceMismatch => e
       raise CloudController::Errors::InvalidRelation.new(e.message)
     end
 

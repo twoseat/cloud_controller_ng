@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-module VCAP::CloudController
+module CloudController
   RSpec.describe IncludeAppSpaceDecorator do
     subject(:decorator) { IncludeAppSpaceDecorator }
     let(:space1) { Space.make(name: 'first-space') }

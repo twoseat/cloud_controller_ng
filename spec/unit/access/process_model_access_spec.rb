@@ -1,13 +1,13 @@
 require 'spec_helper'
 
-module VCAP::CloudController
+module CloudController
   RSpec.describe ProcessModelAccess, type: :access do
     subject(:access) { ProcessModelAccess.new(Security::AccessContext.new) }
     let(:token) { { 'scope' => ['cloud_controller.read', 'cloud_controller.write'] } }
-    let(:user) { VCAP::CloudController::User.make }
-    let(:org) { VCAP::CloudController::Organization.make }
-    let(:space) { VCAP::CloudController::Space.make(organization: org) }
-    let(:object) { VCAP::CloudController::ProcessModelFactory.make(space: space) }
+    let(:user) { CloudController::User.make }
+    let(:org) { CloudController::Organization.make }
+    let(:space) { CloudController::Space.make(organization: org) }
+    let(:object) { CloudController::ProcessModelFactory.make(space: space) }
 
     before do
       SecurityContext.set(user, token)
@@ -233,7 +233,7 @@ module VCAP::CloudController
     end
 
     context 'handles concurrent deletion of app' do
-      let(:object) { VCAP::CloudController::ProcessModelFactory.make(space: nil) }
+      let(:object) { CloudController::ProcessModelFactory.make(space: nil) }
       # only using global_auditor as an example of a non-admin user
       include_context :global_auditor_setup
 

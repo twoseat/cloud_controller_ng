@@ -1,7 +1,7 @@
 require 'spec_helper'
 require 'fetchers/buildpack_lifecycle_fetcher'
 
-module VCAP::CloudController
+module CloudController
   RSpec.describe BuildpackLifecycleFetcher do
     let(:fetcher) { BuildpackLifecycleFetcher.new }
 

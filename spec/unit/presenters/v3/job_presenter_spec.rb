@@ -1,13 +1,13 @@
 require 'spec_helper'
 require 'presenters/v3/job_presenter'
 
-module VCAP::CloudController::Presenters::V3
+module CloudController::Presenters::V3
   RSpec.describe JobPresenter do
     shared_examples_for(JobPresenter) do
       let(:api_error) { nil }
       let(:job) do
-        VCAP::CloudController::PollableJobModel.make(
-          state: VCAP::CloudController::PollableJobModel::COMPLETE_STATE,
+        CloudController::PollableJobModel.make(
+          state: CloudController::PollableJobModel::COMPLETE_STATE,
           operation: "#{resource_type}.delete",
           resource_type: resource_type,
           resource_guid: 'guid',
@@ -23,14 +23,14 @@ module VCAP::CloudController::Presenters::V3
           }
 
           expect(result[:operation]).to eq("#{resource_type}.delete")
-          expect(result[:state]).to eq(VCAP::CloudController::PollableJobModel::COMPLETE_STATE)
+          expect(result[:state]).to eq(CloudController::PollableJobModel::COMPLETE_STATE)
           expect(result[:links]).to eq(links)
           expect(result[:errors]).to eq([])
         end
 
         context 'when the job has not completed' do
           before do
-            job.update(state: VCAP::CloudController::PollableJobModel::PROCESSING_STATE)
+            job.update(state: CloudController::PollableJobModel::PROCESSING_STATE)
           end
 
           it 'shows the resource link when the jobs resource_type is defined' do
@@ -66,7 +66,7 @@ module VCAP::CloudController::Presenters::V3
 
           context 'when the job later completes' do
             before do
-              job.update(state: VCAP::CloudController::PollableJobModel::COMPLETE_STATE)
+              job.update(state: CloudController::PollableJobModel::COMPLETE_STATE)
             end
 
             it 'does not present the list of errors' do
@@ -76,7 +76,7 @@ module VCAP::CloudController::Presenters::V3
 
           context 'when job is processing or failed' do
             before do
-              job.update(state: VCAP::CloudController::PollableJobModel::PROCESSING_STATE)
+              job.update(state: CloudController::PollableJobModel::PROCESSING_STATE)
             end
 
             it 'presents the list of errors' do

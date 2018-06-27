@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-module VCAP::CloudController
+module CloudController
   RSpec.describe LifecycleProvider do
     let(:package) { PackageModel.make }
     let(:message) { BuildCreateMessage.new(request) }

@@ -1,7 +1,7 @@
 require 'spec_helper'
 
-module VCAP::CloudController
-  RSpec.describe VCAP::CloudController::RouteBinding, type: :model do
+module CloudController
+  RSpec.describe CloudController::RouteBinding, type: :model do
     let(:binding) { RouteBinding.new }
     it { is_expected.to have_timestamp_columns }
 

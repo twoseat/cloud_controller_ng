@@ -1,12 +1,12 @@
 require 'spec_helper'
 
-module VCAP::CloudController
+module CloudController
   RSpec.describe QuotaDefinitionAccess, type: :access do
     subject(:access) { QuotaDefinitionAccess.new(Security::AccessContext.new) }
     let(:scopes) { ['cloud_controller.read', 'cloud_controller.write'] }
 
-    let(:user) { VCAP::CloudController::User.make }
-    let(:object) { VCAP::CloudController::QuotaDefinition.make }
+    let(:user) { CloudController::User.make }
+    let(:object) { CloudController::QuotaDefinition.make }
 
     before { set_current_user(user, scopes: scopes) }
 

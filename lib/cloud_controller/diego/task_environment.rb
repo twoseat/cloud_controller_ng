@@ -1,6 +1,6 @@
 require 'credhub/config_helpers'
 
-module VCAP::CloudController
+module CloudController
   module Diego
     class TaskEnvironment
       include ::Credhub::ConfigHelpers

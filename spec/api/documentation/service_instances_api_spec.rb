@@ -5,13 +5,13 @@ require 'uri'
 RSpec.resource 'Service Instances', type: [:api, :legacy_api] do
   tags = %w(accounting mongodb)
   let(:admin_auth_header) { admin_headers['HTTP_AUTHORIZATION'] }
-  let(:service_broker) { VCAP::CloudController::ServiceBroker.make }
-  let(:service) { VCAP::CloudController::Service.make(service_broker: service_broker) }
-  let(:service_plan) { VCAP::CloudController::ServicePlan.make(service: service, public: true) }
+  let(:service_broker) { CloudController::ServiceBroker.make }
+  let(:service) { CloudController::Service.make(service_broker: service_broker) }
+  let(:service_plan) { CloudController::ServicePlan.make(service: service, public: true) }
   let!(:service_instance) do
-    service_instance                            = VCAP::CloudController::ManagedServiceInstance.make(
+    service_instance                            = CloudController::ManagedServiceInstance.make(
       service_plan: service_plan, tags: tags)
-    service_instance.service_instance_operation = VCAP::CloudController::ServiceInstanceOperation.make(
+    service_instance.service_instance_operation = CloudController::ServiceInstanceOperation.make(
       state:       'succeeded',
       description: 'service broker-provided description'
     )
@@ -62,7 +62,7 @@ RSpec.resource 'Service Instances', type: [:api, :legacy_api] do
     response_field 'routes_url', 'Routes bound to the service instance. Requests to these routes will be forwarded to the service instance.'
     response_field 'tags', 'A list of tags for the service instance'
 
-    standard_model_list :managed_service_instance, VCAP::CloudController::ServiceInstancesController, path: :service_instance
+    standard_model_list :managed_service_instance, CloudController::ServiceInstancesController, path: :service_instance
     standard_model_get :managed_service_instance, path: :service_instance, nested_attributes: [:space, :service_plan]
 
     post '/v2/service_instances/' do
@@ -87,7 +87,7 @@ EOF
       end
 
       example 'Creating a Service Instance' do
-        space_guid   = VCAP::CloudController::Space.make.guid
+        space_guid   = CloudController::Space.make.guid
         request_hash = {
           space_guid:        space_guid,
           name:              'my-service-instance',
@@ -104,11 +104,11 @@ EOF
     end
 
     put '/v2/service_instances/:guid' do
-      let(:service_broker) { VCAP::CloudController::ServiceBroker.make }
-      let(:service) { VCAP::CloudController::Service.make(service_broker: service_broker, plan_updateable: true) }
-      let(:new_plan) { VCAP::CloudController::ServicePlan.make(service: service) }
-      let(:old_plan) { VCAP::CloudController::ServicePlan.make(service: service) }
-      let(:service_instance) { VCAP::CloudController::ManagedServiceInstance.make(service_plan: old_plan) }
+      let(:service_broker) { CloudController::ServiceBroker.make }
+      let(:service) { CloudController::Service.make(service_broker: service_broker, plan_updateable: true) }
+      let(:new_plan) { CloudController::ServicePlan.make(service: service) }
+      let(:old_plan) { CloudController::ServicePlan.make(service: service) }
+      let(:service_instance) { CloudController::ManagedServiceInstance.make(service_plan: old_plan) }
 
       field :name, 'The new name for the service instance', required: false, example_values: ['my-new-service-instance']
       field :service_plan_guid, 'The new plan guid for the service instance', required: false, example_values: ['6c4bd80f-4593-41d1-a2c9-b20cb65ec76e']
@@ -182,19 +182,19 @@ EOF
   describe 'Nested endpoints' do
     describe 'Service Bindings' do
       before do
-        VCAP::CloudController::ServiceBinding.make(service_instance: service_instance)
+        CloudController::ServiceBinding.make(service_instance: service_instance)
       end
 
       standard_model_list :service_binding,
-        VCAP::CloudController::ServiceBindingsController,
+        CloudController::ServiceBindingsController,
         outer_model:       :service_instance,
         export_attributes: [:app_guid, :service_instance_guid, :credentials, :binding_options, :gateway_data, :gateway_name, :syslog_drain_url, :volume_mounts]
     end
 
     describe 'Routes' do
-      let(:service_instance) { VCAP::CloudController::ManagedServiceInstance.make(:routing) }
-      let(:route) { VCAP::CloudController::Route.make(space: service_instance.space) }
-      let!(:route_binding) { VCAP::CloudController::RouteBinding.make(service_instance: service_instance) }
+      let(:service_instance) { CloudController::ManagedServiceInstance.make(:routing) }
+      let(:route) { CloudController::Route.make(space: service_instance.space) }
+      let!(:route_binding) { CloudController::RouteBinding.make(service_instance: service_instance) }
 
       put '/v2/service_instances/:service_instance_guid/routes/:route_guid' do
         before do
@@ -215,13 +215,13 @@ EOF
           expect(status).to eq(201)
           expect(parsed_response['metadata']['guid']).to eq(service_instance.guid)
           expect(parsed_response['entity']['routes_url']).to eq("/v2/service_instances/#{service_instance.guid}/routes")
-          audited_event VCAP::CloudController::Event.find(type: 'audit.service_instance.bind_route', actee: service_instance.guid)
+          audited_event CloudController::Event.find(type: 'audit.service_instance.bind_route', actee: service_instance.guid)
         end
       end
 
       delete '/v2/service_instances/:service_instance_guid/routes/:route_guid' do
         before do
-          binding = VCAP::CloudController::RouteBinding.make(service_instance: service_instance, route: route)
+          binding = CloudController::RouteBinding.make(service_instance: service_instance, route: route)
           stub_unbind(binding)
         end
 
@@ -229,19 +229,19 @@ EOF
           client.delete "/v2/service_instances/#{service_instance.guid}/routes/#{route.guid}", {}, headers
           expect(status).to eq(204)
           expect(response_body).to be_empty
-          audited_event VCAP::CloudController::Event.find(type: 'audit.service_instance.unbind_route', actee: service_instance.guid)
+          audited_event CloudController::Event.find(type: 'audit.service_instance.unbind_route', actee: service_instance.guid)
         end
       end
 
-      standard_model_list :route, VCAP::CloudController::RoutesController, outer_model: :service_instance
+      standard_model_list :route, CloudController::RoutesController, outer_model: :service_instance
     end
 
     describe 'Service Keys' do
       before do
-        VCAP::CloudController::ServiceKey.make(name: 'a-service-key', service_instance: service_instance)
+        CloudController::ServiceKey.make(name: 'a-service-key', service_instance: service_instance)
       end
 
-      standard_model_list :service_key, VCAP::CloudController::ServiceInstancesController, outer_model: :service_instance
+      standard_model_list :service_key, CloudController::ServiceInstancesController, outer_model: :service_instance
     end
   end
 

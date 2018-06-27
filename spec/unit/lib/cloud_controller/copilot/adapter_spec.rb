@@ -1,7 +1,7 @@
 require 'spec_helper'
 require 'cloud_controller/copilot/adapter'
 
-module VCAP::CloudController
+module CloudController
   RSpec.describe Copilot::Adapter do
     subject(:adapter) { Copilot::Adapter }
     let(:copilot_client) do

@@ -1,9 +1,9 @@
 require 'spec_helper'
 require 'presenters/v3/app_feature_presenter'
 
-module VCAP::CloudController::Presenters::V3
+module CloudController::Presenters::V3
   RSpec.describe AppFeaturePresenter do
-    let(:app) { VCAP::CloudController::AppModel.make }
+    let(:app) { CloudController::AppModel.make }
 
     describe '#to_hash' do
       it 'presents the app feature as json' do

@@ -1,5 +1,5 @@
 module ControllerHelpers
-  include VCAP::CloudController
+  include CloudController
 
   def self.description_for_inline_depth(depth, pagination=50)
     if depth

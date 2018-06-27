@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-module VCAP::CloudController
+module CloudController
   RSpec.describe SyslogDrainUrlsInternalController do
     let(:org) { Organization.make(name: 'org-1') }
     let(:space) { Space.make(name: 'space-1', organization: org) }

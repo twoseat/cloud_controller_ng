@@ -1,4 +1,4 @@
-module VCAP::CloudController
+module CloudController
   module Diego
     module Docker
       class LifecycleData

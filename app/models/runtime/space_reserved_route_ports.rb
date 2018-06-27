@@ -1,4 +1,4 @@
-module VCAP::CloudController
+module CloudController
   class SpaceReservedRoutePorts
     def initialize(space)
       @space = space

@@ -1,4 +1,4 @@
-module VCAP::CloudController
+module CloudController
   class Membership
     SPACE_DEVELOPER     = 0
     SPACE_MANAGER       = 1

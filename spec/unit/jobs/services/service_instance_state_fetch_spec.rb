@@ -1,7 +1,7 @@
 require 'spec_helper'
 require 'jobs/services/service_instance_state_fetch'
 
-module VCAP::CloudController
+module CloudController
   module Jobs
     module Services
       RSpec.describe ServiceInstanceStateFetch, job_context: :worker do
@@ -42,7 +42,7 @@ module VCAP::CloudController
         end
 
         subject(:job) do
-          VCAP::CloudController::Jobs::Services::ServiceInstanceStateFetch.new(
+          CloudController::Jobs::Services::ServiceInstanceStateFetch.new(
             name,
             service_instance.guid,
             UserAuditInfo.new(user_guid: user.guid, user_email: user_email),
@@ -380,7 +380,7 @@ module VCAP::CloudController
           end
 
           context 'when the poll_interval is changed after the job was created' do
-            let(:default_polling_interval) { VCAP::CloudController::Config.config.get(:broker_client_default_async_poll_interval_seconds) }
+            let(:default_polling_interval) { CloudController::Config.config.get(:broker_client_default_async_poll_interval_seconds) }
             let(:new_polling_interval) { default_polling_interval * 2 }
             let(:state) { 'in progress' }
 
@@ -456,7 +456,7 @@ module VCAP::CloudController
         end
 
         describe '#end_timestamp' do
-          let(:max_poll_duration) { VCAP::CloudController::Config.config.get(:broker_client_max_async_poll_duration_minutes) }
+          let(:max_poll_duration) { CloudController::Config.config.get(:broker_client_max_async_poll_duration_minutes) }
 
           context 'when the job is new' do
             it 'adds the broker_client_max_async_poll_duration_minutes to the current time' do

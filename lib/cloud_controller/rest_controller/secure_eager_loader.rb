@@ -1,4 +1,4 @@
-module VCAP::CloudController::RestController
+module CloudController::RestController
   class SecureEagerLoader
     def eager_load_dataset(ds, starting_controller_class, default_visibility_filter, additional_visibility_filters, depth)
       eager_load_hash = build_eager_load_hash(
@@ -21,7 +21,7 @@ module VCAP::CloudController::RestController
       # because ServiceInstancesController can be used to present objects
       # from ManagedServiceInstance and ServiceInstance datasets.
       # Ideally that will not happen.
-      associated_controller ||= VCAP::CloudController.controller_from_model_name(model_class.name)
+      associated_controller ||= CloudController.controller_from_model_name(model_class.name)
 
       all_relationships = {}
       [associated_controller.to_one_relationships,

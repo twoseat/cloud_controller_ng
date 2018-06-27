@@ -1,7 +1,7 @@
 require 'cloud_controller/metrics/statsd_updater'
 require 'vcap/stats'
 
-module VCAP::CloudController::Metrics
+module CloudController::Metrics
   class PeriodicUpdater
     def initialize(start_time, log_counter, logger=Steno.logger, updaters=[StatsdUpdater.new])
       @start_time = start_time
@@ -38,7 +38,7 @@ module VCAP::CloudController::Metrics
     end
 
     def update_task_stats
-      running_tasks = VCAP::CloudController::TaskModel.where(state: VCAP::CloudController::TaskModel::RUNNING_STATE)
+      running_tasks = CloudController::TaskModel.where(state: CloudController::TaskModel::RUNNING_STATE)
       running_task_count = running_tasks.count
       running_task_memory = running_tasks.sum(:memory_in_mb)
       running_task_memory = 0 if running_task_memory.nil?
@@ -57,7 +57,7 @@ module VCAP::CloudController::Metrics
     end
 
     def record_user_count
-      user_count = VCAP::CloudController::User.count
+      user_count = CloudController::User.count
 
       @updaters.each { |u| u.record_user_count(user_count) }
     end

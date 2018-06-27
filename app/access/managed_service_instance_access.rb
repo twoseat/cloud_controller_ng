@@ -1,4 +1,4 @@
-module VCAP::CloudController
+module CloudController
   class ManagedServiceInstanceAccess < ServiceInstanceAccess
     def read?(object)
       return @ok_read if instance_variable_defined?(:@ok_read)

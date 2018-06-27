@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-module VCAP::CloudController
+module CloudController
   module Jobs::Runtime
     RSpec.describe ExpiredOrphanedBlobCleanup, job_context: :worker do
       subject(:job) { ExpiredOrphanedBlobCleanup.new }

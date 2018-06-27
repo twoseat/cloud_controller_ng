@@ -1,7 +1,7 @@
 require 'spec_helper'
 require 'messages/isolation_segment_relationship_org_message'
 
-module VCAP::CloudController
+module CloudController
   RSpec.describe IsolationSegmentRelationshipOrgMessage do
     describe 'validations' do
       context 'where there are no guids in the data' do

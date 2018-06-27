@@ -1,7 +1,7 @@
 require 'spec_helper'
 
-module VCAP::CloudController
-  RSpec.describe VCAP::CloudController::SpacesController do
+module CloudController
+  RSpec.describe CloudController::SpacesController do
     let(:organization_one) { Organization.make }
     let(:space_one) { Space.make(organization: organization_one) }
     let(:user_email) { Sham.email }
@@ -17,16 +17,16 @@ module VCAP::CloudController
     end
 
     describe 'Query Parameters' do
-      it { expect(VCAP::CloudController::SpacesController).to be_queryable_by(:name) }
-      it { expect(VCAP::CloudController::SpacesController).to be_queryable_by(:organization_guid) }
-      it { expect(VCAP::CloudController::SpacesController).to be_queryable_by(:developer_guid) }
-      it { expect(VCAP::CloudController::SpacesController).to be_queryable_by(:app_guid) }
-      it { expect(VCAP::CloudController::SpacesController).to be_queryable_by(:isolation_segment_guid) }
+      it { expect(CloudController::SpacesController).to be_queryable_by(:name) }
+      it { expect(CloudController::SpacesController).to be_queryable_by(:organization_guid) }
+      it { expect(CloudController::SpacesController).to be_queryable_by(:developer_guid) }
+      it { expect(CloudController::SpacesController).to be_queryable_by(:app_guid) }
+      it { expect(CloudController::SpacesController).to be_queryable_by(:isolation_segment_guid) }
     end
 
     describe 'Attributes' do
       it do
-        expect(VCAP::CloudController::SpacesController).to have_creatable_attributes({
+        expect(CloudController::SpacesController).to have_creatable_attributes({
           name:                         { type: 'string', required: true },
           allow_ssh:                    { type: 'bool', default: true },
           isolation_segment_guid:       { type: 'string', default: nil, required: false },
@@ -43,7 +43,7 @@ module VCAP::CloudController
       end
 
       it do
-        expect(VCAP::CloudController::SpacesController).to have_updatable_attributes({
+        expect(CloudController::SpacesController).to have_updatable_attributes({
           name:                         { type: 'string' },
           allow_ssh:                    { type: 'bool' },
           isolation_segment_guid:       { type: 'string', required: false },
@@ -146,7 +146,7 @@ module VCAP::CloudController
       before { set_current_user_as_admin }
 
       it do
-        expect(VCAP::CloudController::SpacesController).to have_nested_routes(
+        expect(CloudController::SpacesController).to have_nested_routes(
           {
             developers:              [:get, :put, :delete],
             managers:                [:get, :put, :delete],
@@ -196,7 +196,7 @@ module VCAP::CloudController
     end
 
     it 'can order by name and id when listing' do
-      expect(VCAP::CloudController::SpacesController.sortable_parameters).to match_array([:id, :name])
+      expect(CloudController::SpacesController.sortable_parameters).to match_array([:id, :name])
     end
 
     describe 'GET /v2/spaces/:guid/user_roles' do
@@ -843,7 +843,7 @@ module VCAP::CloudController
         end
 
         context 'when a service broker exists in the space' do
-          let!(:broker) { VCAP::CloudController::ServiceBroker.make(space_guid: space.guid) }
+          let!(:broker) { CloudController::ServiceBroker.make(space_guid: space.guid) }
 
           it 'fails to delete spaces with service brokers (private brokers) associated to it' do
             delete "/v2/spaces/#{space.guid}"
@@ -1017,7 +1017,7 @@ module VCAP::CloudController
           context 'when user is an Org Manager' do
             let!(:space)  { Space.make }
             let(:user)    { make_manager_for_org(space.organization) }
-            let!(:broker) { VCAP::CloudController::ServiceBroker.make(space_guid: space.guid) }
+            let!(:broker) { CloudController::ServiceBroker.make(space_guid: space.guid) }
 
             it 'successfully deletes spaces with associated private service brokers' do
               set_current_user(user)
@@ -1856,7 +1856,7 @@ module VCAP::CloudController
       let(:user) { set_current_user(User.make) }
       let(:organization) { Organization.make }
       let(:space) { Space.make(organization: organization) }
-      let(:process) { VCAP::CloudController::ProcessModelFactory.make(state: 'STARTED') }
+      let(:process) { CloudController::ProcessModelFactory.make(state: 'STARTED') }
 
       describe 'permissions' do
         {
@@ -1939,7 +1939,7 @@ module VCAP::CloudController
         context 'when the route has a service instance' do
           it 'does not delete it' do
             service_instance = ManagedServiceInstance.make(:routing, space: space)
-            mapped_route = VCAP::CloudController::Route.make(space: space)
+            mapped_route = CloudController::Route.make(space: space)
             RouteBinding.make(route: mapped_route, service_instance: service_instance)
 
             delete "/v2/spaces/#{space.guid}/unmapped_routes", {}, headers_for(user)

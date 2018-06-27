@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-module VCAP::CloudController
+module CloudController
   module Jobs::Runtime
     RSpec.describe BuildpackCacheCleanup, job_context: :worker do
       let(:cc_addr) { '1.2.3.4' }

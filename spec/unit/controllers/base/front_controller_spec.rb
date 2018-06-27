@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-module VCAP::CloudController
+module CloudController
   RSpec.describe FrontController do
     let(:fake_logger) { double(Steno::Logger, info: nil) }
 

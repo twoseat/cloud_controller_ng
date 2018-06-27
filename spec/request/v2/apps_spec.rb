@@ -1,8 +1,8 @@
 require 'spec_helper'
 
 RSpec.describe 'Apps' do
-  let(:user) { VCAP::CloudController::User.make }
-  let(:space) { VCAP::CloudController::Space.make }
+  let(:user) { CloudController::User.make }
+  let(:space) { CloudController::Space.make }
   let(:build_client) { instance_double(HTTPClient, post: nil) }
 
   before do
@@ -13,8 +13,8 @@ RSpec.describe 'Apps' do
 
   describe 'GET /v2/apps' do
     let!(:process) do
-      VCAP::CloudController::ProcessModelFactory.make(:unstaged,
-        app:                        VCAP::CloudController::AppModel.make(
+      CloudController::ProcessModelFactory.make(:unstaged,
+        app:                        CloudController::AppModel.make(
           space:                 space,
           environment_variables: { 'RAILS_ENV' => 'staging' }
         ),
@@ -90,7 +90,7 @@ RSpec.describe 'Apps' do
     end
 
     it 'does not list non-web processes' do
-      non_web_process = VCAP::CloudController::ProcessModelFactory.make(space: space, type: 'non-web')
+      non_web_process = CloudController::ProcessModelFactory.make(space: space, type: 'non-web')
 
       get '/v2/apps', nil, headers_for(user)
       expect(last_response.status).to eq(200)
@@ -101,9 +101,9 @@ RSpec.describe 'Apps' do
 
     context 'with inline-relations-depth' do
       it 'includes related records' do
-        route = VCAP::CloudController::Route.make(space: space)
-        VCAP::CloudController::RouteMappingModel.make(app: process.app, route: route, process_type: process.type)
-        service_binding = VCAP::CloudController::ServiceBinding.make(app: process.app, service_instance: VCAP::CloudController::ManagedServiceInstance.make(space: space))
+        route = CloudController::Route.make(space: space)
+        CloudController::RouteMappingModel.make(app: process.app, route: route, process_type: process.type)
+        service_binding = CloudController::ServiceBinding.make(app: process.app, service_instance: CloudController::ManagedServiceInstance.make(space: space))
 
         get '/v2/apps?inline-relations-depth=1', nil, headers_for(user)
         expect(last_response.status).to eq(200)
@@ -263,7 +263,7 @@ RSpec.describe 'Apps' do
 
     describe 'filtering' do
       it 'filters by name' do
-        process = VCAP::CloudController::ProcessModelFactory.make
+        process = CloudController::ProcessModelFactory.make
         process.app.update(name: 'filter-name')
 
         get '/v2/apps?q=name:filter-name', nil, admin_headers
@@ -275,7 +275,7 @@ RSpec.describe 'Apps' do
       end
 
       it 'filters by space_guid' do
-        VCAP::CloudController::ProcessModelFactory.make
+        CloudController::ProcessModelFactory.make
 
         get "/v2/apps?q=space_guid:#{space.guid}", nil, admin_headers
         parsed_response = MultiJson.load(last_response.body)
@@ -286,7 +286,7 @@ RSpec.describe 'Apps' do
       end
 
       it 'filters by organization_guid' do
-        VCAP::CloudController::ProcessModelFactory.make
+        CloudController::ProcessModelFactory.make
 
         get "/v2/apps?q=organization_guid:#{space.organization.guid}", nil, admin_headers
         parsed_response = MultiJson.load(last_response.body)
@@ -297,7 +297,7 @@ RSpec.describe 'Apps' do
       end
 
       it 'filters by diego' do
-        VCAP::CloudController::ProcessModelFactory.make(diego: true)
+        CloudController::ProcessModelFactory.make(diego: true)
 
         get '/v2/apps?q=diego:true', nil, admin_headers
         parsed_response = MultiJson.load(last_response.body)
@@ -307,7 +307,7 @@ RSpec.describe 'Apps' do
       end
 
       it 'filters by stack_guid' do
-        search_process = VCAP::CloudController::ProcessModelFactory.make
+        search_process = CloudController::ProcessModelFactory.make
 
         get "/v2/apps?q=stack_guid:#{search_process.stack.guid}", nil, admin_headers
         parsed_response = MultiJson.load(last_response.body)
@@ -321,7 +321,7 @@ RSpec.describe 'Apps' do
 
   describe 'GET /v2/apps/:guid' do
     let!(:process) do
-      VCAP::CloudController::ProcessModelFactory.make(
+      CloudController::ProcessModelFactory.make(
         space:   space,
         name:    'app-name',
         command: 'app-command'
@@ -387,7 +387,7 @@ RSpec.describe 'Apps' do
     end
 
     it 'does not display non-web processes' do
-      non_web_process = VCAP::CloudController::ProcessModelFactory.make(space: space, type: 'non-web')
+      non_web_process = CloudController::ProcessModelFactory.make(space: space, type: 'non-web')
 
       get "/v2/apps/#{non_web_process.guid}", nil, headers_for(user)
       expect(last_response.status).to eq(404)
@@ -396,7 +396,7 @@ RSpec.describe 'Apps' do
 
   describe 'POST /v2/apps' do
     it 'creates an app' do
-      stack       = VCAP::CloudController::Stack.make
+      stack       = CloudController::Stack.make
       post_params = MultiJson.dump({
         name:             'maria',
         space_guid:       space.guid,
@@ -406,7 +406,7 @@ RSpec.describe 'Apps' do
 
       post '/v2/apps', post_params, headers_for(user)
 
-      process = VCAP::CloudController::ProcessModel.last
+      process = CloudController::ProcessModel.last
       expect(last_response.status).to eq(201), last_response.body
       expect(MultiJson.load(last_response.body)).to be_a_response_like(
         {
@@ -473,7 +473,7 @@ RSpec.describe 'Apps' do
 
         post '/v2/apps', post_params, headers_for(user)
 
-        process = VCAP::CloudController::ProcessModel.last
+        process = CloudController::ProcessModel.last
         expect(last_response.status).to eq(201)
         expect(MultiJson.load(last_response.body)).to be_a_response_like(
           {
@@ -487,7 +487,7 @@ RSpec.describe 'Apps' do
               'name'                       => 'maria',
               'production'                 => false,
               'space_guid'                 => space.guid,
-              'stack_guid'                 => VCAP::CloudController::Stack.default.guid,
+              'stack_guid'                 => CloudController::Stack.default.guid,
               'buildpack'                  => nil,
               'detected_buildpack'         => nil,
               'detected_buildpack_guid'    => nil,
@@ -532,7 +532,7 @@ RSpec.describe 'Apps' do
 
   describe 'PUT /v2/apps/:guid' do
     let!(:process) {
-      VCAP::CloudController::ProcessModelFactory.make(
+      CloudController::ProcessModelFactory.make(
         space:            space,
         name:             'mario',
         environment_json: { 'RAILS_ENV' => 'staging' },
@@ -608,17 +608,17 @@ RSpec.describe 'Apps' do
     end
 
     describe 'docker apps' do
-      let(:app_model) { VCAP::CloudController::AppModel.make(:docker, name: 'mario', space: space, environment_variables: { 'RAILS_ENV' => 'staging' }) }
+      let(:app_model) { CloudController::AppModel.make(:docker, name: 'mario', space: space, environment_variables: { 'RAILS_ENV' => 'staging' }) }
       let!(:process) {
-        VCAP::CloudController::ProcessModelFactory.make(
+        CloudController::ProcessModelFactory.make(
           app:          app_model,
           docker_image: 'cloudfoundry/diego-docker-app:latest'
         )
       }
 
       before do
-        VCAP::CloudController::FeatureFlag.make(name: 'diego_docker', enabled: true)
-        allow_any_instance_of(VCAP::CloudController::V2::AppStage).to receive(:stage).and_return(nil)
+        CloudController::FeatureFlag.make(name: 'diego_docker', enabled: true)
+        allow_any_instance_of(CloudController::V2::AppStage).to receive(:stage).and_return(nil)
         process.latest_package.update(docker_username: 'bob', docker_password: 'password')
       end
 
@@ -769,7 +769,7 @@ RSpec.describe 'Apps' do
   end
 
   describe 'DELETE /v2/apps/:guid' do
-    let!(:process) { VCAP::CloudController::ProcessModelFactory.make(space: space) }
+    let!(:process) { CloudController::ProcessModelFactory.make(space: space) }
 
     it 'deletes the specified app' do
       delete "/v2/apps/#{process.guid}", nil, headers_for(user)
@@ -783,8 +783,8 @@ RSpec.describe 'Apps' do
     end
 
     describe 'docker apps' do
-      let(:app_model) { VCAP::CloudController::AppModel.make(:docker, space: space) }
-      let!(:process) { VCAP::CloudController::ProcessModelFactory.make(app: app_model, docker_image: 'cloudfoundry/diego-docker-app:latest') }
+      let(:app_model) { CloudController::AppModel.make(:docker, space: space) }
+      let!(:process) { CloudController::ProcessModelFactory.make(app: app_model, docker_image: 'cloudfoundry/diego-docker-app:latest') }
 
       it 'deletes the specified app' do
         delete "/v2/apps/#{process.guid}", nil, headers_for(user)
@@ -800,11 +800,11 @@ RSpec.describe 'Apps' do
   end
 
   describe 'GET /v2/apps/:guid/summary' do
-    let!(:process) { VCAP::CloudController::ProcessModelFactory.make(space: space, name: 'woo') }
+    let!(:process) { CloudController::ProcessModelFactory.make(space: space, name: 'woo') }
 
     it 'gives a summary of the specified app' do
       private_domains = process.space.organization.private_domains
-      shared_domains  = VCAP::CloudController::SharedDomain.all.collect do |domain|
+      shared_domains  = CloudController::SharedDomain.all.collect do |domain|
         { 'guid'              => domain.guid,
           'name'              => domain.name,
           'internal' => domain.internal,
@@ -859,7 +859,7 @@ RSpec.describe 'Apps' do
 
   describe 'GET /v2/apps/:guid/env' do
     let(:process) do
-      VCAP::CloudController::ProcessModelFactory.make(
+      CloudController::ProcessModelFactory.make(
         space:              space,
         name:               'potato',
         detected_buildpack: 'buildpack-name',
@@ -870,17 +870,17 @@ RSpec.describe 'Apps' do
     end
 
     before do
-      VCAP::CloudController::RouteMappingModel.make(
+      CloudController::RouteMappingModel.make(
         app:          process.app,
         process_type: process.type,
-        route:        VCAP::CloudController::Route.make(space: space, host: 'potato', domain: VCAP::CloudController::SharedDomain.first)
+        route:        CloudController::Route.make(space: space, host: 'potato', domain: CloudController::SharedDomain.first)
       )
 
-      group                  = VCAP::CloudController::EnvironmentVariableGroup.staging
+      group                  = CloudController::EnvironmentVariableGroup.staging
       group.environment_json = { STAGING_ENV: 'staging_value' }
       group.save
 
-      group                  = VCAP::CloudController::EnvironmentVariableGroup.running
+      group                  = CloudController::EnvironmentVariableGroup.running
       group.environment_json = { RUNNING_ENV: 'running_value' }
       group.save
     end
@@ -904,11 +904,11 @@ RSpec.describe 'Apps' do
                 'disk' => 1024
               },
               'application_name'    => 'potato',
-              'application_uris'    => ["potato.#{VCAP::CloudController::SharedDomain.first.name}"],
+              'application_uris'    => ["potato.#{CloudController::SharedDomain.first.name}"],
               'name'                => 'potato',
               'space_name'          => space.name,
               'space_id'            => space.guid,
-              'uris'                => ["potato.#{VCAP::CloudController::SharedDomain.first.name}"],
+              'uris'                => ["potato.#{CloudController::SharedDomain.first.name}"],
               'users'               => nil,
               'application_id'      => process.guid,
               'version'             => process.version,
@@ -923,8 +923,8 @@ RSpec.describe 'Apps' do
   end
 
   describe 'GET /v2/apps/:guid/stats' do
-    let(:process) { VCAP::CloudController::ProcessModelFactory.make(state: 'STARTED', space: space) }
-    let(:instances_reporters) { instance_double(VCAP::CloudController::Diego::InstancesStatsReporter) }
+    let(:process) { CloudController::ProcessModelFactory.make(state: 'STARTED', space: space) }
+    let(:instances_reporters) { instance_double(CloudController::Diego::InstancesStatsReporter) }
     let(:instances_reporter_response) do
       {
         0 => {
@@ -1011,7 +1011,7 @@ RSpec.describe 'Apps' do
       )
     end
 
-    let!(:process) { VCAP::CloudController::ProcessModelFactory.make(diego: true, space: space, state: 'STARTED', instances: 2) }
+    let!(:process) { CloudController::ProcessModelFactory.make(diego: true, space: space, state: 'STARTED', instances: 2) }
     let(:two_days_ago) { 2.days.ago }
     let(:two_days_ago_since_epoch_seconds) { two_days_ago.to_i }
     let(:two_days_ago_since_epoch_ns) { two_days_ago.to_f * 1e9 }
@@ -1025,7 +1025,7 @@ RSpec.describe 'Apps' do
 
     it 'gets the instance information for a started app' do
       Timecop.freeze do
-        allow_any_instance_of(VCAP::CloudController::Diego::BbsInstancesClient).to receive(:lrp_instances).and_return(bbs_instances_response)
+        allow_any_instance_of(CloudController::Diego::BbsInstancesClient).to receive(:lrp_instances).and_return(bbs_instances_response)
 
         get "/v2/apps/#{process.guid}/instances", nil, headers_for(user)
         parsed_response = MultiJson.load(last_response.body)
@@ -1046,8 +1046,8 @@ RSpec.describe 'Apps' do
   end
 
   describe 'DELETE /v2/apps/:guid/instances/:index' do
-    let(:bbs_apps_client) { instance_double(VCAP::CloudController::Diego::BbsAppsClient, stop_index: nil) }
-    let(:process) { VCAP::CloudController::ProcessModelFactory.make(space: space, instances: 2, diego: true) }
+    let(:bbs_apps_client) { instance_double(CloudController::Diego::BbsAppsClient, stop_index: nil) }
+    let(:process) { CloudController::ProcessModelFactory.make(space: space, instances: 2, diego: true) }
 
     before do
       CloudController::DependencyLocator.instance.register(:bbs_apps_client, bbs_apps_client)
@@ -1062,13 +1062,13 @@ RSpec.describe 'Apps' do
   end
 
   describe 'POST /v2/apps/:guid/restage' do
-    let(:process) { VCAP::CloudController::ProcessModelFactory.make(name: 'maria', space: space, diego: true) }
-    let(:stager) { instance_double(VCAP::CloudController::Diego::Stager, stage: nil) }
+    let(:process) { CloudController::ProcessModelFactory.make(name: 'maria', space: space, diego: true) }
+    let(:stager) { instance_double(CloudController::Diego::Stager, stage: nil) }
 
     before do
-      allow_any_instance_of(VCAP::CloudController::Stagers).to receive(:validate_process)
-      allow_any_instance_of(VCAP::CloudController::Stagers).to receive(:stager_for_app).and_return(stager)
-      VCAP::CloudController::Buildpack.make
+      allow_any_instance_of(CloudController::Stagers).to receive(:validate_process)
+      allow_any_instance_of(CloudController::Stagers).to receive(:stager_for_app).and_return(stager)
+      CloudController::Buildpack.make
     end
 
     it 'restages the app' do
@@ -1127,7 +1127,7 @@ RSpec.describe 'Apps' do
   end
 
   describe 'PUT /v2/apps/:guid/bits' do
-    let(:process) { VCAP::CloudController::ProcessModelFactory.make(space: space) }
+    let(:process) { CloudController::ProcessModelFactory.make(space: space) }
     let(:tmpdir) { Dir.mktmpdir }
     let(:valid_zip) do
       zip_name = File.join(tmpdir, 'file.zip')
@@ -1159,8 +1159,8 @@ RSpec.describe 'Apps' do
   end
 
   describe 'POST /v2/apps/:guid/copy_bits' do
-    let!(:source_process) { VCAP::CloudController::ProcessModelFactory.make(space: space) }
-    let!(:destination_process) { VCAP::CloudController::ProcessModelFactory.make(space: space) }
+    let!(:source_process) { CloudController::ProcessModelFactory.make(space: space) }
+    let!(:destination_process) { CloudController::ProcessModelFactory.make(space: space) }
 
     it 'queues a job to copy the bits' do
       post "/v2/apps/#{destination_process.guid}/copy_bits", MultiJson.dump({ source_app_guid: source_process.guid }), headers_for(user)
@@ -1172,7 +1172,7 @@ RSpec.describe 'Apps' do
   end
 
   describe 'GET /v2/apps/:guid/download' do
-    let(:process) { VCAP::CloudController::ProcessModelFactory.make(space: space) }
+    let(:process) { CloudController::ProcessModelFactory.make(space: space) }
     let(:tmpdir) { Dir.mktmpdir }
     let(:valid_zip) do
       zip_name = File.join(tmpdir, 'file.zip')
@@ -1199,14 +1199,14 @@ RSpec.describe 'Apps' do
   end
 
   describe 'GET /v2/apps/:guid/droplet/download' do
-    let(:process) { VCAP::CloudController::ProcessModelFactory.make(space: space) }
+    let(:process) { CloudController::ProcessModelFactory.make(space: space) }
 
     before do
       droplet_file = Tempfile.new(process.guid)
       droplet_file.write('droplet contents')
       droplet_file.close
 
-      VCAP::CloudController::Jobs::V3::DropletUpload.new(droplet_file.path, process.current_droplet.guid).perform
+      CloudController::Jobs::V3::DropletUpload.new(droplet_file.path, process.current_droplet.guid).perform
     end
 
     it 'redirects to a blobstore to download the droplet' do
@@ -1217,10 +1217,10 @@ RSpec.describe 'Apps' do
   end
 
   describe 'GET /v2/apps/:guid/service_bindings' do
-    let!(:process) { VCAP::CloudController::ProcessModelFactory.make(space: space) }
-    let!(:service_instance) { VCAP::CloudController::ManagedServiceInstance.make(space: process.space) }
+    let!(:process) { CloudController::ProcessModelFactory.make(space: space) }
+    let!(:service_instance) { CloudController::ManagedServiceInstance.make(space: process.space) }
     let!(:service_binding) do
-      VCAP::CloudController::ServiceBinding.make(
+      CloudController::ServiceBinding.make(
         service_instance: service_instance,
         app:              process.app,
         credentials:      { 'creds-key' => 'creds-val' }
@@ -1280,9 +1280,9 @@ RSpec.describe 'Apps' do
   end
 
   describe 'DELETE /v2/apps/:guid/service_binding/:guid' do
-    let!(:process) { VCAP::CloudController::ProcessModelFactory.make(space: space) }
-    let!(:service_instance) { VCAP::CloudController::ManagedServiceInstance.make(space: process.space) }
-    let!(:service_binding) { VCAP::CloudController::ServiceBinding.make(service_instance: service_instance, app: process.app) }
+    let!(:process) { CloudController::ProcessModelFactory.make(space: space) }
+    let!(:service_instance) { CloudController::ManagedServiceInstance.make(space: process.space) }
+    let!(:service_binding) { CloudController::ServiceBinding.make(service_instance: service_instance, app: process.app) }
 
     before do
       service_instance.add_service_binding(service_binding)
@@ -1307,9 +1307,9 @@ RSpec.describe 'Apps' do
   end
 
   describe 'GET /v2/apps/:guid/routes' do
-    let!(:process) { VCAP::CloudController::ProcessModelFactory.make(space: space) }
-    let!(:route) { VCAP::CloudController::Route.make(space: space, host: 'youdontknowme') }
-    let!(:route_mapping) { VCAP::CloudController::RouteMappingModel.make(app: process.app, process_type: process.type, route: route) }
+    let!(:process) { CloudController::ProcessModelFactory.make(space: space) }
+    let!(:route) { CloudController::Route.make(space: space, host: 'youdontknowme') }
+    let!(:route_mapping) { CloudController::RouteMappingModel.make(app: process.app, process_type: process.type, route: route) }
 
     it 'shows the routes associated with an app' do
       get "/v2/apps/#{process.guid}/routes", nil, headers_for(user)
@@ -1349,8 +1349,8 @@ RSpec.describe 'Apps' do
   end
 
   describe 'PUT /v2/apps/:guid/routes/:route_guid' do
-    let!(:process) { VCAP::CloudController::ProcessModelFactory.make(space: space) }
-    let!(:route) { VCAP::CloudController::Route.make(space: space) }
+    let!(:process) { CloudController::ProcessModelFactory.make(space: space) }
+    let!(:route) { CloudController::Route.make(space: space) }
 
     it 'associates an app and a route' do
       put "/v2/apps/#{process.guid}/routes/#{route.guid}", nil, headers_for(user)
@@ -1411,17 +1411,17 @@ RSpec.describe 'Apps' do
       )
 
       expect(process.routes).to include(route)
-      route_mapping = VCAP::CloudController::RouteMappingModel.find(app: process.app, route: route)
+      route_mapping = CloudController::RouteMappingModel.find(app: process.app, route: route)
       expect(route_mapping).not_to be_nil
     end
   end
 
   describe 'DELETE /v2/apps/:guid/routes/:guid' do
-    let!(:process) { VCAP::CloudController::ProcessModelFactory.make(space: space) }
-    let!(:route1) { VCAP::CloudController::Route.make(space: space, host: 'youdontknowme') }
-    let!(:route2) { VCAP::CloudController::Route.make(space: space, host: 'andyouneverwill') }
-    let!(:route_mapping1) { VCAP::CloudController::RouteMappingModel.make(app: process.app, process_type: process.type, route: route1) }
-    let!(:route_mapping2) { VCAP::CloudController::RouteMappingModel.make(app: process.app, process_type: process.type, route: route2) }
+    let!(:process) { CloudController::ProcessModelFactory.make(space: space) }
+    let!(:route1) { CloudController::Route.make(space: space, host: 'youdontknowme') }
+    let!(:route2) { CloudController::Route.make(space: space, host: 'andyouneverwill') }
+    let!(:route_mapping1) { CloudController::RouteMappingModel.make(app: process.app, process_type: process.type, route: route1) }
+    let!(:route_mapping2) { CloudController::RouteMappingModel.make(app: process.app, process_type: process.type, route: route2) }
 
     it 'removes the associated route' do
       expect(process.routes).to include(route1)
@@ -1436,9 +1436,9 @@ RSpec.describe 'Apps' do
   end
 
   describe 'GET /v2/apps/:guid/route_mappings' do
-    let!(:process) { VCAP::CloudController::ProcessModelFactory.make(space: space) }
-    let!(:route) { VCAP::CloudController::Route.make(space: space) }
-    let!(:route_mapping) { VCAP::CloudController::RouteMappingModel.make(app: process.app, process_type: process.type, route: route) }
+    let!(:process) { CloudController::ProcessModelFactory.make(space: space) }
+    let!(:route) { CloudController::Route.make(space: space) }
+    let!(:route_mapping) { CloudController::RouteMappingModel.make(app: process.app, process_type: process.type, route: route) }
 
     it 'lists associated route_mappings' do
       get "/v2/apps/#{process.guid}/route_mappings", nil, headers_for(user)
@@ -1474,7 +1474,7 @@ RSpec.describe 'Apps' do
   end
 
   describe 'PUT /v2/apps/:guid/droplet/upload' do
-    let(:process) { VCAP::CloudController::ProcessModelFactory.make(space: space) }
+    let(:process) { CloudController::ProcessModelFactory.make(space: space) }
     let(:tmpdir) { Dir.mktmpdir }
     let(:valid_zip) do
       zip_name = File.join(tmpdir, 'file.zip')
@@ -1509,19 +1509,19 @@ RSpec.describe 'Apps' do
         }
       )
 
-      droplet = VCAP::CloudController::DropletModel.last
-      expect(droplet.state).to eq(VCAP::CloudController::DropletModel::PROCESSING_UPLOAD_STATE)
+      droplet = CloudController::DropletModel.last
+      expect(droplet.state).to eq(CloudController::DropletModel::PROCESSING_UPLOAD_STATE)
 
       Delayed::Worker.new.work_off
       droplet.reload
 
-      expect(droplet.state).to eq(VCAP::CloudController::DropletModel::STAGED_STATE)
+      expect(droplet.state).to eq(CloudController::DropletModel::STAGED_STATE)
       expect(process.reload.current_droplet).to eq(droplet)
     end
   end
 
   describe 'GET /v2/apps/:guid/permissions' do
-    let(:process) { VCAP::CloudController::ProcessModelFactory.make(space: space) }
+    let(:process) { CloudController::ProcessModelFactory.make(space: space) }
 
     context 'when the scope is cloud_controller.read' do
       it 'shows permissions' do

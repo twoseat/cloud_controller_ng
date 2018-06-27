@@ -4,7 +4,7 @@ module CloudController
       class SpacePresenter < BasePresenter
         extend PresenterProvider
 
-        present_for_class 'VCAP::CloudController::Space'
+        present_for_class 'CloudController::Space'
 
         def entity_hash(controller, space, opts, depth, parents, orphans=nil)
           entity = {

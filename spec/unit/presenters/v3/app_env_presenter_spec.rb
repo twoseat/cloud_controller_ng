@@ -1,10 +1,10 @@
 require 'spec_helper'
 require 'presenters/v3/app_env_presenter'
 
-module VCAP::CloudController::Presenters::V3
+module CloudController::Presenters::V3
   RSpec.describe AppEnvPresenter do
     let(:app) do
-      VCAP::CloudController::AppModel.make(
+      CloudController::AppModel.make(
         created_at: Time.at(1),
         updated_at: Time.at(2),
         environment_variables: { 'some' => 'stuff' },
@@ -14,8 +14,8 @@ module VCAP::CloudController::Presenters::V3
     let(:buildpack_name) { 'the-happiest-buildpack' }
 
     before do
-      VCAP::CloudController::Buildpack.make(name: buildpack_name)
-      VCAP::CloudController::BuildpackLifecycleDataModel.create(
+      CloudController::Buildpack.make(name: buildpack_name)
+      CloudController::BuildpackLifecycleDataModel.create(
         buildpacks: [buildpack_name],
         stack: 'the-happiest-stack',
         app: app
@@ -24,12 +24,12 @@ module VCAP::CloudController::Presenters::V3
     subject(:presenter) { AppEnvPresenter.new(app) }
 
     describe '#to_hash' do
-      let(:service) { VCAP::CloudController::Service.make(label: 'rabbit', tags: ['swell']) }
-      let(:service_plan) { VCAP::CloudController::ServicePlan.make(service: service) }
-      let(:service_instance) { VCAP::CloudController::ManagedServiceInstance.make(space: app.space, service_plan: service_plan, name: 'rabbit-instance') }
+      let(:service) { CloudController::Service.make(label: 'rabbit', tags: ['swell']) }
+      let(:service_plan) { CloudController::ServicePlan.make(service: service) }
+      let(:service_instance) { CloudController::ManagedServiceInstance.make(space: app.space, service_plan: service_plan, name: 'rabbit-instance') }
       let!(:service_binding) do
-        VCAP::CloudController::ServiceBinding.create(app: app, service_instance: service_instance,
-                                                     type: 'app', credentials: { 'url' => 'www.service.com/foo' }, syslog_drain_url: 'logs.go-here-2.com')
+        CloudController::ServiceBinding.create(app: app, service_instance: service_instance,
+                                               type: 'app', credentials: { 'url' => 'www.service.com/foo' }, syslog_drain_url: 'logs.go-here-2.com')
       end
       let(:result) { presenter.to_hash }
 

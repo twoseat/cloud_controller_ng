@@ -1,6 +1,6 @@
 require 'vcap/services/api'
 
-module VCAP::CloudController
+module CloudController
   class ServiceKeysController < RestController::ModelController
     define_attributes do
       to_one :service_instance

@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-module VCAP::CloudController
+module CloudController
   module Jobs
     RSpec.describe DeleteActionJob, job_context: :worker do
       let(:user) { User.make(admin: true) }

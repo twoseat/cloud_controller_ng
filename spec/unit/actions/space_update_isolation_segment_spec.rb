@@ -1,7 +1,7 @@
 require 'spec_helper'
 require 'actions/space_update_isolation_segment'
 
-module VCAP::CloudController
+module CloudController
   RSpec.describe SpaceUpdateIsolationSegment do
     subject(:space_update) { SpaceUpdateIsolationSegment.new(user_audit_info) }
 
@@ -18,7 +18,7 @@ module VCAP::CloudController
       end
 
       context ' when the org is entitled to the isolation segment' do
-        let(:assigner) { VCAP::CloudController::IsolationSegmentAssign.new }
+        let(:assigner) { CloudController::IsolationSegmentAssign.new }
 
         before do
           assigner.assign(isolation_segment, [org])
@@ -75,7 +75,7 @@ module VCAP::CloudController
       context 'when the org is NOT entitled to the isolation segment' do
         it 'raises an error' do
           expect { space_update.update(space, org, message) }.to raise_error(
-            VCAP::CloudController::SpaceUpdateIsolationSegment::Error, /Unable to assign/)
+            CloudController::SpaceUpdateIsolationSegment::Error, /Unable to assign/)
         end
       end
 
@@ -86,7 +86,7 @@ module VCAP::CloudController
 
         it 'raises an error' do
           expect { space_update.update(space, org, message) }.to raise_error(
-            VCAP::CloudController::SpaceUpdateIsolationSegment::Error, /Unable to assign/)
+            CloudController::SpaceUpdateIsolationSegment::Error, /Unable to assign/)
         end
       end
     end

@@ -1,7 +1,7 @@
 require 'spec_helper'
 require 'membrane'
 
-module VCAP::CloudController
+module CloudController
   RSpec.describe TasksCompletionController do
     describe 'POST /internal/v4/tasks/:task_guid/completed' do
       let(:url) { "/internal/v4/tasks/#{task.guid}/completed" }

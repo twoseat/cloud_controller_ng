@@ -1,4 +1,4 @@
-module VCAP::CloudController
+module CloudController
   class ServiceKeyAccess < BaseAccess
     def read_for_update?(object, params=nil)
       admin_user?

@@ -1,4 +1,4 @@
-module VCAP::CloudController
+module CloudController
   class ServiceDashboardClient < Sequel::Model
     many_to_one :service_broker
 

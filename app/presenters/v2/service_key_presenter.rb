@@ -4,7 +4,7 @@ module CloudController
       class ServiceKeyPresenter < DefaultPresenter
         extend PresenterProvider
 
-        present_for_class 'VCAP::CloudController::ServiceKey'
+        present_for_class 'CloudController::ServiceKey'
 
         def entity_hash(controller, service_key, opts, depth, parents, orphans=nil)
           default_hash = super(controller, service_key, opts, depth, parents, orphans)

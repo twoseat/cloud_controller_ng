@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-module VCAP::CloudController
+module CloudController
   RSpec.describe SecurityGroup, type: :model do
     def build_transport_rule(attrs={})
       {
@@ -746,7 +746,7 @@ module VCAP::CloudController
 
         context 'when rules exceeds max number of characters' do
           before do
-            stub_const('VCAP::CloudController::SecurityGroup::MAX_RULES_CHAR_LENGTH', 20)
+            stub_const('CloudController::SecurityGroup::MAX_RULES_CHAR_LENGTH', 20)
             subject.rules = [build_all_rule] * SecurityGroup::MAX_RULES_CHAR_LENGTH
           end
 

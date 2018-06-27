@@ -1,11 +1,11 @@
 require 'spec_helper'
 require 'messages/list_message'
 
-class VCAP::CloudController::ListMessage
+class CloudController::ListMessage
   register_allowed_keys []
 end
 
-module VCAP::CloudController
+module CloudController
   RSpec.describe ListMessage do
     describe 'page' do
       it 'is invalid if page is a string' do

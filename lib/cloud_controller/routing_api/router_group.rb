@@ -1,4 +1,4 @@
-module VCAP::CloudController::RoutingApi
+module CloudController::RoutingApi
   class RouterGroup
     attr_reader :guid, :type, :name
     def initialize(hash)

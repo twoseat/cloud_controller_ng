@@ -1,7 +1,7 @@
 require 'spec_helper'
 require 'actions/package_upload'
 
-module VCAP::CloudController
+module CloudController
   RSpec.describe PackageUpload do
     subject(:package_upload) { PackageUpload.new }
 

@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-module VCAP::CloudController
+module CloudController
   RSpec.describe AppBitsDownloadController do
     describe 'GET /v2/app/:id/download' do
       let(:process) { ProcessModelFactory.make }

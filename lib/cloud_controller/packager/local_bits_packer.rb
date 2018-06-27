@@ -73,7 +73,7 @@ module CloudController
       end
 
       def tmp_dir
-        @tmp_dir ||= VCAP::CloudController::Config.config.get(:directories, :tmpdir)
+        @tmp_dir ||= CloudController::Config.config.get(:directories, :tmpdir)
       end
 
       def package_blobstore
@@ -85,7 +85,7 @@ module CloudController
       end
 
       def max_package_size
-        @max_package_size ||= VCAP::CloudController::Config.config.get(:packages, :max_package_size)
+        @max_package_size ||= CloudController::Config.config.get(:packages, :max_package_size)
       end
     end
   end

@@ -1,7 +1,7 @@
 require 'spec_helper'
 require 'messages/process_scale_message'
 
-module VCAP::CloudController
+module CloudController
   RSpec.describe ManifestProcessScaleMessage do
     describe 'validations' do
       context 'when unexpected keys are requested' do

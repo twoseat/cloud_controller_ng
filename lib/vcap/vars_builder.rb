@@ -18,7 +18,7 @@ module VCAP
     def to_hash
       app_name = @process.name
 
-      if @process.class == VCAP::CloudController::AppModel
+      if @process.class == CloudController::AppModel
         uris = @process.routes.map(&:fqdn)
       else
         @staging_disk_in_mb ||= @process.disk_quota
@@ -30,8 +30,8 @@ module VCAP
 
       @space = @process.space if @space.nil?
 
-      my_uri        = URI::HTTP.build(host: VCAP::CloudController::Config.config.get(:external_domain))
-      my_uri.scheme = VCAP::CloudController::Config.config.get(:external_protocol)
+      my_uri        = URI::HTTP.build(host: CloudController::Config.config.get(:external_domain))
+      my_uri.scheme = CloudController::Config.config.get(:external_protocol)
 
       env_hash = {
         cf_api: my_uri.to_s,

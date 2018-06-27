@@ -11,7 +11,7 @@ module CloudController
 
       describe '#send_blob' do
         context 'when the controller is a v2 controller' do
-          let(:controller) { instance_double(VCAP::CloudController::RestController::BaseController) }
+          let(:controller) { instance_double(CloudController::RestController::BaseController) }
 
           it 'returns the correct status and headers' do
             expect(sender.send_blob(blob, controller)).to eql([200, { 'X-Accel-Redirect' => 'http://url/to/blob' }, ''])

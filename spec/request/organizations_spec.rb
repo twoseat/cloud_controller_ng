@@ -1,13 +1,13 @@
 require 'spec_helper'
 
 RSpec.describe 'Organizations' do
-  let(:user) { VCAP::CloudController::User.make }
+  let(:user) { CloudController::User.make }
   let(:user_header) { headers_for(user) }
   let(:admin_header) { admin_headers_for(user) }
-  let!(:organization1) { VCAP::CloudController::Organization.make name: 'Apocalypse World' }
-  let!(:organization2) { VCAP::CloudController::Organization.make name: 'Dungeon World' }
-  let!(:organization3) { VCAP::CloudController::Organization.make name: 'The Sprawl' }
-  let!(:unaccesable_organization) { VCAP::CloudController::Organization.make name: 'D&D' }
+  let!(:organization1) { CloudController::Organization.make name: 'Apocalypse World' }
+  let!(:organization2) { CloudController::Organization.make name: 'Dungeon World' }
+  let!(:organization3) { CloudController::Organization.make name: 'The Sprawl' }
+  let!(:unaccesable_organization) { CloudController::Organization.make name: 'D&D' }
 
   before do
     organization1.add_user(user)
@@ -24,10 +24,10 @@ RSpec.describe 'Organizations' do
       expect {
         post '/v3/organizations', request_body, admin_header
       }.to change {
-        VCAP::CloudController::Organization.count
+        CloudController::Organization.count
       }.by 1
 
-      created_org = VCAP::CloudController::Organization.last
+      created_org = CloudController::Organization.last
 
       expect(last_response.status).to eq(201)
 
@@ -97,8 +97,8 @@ RSpec.describe 'Organizations' do
   end
 
   describe 'GET /v3/isolation_segments/:guid/organizations' do
-    let(:isolation_segment1) { VCAP::CloudController::IsolationSegmentModel.make(name: 'awesome_seg') }
-    let(:assigner) { VCAP::CloudController::IsolationSegmentAssign.new }
+    let(:isolation_segment1) { CloudController::IsolationSegmentModel.make(name: 'awesome_seg') }
+    let(:assigner) { CloudController::IsolationSegmentAssign.new }
 
     before do
       assigner.assign(isolation_segment1, [organization2, organization3])
@@ -153,8 +153,8 @@ RSpec.describe 'Organizations' do
   end
 
   describe 'GET /v3/organizations/:guid/relationships/default_isolation_segment' do
-    let(:isolation_segment) { VCAP::CloudController::IsolationSegmentModel.make(name: 'default_seg') }
-    let(:assigner) { VCAP::CloudController::IsolationSegmentAssign.new }
+    let(:isolation_segment) { CloudController::IsolationSegmentModel.make(name: 'default_seg') }
+    let(:assigner) { CloudController::IsolationSegmentAssign.new }
 
     before do
       set_current_user(user, { admin: true })
@@ -184,13 +184,13 @@ RSpec.describe 'Organizations' do
   end
 
   describe 'PATCH /v3/organizations/:guid/relationships/default_isolation_segment' do
-    let(:isolation_segment) { VCAP::CloudController::IsolationSegmentModel.make(name: 'default_seg') }
+    let(:isolation_segment) { CloudController::IsolationSegmentModel.make(name: 'default_seg') }
     let(:update_request) do
       {
         data: { guid: isolation_segment.guid }
       }.to_json
     end
-    let(:assigner) { VCAP::CloudController::IsolationSegmentAssign.new }
+    let(:assigner) { CloudController::IsolationSegmentAssign.new }
 
     before do
       set_current_user(user, { admin: true })

@@ -1,7 +1,7 @@
 require 'active_model'
 require 'messages/validators'
 
-module VCAP::CloudController
+module CloudController
   class BaseMessage
     include ActiveModel::Model
     include Validators

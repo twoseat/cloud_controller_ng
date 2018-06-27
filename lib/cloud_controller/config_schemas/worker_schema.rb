@@ -1,6 +1,6 @@
 require 'vcap/config'
 
-module VCAP::CloudController
+module CloudController
   module ConfigSchemas
     class WorkerSchema < VCAP::Config
       # rubocop:disable Metrics/BlockLength

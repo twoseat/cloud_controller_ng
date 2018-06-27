@@ -1,7 +1,7 @@
 require 'spec_helper'
 require 'actions/package_copy'
 
-module VCAP::CloudController
+module CloudController
   RSpec.describe PackageCopy do
     subject(:package_copy) { PackageCopy.new }
 

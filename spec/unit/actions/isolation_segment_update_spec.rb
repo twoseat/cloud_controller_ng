@@ -1,7 +1,7 @@
 require 'spec_helper'
 require 'isolation_segment_update'
 
-module VCAP::CloudController
+module CloudController
   RSpec.describe IsolationSegmentUpdate do
     let!(:isolation_segment) { IsolationSegmentModel.make name: 'Old Name' }
 

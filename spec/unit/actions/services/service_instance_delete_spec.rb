@@ -1,7 +1,7 @@
 require 'spec_helper'
 require 'actions/services/service_instance_delete'
 
-module VCAP::CloudController
+module CloudController
   RSpec.describe ServiceInstanceDelete do
     let(:event_repository) { Repositories::ServiceEventRepository.new(UserAuditInfo.new(user_guid: user.guid, user_email: user_email)) }
 
@@ -148,7 +148,7 @@ module VCAP::CloudController
             expect(Delayed::Job.count).to eq 1
             job = Delayed::Job.last
 
-            poll_interval = VCAP::CloudController::Config.config.get(:broker_client_default_async_poll_interval_seconds).seconds
+            poll_interval = CloudController::Config.config.get(:broker_client_default_async_poll_interval_seconds).seconds
             expect(job.run_at).to be < Time.now.utc + poll_interval
           end
         end

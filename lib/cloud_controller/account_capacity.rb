@@ -1,5 +1,5 @@
 # port of legacy acount capacity model
-module VCAP::CloudController
+module CloudController
   class AccountCapacity
     DEFAULT_MEM      = 2 * 1024 # 8GB total
     DEFAULT_URIS     = 4      # per app

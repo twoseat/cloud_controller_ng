@@ -1,4 +1,4 @@
-module VCAP::CloudController
+module CloudController
   class BlobDispatcher
     def initialize(blobstore:, controller:)
       @blobstore = blobstore

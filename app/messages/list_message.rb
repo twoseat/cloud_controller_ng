@@ -2,7 +2,7 @@ require 'active_model'
 require 'messages/validators'
 require 'messages/base_message'
 
-module VCAP::CloudController
+module CloudController
   class ListMessage < BaseMessage
     include ActiveModel::Model
     include Validators

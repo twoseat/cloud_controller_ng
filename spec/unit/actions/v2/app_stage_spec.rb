@@ -1,7 +1,7 @@
 require 'spec_helper'
 require 'actions/v2/app_stage'
 
-module VCAP::CloudController
+module CloudController
   module V2
     RSpec.describe AppStage do
       let(:stagers) { instance_double(Stagers, validate_process: nil) }

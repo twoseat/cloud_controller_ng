@@ -1,7 +1,7 @@
 require 'spec_helper'
 require 'cloud_controller/process_route_handler'
 
-module VCAP::CloudController
+module CloudController
   RSpec.describe ProcessRouteHandler do
     subject(:handler) { ProcessRouteHandler.new(process, runners) }
     let(:runners) { instance_double(Runners, runner_for_process: runner) }

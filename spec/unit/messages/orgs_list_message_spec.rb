@@ -1,7 +1,7 @@
 require 'spec_helper'
 require 'messages/orgs_list_message'
 
-module VCAP::CloudController
+module CloudController
   RSpec.describe OrgsListMessage do
     describe '.from_params' do
       let(:params) do

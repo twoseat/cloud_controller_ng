@@ -1,4 +1,4 @@
-module VCAP::CloudController
+module CloudController
   class ServicePlan < Sequel::Model
     many_to_one :service
     one_to_many :service_instances

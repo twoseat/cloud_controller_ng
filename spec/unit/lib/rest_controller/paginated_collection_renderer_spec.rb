@@ -1,9 +1,9 @@
 require 'spec_helper'
 
-module VCAP::CloudController::RestController
+module CloudController::RestController
   RSpec.describe PaginatedCollectionRenderer do
-    let(:controller) { VCAP::CloudController::TestModelsController }
-    let(:dataset) { VCAP::CloudController::TestModel.dataset }
+    let(:controller) { CloudController::TestModelsController }
+    let(:dataset) { CloudController::TestModel.dataset }
 
     subject(:paginated_collection_renderer) { PaginatedCollectionRenderer.new(eager_loader, serializer, renderer_opts) }
 
@@ -45,12 +45,12 @@ module VCAP::CloudController::RestController
       end
 
       context 'when one of the objects serializes to nil' do
-        let(:dataset) { VCAP::CloudController::TestModel.dataset }
+        let(:dataset) { CloudController::TestModel.dataset }
         let(:serializer) { instance_double(PreloadedObjectSerializer) }
 
         before do
-          VCAP::CloudController::TestModel.make
-          VCAP::CloudController::TestModel.make
+          CloudController::TestModel.make
+          CloudController::TestModel.make
           counter = 0
           allow(serializer).to receive(:serialize).with(any_args) do
             if counter == 0
@@ -97,8 +97,8 @@ module VCAP::CloudController::RestController
 
         context 'was not specified' do
           before do
-            VCAP::CloudController::TestModel.make
-            VCAP::CloudController::TestModel.make
+            CloudController::TestModel.make
+            CloudController::TestModel.make
           end
 
           let(:default_results_per_page) { 1 }
@@ -142,9 +142,9 @@ module VCAP::CloudController::RestController
 
       context 'when orphan_relations' do
         before do
-          VCAP::CloudController::TestModel.make
-          VCAP::CloudController::TestModel.make
-          VCAP::CloudController::TestModel.make
+          CloudController::TestModel.make
+          CloudController::TestModel.make
+          CloudController::TestModel.make
         end
 
         let(:page) { 2 }
@@ -188,9 +188,9 @@ module VCAP::CloudController::RestController
 
       context 'when exclude-relations' do
         before do
-          VCAP::CloudController::TestModel.make
-          VCAP::CloudController::TestModel.make
-          VCAP::CloudController::TestModel.make
+          CloudController::TestModel.make
+          CloudController::TestModel.make
+          CloudController::TestModel.make
         end
 
         let(:opts) do
@@ -226,9 +226,9 @@ module VCAP::CloudController::RestController
 
       context 'when include-relations' do
         before do
-          VCAP::CloudController::TestModel.make
-          VCAP::CloudController::TestModel.make
-          VCAP::CloudController::TestModel.make
+          CloudController::TestModel.make
+          CloudController::TestModel.make
+          CloudController::TestModel.make
         end
 
         let(:opts) do
@@ -264,9 +264,9 @@ module VCAP::CloudController::RestController
 
       context 'order-direction' do
         before do
-          VCAP::CloudController::TestModel.make
-          VCAP::CloudController::TestModel.make
-          VCAP::CloudController::TestModel.make
+          CloudController::TestModel.make
+          CloudController::TestModel.make
+          CloudController::TestModel.make
         end
 
         let(:opts) do
@@ -318,9 +318,9 @@ module VCAP::CloudController::RestController
 
       context 'order-by' do
         before do
-          VCAP::CloudController::TestModel.make
-          VCAP::CloudController::TestModel.make
-          VCAP::CloudController::TestModel.make
+          CloudController::TestModel.make
+          CloudController::TestModel.make
+          CloudController::TestModel.make
         end
 
         let(:opts) do
@@ -359,7 +359,7 @@ module VCAP::CloudController::RestController
 
       context 'when collection_transformer is given' do
         let(:collection_transformer) { double('collection_transformer') }
-        let!(:test_model) { VCAP::CloudController::TestModel.make }
+        let!(:test_model) { CloudController::TestModel.make }
 
         it 'passes the populated dataset to the transformer' do
           expect(collection_transformer).to receive(:transform) do |collection|
@@ -381,9 +381,9 @@ module VCAP::CloudController::RestController
       context 'when request_params are given' do
         let(:results_per_page) { 1 }
         before do
-          VCAP::CloudController::TestModel.make
-          VCAP::CloudController::TestModel.make
-          VCAP::CloudController::TestModel.make
+          CloudController::TestModel.make
+          CloudController::TestModel.make
+          CloudController::TestModel.make
           opts[:q] = 'organization_guid:1234'
         end
 

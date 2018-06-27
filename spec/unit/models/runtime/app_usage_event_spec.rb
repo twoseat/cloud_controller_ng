@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-module VCAP::CloudController
+module CloudController
   RSpec.describe AppUsageEvent, type: :model do
     describe 'Validations' do
       it { is_expected.to validate_db_presence :created_at }

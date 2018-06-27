@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-module VCAP::CloudController
+module CloudController
   RSpec.describe ServicePlanVisibilitiesController, :services do
     let(:user) { User.make }
     before { set_current_user(user, admin: true, email: 'some-email-address@example.com') }

@@ -1,4 +1,4 @@
-module VCAP::CloudController
+module CloudController
   class DropletCopy
     class InvalidCopyError < StandardError; end
 

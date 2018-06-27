@@ -1,16 +1,16 @@
 require 'spec_helper'
 
-module VCAP::CloudController
+module CloudController
   module Jobs::Services
     RSpec.describe DeleteOrphanedInstance, job_context: :worker do
       let(:client) { instance_double('VCAP::Services::ServiceBrokers::V2::Client') }
-      let(:plan) { VCAP::CloudController::ServicePlan.make }
-      let(:service_instance) { VCAP::CloudController::ManagedServiceInstance.new(service_plan: plan) }
+      let(:plan) { CloudController::ServicePlan.make }
+      let(:service_instance) { CloudController::ManagedServiceInstance.new(service_plan: plan) }
 
       let(:name) { 'fake-name' }
 
       subject(:job) do
-        VCAP::CloudController::Jobs::Services::DeleteOrphanedInstance.new(name, {},
+        CloudController::Jobs::Services::DeleteOrphanedInstance.new(name, {},
           service_instance.guid, service_instance.service_plan.guid)
       end
 

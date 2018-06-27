@@ -1,4 +1,4 @@
-module VCAP::CloudController
+module CloudController
   class PaginatedResult
     attr_reader :records, :total, :pagination_options
 

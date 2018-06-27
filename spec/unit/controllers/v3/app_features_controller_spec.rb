@@ -2,10 +2,10 @@ require 'rails_helper'
 require 'permissions_spec_helper'
 
 RSpec.describe AppFeaturesController, type: :controller do
-  let(:app_model) { VCAP::CloudController::AppModel.make(enable_ssh: true) }
+  let(:app_model) { CloudController::AppModel.make(enable_ssh: true) }
   let(:space) { app_model.space }
   let(:org) { space.organization }
-  let(:user) { VCAP::CloudController::User.make }
+  let(:user) { CloudController::User.make }
   let(:app_feature_ssh_response) { { 'name' => 'ssh', 'description' => 'Enable SSHing into the app.', 'enabled' => true } }
 
   before do
@@ -82,7 +82,7 @@ RSpec.describe AppFeaturesController, type: :controller do
     end
 
     it 'updates a given app feature' do
-      expect(VCAP::CloudController::Permissions::Queryer).to receive(:new).and_call_original.exactly(:once)
+      expect(CloudController::Permissions::Queryer).to receive(:new).and_call_original.exactly(:once)
       expect {
         patch :update, app_guid: app_model.guid, name: 'ssh', body: { enabled: false }
       }.to change { app_model.reload.enable_ssh }.to(false)

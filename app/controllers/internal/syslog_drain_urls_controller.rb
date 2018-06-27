@@ -1,4 +1,4 @@
-module VCAP::CloudController
+module CloudController
   class SyslogDrainUrlsInternalController < RestController::BaseController
     # Endpoint uses mutual tls for auth, handled by nginx
     allow_unauthenticated_access

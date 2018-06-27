@@ -5,6 +5,6 @@ namespace :route_syncer do
 
     RakeConfig.context = :route_syncer
     BackgroundJobEnvironment.new(RakeConfig.config).setup_environment
-    VCAP::CloudController::Copilot::Scheduler.start
+    CloudController::Copilot::Scheduler.start
   end
 end

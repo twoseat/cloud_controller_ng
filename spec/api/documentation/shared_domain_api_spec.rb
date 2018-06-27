@@ -3,13 +3,13 @@ require 'rspec_api_documentation/dsl'
 
 RSpec.resource 'Shared Domains', type: [:api, :legacy_api] do
   let(:admin_auth_header) { admin_headers['HTTP_AUTHORIZATION'] }
-  let(:guid) { VCAP::CloudController::SharedDomain.first.guid }
-  let!(:domains) { 3.times { VCAP::CloudController::SharedDomain.make } }
-  let!(:tcp_domains) { 1.times { VCAP::CloudController::SharedDomain.make router_group_guid: 'my-random-guid' } }
+  let(:guid) { CloudController::SharedDomain.first.guid }
+  let!(:domains) { 3.times { CloudController::SharedDomain.make } }
+  let!(:tcp_domains) { 1.times { CloudController::SharedDomain.make router_group_guid: 'my-random-guid' } }
 
   authenticated_request
 
-  standard_model_list :shared_domain, VCAP::CloudController::SharedDomainsController
+  standard_model_list :shared_domain, CloudController::SharedDomainsController
   standard_model_get :shared_domain
   standard_model_delete :shared_domain
 
@@ -45,19 +45,19 @@ RSpec.resource 'Shared Domains', type: [:api, :legacy_api] do
         expected_values: { name: 'example.com', router_group_guid: 'my-random-guid' }
 
       domain_guid = parsed_response['metadata']['guid']
-      domain = VCAP::CloudController::Domain.find(guid: domain_guid)
+      domain = CloudController::Domain.find(guid: domain_guid)
       expect(domain.router_group_guid).to eq('my-random-guid')
     end
   end
 
   get '/v2/shared_domains' do
-    standard_list_parameters VCAP::CloudController::SharedDomainsController
+    standard_list_parameters CloudController::SharedDomainsController
 
     describe 'Querying Shared Domains by name' do
       let(:q) { 'name:shared-domain.com' }
 
       before do
-        VCAP::CloudController::SharedDomain.make name: 'shared-domain.com', router_group_guid: 'my-random-guid'
+        CloudController::SharedDomain.make name: 'shared-domain.com', router_group_guid: 'my-random-guid'
       end
 
       example 'Filtering Shared Domains by name' do

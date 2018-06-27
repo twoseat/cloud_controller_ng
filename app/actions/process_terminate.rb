@@ -1,4 +1,4 @@
-module VCAP::CloudController
+module CloudController
   class ProcessTerminate
     class InstanceNotFound < StandardError; end
 

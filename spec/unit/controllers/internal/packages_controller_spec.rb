@@ -1,11 +1,11 @@
 require 'spec_helper'
 
-module VCAP::CloudController
+module CloudController
   module Internal
     RSpec.describe PackagesController do
       describe '#update' do
         let!(:package) {
-          VCAP::CloudController::PackageModel.make(state: VCAP::CloudController::PackageModel::PENDING_STATE)
+          CloudController::PackageModel.make(state: CloudController::PackageModel::PENDING_STATE)
         }
         let(:request_body) do
           {
@@ -34,7 +34,7 @@ module VCAP::CloudController
           patch "/internal/v4/packages/#{package.guid}", request_body
 
           package.reload
-          expect(package.state).to eq VCAP::CloudController::PackageModel::READY_STATE
+          expect(package.state).to eq CloudController::PackageModel::READY_STATE
           expect(package.package_hash).to eq('potato')
           expect(package.sha256_checksum).to eq('potatoest')
           expect(package.error).to eq('nothing bad')
@@ -59,8 +59,8 @@ module VCAP::CloudController
 
         context 'when InvalidPackage is raised' do
           before do
-            allow_any_instance_of(VCAP::CloudController::PackageUpdate).to receive(:update).
-              and_raise(VCAP::CloudController::PackageUpdate::InvalidPackage.new('ya done goofed'))
+            allow_any_instance_of(CloudController::PackageUpdate).to receive(:update).
+              and_raise(CloudController::PackageUpdate::InvalidPackage.new('ya done goofed'))
           end
 
           it 'returns an UnprocessableEntity error' do

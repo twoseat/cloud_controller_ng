@@ -1,7 +1,7 @@
 require 'spec_helper'
 require 'presenters/v3/relationship_presenter'
 
-module VCAP::CloudController::Presenters::V3
+module CloudController::Presenters::V3
   RSpec.describe RelationshipPresenter do
     let(:relationship_class) do
       Class.new do

@@ -1,23 +1,23 @@
 require 'spec_helper'
 require 'cloud_controller/diego/buildpack/staging_completion_handler'
 
-module VCAP::CloudController
+module CloudController
   module Diego
     module Buildpack
       RSpec.describe StagingCompletionHandler do
         let(:logger) { instance_double(Steno::Logger, info: nil, error: nil, warn: nil) }
-        let(:buildpack) { VCAP::CloudController::Buildpack.make(name: 'lifecycle-bp') }
+        let(:buildpack) { CloudController::Buildpack.make(name: 'lifecycle-bp') }
 
         let(:buildpack1_name) { 'the-pleasant-buildpack' }
         let(:buildpack1_other_name) { 'valley' }
         let(:buildpack1_version) { '3.1' }
         let(:buildpack1_key) { 'vicuna' }
-        let!(:buildpack1) { VCAP::CloudController::Buildpack.make(key: buildpack1_key, name: buildpack1_name, sha256_checksum: 'mammoth') }
+        let!(:buildpack1) { CloudController::Buildpack.make(key: buildpack1_key, name: buildpack1_name, sha256_checksum: 'mammoth') }
         let(:buildpack2_name) { 'my-brilliant-buildpack' }
         let(:buildpack2_other_name) { 'launderette' }
         let(:buildpack2_version) { '95' }
         let(:buildpack2_key) { 'guanaco' }
-        let!(:buildpack2) { VCAP::CloudController::Buildpack.make(key: buildpack2_key, name: buildpack2_name, sha256_checksum: 'languid') }
+        let!(:buildpack2) { CloudController::Buildpack.make(key: buildpack2_key, name: buildpack2_name, sha256_checksum: 'languid') }
         let(:buildpack3_key) { 'git://my-buildpacks.tv/kate/allie.git' }
         let(:buildpack3_other_name) { 'hilltop' }
         let(:buildpack3_version) { 'ME' }
@@ -220,7 +220,7 @@ module VCAP::CloudController
 
                 context 'when the buildpack key is a key' do
                   it 'records that as the buildpack' do
-                    admin_buildpack = VCAP::CloudController::Buildpack.make(name: 'woop', key: 'thismakey')
+                    admin_buildpack = CloudController::Buildpack.make(name: 'woop', key: 'thismakey')
 
                     success_response[:result][:lifecycle_metadata][:buildpack_key] = 'thismakey'
                     subject.staging_complete(success_response)

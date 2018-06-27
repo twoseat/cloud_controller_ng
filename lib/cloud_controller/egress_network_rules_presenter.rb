@@ -1,4 +1,4 @@
-module VCAP::CloudController
+module CloudController
   class EgressNetworkRulesPresenter
     def initialize(security_groups)
       @security_groups = security_groups

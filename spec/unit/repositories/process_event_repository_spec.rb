@@ -1,7 +1,7 @@
 require 'spec_helper'
 require 'repositories/process_event_repository'
 
-module VCAP::CloudController
+module CloudController
   module Repositories
     RSpec.describe ProcessEventRepository do
       let(:app) { AppModel.make(name: 'zach-loves-kittens') }

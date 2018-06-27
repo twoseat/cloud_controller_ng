@@ -1,4 +1,4 @@
-module VCAP::CloudController
+module CloudController
   module Jobs
     module Services
       ### THIS CLASS IS DEPRECATED
@@ -6,7 +6,7 @@ module VCAP::CloudController
       # We have to leave this job definition for backwards compatibility with any old deployments that still
       # run this job.
 
-      class ServiceInstanceDeletion < VCAP::CloudController::Jobs::CCJob
+      class ServiceInstanceDeletion < CloudController::Jobs::CCJob
         attr_accessor :guid
 
         def initialize(guid)

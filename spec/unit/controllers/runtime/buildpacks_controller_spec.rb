@@ -1,7 +1,7 @@
 require 'spec_helper'
 
-module VCAP::CloudController
-  RSpec.describe VCAP::CloudController::BuildpacksController do
+module CloudController
+  RSpec.describe CloudController::BuildpacksController do
     def ordered_buildpacks
       Buildpack.order(:position).map { |bp| [bp.name, bp.position] }
     end
@@ -13,12 +13,12 @@ module VCAP::CloudController
     before { set_current_user_as_admin }
 
     describe 'Query Parameters' do
-      it { expect(VCAP::CloudController::BuildpacksController).to be_queryable_by(:name) }
+      it { expect(CloudController::BuildpacksController).to be_queryable_by(:name) }
     end
 
     describe 'Attributes' do
       it do
-        expect(VCAP::CloudController::BuildpacksController).to have_creatable_attributes({
+        expect(CloudController::BuildpacksController).to have_creatable_attributes({
           name:     { type: 'string', required: true },
           stack:    { type: 'string' },
           position: { type: 'integer', default: 0 },
@@ -28,7 +28,7 @@ module VCAP::CloudController
       end
 
       it do
-        expect(VCAP::CloudController::BuildpacksController).to have_updatable_attributes({
+        expect(CloudController::BuildpacksController).to have_updatable_attributes({
           name:     { type: 'string' },
           stack:    { type: 'string' },
           position: { type: 'integer' },
@@ -118,8 +118,8 @@ module VCAP::CloudController
     end
 
     describe '#update' do
-      let!(:buildpack1) { VCAP::CloudController::Buildpack.create({ name: 'first_buildpack', stack: stack.name, key: 'xyz', filename: 'a', position: 1 }) }
-      let!(:buildpack2) { VCAP::CloudController::Buildpack.create({ name: 'second_buildpack', stack: stack.name, key: 'xyz', filename: 'b', position: 2 }) }
+      let!(:buildpack1) { CloudController::Buildpack.create({ name: 'first_buildpack', stack: stack.name, key: 'xyz', filename: 'a', position: 1 }) }
+      let!(:buildpack2) { CloudController::Buildpack.create({ name: 'second_buildpack', stack: stack.name, key: 'xyz', filename: 'b', position: 2 }) }
 
       it 'can update the buildpack name' do
         set_current_user_as_admin
@@ -148,7 +148,7 @@ module VCAP::CloudController
     end
 
     describe '#delete' do
-      let!(:buildpack1) { VCAP::CloudController::Buildpack.create({ name: 'first_buildpack', stack: stack.name, key: 'xyz', position: 1 }) }
+      let!(:buildpack1) { CloudController::Buildpack.create({ name: 'first_buildpack', stack: stack.name, key: 'xyz', position: 1 }) }
 
       it 'returns NOT AUTHORIZED (403) for non admins' do
         set_current_user(user)

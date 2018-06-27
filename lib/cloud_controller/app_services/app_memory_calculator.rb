@@ -1,4 +1,4 @@
-module VCAP::CloudController
+module CloudController
   class AppMemoryCalculator
     attr_reader :app
 

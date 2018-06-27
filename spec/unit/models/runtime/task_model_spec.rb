@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-module VCAP::CloudController
+module CloudController
   RSpec.describe TaskModel do
     let(:parent_app) { AppModel.make }
 
@@ -219,7 +219,7 @@ module VCAP::CloudController
 
         context 'maximum length allow' do
           before do
-            stub_const('VCAP::CloudController::TaskModel::ENV_VAR_MAX_LENGTH', 5)
+            stub_const('CloudController::TaskModel::ENV_VAR_MAX_LENGTH', 5)
           end
 
           it 'limits the length' do

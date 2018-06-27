@@ -1,7 +1,7 @@
-module VCAP::CloudController
+module CloudController
   module Jobs
     module Services
-      class ServiceInstanceStateFetch < VCAP::CloudController::Jobs::CCJob
+      class ServiceInstanceStateFetch < CloudController::Jobs::CCJob
         attr_accessor :name, :service_instance_guid, :services_event_repository, :request_attrs, :poll_interval, :end_timestamp
 
         def initialize(name, service_instance_guid, user_audit_info, request_attrs, end_timestamp=nil)
@@ -39,7 +39,7 @@ module VCAP::CloudController
         private
 
         def new_end_timestamp
-          Time.now + VCAP::CloudController::Config.config.get(:broker_client_max_async_poll_duration_minutes).minutes
+          Time.now + CloudController::Config.config.get(:broker_client_max_async_poll_duration_minutes).minutes
         end
 
         def repository
@@ -90,11 +90,11 @@ module VCAP::CloudController
 
         def enqueue_again
           opts = { queue: 'cc-generic', run_at: Delayed::Job.db_time_now + @poll_interval }
-          VCAP::CloudController::Jobs::Enqueuer.new(self, opts).enqueue
+          CloudController::Jobs::Enqueuer.new(self, opts).enqueue
         end
 
         def update_polling_interval
-          default_poll_interval = VCAP::CloudController::Config.config.get(:broker_client_default_async_poll_interval_seconds)
+          default_poll_interval = CloudController::Config.config.get(:broker_client_default_async_poll_interval_seconds)
           poll_interval         = [default_poll_interval, 24.hours].min
           @poll_interval        = poll_interval
         end

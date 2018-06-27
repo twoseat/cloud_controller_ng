@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-module VCAP::CloudController
+module CloudController
   RSpec.describe Service, type: :model do
     it { is_expected.to have_timestamp_columns }
 
@@ -54,9 +54,9 @@ module VCAP::CloudController
       before do
         ServicePlan.make service: public_service, public: true
         ServicePlan.make service: public_service, public: false
-        VCAP::CloudController::SecurityContext.set(admin_user, { 'scope' => [VCAP::CloudController::Roles::CLOUD_CONTROLLER_ADMIN_SCOPE] })
+        CloudController::SecurityContext.set(admin_user, { 'scope' => [CloudController::Roles::CLOUD_CONTROLLER_ADMIN_SCOPE] })
         nonadmin_user.add_organization nonadmin_org
-        VCAP::CloudController::SecurityContext.clear
+        CloudController::SecurityContext.clear
       end
 
       def records(user)
@@ -237,7 +237,7 @@ module VCAP::CloudController
 
       context 'there is a service instance with state `in progress`' do
         before do
-          service_instance.save_with_new_operation({}, state: VCAP::CloudController::ManagedServiceInstance::IN_PROGRESS_STRING)
+          service_instance.save_with_new_operation({}, state: CloudController::ManagedServiceInstance::IN_PROGRESS_STRING)
         end
 
         it 'destroys all models that depend on it' do
@@ -259,7 +259,7 @@ module VCAP::CloudController
         let(:service) { Service.make }
 
         before do
-          allow_any_instance_of(VCAP::CloudController::ServiceInstance).to receive(:destroy).and_raise('Boom')
+          allow_any_instance_of(CloudController::ServiceInstance).to receive(:destroy).and_raise('Boom')
         end
 
         it 'raises the same error' do
@@ -273,7 +273,7 @@ module VCAP::CloudController
         let(:service) { Service.make }
 
         before do
-          allow_any_instance_of(VCAP::CloudController::ServicePlan).to receive(:destroy).and_raise('Boom')
+          allow_any_instance_of(CloudController::ServicePlan).to receive(:destroy).and_raise('Boom')
         end
 
         it 'rolls back the transaction and does not destroy any records' do

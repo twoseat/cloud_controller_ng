@@ -1,13 +1,13 @@
 require 'spec_helper'
 
-module VCAP::CloudController
+module CloudController
   RSpec.describe PrivateDomainAccess, type: :access do
     subject(:access) { PrivateDomainAccess.new(Security::AccessContext.new) }
     let(:scopes) { ['cloud_controller.read', 'cloud_controller.write'] }
 
-    let(:user) { VCAP::CloudController::User.make }
-    let(:org) { VCAP::CloudController::Organization.make }
-    let(:object) { VCAP::CloudController::PrivateDomain.make owning_organization: org }
+    let(:user) { CloudController::User.make }
+    let(:org) { CloudController::Organization.make }
+    let(:object) { CloudController::PrivateDomain.make owning_organization: org }
 
     before { set_current_user(user, scopes: scopes) }
 
@@ -55,7 +55,7 @@ module VCAP::CloudController
 
     context 'user in a different organization (defensive)' do
       before do
-        different_organization = VCAP::CloudController::Organization.make
+        different_organization = CloudController::Organization.make
         different_organization.add_user(user)
       end
 
@@ -64,7 +64,7 @@ module VCAP::CloudController
 
     context 'manager in a different organization (defensive)' do
       before do
-        different_organization = VCAP::CloudController::Organization.make
+        different_organization = CloudController::Organization.make
         different_organization.add_manager(user)
       end
 

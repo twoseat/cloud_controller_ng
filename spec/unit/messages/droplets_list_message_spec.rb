@@ -1,7 +1,7 @@
 require 'spec_helper'
 require 'messages/droplets_list_message'
 
-module VCAP::CloudController
+module CloudController
   RSpec.describe DropletsListMessage do
     describe '.from_params' do
       let(:params) do

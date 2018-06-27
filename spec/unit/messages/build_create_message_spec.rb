@@ -1,7 +1,7 @@
 require 'spec_helper'
 require 'messages/build_create_message'
 
-module VCAP::CloudController
+module CloudController
   RSpec.describe BuildCreateMessage do
     describe 'validations' do
       context 'when no params are given' do

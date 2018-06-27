@@ -1,7 +1,7 @@
 require 'spec_helper'
 require 'cloud_controller/diego/task_completion_handler'
 
-module VCAP::CloudController
+module CloudController
   module Diego
     RSpec.describe TaskCompletionHandler do
       let!(:task) { TaskModel.make }

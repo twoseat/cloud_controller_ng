@@ -4,7 +4,7 @@ module CloudController
       class RouteMappingPresenter < BasePresenter
         extend PresenterProvider
 
-        present_for_class 'VCAP::CloudController::RouteMappingModel'
+        present_for_class 'CloudController::RouteMappingModel'
 
         def entity_hash(controller, route_mapping, opts, depth, parents, orphans=nil)
           entity = {
@@ -18,7 +18,7 @@ module CloudController
         private
 
         def present_app_port(route_mapping)
-          if route_mapping.app_port == VCAP::CloudController::ProcessModel::NO_APP_PORT_SPECIFIED
+          if route_mapping.app_port == CloudController::ProcessModel::NO_APP_PORT_SPECIFIED
             nil
           else
             route_mapping.app_port

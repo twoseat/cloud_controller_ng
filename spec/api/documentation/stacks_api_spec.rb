@@ -9,13 +9,13 @@ RSpec.resource 'Stacks', type: [:api, :legacy_api] do
     set_current_user_as_admin
   end
 
-  let(:guid) { VCAP::CloudController::Stack.first.guid }
+  let(:guid) { CloudController::Stack.first.guid }
 
   context do
     field :name, 'The name for the stack.'
     field :description, 'The description for the stack'
 
-    standard_model_list(:stack, VCAP::CloudController::StacksController)
+    standard_model_list(:stack, CloudController::StacksController)
     standard_model_get(:stack)
 
     post '/v2/stacks' do

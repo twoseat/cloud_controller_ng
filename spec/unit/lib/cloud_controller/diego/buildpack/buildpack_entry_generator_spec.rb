@@ -1,7 +1,7 @@
 require 'spec_helper'
 require 'cloud_controller/diego/buildpack/buildpack_entry_generator'
 
-module VCAP::CloudController
+module CloudController
   module Diego
     module Buildpack
       RSpec.describe BuildpackEntryGenerator do
@@ -16,13 +16,13 @@ module VCAP::CloudController
         let(:stack2) { Stack.make }
 
         let!(:java_buildpack) do
-          VCAP::CloudController::Buildpack.create(name: 'java', stack: stack.name, key: 'java-buildpack-key', position: 1, sha256_checksum: 'checksum')
+          CloudController::Buildpack.create(name: 'java', stack: stack.name, key: 'java-buildpack-key', position: 1, sha256_checksum: 'checksum')
         end
         let!(:ruby_buildpack) do
-          VCAP::CloudController::Buildpack.create(name: 'ruby', stack: stack.name, key: 'ruby-buildpack-key', position: 2, sha256_checksum: 'checksum')
+          CloudController::Buildpack.create(name: 'ruby', stack: stack.name, key: 'ruby-buildpack-key', position: 2, sha256_checksum: 'checksum')
         end
         let!(:ruby_buildpack_other_stack) do
-          VCAP::CloudController::Buildpack.create(name: 'ruby', stack: stack2.name, key: 'ruby-buildpack-stack2-key', position: 3, sha256_checksum: 'checksum')
+          CloudController::Buildpack.create(name: 'ruby', stack: stack2.name, key: 'ruby-buildpack-stack2-key', position: 3, sha256_checksum: 'checksum')
         end
 
         before do
@@ -37,12 +37,12 @@ module VCAP::CloudController
         describe '#buildpack_entries' do
           let(:v3_app) { AppModel.make }
           let(:package) { PackageModel.make(app_guid: v3_app.guid) }
-          let(:buildpack_info) { BuildpackInfo.new(buildpack, VCAP::CloudController::Buildpack.find(name: buildpack)) }
+          let(:buildpack_info) { BuildpackInfo.new(buildpack, CloudController::Buildpack.find(name: buildpack)) }
           let(:buildpack_infos) { [buildpack_info] }
 
           context 'when the user has requested a custom and admin buildpack' do
             let(:custom_buildpack_info) { BuildpackInfo.new('http://example.com/my_buildpack_url.zip', nil) }
-            let(:admin_buildpack_info) { BuildpackInfo.new('java', VCAP::CloudController::Buildpack.find(name: 'java')) }
+            let(:admin_buildpack_info) { BuildpackInfo.new('java', CloudController::Buildpack.find(name: 'java')) }
             let(:buildpack_infos) { [custom_buildpack_info, admin_buildpack_info] }
 
             it 'returns both buildpacks for the stack' do

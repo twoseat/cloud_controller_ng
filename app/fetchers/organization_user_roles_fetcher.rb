@@ -1,4 +1,4 @@
-module VCAP::CloudController
+module CloudController
   class OrganizationUserRolesFetcher
     def self.fetch(org, user_guid: nil)
       new(user_guid: user_guid).fetch(org)

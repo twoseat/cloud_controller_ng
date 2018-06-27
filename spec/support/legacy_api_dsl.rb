@@ -89,7 +89,7 @@ module LegacyApiDsl
   private
 
   def model_class_from_name(model)
-    "VCAP::CloudController::#{model.to_s.classify}".constantize
+    "CloudController::#{model.to_s.classify}".constantize
   end
 
   def model_has_updated_at?(model)

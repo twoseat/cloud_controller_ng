@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-module VCAP::CloudController
+module CloudController
   RSpec.describe AppShowMessage do
     it 'does not accept fields not in the set' do
       message = AppShowMessage.new({ foobar: 'pants' })

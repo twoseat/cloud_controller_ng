@@ -1,4 +1,4 @@
-module VCAP::CloudController
+module CloudController
   module Diego
     class Protocol
       class OpenProcessPorts
@@ -11,7 +11,7 @@ module VCAP::CloudController
         def to_a
           return process.ports unless process.ports.nil?
           return process.docker_ports if process.docker?
-          return [VCAP::CloudController::ProcessModel::DEFAULT_HTTP_PORT] if process.web?
+          return [CloudController::ProcessModel::DEFAULT_HTTP_PORT] if process.web?
           []
         end
       end

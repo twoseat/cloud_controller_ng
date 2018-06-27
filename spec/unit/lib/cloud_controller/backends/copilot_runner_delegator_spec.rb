@@ -2,7 +2,7 @@ require 'spec_helper'
 require 'cloud_controller/diego/process_guid'
 require 'cloud_controller/backends/copilot_runner_delegator'
 
-module VCAP::CloudController
+module CloudController
   RSpec.describe CopilotRunnerDelegator do
     subject(:copilot_delegator) { CopilotRunnerDelegator.new(runner, process) }
     let(:runner) { instance_double(Diego::Runner) }

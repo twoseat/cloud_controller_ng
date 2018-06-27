@@ -1,4 +1,4 @@
-module VCAP::CloudController
+module CloudController
   class Diagnostics
     def collect(output_directory)
       data = {

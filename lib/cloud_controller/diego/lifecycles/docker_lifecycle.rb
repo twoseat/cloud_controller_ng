@@ -1,4 +1,4 @@
-module VCAP::CloudController
+module CloudController
   class DockerLifecycle
     attr_reader :staging_message
 

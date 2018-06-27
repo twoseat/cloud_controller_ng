@@ -1,14 +1,14 @@
 require 'spec_helper'
 require 'presenters/v3/service_binding_presenter'
 
-module VCAP::CloudController::Presenters::V3
+module CloudController::Presenters::V3
   RSpec.describe ServiceBindingPresenter do
     let(:presenter) { ServiceBindingPresenter.new(service_binding) }
     let(:credentials) { { 'very-secret' => 'password' }.to_json }
     let(:volume_mounts) { [{ 'container_dir' => '/a/reasonable/path', 'device' => { 'very-secret' => 'password' } }] }
     let(:censored_volume_mounts) { [{ 'container_dir' => '/a/reasonable/path' }] }
     let(:service_binding) do
-      VCAP::CloudController::ServiceBinding.make(
+      CloudController::ServiceBinding.make(
         created_at:       Time.at(1),
         credentials:      credentials,
         syslog_drain_url: 'syslog:/syslog.com',

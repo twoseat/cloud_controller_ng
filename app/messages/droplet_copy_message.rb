@@ -2,7 +2,7 @@ require 'messages/base_message'
 require 'messages/validators'
 require 'messages/docker_lifecycle_data_message'
 
-module VCAP::CloudController
+module CloudController
   class DropletCopyMessage < BaseMessage
     register_allowed_keys [:relationships]
 

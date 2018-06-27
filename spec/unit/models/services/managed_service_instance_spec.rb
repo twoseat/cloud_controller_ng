@@ -1,15 +1,15 @@
 require 'spec_helper'
 
-module VCAP::CloudController
+module CloudController
   RSpec.describe ManagedServiceInstance, type: :model do
-    let(:service_instance) { VCAP::CloudController::ManagedServiceInstance.make }
+    let(:service_instance) { CloudController::ManagedServiceInstance.make }
     let(:email) { Sham.email }
     let(:guid) { Sham.guid }
 
     after { VCAP::Request.current_id = nil }
 
     before do
-      allow(VCAP::CloudController::SecurityContext).to receive(:current_user_email) { email }
+      allow(CloudController::SecurityContext).to receive(:current_user_email) { email }
 
       client = instance_double(VCAP::Services::ServiceBrokers::V2::Client, unbind: nil, deprovision: nil)
       allow_any_instance_of(Service).to receive(:client).and_return(client)
@@ -22,7 +22,7 @@ module VCAP::CloudController
       it { is_expected.to have_associated :space }
       it do
         is_expected.to have_associated :service_bindings, associated_instance: ->(service_instance) {
-          app = VCAP::CloudController::AppModel.make(space: service_instance.space)
+          app = CloudController::AppModel.make(space: service_instance.space)
           ServiceBinding.make(app: app, service_instance: service_instance, credentials: Sham.service_credentials)
         }
       end
@@ -168,7 +168,7 @@ module VCAP::CloudController
       let(:developer) { make_developer_for_space(service_instance.space) }
 
       before do
-        allow(VCAP::CloudController::SecurityContext).to receive(:current_user).and_return(developer)
+        allow(CloudController::SecurityContext).to receive(:current_user).and_return(developer)
       end
 
       it 'creates a new last_operation object and associates it with the service instance' do
@@ -439,9 +439,9 @@ module VCAP::CloudController
       it 'creates a DELETED service usage event' do
         service_instance.destroy
 
-        event = VCAP::CloudController::ServiceUsageEvent.last
+        event = CloudController::ServiceUsageEvent.last
 
-        expect(VCAP::CloudController::ServiceUsageEvent.count).to eq(2)
+        expect(CloudController::ServiceUsageEvent.count).to eq(2)
         expect(event.state).to eq(Repositories::ServiceUsageEventRepository::DELETED_EVENT_STATE)
         expect(event).to match_service_instance(service_instance)
       end

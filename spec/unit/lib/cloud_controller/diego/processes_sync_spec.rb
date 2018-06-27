@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-module VCAP::CloudController
+module CloudController
   module Diego
     RSpec.describe ProcessesSync, job_context: :clock do
       subject { ProcessesSync.new(config: config, statsd_updater: statsd_updater) }
@@ -12,7 +12,7 @@ module VCAP::CloudController
       let!(:missing_process_no_droplet) { ProcessModel.make(:process) }
 
       let(:scheduling_infos) { [] }
-      let(:statsd_updater) { instance_double(VCAP::CloudController::Metrics::StatsdUpdater, update_synced_invalid_lrps: nil) }
+      let(:statsd_updater) { instance_double(CloudController::Metrics::StatsdUpdater, update_synced_invalid_lrps: nil) }
 
       before do
         CloudController::DependencyLocator.instance.register(:bbs_apps_client, bbs_apps_client)
@@ -351,7 +351,7 @@ module VCAP::CloudController
           let!(:scheduling_infos) { [] }
 
           before do
-            stub_const('VCAP::CloudController::Diego::ProcessesSync::BATCH_SIZE', 5)
+            stub_const('CloudController::Diego::ProcessesSync::BATCH_SIZE', 5)
             (ProcessesSync::BATCH_SIZE + 1).times do |_|
               process = ProcessModel.make(:diego_runnable)
 

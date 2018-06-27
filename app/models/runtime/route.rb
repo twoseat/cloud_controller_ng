@@ -1,16 +1,16 @@
 require 'utils/uri_utils'
 require 'models/helpers/process_types'
 
-module VCAP::CloudController
+module CloudController
   class Route < Sequel::Model
     class InvalidOrganizationRelation < CloudController::Errors::InvalidRelation; end
 
     many_to_one :domain
     many_to_one :space, after_set: :validate_changed_space
 
-    one_to_many :route_mappings, class: 'VCAP::CloudController::RouteMappingModel', key: :route_guid, primary_key: :guid
+    one_to_many :route_mappings, class: 'CloudController::RouteMappingModel', key: :route_guid, primary_key: :guid
 
-    many_to_many :apps, class: 'VCAP::CloudController::ProcessModel',
+    many_to_many :apps, class: 'CloudController::ProcessModel',
                         join_table:              RouteMappingModel.table_name,
                         left_primary_key:        :guid, left_key: :route_guid,
                         right_primary_key:       [:app_guid, :type], right_key: [:app_guid, :process_type],

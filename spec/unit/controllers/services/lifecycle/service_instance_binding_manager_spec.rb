@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-module VCAP::CloudController
+module CloudController
   RSpec.describe ServiceInstanceBindingManager do
     let(:manager) { ServiceInstanceBindingManager.new(access_validator, logger) }
     let(:event_repository) { double(:event_repository, record_service_instance_event: true) }

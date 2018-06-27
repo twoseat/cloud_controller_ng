@@ -1,6 +1,6 @@
 require 'models/helpers/process_types'
 
-module VCAP::CloudController
+module CloudController
   class Space < Sequel::Model
     class InvalidDeveloperRelation < CloudController::Errors::InvalidRelation; end
     class InvalidAuditorRelation < CloudController::Errors::InvalidRelation; end
@@ -24,12 +24,12 @@ module VCAP::CloudController
 
     one_to_many :app_models, primary_key: :guid, key: :space_guid
 
-    one_to_many :processes, class: 'VCAP::CloudController::ProcessModel', dataset: -> { ProcessModel.filter(app: app_models) }
+    one_to_many :processes, class: 'CloudController::ProcessModel', dataset: -> { ProcessModel.filter(app: app_models) }
 
     many_through_many :apps, [
       [:spaces, :id, :guid],
       [:apps, :space_guid, :guid]
-    ], class: 'VCAP::CloudController::ProcessModel', right_primary_key: :app_guid, conditions: { type: ProcessTypes::WEB }
+    ], class: 'CloudController::ProcessModel', right_primary_key: :app_guid, conditions: { type: ProcessTypes::WEB }
 
     one_to_many :events, primary_key: :guid, key: :space_guid
     one_to_many :service_instances
@@ -40,7 +40,7 @@ module VCAP::CloudController
           right_key:         :service_instance_guid,
           right_primary_key: :guid,
           join_table:        :service_instance_shares,
-          class: 'VCAP::CloudController::ServiceInstance'
+          class: 'CloudController::ServiceInstance'
 
     one_to_many :service_brokers
     one_to_many :routes
@@ -70,7 +70,7 @@ module VCAP::CloudController
     }
 
     many_to_many :staging_security_groups,
-    class: 'VCAP::CloudController::SecurityGroup',
+    class: 'CloudController::SecurityGroup',
     join_table: 'staging_security_groups_spaces',
     left_key: :staging_space_id,
     right_key: :staging_security_group_id,
@@ -99,7 +99,7 @@ module VCAP::CloudController
     one_to_many :app_events,
       dataset: -> { AppEvent.filter(app: apps) }
 
-    one_to_many :default_users, class: 'VCAP::CloudController::User', key: :default_space_id
+    one_to_many :default_users, class: 'CloudController::User', key: :default_space_id
 
     one_to_many :domains,
       dataset: -> { organization.domains_dataset },

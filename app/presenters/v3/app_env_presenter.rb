@@ -1,4 +1,4 @@
-module VCAP::CloudController
+module CloudController
   module Presenters
     module V3
       class AppEnvPresenter

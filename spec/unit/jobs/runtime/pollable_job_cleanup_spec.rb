@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-module VCAP::CloudController
+module CloudController
   module Jobs::Runtime
     RSpec.describe PollableJobCleanup, job_context: :worker do
       subject(:job) { PollableJobCleanup.new }

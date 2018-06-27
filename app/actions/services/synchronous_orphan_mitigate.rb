@@ -1,4 +1,4 @@
-module VCAP::CloudController
+module CloudController
   class SynchronousOrphanMitigate
     def initialize(logger)
       @logger = logger

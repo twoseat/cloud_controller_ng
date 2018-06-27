@@ -10,15 +10,15 @@ RSpec.describe 'Backfill web processes', isolation: :truncation do
     )
   end
 
-  let(:app_with_web_process) { VCAP::CloudController::AppModel.create(guid: 'a-with-web-process', name: 'app_with_web_process') }
-  let!(:app_with_no_processes) { VCAP::CloudController::AppModel.create(guid: 'b-with-no-processes', name: 'app_with_no_processes') }
-  let(:app_with_no_web_processes) { VCAP::CloudController::AppModel.create(guid: 'c-with-no-web-processes', name: 'app_with_no_web_process') }
-  let(:app_with_mixed_processes) { VCAP::CloudController::AppModel.create(guid: 'd-with-mixed-processes', name: 'app_with_mixed_processes') }
+  let(:app_with_web_process) { CloudController::AppModel.create(guid: 'a-with-web-process', name: 'app_with_web_process') }
+  let!(:app_with_no_processes) { CloudController::AppModel.create(guid: 'b-with-no-processes', name: 'app_with_no_processes') }
+  let(:app_with_no_web_processes) { CloudController::AppModel.create(guid: 'c-with-no-web-processes', name: 'app_with_no_web_process') }
+  let(:app_with_mixed_processes) { CloudController::AppModel.create(guid: 'd-with-mixed-processes', name: 'app_with_mixed_processes') }
   let!(:started_app_with_no_processes) do
-    VCAP::CloudController::AppModel.create(
+    CloudController::AppModel.create(
       guid: 'e-with-no-processes',
       name: 'started_app_with_no_processes',
-      desired_state: VCAP::CloudController::ProcessModel::STARTED
+      desired_state: CloudController::ProcessModel::STARTED
     )
   end
 
@@ -29,25 +29,25 @@ RSpec.describe 'Backfill web processes', isolation: :truncation do
     )
 
     app_with_no_processes
-    VCAP::CloudController::ProcessModelFactory.make(app: app_with_web_process, type: 'web')
-    VCAP::CloudController::ProcessModelFactory.make(app: app_with_no_web_processes, type: 'not-web')
-    VCAP::CloudController::ProcessModelFactory.make(app: app_with_mixed_processes, type: 'web')
-    VCAP::CloudController::ProcessModelFactory.make(app: app_with_mixed_processes, type: 'not-web')
+    CloudController::ProcessModelFactory.make(app: app_with_web_process, type: 'web')
+    CloudController::ProcessModelFactory.make(app: app_with_no_web_processes, type: 'not-web')
+    CloudController::ProcessModelFactory.make(app: app_with_mixed_processes, type: 'web')
+    CloudController::ProcessModelFactory.make(app: app_with_mixed_processes, type: 'not-web')
   end
 
   context 'when an app has a web process' do
     context 'and it has other non-web processes' do
       it 'does not change the existing processes' do
         app_guid = app_with_mixed_processes.guid
-        web_process = VCAP::CloudController::ProcessModel.first(app_guid: app_guid, type: VCAP::CloudController::ProcessTypes::WEB)
-        non_web_process = VCAP::CloudController::ProcessModel.first(app_guid: app_guid, type: 'not-web')
+        web_process = CloudController::ProcessModel.first(app_guid: app_guid, type: CloudController::ProcessTypes::WEB)
+        non_web_process = CloudController::ProcessModel.first(app_guid: app_guid, type: 'not-web')
 
         expect {
-          Sequel::Migrator.run(VCAP::CloudController::AppModel.db, tmp_migrations_dir, table: :my_fake_table)
-        }.not_to change { VCAP::CloudController::ProcessModel.where(app_guid: app_guid).count }
+          Sequel::Migrator.run(CloudController::AppModel.db, tmp_migrations_dir, table: :my_fake_table)
+        }.not_to change { CloudController::ProcessModel.where(app_guid: app_guid).count }
 
-        reloaded_web_process = VCAP::CloudController::ProcessModel.first(app_guid: app_guid, type: VCAP::CloudController::ProcessTypes::WEB)
-        reloaded_non_web_process = VCAP::CloudController::ProcessModel.first(app_guid: app_guid, type: 'not-web')
+        reloaded_web_process = CloudController::ProcessModel.first(app_guid: app_guid, type: CloudController::ProcessTypes::WEB)
+        reloaded_non_web_process = CloudController::ProcessModel.first(app_guid: app_guid, type: 'not-web')
 
         expect(web_process).to eq(reloaded_web_process)
         expect(non_web_process).to eq(reloaded_non_web_process)
@@ -57,13 +57,13 @@ RSpec.describe 'Backfill web processes', isolation: :truncation do
     context 'and no other processes' do
       it 'does not change the existing processes' do
         app_guid = app_with_web_process.guid
-        web_process = VCAP::CloudController::ProcessModel.first(app_guid: app_guid, type: VCAP::CloudController::ProcessTypes::WEB)
+        web_process = CloudController::ProcessModel.first(app_guid: app_guid, type: CloudController::ProcessTypes::WEB)
 
         expect {
-          Sequel::Migrator.run(VCAP::CloudController::AppModel.db, tmp_migrations_dir, table: :my_fake_table)
-        }.not_to change { VCAP::CloudController::ProcessModel.where(app_guid: app_guid).count }
+          Sequel::Migrator.run(CloudController::AppModel.db, tmp_migrations_dir, table: :my_fake_table)
+        }.not_to change { CloudController::ProcessModel.where(app_guid: app_guid).count }
 
-        reloaded_web_process = VCAP::CloudController::ProcessModel.first(app_guid: app_guid, type: VCAP::CloudController::ProcessTypes::WEB)
+        reloaded_web_process = CloudController::ProcessModel.first(app_guid: app_guid, type: CloudController::ProcessTypes::WEB)
 
         expect(web_process).to eq(reloaded_web_process)
       end
@@ -74,12 +74,12 @@ RSpec.describe 'Backfill web processes', isolation: :truncation do
     context 'when the app is STARTED' do
       it 'adds an empty web process' do
         app_guid = started_app_with_no_processes.guid
-        expect(VCAP::CloudController::ProcessModel.where(app_guid: app_guid, type: VCAP::CloudController::ProcessTypes::WEB).count).to eq(0)
+        expect(CloudController::ProcessModel.where(app_guid: app_guid, type: CloudController::ProcessTypes::WEB).count).to eq(0)
 
-        Sequel::Migrator.run(VCAP::CloudController::AppModel.db, tmp_migrations_dir, table: :my_fake_table)
+        Sequel::Migrator.run(CloudController::AppModel.db, tmp_migrations_dir, table: :my_fake_table)
 
-        expect(VCAP::CloudController::ProcessModel.where(app_guid: app_guid, type: VCAP::CloudController::ProcessTypes::WEB).count).to eq(1)
-        process = VCAP::CloudController::ProcessModel.find(app_guid: app_guid, type: VCAP::CloudController::ProcessTypes::WEB)
+        expect(CloudController::ProcessModel.where(app_guid: app_guid, type: CloudController::ProcessTypes::WEB).count).to eq(1)
+        process = CloudController::ProcessModel.find(app_guid: app_guid, type: CloudController::ProcessTypes::WEB)
 
         expect(process.guid).to eq app_guid
         expect(process.state).to eq 'STARTED'
@@ -89,12 +89,12 @@ RSpec.describe 'Backfill web processes', isolation: :truncation do
     context 'and it has other non-web processes' do
       it 'adds an empty web process' do
         app_guid = app_with_no_web_processes.guid
-        expect(VCAP::CloudController::ProcessModel.where(app_guid: app_guid, type: VCAP::CloudController::ProcessTypes::WEB).count).to eq(0)
+        expect(CloudController::ProcessModel.where(app_guid: app_guid, type: CloudController::ProcessTypes::WEB).count).to eq(0)
 
-        Sequel::Migrator.run(VCAP::CloudController::AppModel.db, tmp_migrations_dir, table: :my_fake_table)
+        Sequel::Migrator.run(CloudController::AppModel.db, tmp_migrations_dir, table: :my_fake_table)
 
-        expect(VCAP::CloudController::ProcessModel.where(app_guid: app_guid, type: VCAP::CloudController::ProcessTypes::WEB).count).to eq(1)
-        process = VCAP::CloudController::ProcessModel.find(app_guid: app_guid, type: VCAP::CloudController::ProcessTypes::WEB)
+        expect(CloudController::ProcessModel.where(app_guid: app_guid, type: CloudController::ProcessTypes::WEB).count).to eq(1)
+        process = CloudController::ProcessModel.find(app_guid: app_guid, type: CloudController::ProcessTypes::WEB)
 
         expect(process.guid).to eq app_guid
         expect(process.instances).to eq 0
@@ -111,12 +111,12 @@ RSpec.describe 'Backfill web processes', isolation: :truncation do
     context 'and no other processes' do
       it 'adds an empty web process' do
         app_guid = app_with_no_processes.guid
-        expect(VCAP::CloudController::ProcessModel.where(app_guid: app_guid, type: VCAP::CloudController::ProcessTypes::WEB).count).to eq(0)
+        expect(CloudController::ProcessModel.where(app_guid: app_guid, type: CloudController::ProcessTypes::WEB).count).to eq(0)
 
-        Sequel::Migrator.run(VCAP::CloudController::AppModel.db, tmp_migrations_dir, table: :my_fake_table)
+        Sequel::Migrator.run(CloudController::AppModel.db, tmp_migrations_dir, table: :my_fake_table)
 
-        expect(VCAP::CloudController::ProcessModel.where(app_guid: app_guid, type: VCAP::CloudController::ProcessTypes::WEB).count).to eq(1)
-        process = VCAP::CloudController::ProcessModel.find(app_guid: app_guid, type: VCAP::CloudController::ProcessTypes::WEB)
+        expect(CloudController::ProcessModel.where(app_guid: app_guid, type: CloudController::ProcessTypes::WEB).count).to eq(1)
+        process = CloudController::ProcessModel.find(app_guid: app_guid, type: CloudController::ProcessTypes::WEB)
 
         expect(process.guid).to eq app_guid
         expect(process.instances).to eq 0

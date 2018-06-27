@@ -1,11 +1,11 @@
 require 'spec_helper'
 require 'cloud_controller/diego/bbs_stager_client'
 
-module VCAP::CloudController
+module CloudController
   module Diego
     RSpec.describe Messenger do
       subject(:messenger) { Messenger.new(statsd_updater) }
-      let(:statsd_updater) { instance_double(VCAP::CloudController::Metrics::StatsdUpdater) }
+      let(:statsd_updater) { instance_double(CloudController::Metrics::StatsdUpdater) }
 
       let(:bbs_stager_client) { instance_double(BbsStagerClient) }
       let(:config) { TestConfig.config_instance }
@@ -24,7 +24,7 @@ module VCAP::CloudController
         let(:staging_guid) { droplet.guid }
         let(:message) { { staging: 'message' } }
         let(:staging_details) do
-          VCAP::CloudController::Diego::StagingDetails.new.tap do |sd|
+          CloudController::Diego::StagingDetails.new.tap do |sd|
             sd.package = package
             sd.staging_guid = staging_guid
           end

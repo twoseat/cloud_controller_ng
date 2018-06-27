@@ -1,7 +1,7 @@
 require 'securerandom'
 require 'spec_helper'
 
-module VCAP::CloudController::Perm
+module CloudController::Perm
   RSpec.describe Client do
     let(:hostname) { 'https://perm.example.com' }
     let(:port) { 5678 }

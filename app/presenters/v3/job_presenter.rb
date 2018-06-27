@@ -1,6 +1,6 @@
 require 'presenters/v3/base_presenter'
 
-module VCAP::CloudController
+module CloudController
   module Presenters
     module V3
       class JobPresenter < BasePresenter
@@ -32,7 +32,7 @@ module VCAP::CloudController
         end
 
         def build_links
-          url_builder = VCAP::CloudController::Presenters::ApiUrlBuilder.new
+          url_builder = CloudController::Presenters::ApiUrlBuilder.new
 
           links = {
             self: { href: url_builder.build_url(path: "/v3/jobs/#{job.guid}") }
@@ -48,7 +48,7 @@ module VCAP::CloudController
         end
 
         def build_errors
-          return [] if job.cf_api_error.nil? || job.state == VCAP::CloudController::PollableJobModel::COMPLETE_STATE
+          return [] if job.cf_api_error.nil? || job.state == CloudController::PollableJobModel::COMPLETE_STATE
           parsed_last_error = YAML.safe_load(job.cf_api_error)
 
           parsed_last_error['errors'].map(&:deep_symbolize_keys)

@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-module VCAP::CloudController
+module CloudController
   RSpec.describe FeatureFlagsController do
     before { set_current_user_as_admin }
 
@@ -69,7 +69,7 @@ module VCAP::CloudController
 
     describe 'GET /v2/config/feature_flags' do
       before do
-        stub_const('VCAP::CloudController::FeatureFlag::DEFAULT_FLAGS', {
+        stub_const('CloudController::FeatureFlag::DEFAULT_FLAGS', {
           flag1: false,
           flag2: true,
           flag3: false,
@@ -141,7 +141,7 @@ module VCAP::CloudController
 
     describe 'GET /v2/config/feature_flags/:name' do
       before do
-        stub_const('VCAP::CloudController::FeatureFlag::DEFAULT_FLAGS', {
+        stub_const('CloudController::FeatureFlag::DEFAULT_FLAGS', {
           flag1: false,
         })
       end

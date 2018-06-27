@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-module VCAP::CloudController
+module CloudController
   RSpec.describe BuildpackLifecycleDataModel do
     subject(:lifecycle_data) { BuildpackLifecycleDataModel.new }
 
@@ -89,11 +89,11 @@ module VCAP::CloudController
             let(:buildpack1_name) { 'pleasant-valley-buildpack' }
             let(:buildpack1_other_name) { 'valley' }
             let(:buildpack1_version) { '3.1' }
-            let!(:buildpack1) { VCAP::CloudController::Buildpack.make(name: buildpack1_name, sha256_checksum: 'mammoth') }
+            let!(:buildpack1) { CloudController::Buildpack.make(name: buildpack1_name, sha256_checksum: 'mammoth') }
             let(:buildpack2_name) { 'stepping-stone-buildpack' }
             let(:buildpack2_other_name) { 'gilooley' }
             let(:buildpack2_version) { '95' }
-            let!(:buildpack2) { VCAP::CloudController::Buildpack.make(name: buildpack2_name, sha256_checksum: 'languid') }
+            let!(:buildpack2) { CloudController::Buildpack.make(name: buildpack2_name, sha256_checksum: 'languid') }
 
             let(:buildpack3_key) { 'git://my-buildpacks.tv/fred/barney.git' }
             let(:buildpack3_other_name) { 'hilltop' }

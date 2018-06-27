@@ -1,22 +1,22 @@
 require 'spec_helper'
 require 'actions/droplet_copy'
 
-module VCAP::CloudController
+module CloudController
   RSpec.describe DropletCopy do
     let(:droplet_copy) { DropletCopy.new(source_droplet) }
-    let(:source_space) { VCAP::CloudController::Space.make }
-    let!(:target_app) { VCAP::CloudController::AppModel.make(name: 'target-app-name') }
-    let!(:source_app) { VCAP::CloudController::AppModel.make(name: 'source-app-name', space: source_space) }
+    let(:source_space) { CloudController::Space.make }
+    let!(:target_app) { CloudController::AppModel.make(name: 'target-app-name') }
+    let!(:source_app) { CloudController::AppModel.make(name: 'source-app-name', space: source_space) }
     let(:lifecycle_type) { :buildpack }
     let!(:source_droplet) do
-      VCAP::CloudController::DropletModel.make(lifecycle_type,
+      CloudController::DropletModel.make(lifecycle_type,
         app_guid:              source_app.guid,
         droplet_hash:          'abcdef',
         sha256_checksum:          'droplet-sha256-checksum',
         process_types:         { web: 'bundle exec rails s' },
         buildpack_receipt_buildpack_guid: 'buildpack-guid',
         buildpack_receipt_buildpack: 'buildpack',
-        state:                 VCAP::CloudController::DropletModel::STAGED_STATE,
+        state:                 CloudController::DropletModel::STAGED_STATE,
         execution_metadata: 'execution_metadata',
         docker_receipt_image: 'docker/image',
         docker_receipt_username: 'dockerusername',
@@ -117,7 +117,7 @@ module VCAP::CloudController
           expect(copied_droplet).to be_docker
           expect(copied_droplet.guid).to_not eq(source_droplet.guid)
           expect(copied_droplet.docker_receipt_image).to eq('urvashi/reddy')
-          expect(copied_droplet.state).to eq(VCAP::CloudController::DropletModel::STAGED_STATE)
+          expect(copied_droplet.state).to eq(CloudController::DropletModel::STAGED_STATE)
         end
       end
     end

@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-module VCAP::CloudController
+module CloudController
   module Jobs::Runtime
     RSpec.describe OrphanedBlobsCleanup, job_context: :worker do
       subject(:job) { OrphanedBlobsCleanup.new }
@@ -15,7 +15,7 @@ module VCAP::CloudController
 
       before do
         TestConfig.override(perform_blob_cleanup: perform_blob_cleanup)
-        stub_const('VCAP::CloudController::Jobs::Runtime::OrphanedBlobsCleanup::NUMBER_OF_BLOBS_TO_DELETE', 20)
+        stub_const('CloudController::Jobs::Runtime::OrphanedBlobsCleanup::NUMBER_OF_BLOBS_TO_DELETE', 20)
       end
 
       describe '#perform' do

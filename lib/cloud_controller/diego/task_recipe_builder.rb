@@ -6,7 +6,7 @@ require 'cloud_controller/diego/bbs_environment_builder'
 require 'cloud_controller/diego/task_completion_callback_generator'
 require 'cloud_controller/diego/task_cpu_weight_calculator'
 
-module VCAP::CloudController
+module CloudController
   module Diego
     class TaskRecipeBuilder
       include ::Diego::ActionBuilder
@@ -16,8 +16,8 @@ module VCAP::CloudController
       end
 
       def build_app_task(config, task)
-        task_completion_callback = VCAP::CloudController::Diego::TaskCompletionCallbackGenerator.new(config).generate(task)
-        app_volume_mounts        = VCAP::CloudController::Diego::Protocol::AppVolumeMounts.new(task.app).as_json
+        task_completion_callback = CloudController::Diego::TaskCompletionCallbackGenerator.new(config).generate(task)
+        app_volume_mounts        = CloudController::Diego::Protocol::AppVolumeMounts.new(task.app).as_json
         task_action_builder      = LifecycleProtocol.protocol_for_type(task.droplet.lifecycle_type).task_action_builder(config, task)
 
         ::Diego::Bbs::Models::TaskDefinition.new(
@@ -37,7 +37,7 @@ module VCAP::CloudController
           cached_dependencies:              task_action_builder.cached_dependencies,
           root_fs:                          task_action_builder.stack,
           environment_variables:            task_action_builder.task_environment_variables,
-          PlacementTags:                    [VCAP::CloudController::IsolationSegmentSelector.for_space(task.space)],
+          PlacementTags:                    [CloudController::IsolationSegmentSelector.for_space(task.space)],
           certificate_properties:           ::Diego::Bbs::Models::CertificateProperties.new(
             organizational_unit: [
               "organization:#{task.app.organization.guid}",

@@ -1,6 +1,6 @@
 require 'repositories/package_event_repository'
 
-module VCAP::CloudController
+module CloudController
   class PackageCopy
     class InvalidPackage < StandardError; end
 

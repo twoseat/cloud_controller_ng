@@ -56,11 +56,11 @@ RSpec.describe 'Perm', type: :integration, skip: skip_perm_tests, perm: skip_per
 
     user_id = create_user
 
-    allow_any_instance_of(VCAP::CloudController::UaaClient).to receive(:origins_for_username).with(username).and_return([uaa_origin])
-    allow_any_instance_of(VCAP::CloudController::UaaClient).to receive(:usernames_for_ids).with([user_id]).and_return({ user_id => username })
-    allow_any_instance_of(VCAP::CloudController::UaaClient).to receive(:id_for_username).with(username).and_return(user_id)
-    allow_any_instance_of(VCAP::CloudController::UaaClient).to receive(:id_for_username).with(username, origin: nil).and_return(user_id)
-    allow_any_instance_of(VCAP::CloudController::UaaTokenDecoder).to receive(:uaa_issuer).and_return(issuer)
+    allow_any_instance_of(CloudController::UaaClient).to receive(:origins_for_username).with(username).and_return([uaa_origin])
+    allow_any_instance_of(CloudController::UaaClient).to receive(:usernames_for_ids).with([user_id]).and_return({ user_id => username })
+    allow_any_instance_of(CloudController::UaaClient).to receive(:id_for_username).with(username).and_return(user_id)
+    allow_any_instance_of(CloudController::UaaClient).to receive(:id_for_username).with(username, origin: nil).and_return(user_id)
+    allow_any_instance_of(CloudController::UaaTokenDecoder).to receive(:uaa_issuer).and_return(issuer)
   end
 
   describe 'POST /v2/organizations' do
@@ -321,7 +321,7 @@ RSpec.describe 'Perm', type: :integration, skip: skip_perm_tests, perm: skip_per
   end
 
   describe 'DELETE /v2/organizations/:guid/:role' do
-    let(:org) { VCAP::CloudController::Organization.make }
+    let(:org) { CloudController::Organization.make }
 
     ORG_ROLES.each do |role|
       describe "DELETE /v2/organizations/:guid/#{role}s" do
@@ -424,7 +424,7 @@ RSpec.describe 'Perm', type: :integration, skip: skip_perm_tests, perm: skip_per
   end
 
   describe 'DELETE /v2/organizations/:guid/:role/:user_guid' do
-    let(:org) { VCAP::CloudController::Organization.make }
+    let(:org) { CloudController::Organization.make }
 
     ORG_ROLES.each do |role|
       describe "DELETE /v2/organizations/:guid/#{role}s/:user_guid" do
@@ -453,7 +453,7 @@ RSpec.describe 'Perm', type: :integration, skip: skip_perm_tests, perm: skip_per
   end
 
   describe 'POST /v2/spaces' do
-    let(:org) { VCAP::CloudController::Organization.make(user_guids: [user_id]) }
+    let(:org) { CloudController::Organization.make(user_guids: [user_id]) }
 
     it 'creates the space roles' do
       post '/v2/spaces', {
@@ -495,7 +495,7 @@ RSpec.describe 'Perm', type: :integration, skip: skip_perm_tests, perm: skip_per
   end
 
   describe 'DELETE /v2/spaces/:guid' do
-    let(:org) { VCAP::CloudController::Organization.make(user_guids: [user_id]) }
+    let(:org) { CloudController::Organization.make(user_guids: [user_id]) }
 
     let(:worker) { Delayed::Worker.new }
 
@@ -623,9 +623,9 @@ RSpec.describe 'Perm', type: :integration, skip: skip_perm_tests, perm: skip_per
   end
 
   describe 'DELETE /v2/spaces/:guid/:role' do
-    let(:org) { VCAP::CloudController::Organization.make }
+    let(:org) { CloudController::Organization.make }
     let(:space) {
-      VCAP::CloudController::Space.make(
+      CloudController::Space.make(
         organization: org,
       )
     }
@@ -652,9 +652,9 @@ RSpec.describe 'Perm', type: :integration, skip: skip_perm_tests, perm: skip_per
   end
 
   describe 'DELETE /v2/spaces/:guid/:role/:user_guid' do
-    let(:org) { VCAP::CloudController::Organization.make }
+    let(:org) { CloudController::Organization.make }
     let(:space) {
-      VCAP::CloudController::Space.make(
+      CloudController::Space.make(
         organization: org,
       )
     }

@@ -1,32 +1,32 @@
 require 'cloud_controller/diego/lifecycles/lifecycles'
 require 'utils/uri_utils'
 
-module VCAP::CloudController
+module CloudController
   class BuildpackLifecycleDataModel < Sequel::Model(:buildpack_lifecycle_data)
     LIFECYCLE_TYPE = Lifecycles::BUILDPACK
 
     set_field_as_encrypted :buildpack_url, salt: :encrypted_buildpack_url_salt, column: :encrypted_buildpack_url
 
     many_to_one :droplet,
-      class: '::VCAP::CloudController::DropletModel',
+      class: '::CloudController::DropletModel',
       key: :droplet_guid,
       primary_key: :guid,
       without_guid_generation: true
 
     many_to_one :build,
-      class: '::VCAP::CloudController::BuildModel',
+      class: '::CloudController::BuildModel',
       key: :build_guid,
       primary_key: :guid,
       without_guid_generation: true
 
     many_to_one :app,
-      class: '::VCAP::CloudController::AppModel',
+      class: '::CloudController::AppModel',
       key: :app_guid,
       primary_key: :guid,
       without_guid_generation: true
 
     one_to_many :buildpack_lifecycle_buildpacks,
-      class: '::VCAP::CloudController::BuildpackLifecycleBuildpackModel',
+      class: '::CloudController::BuildpackLifecycleBuildpackModel',
       key: :buildpack_lifecycle_data_guid,
       primary_key: :guid,
       order: :id

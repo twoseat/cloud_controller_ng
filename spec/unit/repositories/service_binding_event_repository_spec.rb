@@ -1,7 +1,7 @@
 require 'spec_helper'
 require 'repositories/service_binding_event_repository'
 
-module VCAP::CloudController
+module CloudController
   module Repositories
     RSpec.describe ServiceBindingEventRepository do
       let(:user_guid) { 'user-guid' }

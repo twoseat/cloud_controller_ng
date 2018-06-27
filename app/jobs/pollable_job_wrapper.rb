@@ -1,6 +1,6 @@
 require 'presenters/error_presenter'
 
-module VCAP::CloudController
+module CloudController
   module Jobs
     class PollableJobWrapper < WrappingJob
       # use custom hook as Job does not have the guid field populated during the normal `enqueue` hook

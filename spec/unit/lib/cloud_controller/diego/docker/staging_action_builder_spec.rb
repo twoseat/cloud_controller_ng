@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-module VCAP::CloudController
+module CloudController
   module Diego
     module Docker
       RSpec.describe StagingActionBuilder do

@@ -3,7 +3,7 @@ namespace :buildpacks do
   task :install do
     buildpacks = RakeConfig.config.get(:install_buildpacks)
     BackgroundJobEnvironment.new(RakeConfig.config).setup_environment do
-      VCAP::CloudController::InstallBuildpacks.new(RakeConfig.config).install(buildpacks)
+      CloudController::InstallBuildpacks.new(RakeConfig.config).install(buildpacks)
     end
   end
 end

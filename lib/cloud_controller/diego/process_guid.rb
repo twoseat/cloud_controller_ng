@@ -1,4 +1,4 @@
-module VCAP::CloudController
+module CloudController
   module Diego
     class ProcessGuid
       def self.from(process_guid, process_version)

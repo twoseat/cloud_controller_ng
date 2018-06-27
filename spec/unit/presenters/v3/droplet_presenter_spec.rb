@@ -1,12 +1,12 @@
 require 'spec_helper'
 require 'presenters/v3/droplet_presenter'
 
-module VCAP::CloudController::Presenters::V3
+module CloudController::Presenters::V3
   RSpec.describe DropletPresenter do
     let(:droplet) do
-      VCAP::CloudController::DropletModel.make(
+      CloudController::DropletModel.make(
         :buildpack,
-        state:              VCAP::CloudController::DropletModel::STAGED_STATE,
+        state:              CloudController::DropletModel::STAGED_STATE,
         error_id:           'FAILED',
         error_description:  'things went all sorts of bad',
         process_types:      { 'web' => 'npm start', 'worker' => 'start worker' },
@@ -116,7 +116,7 @@ module VCAP::CloudController::Presenters::V3
 
         describe 'links' do
           context 'when there is no package guid' do
-            let(:droplet) { VCAP::CloudController::DropletModel.make(:buildpack, package_guid: nil) }
+            let(:droplet) { CloudController::DropletModel.make(:buildpack, package_guid: nil) }
 
             it 'links to nil' do
               expect(result[:links][:package]).to be nil
@@ -129,11 +129,11 @@ module VCAP::CloudController::Presenters::V3
         let(:buildpack1_name) { 'rosanna' }
         let(:buildpack1_other_name) { 'toto' }
         let(:buildpack1_version) { '1.9.82' }
-        let!(:buildpack1) { VCAP::CloudController::Buildpack.make(name: buildpack1_name, sha256_checksum: 'mammoth') }
+        let!(:buildpack1) { CloudController::Buildpack.make(name: buildpack1_name, sha256_checksum: 'mammoth') }
         let(:buildpack2_name) { 'chris-cross' }
         let(:buildpack2_other_name) { 'sailing' }
         let(:buildpack2_version) { '1.9.79' }
-        let!(:buildpack2) { VCAP::CloudController::Buildpack.make(name: buildpack2_name, sha256_checksum: 'languid') }
+        let!(:buildpack2) { CloudController::Buildpack.make(name: buildpack2_name, sha256_checksum: 'languid') }
         let(:buildpack_receipt_buildpack) { buildpack2_name }
         let(:buildpack_receipt_detect_output) { 'black cow' }
 
@@ -196,9 +196,9 @@ module VCAP::CloudController::Presenters::V3
 
       context 'docker lifecycle' do
         let(:droplet) do
-          VCAP::CloudController::DropletModel.make(
+          CloudController::DropletModel.make(
             :docker,
-            state: VCAP::CloudController::DropletModel::STAGED_STATE
+            state: CloudController::DropletModel::STAGED_STATE
           )
         end
 

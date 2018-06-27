@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-module VCAP::CloudController
+module CloudController
   RSpec.describe RouteValidator do
     let(:space_quota) { SpaceQuotaDefinition.make }
     let(:space) { Space.make(space_quota_definition: space_quota, organization: space_quota.organization) }

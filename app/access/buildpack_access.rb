@@ -1,4 +1,4 @@
-module VCAP::CloudController
+module CloudController
   class BuildpackAccess < BaseAccess
     def create?(object, params=nil)
       admin_user?

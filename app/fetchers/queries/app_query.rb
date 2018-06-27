@@ -19,15 +19,15 @@ module VCAP::RestAPI
     end
 
     def org_filter(ds, cond)
-      ds.where(space: VCAP::CloudController::Space.where(organization: cond[:organization]))
+      ds.where(space: CloudController::Space.where(organization: cond[:organization]))
     end
 
     def stack_filter(ds, cond)
       stack_names = cond[:stack].select(:name)
 
       ds.where(
-        app: VCAP::CloudController::AppModel.where(
-          buildpack_lifecycle_data: VCAP::CloudController::BuildpackLifecycleDataModel.where(stack: stack_names).
+        app: CloudController::AppModel.where(
+          buildpack_lifecycle_data: CloudController::BuildpackLifecycleDataModel.where(stack: stack_names).
             exclude(app_guid: nil).
             select(:guid)
         ).select(:guid)
@@ -35,7 +35,7 @@ module VCAP::RestAPI
     end
 
     def name_filter(ds, cond)
-      ds.where(app: VCAP::CloudController::AppModel.filter(cond))
+      ds.where(app: CloudController::AppModel.filter(cond))
     end
 
     def raise_if_column_is_missing(query_key, column)

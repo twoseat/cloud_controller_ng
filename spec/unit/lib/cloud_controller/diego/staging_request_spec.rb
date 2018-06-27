@@ -1,12 +1,12 @@
 require 'spec_helper'
 require 'cloud_controller/diego/staging_request'
 
-module VCAP::CloudController::Diego
+module CloudController::Diego
   RSpec.describe StagingRequest do
-    let(:isolation_segment_model) { VCAP::CloudController::IsolationSegmentModel.make }
+    let(:isolation_segment_model) { CloudController::IsolationSegmentModel.make }
     let(:process) do
-      VCAP::CloudController::ProcessModelFactory.make(
-        stack:            VCAP::CloudController::Stack.default,
+      CloudController::ProcessModelFactory.make(
+        stack:            CloudController::Stack.default,
         file_descriptors: 16384,
         memory:           1024,
         disk_quota:       1946,

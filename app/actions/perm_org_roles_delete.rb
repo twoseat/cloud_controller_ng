@@ -1,4 +1,4 @@
-module VCAP::CloudController
+module CloudController
   class PermOrgRolesDelete
     def initialize(client)
       @client = client
@@ -6,7 +6,7 @@ module VCAP::CloudController
 
     def delete(org)
       @client = client.rehydrate
-      VCAP::CloudController::Roles::ORG_ROLE_NAMES.each do |role|
+      CloudController::Roles::ORG_ROLE_NAMES.each do |role|
         begin
           client.delete_org_role(role: role, org_id: org.guid)
         rescue

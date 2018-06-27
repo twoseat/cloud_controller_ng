@@ -1,7 +1,7 @@
 require 'cloudfront-signer'
 require 'cloud_controller/blobstore/client'
 
-module VCAP::CloudController
+module CloudController
   class DownloadDropletsController < RestController::BaseController
     def self.dependencies
       [:droplet_blobstore, :blobstore_url_generator, :missing_blob_handler, :blob_sender, :droplet_url_generator]

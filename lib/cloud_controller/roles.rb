@@ -1,6 +1,6 @@
 require 'set'
 
-module VCAP::CloudController
+module CloudController
   class Roles
     CLOUD_CONTROLLER_ADMIN_SCOPE = 'cloud_controller.admin'.freeze
     CLOUD_CONTROLLER_ADMIN_READ_ONLY_SCOPE = 'cloud_controller.admin_read_only'.freeze

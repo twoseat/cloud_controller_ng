@@ -1,7 +1,7 @@
 require 'spec_helper'
 require 'presenters/api_url_builder'
 
-module VCAP::CloudController::Presenters
+module CloudController::Presenters
   RSpec.describe ApiUrlBuilder do
     let(:scheme) { TestConfig.config[:external_protocol] }
     let(:host) { TestConfig.config[:external_domain] }

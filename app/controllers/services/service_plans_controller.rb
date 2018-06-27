@@ -1,4 +1,4 @@
-module VCAP::CloudController
+module CloudController
   class ServicePlansController < RestController::ModelController
     define_attributes do
       attribute :name,              String

@@ -5,7 +5,7 @@ require 'openssl/digest'
 
 require 'base64'
 
-module VCAP::CloudController
+module CloudController
   module Encryptor
     class << self
       ALGORITHM = 'AES-128-CBC'.freeze

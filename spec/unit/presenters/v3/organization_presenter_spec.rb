@@ -1,9 +1,9 @@
 require 'spec_helper'
 require 'presenters/v3/organization_presenter'
 
-module VCAP::CloudController::Presenters::V3
+module CloudController::Presenters::V3
   RSpec.describe OrganizationPresenter do
-    let(:organization) { VCAP::CloudController::Organization.make }
+    let(:organization) { CloudController::Organization.make }
 
     describe '#to_hash' do
       let(:result) { OrganizationPresenter.new(organization).to_hash }

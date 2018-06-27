@@ -1,4 +1,4 @@
-module VCAP::CloudController
+module CloudController
   class ServiceInstanceOperation < Sequel::Model
     plugin :serialization
 

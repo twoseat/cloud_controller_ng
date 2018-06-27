@@ -1,7 +1,7 @@
 require 'spec_helper'
 
-module VCAP::CloudController
-  RSpec.describe VCAP::CloudController::CrashesController do
+module CloudController
+  RSpec.describe CloudController::CrashesController do
     describe 'GET /v2/apps/:id/crashes' do
       let(:app_model) { AppModel.make }
       let(:process) { ProcessModel.make(app: app_model, guid: app_model.guid) }

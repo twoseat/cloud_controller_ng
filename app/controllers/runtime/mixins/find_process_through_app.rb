@@ -1,4 +1,4 @@
-module VCAP::CloudController
+module CloudController
   module FindProcessThroughApp
     def find_guid(guid, model=ProcessModel)
       if model == ProcessModel

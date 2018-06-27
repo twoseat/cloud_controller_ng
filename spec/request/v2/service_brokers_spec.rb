@@ -25,16 +25,16 @@ RSpec.describe 'ServiceBrokers' do
       post '/v2/service_brokers', req_body.to_json, admin_headers
       expect(last_response.status).to eq(201)
 
-      broker = VCAP::CloudController::ServiceBroker.last
+      broker = CloudController::ServiceBroker.last
       expect(broker.name).to eq(req_body[:name])
       expect(broker.broker_url).to eq(req_body[:broker_url])
       expect(broker.auth_username).to eq(req_body[:auth_username])
       expect(broker.auth_password).to eq(req_body[:auth_password])
 
-      service = VCAP::CloudController::Service.last
+      service = CloudController::Service.last
       expect(service.label).to eq(service_name)
 
-      plan = VCAP::CloudController::ServicePlan.last
+      plan = CloudController::ServicePlan.last
       expect(plan.name).to eq(plan_name)
     end
 

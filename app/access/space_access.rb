@@ -1,4 +1,4 @@
-module VCAP::CloudController
+module CloudController
   class SpaceAccess < BaseAccess
     # These methods should be called first to determine if the user's token has the appropriate scope for the operation
 

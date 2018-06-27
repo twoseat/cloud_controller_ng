@@ -1,6 +1,6 @@
 require 'messages/base_message'
 
-module VCAP::CloudController
+module CloudController
   class IsolationSegmentUpdateMessage < BaseMessage
     register_allowed_keys [:name]
 

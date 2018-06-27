@@ -24,7 +24,7 @@ module CloudFoundry
         auth_method, user_guid, user_name = get_auth_info(env, request)
 
         @logger.info(
-          "CEF:#{CEF_VERSION}|cloud_foundry|cloud_controller_ng|#{VCAP::CloudController::Constants::API_VERSION}|" \
+          "CEF:#{CEF_VERSION}|cloud_foundry|cloud_controller_ng|#{CloudController::Constants::API_VERSION}|" \
           "#{escape_prefix(signature_id)}|#{escape_prefix(name)}|#{SEVERITY}|" \
           "rt=#{(Time.now.utc.to_f * 1000).to_i} " \
           "suser=#{escape_extension(user_name)} " \

@@ -1,16 +1,16 @@
 require 'spec_helper'
 require 'presenters/v3/build_presenter'
 
-module VCAP::CloudController::Presenters::V3
+module CloudController::Presenters::V3
   RSpec.describe BuildPresenter do
-    let(:app) { VCAP::CloudController::AppModel.make }
-    let(:package) { VCAP::CloudController::PackageModel.make(app: app) }
-    let!(:happy_buildpack) { VCAP::CloudController::Buildpack.make(name: 'the-happiest-buildpack') }
+    let(:app) { CloudController::AppModel.make }
+    let(:package) { CloudController::PackageModel.make(app: app) }
+    let!(:happy_buildpack) { CloudController::Buildpack.make(name: 'the-happiest-buildpack') }
     let(:buildpacks) { [happy_buildpack.name, 'http://bob:secret@example.com/happy'] }
     let(:stack) { 'the-happiest-stack' }
     let(:build) do
-      VCAP::CloudController::BuildModel.make(
-        state:   VCAP::CloudController::BuildModel::STAGING_STATE,
+      CloudController::BuildModel.make(
+        state:   CloudController::BuildModel::STAGING_STATE,
         package: package,
         app:     app,
         created_by_user_guid: 'happy user guid',
@@ -19,7 +19,7 @@ module VCAP::CloudController::Presenters::V3
       )
     end
     let!(:lifecycle_data) do
-      VCAP::CloudController::BuildpackLifecycleDataModel.make(buildpacks: buildpacks, stack: stack, build: build)
+      CloudController::BuildpackLifecycleDataModel.make(buildpacks: buildpacks, stack: stack, build: build)
     end
 
     describe '#to_hash' do
@@ -99,9 +99,9 @@ module VCAP::CloudController::Presenters::V3
 
       context 'when the droplet has finished staging' do
         let(:droplet) do
-          VCAP::CloudController::DropletModel.make(
+          CloudController::DropletModel.make(
             :buildpack,
-            state:        VCAP::CloudController::DropletModel::STAGED_STATE,
+            state:        CloudController::DropletModel::STAGED_STATE,
             package_guid: package.guid,
             app:          app,
             build:        build
@@ -125,7 +125,7 @@ module VCAP::CloudController::Presenters::V3
       context 'when the droplet stages with an error' do
         before do
           build.update(
-            state:             VCAP::CloudController::BuildModel::FAILED_STATE,
+            state:             CloudController::BuildModel::FAILED_STATE,
             error_description: 'something bad',
             error_id:          'SomeError',
           )

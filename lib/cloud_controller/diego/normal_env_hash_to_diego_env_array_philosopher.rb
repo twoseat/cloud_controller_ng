@@ -1,6 +1,6 @@
 require 'presenters/system_environment/system_env_presenter'
 
-module VCAP::CloudController
+module CloudController
   module Diego
     class NormalEnvHashToDiegoEnvArrayPhilosopher
       def self.muse(hash)

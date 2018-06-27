@@ -284,7 +284,7 @@ module CloudFoundry
         let(:general_limit) { 1 }
 
         before do
-          allow(VCAP::CloudController::SecurityContext).to receive(:admin_read_only?).and_return(true)
+          allow(CloudController::SecurityContext).to receive(:admin_read_only?).and_return(true)
         end
         it 'does not rate limit' do
           _, _, _ = middleware.call(user_1_env)

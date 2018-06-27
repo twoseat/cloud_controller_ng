@@ -1,4 +1,4 @@
-module VCAP::CloudController
+module CloudController
   class OrganizationInstanceUsageCalculator
     def self.get_instance_usage(org)
       instance_usage = 0

@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-module VCAP::CloudController
+module CloudController
   RSpec.describe PortGenerator do
     let(:routing_api_client) { double('routing_api_client', router_group: router_group1) }
     let(:router_group1) { double('router_group1', type: router_group_type, guid: router_group_guid1) }

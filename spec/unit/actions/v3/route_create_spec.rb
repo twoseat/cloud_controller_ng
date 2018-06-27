@@ -1,7 +1,7 @@
 require 'spec_helper'
 require 'actions/v3/route_create'
 
-module VCAP::CloudController
+module CloudController
   module V3
     RSpec.describe RouteCreate do
       let(:logger) { instance_double(Steno::Logger) }

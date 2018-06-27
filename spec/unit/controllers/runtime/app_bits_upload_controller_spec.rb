@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-module VCAP::CloudController
+module CloudController
   RSpec.describe AppBitsUploadController do
     let(:app_event_repository) { Repositories::AppEventRepository.new }
     before { CloudController::DependencyLocator.instance.register(:app_event_repository, app_event_repository) }
@@ -480,14 +480,14 @@ module VCAP::CloudController
 
         context 'validation permissions' do
           it 'allows an admin' do
-            stub_const('VCAP::CloudController::Jobs::Runtime::AppBitsCopier', FakeCopier)
+            stub_const('CloudController::Jobs::Runtime::AppBitsCopier', FakeCopier)
             post "/v2/apps/#{dest_process.app.guid}/copy_bits", json_payload, admin_headers
 
             expect(last_response.status).to eq(201)
           end
 
           it 'disallows when not a developer of destination space' do
-            stub_const('VCAP::CloudController::Jobs::Runtime::AppBitsCopier', FakeCopier)
+            stub_const('CloudController::Jobs::Runtime::AppBitsCopier', FakeCopier)
             user = make_developer_for_space(src_process.space)
 
             post "/v2/apps/#{dest_process.app.guid}/copy_bits", json_payload, headers_for(user)
@@ -496,7 +496,7 @@ module VCAP::CloudController
           end
 
           it 'disallows when not a developer of source space' do
-            stub_const('VCAP::CloudController::Jobs::Runtime::AppBitsCopier', FakeCopier)
+            stub_const('CloudController::Jobs::Runtime::AppBitsCopier', FakeCopier)
             user = make_developer_for_space(dest_process.space)
 
             post "/v2/apps/#{dest_process.app.guid}/copy_bits", json_payload, headers_for(user)
@@ -505,7 +505,7 @@ module VCAP::CloudController
           end
 
           it 'allows when a developer of both spaces' do
-            stub_const('VCAP::CloudController::Jobs::Runtime::AppBitsCopier', FakeCopier)
+            stub_const('CloudController::Jobs::Runtime::AppBitsCopier', FakeCopier)
             user = make_developer_for_space(dest_process.space)
             src_process.organization.add_user(user)
             src_process.space.add_developer(user)

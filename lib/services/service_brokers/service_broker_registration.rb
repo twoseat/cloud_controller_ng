@@ -58,7 +58,7 @@ module VCAP::Services::ServiceBrokers
     private
 
     def only_updating_broker_name?
-      current_broker_values = VCAP::CloudController::ServiceBroker.find(guid: broker.guid).values.to_a
+      current_broker_values = CloudController::ServiceBroker.find(guid: broker.guid).values.to_a
       update_values = current_broker_values - broker.values.to_a
       update_values.length == 1 && update_values[0][0] == :name
     end

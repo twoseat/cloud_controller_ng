@@ -40,20 +40,20 @@ module VCAP::Services::SSO::UAA
         return
       when 400
         log_bad_uaa_response(response)
-        raise VCAP::CloudController::UaaResourceInvalid.new
+        raise CloudController::UaaResourceInvalid.new
       when 404
         log_bad_uaa_response(response)
         if response[ROUTER_404_KEY] == ROUTER_404_VALUE
-          raise VCAP::CloudController::UaaUnavailable.new
+          raise CloudController::UaaUnavailable.new
         else
-          raise VCAP::CloudController::UaaResourceNotFound.new
+          raise CloudController::UaaResourceNotFound.new
         end
       when 409
         log_bad_uaa_response(response)
-        raise VCAP::CloudController::UaaResourceAlreadyExists.new
+        raise CloudController::UaaResourceAlreadyExists.new
       else
         log_bad_uaa_response(response)
-        raise VCAP::CloudController::UaaUnexpectedResponse.new
+        raise CloudController::UaaUnexpectedResponse.new
       end
     end
 
@@ -95,7 +95,7 @@ module VCAP::Services::SSO::UAA
     end
 
     def filter_uaa_client_scope
-      configured_scope = VCAP::CloudController::Config.config.get(:uaa_client_scope).split(',')
+      configured_scope = CloudController::Config.config.get(:uaa_client_scope).split(',')
       filtered_scope   = configured_scope.select do |val|
         ['cloud_controller.write', 'openid', 'cloud_controller.read', 'cloud_controller_service_permissions.read'].include?(val)
       end
@@ -104,20 +104,20 @@ module VCAP::Services::SSO::UAA
     end
 
     def create_uaa_client
-      VCAP::CloudController::UaaClient.new(
+      CloudController::UaaClient.new(
         uaa_target: uaa_target,
-        client_id:  VCAP::CloudController::Config.config.get(:uaa_client_name),
-        secret:     VCAP::CloudController::Config.config.get(:uaa_client_secret),
+        client_id:  CloudController::Config.config.get(:uaa_client_name),
+        secret:     CloudController::Config.config.get(:uaa_client_secret),
         ca_file:    uaa_ca_file
       )
     end
 
     def uaa_ca_file
-      VCAP::CloudController::Config.config.get(:uaa, :ca_file)
+      CloudController::Config.config.get(:uaa, :ca_file)
     end
 
     def uaa_target
-      VCAP::CloudController::Config.config.get(:uaa, :internal_url)
+      CloudController::Config.config.get(:uaa, :internal_url)
     end
   end
 end

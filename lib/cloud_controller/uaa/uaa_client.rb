@@ -1,9 +1,9 @@
-module VCAP::CloudController
+module CloudController
   class UaaClient
     attr_reader :uaa_target, :client_id, :secret, :ca_file, :http_timeout
 
     def self.default_http_timeout
-      @http_timeout ||= VCAP::CloudController::Config.config.get(:uaa, :client_timeout)
+      @http_timeout ||= CloudController::Config.config.get(:uaa, :client_timeout)
     end
 
     def initialize(uaa_target:, client_id:, secret:, ca_file:)

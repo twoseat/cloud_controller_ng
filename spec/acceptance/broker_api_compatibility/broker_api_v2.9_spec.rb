@@ -2,14 +2,14 @@ require 'spec_helper'
 
 RSpec.describe 'Service Broker API integration' do
   describe 'v2.9' do
-    include VCAP::CloudController::BrokerApiHelper
+    include CloudController::BrokerApiHelper
 
     let(:catalog) { default_catalog(plan_updateable: true) }
 
     before do
       setup_cc
       setup_broker(catalog)
-      @broker = VCAP::CloudController::ServiceBroker.find guid: @broker_guid
+      @broker = CloudController::ServiceBroker.find guid: @broker_guid
     end
 
     describe 'provision' do
@@ -20,7 +20,7 @@ RSpec.describe 'Service Broker API integration' do
 
         expect(a_request(:put, provision_url_for_broker(@broker, accepts_incomplete: true))).to have_been_made
 
-        service_instance = VCAP::CloudController::ManagedServiceInstance.find(guid: @service_instance_guid)
+        service_instance = CloudController::ManagedServiceInstance.find(guid: @service_instance_guid)
         Delayed::Worker.new.work_off
 
         expect(a_request(
@@ -33,7 +33,7 @@ RSpec.describe 'Service Broker API integration' do
     describe 'Last Operation for instances that have already been provisioned' do
       let(:broker_response_status) { 200 }
       let(:broker_response_body) { { state: 'succeeded' }.to_json }
-      let!(:service_instance) { VCAP::CloudController::ManagedServiceInstance.make(space_guid: @space_guid, service_plan_guid: @plan_guid) }
+      let!(:service_instance) { CloudController::ManagedServiceInstance.make(space_guid: @space_guid, service_plan_guid: @plan_guid) }
       let(:operation_data) { nil }
       let(:basic_auth) { [stubbed_broker_username, stubbed_broker_password] }
 

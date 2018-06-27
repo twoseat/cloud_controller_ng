@@ -1,4 +1,4 @@
-module VCAP::CloudController
+module CloudController
   class SpaceUpdateIsolationSegment
     class Error < StandardError; end
 

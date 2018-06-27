@@ -18,7 +18,7 @@ module CloudController::Presenters::V2
 
       let(:volume_mount) { [{ 'container_dir' => 'mount' }] }
       let(:service_binding) do
-        VCAP::CloudController::ServiceBinding.make(
+        CloudController::ServiceBinding.make(
           credentials:      { 'secret' => 'key' },
           syslog_drain_url: 'syslog://drain.example.com',
           volume_mounts:    volume_mount
@@ -55,7 +55,7 @@ module CloudController::Presenters::V2
       end
 
       context 'when there is operation associated with this binding' do
-        let(:binding_operation) { VCAP::CloudController::ServiceBindingOperation.make(state: 'in progress', description: '10% complete') }
+        let(:binding_operation) { CloudController::ServiceBindingOperation.make(state: 'in progress', description: '10% complete') }
 
         before do
           service_binding.service_binding_operation = binding_operation
@@ -77,7 +77,7 @@ module CloudController::Presenters::V2
 
       context 'when a name is provided' do
         let(:service_binding) do
-          VCAP::CloudController::ServiceBinding.make(
+          CloudController::ServiceBinding.make(
             credentials:      { 'secret' => 'key' },
             syslog_drain_url: 'syslog://drain.example.com',
             volume_mounts:    volume_mount,

@@ -1,4 +1,4 @@
-module VCAP::CloudController
+module CloudController
   class DomainAccess < BaseAccess
     def can_remove_related_object?(object, params=nil)
       read_for_update?(object, params)

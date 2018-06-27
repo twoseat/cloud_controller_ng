@@ -9,7 +9,7 @@ module VCAP::Services
       private
 
       def provide_client_for_instance(service_instance)
-        if service_instance.is_a? VCAP::CloudController::UserProvidedServiceInstance
+        if service_instance.is_a? CloudController::UserProvidedServiceInstance
           VCAP::Services::ServiceBrokers::UserProvided::Client.new
         else
           provide_client_for_broker(service_instance.service_broker)

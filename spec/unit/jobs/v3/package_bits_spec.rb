@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-module VCAP::CloudController
+module CloudController
   module Jobs::V3
     RSpec.describe PackageBits, job_context: :api do
       let(:uploaded_path) { 'tmp/uploaded.zip' }

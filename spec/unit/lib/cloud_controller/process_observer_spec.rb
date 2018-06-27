@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-module VCAP::CloudController
+module CloudController
   RSpec.describe ProcessObserver do
     let(:stagers) { double(:stagers, stager_for_app: stager) }
     let(:runners) { instance_double(Runners, runner_for_process: runner) }
@@ -48,7 +48,7 @@ module VCAP::CloudController
         let(:diego) { true }
 
         it 'does not care if diego is unavailable' do
-          allow(runner).to receive(:stop).and_raise(VCAP::CloudController::Diego::Runner::CannotCommunicateWithDiegoError)
+          allow(runner).to receive(:stop).and_raise(CloudController::Diego::Runner::CannotCommunicateWithDiegoError)
           expect { subject }.not_to raise_error
         end
       end
@@ -77,7 +77,7 @@ module VCAP::CloudController
             let(:diego) { true }
 
             it 'does not care if diego is unavailable' do
-              allow(runner).to receive(:stop).and_raise(VCAP::CloudController::Diego::Runner::CannotCommunicateWithDiegoError)
+              allow(runner).to receive(:stop).and_raise(CloudController::Diego::Runner::CannotCommunicateWithDiegoError)
               expect { subject }.not_to raise_error
             end
           end
@@ -113,7 +113,7 @@ module VCAP::CloudController
             let(:diego) { true }
 
             it 'does not care if diego is unavailable' do
-              allow(runner).to receive(:start).and_raise(VCAP::CloudController::Diego::Runner::CannotCommunicateWithDiegoError)
+              allow(runner).to receive(:start).and_raise(CloudController::Diego::Runner::CannotCommunicateWithDiegoError)
               expect { subject }.not_to raise_error
             end
           end
@@ -185,7 +185,7 @@ module VCAP::CloudController
             let(:diego) { true }
 
             it 'does not care if diego is unavailable' do
-              allow(runner).to receive(:stop).and_raise(VCAP::CloudController::Diego::Runner::CannotCommunicateWithDiegoError)
+              allow(runner).to receive(:stop).and_raise(CloudController::Diego::Runner::CannotCommunicateWithDiegoError)
               expect { subject }.not_to raise_error
             end
           end
@@ -220,7 +220,7 @@ module VCAP::CloudController
               let(:diego) { true }
 
               it 'does not care if diego is unavailable' do
-                allow(runner).to receive(:start).and_raise(VCAP::CloudController::Diego::Runner::CannotCommunicateWithDiegoError)
+                allow(runner).to receive(:start).and_raise(CloudController::Diego::Runner::CannotCommunicateWithDiegoError)
                 expect { subject }.not_to raise_error
               end
             end
@@ -288,7 +288,7 @@ module VCAP::CloudController
             let(:diego) { true }
 
             it 'does not care if diego is unavailable' do
-              allow(runner).to receive(:scale).and_raise(VCAP::CloudController::Diego::Runner::CannotCommunicateWithDiegoError)
+              allow(runner).to receive(:scale).and_raise(CloudController::Diego::Runner::CannotCommunicateWithDiegoError)
               expect { subject }.not_to raise_error
             end
           end

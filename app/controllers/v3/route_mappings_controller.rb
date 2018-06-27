@@ -48,7 +48,7 @@ class RouteMappingsController < ApplicationController
 
     begin
       route_mapping = RouteMappingCreate.add(UserAuditInfo.from_context(SecurityContext), route, process)
-    rescue ::VCAP::CloudController::RouteMappingCreate::InvalidRouteMapping => e
+    rescue ::CloudController::RouteMappingCreate::InvalidRouteMapping => e
       unprocessable!(e.message)
     end
 

@@ -1,6 +1,6 @@
 require 'messages/list_message'
 
-module VCAP::CloudController
+module CloudController
   class AppsListMessage < ListMessage
     register_allowed_keys [:names, :guids, :organization_guids, :space_guids, :page, :per_page, :order_by, :order_direction, :include]
 

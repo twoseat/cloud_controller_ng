@@ -1,6 +1,6 @@
-module VCAP::CloudController
+module CloudController
   module Jobs
-    class DeleteActionJob < VCAP::CloudController::Jobs::CCJob
+    class DeleteActionJob < CloudController::Jobs::CCJob
       attr_reader :resource_guid
 
       def initialize(model_class, resource_guid, delete_action)

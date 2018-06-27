@@ -1,7 +1,7 @@
 require 'spec_helper'
 require 'messages/app_update_environment_variables_message'
 
-module VCAP::CloudController
+module CloudController
   RSpec.describe AppUpdateEnvironmentVariablesMessage do
     let(:valid_body) {
       {

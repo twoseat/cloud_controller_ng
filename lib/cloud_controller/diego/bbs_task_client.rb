@@ -1,7 +1,7 @@
 require 'diego/client'
 require 'cloud_controller/diego/constants'
 
-module VCAP::CloudController
+module CloudController
   module Diego
     class BbsTaskClient
       def initialize(client)

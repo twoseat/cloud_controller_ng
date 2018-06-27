@@ -1,6 +1,6 @@
 require 'vcap/rest_api/event_query'
 
-module VCAP::CloudController
+module CloudController
   class EventsController < RestController::ModelController
     query_parameters :timestamp, :type, :actee, :space_guid, :organization_guid
     sortable_parameters :timestamp, :id

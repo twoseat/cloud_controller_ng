@@ -1,7 +1,7 @@
 require 'spec_helper'
 require 'repositories/orphaned_blob_event_repository'
 
-module VCAP::CloudController
+module CloudController
   module Repositories
     RSpec.describe OrphanedBlobEventRepository do
       describe '#record_delete' do

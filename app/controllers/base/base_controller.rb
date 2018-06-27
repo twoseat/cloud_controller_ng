@@ -5,12 +5,12 @@ require 'cloud_controller/security/access_context'
 require 'cloud_controller/basic_auth/basic_auth_authenticator'
 require 'vcap/json_message'
 
-module VCAP::CloudController::RestController
+module CloudController::RestController
   # The base class for all api endpoints.
   class BaseController
     V2_ROUTE_PREFIX ||= '/v2'.freeze
 
-    include VCAP::CloudController
+    include CloudController
     include CloudController::Errors
     include VCAP::RestAPI
     include Messages
@@ -52,10 +52,10 @@ module VCAP::CloudController::RestController
       end
       @sinatra = sinatra
 
-      @queryer = VCAP::CloudController::Permissions::Queryer.build(
+      @queryer = CloudController::Permissions::Queryer.build(
         dependencies.fetch(:perm_client),
         dependencies.fetch(:statsd_client),
-        VCAP::CloudController::SecurityContext,
+        CloudController::SecurityContext,
         config.get(:perm, :enabled),
       )
       @access_context = Security::AccessContext.new(queryer)
@@ -135,15 +135,15 @@ module VCAP::CloudController::RestController
       # The logic here is a bit oddly ordered, but it supports the
       # legacy calls setting a user, but not providing a token.
       return if self.class.allow_unauthenticated_access?(op)
-      return if VCAP::CloudController::SecurityContext.current_user
+      return if CloudController::SecurityContext.current_user
 
-      if VCAP::CloudController::SecurityContext.missing_token?
+      if CloudController::SecurityContext.missing_token?
         raise CloudController::Errors::NotAuthenticated
-      elsif VCAP::CloudController::SecurityContext.invalid_token?
+      elsif CloudController::SecurityContext.invalid_token?
         raise CloudController::Errors::InvalidAuthToken
       else
         logger.error 'Unexpected condition: valid token with no user/client id ' \
-                       "or admin scope. Token hash: #{VCAP::CloudController::SecurityContext.token}"
+                       "or admin scope. Token hash: #{CloudController::SecurityContext.token}"
         raise CloudController::Errors::InvalidAuthToken
       end
     end
@@ -223,7 +223,7 @@ module VCAP::CloudController::RestController
     attr_reader :config, :logger, :env, :params, :body, :request_attrs, :queryer
 
     class << self
-      include VCAP::CloudController
+      include CloudController
 
       # basename of the class
       #

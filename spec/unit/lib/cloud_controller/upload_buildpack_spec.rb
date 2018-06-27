@@ -1,9 +1,9 @@
 require 'spec_helper'
 
-module VCAP::CloudController
+module CloudController
   RSpec.describe UploadBuildpack do
     let(:buildpack_blobstore) { double(:buildpack_blobstore).as_null_object }
-    let!(:buildpack) { VCAP::CloudController::Buildpack.create_from_hash({ name: 'upload_binary_buildpack', stack: 'cflinuxfs2', position: 0 }) }
+    let!(:buildpack) { CloudController::Buildpack.create_from_hash({ name: 'upload_binary_buildpack', stack: 'cflinuxfs2', position: 0 }) }
 
     let(:upload_buildpack) { UploadBuildpack.new(buildpack_blobstore) }
 
@@ -85,7 +85,7 @@ module VCAP::CloudController
           context 'different from buildpack' do
             let(:valid_zip_manifest_stack) { 'cflinuxfs3' }
             before do
-              VCAP::CloudController::Stack.create(name: 'cflinuxfs3')
+              CloudController::Stack.create(name: 'cflinuxfs3')
             end
 
             it 'raises an error and does not update stack' do
@@ -99,11 +99,11 @@ module VCAP::CloudController
           end
 
           context 'stack previously unknown' do
-            let!(:buildpack) { VCAP::CloudController::Buildpack.create_from_hash({ name: 'upload_binary_buildpack', stack: nil, position: 0 }) }
+            let!(:buildpack) { CloudController::Buildpack.create_from_hash({ name: 'upload_binary_buildpack', stack: nil, position: 0 }) }
             context 'and the stack exists' do
               let(:valid_zip_manifest_stack) { 'cflinuxfs3' }
               before do
-                VCAP::CloudController::Stack.create(name: 'cflinuxfs3')
+                CloudController::Stack.create(name: 'cflinuxfs3')
               end
 
               it 'copies new bits to the blobstore and updates the stack' do
@@ -118,7 +118,7 @@ module VCAP::CloudController
                 let(:valid_zip_manifest_stack) { 'cflinuxfs3' }
 
                 it 'raises an error' do
-                  VCAP::CloudController::Buildpack.create(name: buildpack.name, stack: 'cflinuxfs3')
+                  CloudController::Buildpack.create(name: buildpack.name, stack: 'cflinuxfs3')
                   expect {
                     upload_buildpack.upload_buildpack(buildpack, valid_zip, filename)
                   }.to raise_error(CloudController::Errors::ApiError, /The buildpack name #{buildpack.name} is already in use for the stack #{valid_zip_manifest_stack}/)
@@ -162,7 +162,7 @@ module VCAP::CloudController
           end
 
           it 'does not attempt to delete the old buildpack blob when it does not exist' do
-            expect(VCAP::CloudController::BuildpackBitsDelete).to_not receive(:delete_when_safe)
+            expect(CloudController::BuildpackBitsDelete).to_not receive(:delete_when_safe)
             upload_buildpack.upload_buildpack(buildpack, valid_zip, filename)
           end
 
@@ -170,9 +170,9 @@ module VCAP::CloudController
             before { buildpack.update(key: 'existing_key') }
 
             it 'removes the old buildpack binary when a new one is uploaded' do
-              allow(VCAP::CloudController::BuildpackBitsDelete).to receive(:delete_when_safe)
+              allow(CloudController::BuildpackBitsDelete).to receive(:delete_when_safe)
               upload_buildpack.upload_buildpack(buildpack, valid_zip, filename)
-              expect(VCAP::CloudController::BuildpackBitsDelete).to have_received(:delete_when_safe).with('existing_key', staging_timeout)
+              expect(CloudController::BuildpackBitsDelete).to have_received(:delete_when_safe).with('existing_key', staging_timeout)
             end
           end
 
@@ -182,7 +182,7 @@ module VCAP::CloudController
                 Buildpack.find(name: 'upload_binary_buildpack').update(key: expected_sha_valid_zip)
               end
 
-              expect(VCAP::CloudController::BuildpackBitsDelete).to_not receive(:delete_when_safe)
+              expect(CloudController::BuildpackBitsDelete).to_not receive(:delete_when_safe)
               expect(upload_buildpack.upload_buildpack(buildpack, valid_zip, filename)).to be true
             end
           end
@@ -200,7 +200,7 @@ module VCAP::CloudController
 
             it 'does not copy bits to the blobstore if nothing has changed' do
               expect(buildpack_blobstore).not_to receive(:cp_to_blobstore)
-              expect(VCAP::CloudController::BuildpackBitsDelete).to_not receive(:delete_when_safe)
+              expect(CloudController::BuildpackBitsDelete).to_not receive(:delete_when_safe)
               expect(upload_buildpack.upload_buildpack(buildpack, valid_zip, filename)).to be false
             end
           end
@@ -212,14 +212,14 @@ module VCAP::CloudController
 
             it 'returns true if the bits are uploaded and does not remove the bits' do
               expect(buildpack_blobstore).to receive(:cp_to_blobstore)
-              expect(VCAP::CloudController::BuildpackBitsDelete).not_to receive(:delete_when_safe)
+              expect(CloudController::BuildpackBitsDelete).not_to receive(:delete_when_safe)
               expect(upload_buildpack.upload_buildpack(buildpack, valid_zip, filename)).to be true
             end
           end
         end
 
         context 'when the same bits are uploaded twice' do
-          let(:buildpack2) { VCAP::CloudController::Buildpack.create_from_hash({ name: 'buildpack2', stack: 'cflinuxfs2', position: 0 }) }
+          let(:buildpack2) { CloudController::Buildpack.create_from_hash({ name: 'buildpack2', stack: 'cflinuxfs2', position: 0 }) }
 
           it 'should have different keys' do
             upload_buildpack.upload_buildpack(buildpack, valid_zip2, filename)
@@ -257,7 +257,7 @@ module VCAP::CloudController
         end
 
         it 'deletes the uploaded blob from the blobstore' do
-          allow(VCAP::CloudController::BuildpackBitsDelete).to receive(:delete_when_safe)
+          allow(CloudController::BuildpackBitsDelete).to receive(:delete_when_safe)
 
           upload_buildpack.upload_buildpack(buildpack, valid_zip, filename)
           expect(BuildpackBitsDelete).to have_received(:delete_when_safe).with(expected_sha_valid_zip, 0)

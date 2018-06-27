@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-module VCAP::CloudController
+module CloudController
   RSpec.describe UpdaterLock do
     let(:service_instance) { ManagedServiceInstance.make }
     let(:updater_lock) { UpdaterLock.new(service_instance) }

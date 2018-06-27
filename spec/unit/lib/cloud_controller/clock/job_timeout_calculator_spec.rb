@@ -1,7 +1,7 @@
 require 'spec_helper'
 require 'cloud_controller/clock/job_timeout_calculator'
 
-module VCAP::CloudController
+module CloudController
   RSpec.describe JobTimeoutCalculator do
     let(:global_timeout) { 1.hour }
 

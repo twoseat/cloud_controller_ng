@@ -1,7 +1,7 @@
 require 'spec_helper'
 require 'fetchers/package_list_fetcher'
 
-module VCAP::CloudController
+module CloudController
   RSpec.describe PackageListFetcher do
     let(:space1) { Space.make }
     let(:space2) { Space.make }

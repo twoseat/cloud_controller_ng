@@ -7,7 +7,7 @@ RSpec.describe UploadHandler do
 
   context 'Nginx mode' do
     let(:config) do
-      VCAP::CloudController::Config.new({ nginx: { use_nginx: true }, directories: { tmpdir: tmpdir } })
+      CloudController::Config.new({ nginx: { use_nginx: true }, directories: { tmpdir: tmpdir } })
     end
 
     context 'when the file exists' do
@@ -60,7 +60,7 @@ RSpec.describe UploadHandler do
 
   context 'Rack Mode' do
     let(:config) do
-      VCAP::CloudController::Config.new({ nginx: { use_nginx: false }, directories: { tmpdir: tmpdir } })
+      CloudController::Config.new({ nginx: { use_nginx: false }, directories: { tmpdir: tmpdir } })
     end
 
     context 'and the tempfile key is a symbol' do

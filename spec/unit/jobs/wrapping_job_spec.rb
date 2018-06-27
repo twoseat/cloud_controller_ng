@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-module VCAP::CloudController
+module CloudController
   module Jobs
     RSpec.describe WrappingJob, job_context: :worker do
       describe '#error' do

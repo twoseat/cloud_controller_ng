@@ -1,7 +1,7 @@
 require 'clockwork'
 require 'cloud_controller/clock/distributed_scheduler'
 
-module VCAP::CloudController
+module CloudController
   class Clock
     FREQUENT_FUDGE_FACTOR = 1.second.freeze
     DAILY_FUDGE_FACTOR    = 1.minute.freeze

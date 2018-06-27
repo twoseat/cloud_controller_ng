@@ -8,7 +8,7 @@ class FeatureFlagPresenter < ApiPresenter
   end
 
   def to_hash
-    default_value = VCAP::CloudController::FeatureFlag::DEFAULT_FLAGS[@name.to_sym]
+    default_value = CloudController::FeatureFlag::DEFAULT_FLAGS[@name.to_sym]
     {
       name: @name,
       enabled: @object.nil? ? default_value : @object.enabled,

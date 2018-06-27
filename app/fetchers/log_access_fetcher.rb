@@ -1,4 +1,4 @@
-module VCAP::CloudController
+module CloudController
   class LogAccessFetcher
     def app_exists?(guid)
       AppModel.where(guid: guid).count > 0 ||

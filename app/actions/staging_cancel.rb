@@ -1,4 +1,4 @@
-module VCAP::CloudController
+module CloudController
   class StagingCancel
     def initialize(stagers)
       @stagers = stagers

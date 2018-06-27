@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-module VCAP::CloudController
+module CloudController
   RSpec.describe SecurityGroupRunningDefaultsController do
     before { set_current_user(User.make) }
 

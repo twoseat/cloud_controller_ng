@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-module VCAP::CloudController
+module CloudController
   module Repositories
     RSpec.describe SpaceEventRepository do
       let(:request_attrs) { { 'name' => 'new-space' } }

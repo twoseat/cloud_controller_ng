@@ -1,4 +1,4 @@
-module VCAP::CloudController
+module CloudController
   class UaaVerificationKeys
     def initialize(info)
       @info = info
@@ -22,7 +22,7 @@ module VCAP::CloudController
 
       if !(validation_hash.present? || last_fetched_keys)
         logger.error('Fetching uaa verification keys failed')
-        raise VCAP::CloudController::UaaUnavailable
+        raise CloudController::UaaUnavailable
       end
 
       if !validation_hash.present? && last_fetched_keys

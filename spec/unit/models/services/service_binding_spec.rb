@@ -1,7 +1,7 @@
 require 'spec_helper'
 
-module VCAP::CloudController
-  RSpec.describe VCAP::CloudController::ServiceBinding, type: :model do
+module CloudController
+  RSpec.describe CloudController::ServiceBinding, type: :model do
     it { is_expected.to have_timestamp_columns }
 
     describe 'Associations' do
@@ -172,7 +172,7 @@ module VCAP::CloudController
 
     describe '#new' do
       it 'has a guid when constructed' do
-        binding = VCAP::CloudController::ServiceBinding.new
+        binding = CloudController::ServiceBinding.new
         expect(binding.guid).to be
       end
     end
@@ -211,8 +211,8 @@ module VCAP::CloudController
     end
 
     describe '#in_suspended_org?' do
-      let(:app_model) { VCAP::CloudController::AppModel.make }
-      subject(:service_binding) { VCAP::CloudController::ServiceBinding.new(app: app_model) }
+      let(:app_model) { CloudController::AppModel.make }
+      subject(:service_binding) { CloudController::ServiceBinding.new(app: app_model) }
 
       context 'when in a suspended organization' do
         before { allow(app_model.space).to receive(:in_suspended_org?).and_return(true) }

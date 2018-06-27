@@ -1,4 +1,4 @@
-module VCAP::CloudController
+module CloudController
   class HealthCheckTypes
     PORT = 'port'.freeze
     PROCESS = 'process'.freeze

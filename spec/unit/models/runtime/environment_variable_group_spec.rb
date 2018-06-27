@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-module VCAP::CloudController
+module CloudController
   RSpec.describe EnvironmentVariableGroup, type: :model do
     subject(:env_group) { EnvironmentVariableGroup.make }
 

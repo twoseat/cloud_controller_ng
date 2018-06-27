@@ -10,13 +10,13 @@ RSpec.describe 'Fill in enable_ssh flags for apps from existing processes', isol
       tmp_migrations_dir,
     )
 
-    allow(VCAP::CloudController::ProcessObserver).to receive(:updated)
+    allow(CloudController::ProcessObserver).to receive(:updated)
   end
 
-  let!(:web_process) { VCAP::CloudController::ProcessModelFactory.make(type: 'web', guid: 'app-1') }
-  let!(:nonweb_process) { VCAP::CloudController::ProcessModelFactory.make(type: 'nonweb', guid: 'app-1') }
+  let!(:web_process) { CloudController::ProcessModelFactory.make(type: 'web', guid: 'app-1') }
+  let!(:nonweb_process) { CloudController::ProcessModelFactory.make(type: 'nonweb', guid: 'app-1') }
 
-  let!(:nonweb_process_alone) { VCAP::CloudController::ProcessModelFactory.make(type: 'nonweb', guid: '456',) }
+  let!(:nonweb_process_alone) { CloudController::ProcessModelFactory.make(type: 'nonweb', guid: '456',) }
 
   context 'apps with corresponding web processes with app settings set to true' do
     before do
@@ -28,8 +28,8 @@ RSpec.describe 'Fill in enable_ssh flags for apps from existing processes', isol
     end
 
     it 'copies the ssh_enabled flag from web process to the app for the process and app with same guid' do
-      Sequel::Migrator.run(VCAP::CloudController::AppModel.db, tmp_migrations_dir, table: :my_fake_table)
-      expect(VCAP::CloudController::AppModel.where(guid: web_process.app.guid).first.enable_ssh).to eq(true)
+      Sequel::Migrator.run(CloudController::AppModel.db, tmp_migrations_dir, table: :my_fake_table)
+      expect(CloudController::AppModel.where(guid: web_process.app.guid).first.enable_ssh).to eq(true)
     end
   end
 
@@ -43,8 +43,8 @@ RSpec.describe 'Fill in enable_ssh flags for apps from existing processes', isol
     end
 
     it 'copies the ssh_enabled flag from the web process to the app for the process and app with same guid' do
-      Sequel::Migrator.run(VCAP::CloudController::AppModel.db, tmp_migrations_dir, table: :my_fake_table)
-      expect(VCAP::CloudController::AppModel.where(guid: web_process.app.guid).first.enable_ssh).to eq(false)
+      Sequel::Migrator.run(CloudController::AppModel.db, tmp_migrations_dir, table: :my_fake_table)
+      expect(CloudController::AppModel.where(guid: web_process.app.guid).first.enable_ssh).to eq(false)
     end
   end
 end

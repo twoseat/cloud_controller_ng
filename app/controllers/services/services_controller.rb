@@ -1,6 +1,6 @@
 require 'ext/validation_error_message_overrides'
 
-module VCAP::CloudController
+module CloudController
   class ServicesController < RestController::ModelController
     define_attributes do
       to_many :service_plans

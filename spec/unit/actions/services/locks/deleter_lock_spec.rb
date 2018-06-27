@@ -1,8 +1,8 @@
 require 'spec_helper'
 require 'actions/services/locks/deleter_lock'
 
-module VCAP::CloudController
-  RSpec.describe VCAP::CloudController::DeleterLock do
+module CloudController
+  RSpec.describe CloudController::DeleterLock do
     let(:service_instance) { ManagedServiceInstance.make }
     let(:deleter_lock) { DeleterLock.new service_instance }
     let(:operation) { ServiceInstanceOperation.make(state: 'override me') }

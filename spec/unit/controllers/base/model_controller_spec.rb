@@ -1,7 +1,7 @@
 require 'spec_helper'
 require 'stringio'
 
-module VCAP::CloudController
+module CloudController
   RSpec.describe RestController::ModelController do
     let(:user) { User.make(active: true) }
     let(:dep) do

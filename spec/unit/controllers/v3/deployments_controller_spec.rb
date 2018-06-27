@@ -2,10 +2,10 @@ require 'rails_helper'
 require 'permissions_spec_helper'
 
 RSpec.describe DeploymentsController, type: :controller do
-  let(:user) { VCAP::CloudController::User.make }
-  let(:app) { VCAP::CloudController::AppModel.make(droplet: droplet) }
-  let!(:process_model) { VCAP::CloudController::ProcessModel.make(app: app) }
-  let(:droplet) { VCAP::CloudController::DropletModel.make }
+  let(:user) { CloudController::User.make }
+  let(:app) { CloudController::AppModel.make(droplet: droplet) }
+  let!(:process_model) { CloudController::ProcessModel.make(app: app) }
+  let(:droplet) { CloudController::DropletModel.make }
   let(:app_guid) { app.guid }
   let(:space) { app.space }
   let(:org) { space.organization }
@@ -38,9 +38,9 @@ RSpec.describe DeploymentsController, type: :controller do
       end
 
       it 'creates a deployment' do
-        expect(VCAP::CloudController::DeploymentCreate).
+        expect(CloudController::DeploymentCreate).
           to receive(:create).
-          with(app: app, user_audit_info: instance_of(VCAP::CloudController::UserAuditInfo)).
+          with(app: app, user_audit_info: instance_of(CloudController::UserAuditInfo)).
           and_call_original
 
         post :create, body: req_body
@@ -103,7 +103,7 @@ RSpec.describe DeploymentsController, type: :controller do
       end
 
       it 'does not create a deployment' do
-        expect(VCAP::CloudController::DeploymentCreate).not_to receive(:create)
+        expect(CloudController::DeploymentCreate).not_to receive(:create)
 
         post :create, body: req_body
       end
@@ -111,7 +111,7 @@ RSpec.describe DeploymentsController, type: :controller do
   end
 
   describe '#show' do
-    let(:deployment) { VCAP::CloudController::DeploymentModel.make(state: 'DEPLOYING', app: app, droplet: droplet) }
+    let(:deployment) { CloudController::DeploymentModel.make(state: 'DEPLOYING', app: app, droplet: droplet) }
 
     describe 'for a valid user' do
       before do
@@ -133,7 +133,7 @@ RSpec.describe DeploymentsController, type: :controller do
       end
 
       context 'when the current droplet changes on the app' do
-        let(:new_droplet) { VCAP::CloudController::DropletModel.make }
+        let(:new_droplet) { CloudController::DropletModel.make }
 
         it 'shows the droplet guid for the droplet the deployment was created with' do
           app.update(droplet: new_droplet)
@@ -170,8 +170,8 @@ RSpec.describe DeploymentsController, type: :controller do
   end
 
   describe '#index' do
-    let!(:deployment) { VCAP::CloudController::DeploymentModel.make(state: 'DEPLOYING', app: app) }
-    let!(:another_deployment) { VCAP::CloudController::DeploymentModel.make(state: 'DEPLOYING', app: app) }
+    let!(:deployment) { CloudController::DeploymentModel.make(state: 'DEPLOYING', app: app) }
+    let!(:another_deployment) { CloudController::DeploymentModel.make(state: 'DEPLOYING', app: app) }
 
     context 'permissions' do
       describe 'authorization' do

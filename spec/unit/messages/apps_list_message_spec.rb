@@ -1,7 +1,7 @@
 require 'spec_helper'
 require 'messages/apps_list_message'
 
-module VCAP::CloudController
+module CloudController
   RSpec.describe AppsListMessage do
     describe '.from_params' do
       let(:params) do

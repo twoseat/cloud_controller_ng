@@ -1,6 +1,6 @@
 require 'messages/list_message'
 
-module VCAP::CloudController
+module CloudController
   class IsolationSegmentsListMessage < ListMessage
     register_allowed_keys [:names, :guids, :page, :per_page, :order_by, :order_direction, :organization_guids]
 

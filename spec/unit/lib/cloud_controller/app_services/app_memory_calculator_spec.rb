@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-module VCAP::CloudController
+module CloudController
   RSpec.describe AppMemoryCalculator do
     subject { AppMemoryCalculator.new(process) }
     let(:process) { ProcessModelFactory.make }

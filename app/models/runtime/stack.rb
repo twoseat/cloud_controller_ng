@@ -1,6 +1,6 @@
 require 'models/helpers/process_types'
 
-module VCAP::CloudController
+module CloudController
   class Stack < Sequel::Model
     class MissingConfigFileError < StandardError
     end
@@ -8,7 +8,7 @@ module VCAP::CloudController
     end
 
     many_to_many :apps,
-      class:             'VCAP::CloudController::ProcessModel',
+      class:             'CloudController::ProcessModel',
       join_table:        BuildpackLifecycleDataModel.table_name,
       left_primary_key:  :name, left_key: :stack,
       right_primary_key: :app_guid, right_key: :app_guid,

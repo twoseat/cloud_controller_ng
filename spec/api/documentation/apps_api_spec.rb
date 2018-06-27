@@ -3,9 +3,9 @@ require 'rspec_api_documentation/dsl'
 
 RSpec.resource 'Apps', type: [:api, :legacy_api] do
   let(:admin_auth_header) { admin_headers['HTTP_AUTHORIZATION'] }
-  let(:admin_buildpack) { VCAP::CloudController::Buildpack.make }
-  let!(:processes) { 3.times { VCAP::CloudController::ProcessModelFactory.make } }
-  let(:process) { VCAP::CloudController::ProcessModel.first }
+  let(:admin_buildpack) { CloudController::Buildpack.make }
+  let!(:processes) { 3.times { CloudController::ProcessModelFactory.make } }
+  let(:process) { CloudController::ProcessModel.first }
   let(:guid) { process.guid }
 
   authenticated_request
@@ -118,7 +118,7 @@ RSpec.resource 'Apps', type: [:api, :legacy_api] do
 
   describe 'Standard endpoints' do
     standard_model_delete_without_async :app
-    standard_model_list 'ProcessModel', VCAP::CloudController::AppsController, path: :app, response_fields: true
+    standard_model_list 'ProcessModel', CloudController::AppsController, path: :app, response_fields: true
     standard_model_get 'ProcessModel', path: :app, nested_associations: [:stack, :space], response_fields: true
 
     before do
@@ -126,14 +126,14 @@ RSpec.resource 'Apps', type: [:api, :legacy_api] do
     end
 
     def after_standard_model_delete(guid)
-      event = VCAP::CloudController::Event.find(type: 'audit.app.delete-request', actee: guid, actee_type: 'app')
+      event = CloudController::Event.find(type: 'audit.app.delete-request', actee: guid, actee_type: 'app')
       audited_event event
     end
 
     post '/v2/apps/' do
       include_context 'fields', required: true
       example 'Creating an App' do
-        space_guid = VCAP::CloudController::Space.make.guid
+        space_guid = CloudController::Space.make.guid
         ports      = [1024, 2000]
         client.post '/v2/apps', MultiJson.dump(required_fields.merge(space_guid: space_guid, diego: true, ports: ports), pretty: true), headers
         expect(status).to eq(201)
@@ -141,11 +141,11 @@ RSpec.resource 'Apps', type: [:api, :legacy_api] do
         standard_entity_response parsed_response, 'ProcessModel'
 
         app_guid = parsed_response['metadata']['guid']
-        audited_event VCAP::CloudController::Event.find(type: 'audit.app.create', actee: app_guid)
+        audited_event CloudController::Event.find(type: 'audit.app.create', actee: app_guid)
       end
 
       example 'Creating a Docker App' do
-        space_guid = VCAP::CloudController::Space.make.guid
+        space_guid = CloudController::Space.make.guid
 
         data = required_fields.merge(space_guid: space_guid, name: 'docker_app', docker_image: 'cloudfoundry/diego-docker-app', diego: true)
         client.post '/v2/apps', MultiJson.dump(data, pretty: true), headers
@@ -156,7 +156,7 @@ RSpec.resource 'Apps', type: [:api, :legacy_api] do
         expect(parsed_response['entity']['diego']).to be_truthy
 
         app_guid = parsed_response['metadata']['guid']
-        audited_event VCAP::CloudController::Event.find(type: 'audit.app.create', actee: app_guid)
+        audited_event CloudController::Event.find(type: 'audit.app.create', actee: app_guid)
       end
     end
 
@@ -177,12 +177,12 @@ RSpec.resource 'Apps', type: [:api, :legacy_api] do
     include_context 'guid_parameter'
 
     describe 'Service Bindings' do
-      let!(:service_instance) { VCAP::CloudController::ManagedServiceInstance.make(space: process.space) }
-      let(:associated_service_instance) { VCAP::CloudController::ManagedServiceInstance.make(space: process.space) }
+      let!(:service_instance) { CloudController::ManagedServiceInstance.make(space: process.space) }
+      let(:associated_service_instance) { CloudController::ManagedServiceInstance.make(space: process.space) }
 
-      let(:service_binding) { VCAP::CloudController::ServiceBinding.make(service_instance: service_instance) }
+      let(:service_binding) { CloudController::ServiceBinding.make(service_instance: service_instance) }
       let(:service_binding_guid) { service_binding.guid }
-      let!(:associated_service_binding) { VCAP::CloudController::ServiceBinding.make(app: process.app, service_instance: associated_service_instance) }
+      let!(:associated_service_binding) { CloudController::ServiceBinding.make(app: process.app, service_instance: associated_service_instance) }
       let(:associated_service_binding_guid) { associated_service_binding.guid }
 
       before do
@@ -200,7 +200,7 @@ RSpec.resource 'Apps', type: [:api, :legacy_api] do
       end
 
       standard_model_list :service_binding,
-        VCAP::CloudController::ServiceBindingsController,
+        CloudController::ServiceBindingsController,
         outer_model:       :app,
         export_attributes: [:app_guid, :service_instance_guid, :credentials, :binding_options, :gateway_data, :gateway_name, :syslog_drain_url, :volume_mounts]
 
@@ -212,14 +212,14 @@ RSpec.resource 'Apps', type: [:api, :legacy_api] do
 
     describe 'Routes' do
       before do
-        VCAP::CloudController::RouteMappingModel.make(app: process.app, route: associated_route, process_type: process.type)
+        CloudController::RouteMappingModel.make(app: process.app, route: associated_route, process_type: process.type)
       end
-      let!(:route) { VCAP::CloudController::Route.make(space: process.space) }
+      let!(:route) { CloudController::Route.make(space: process.space) }
       let(:route_guid) { route.guid }
-      let(:associated_route) { VCAP::CloudController::Route.make(space: process.space) }
+      let(:associated_route) { CloudController::Route.make(space: process.space) }
       let(:associated_route_guid) { associated_route.guid }
 
-      standard_model_list :route, VCAP::CloudController::RoutesController, outer_model: :app, exclude_parameters: ['organization_guid']
+      standard_model_list :route, CloudController::RoutesController, outer_model: :app, exclude_parameters: ['organization_guid']
 
       context 'has route guid param' do
         parameter :route_guid, 'The guid of the route'
@@ -232,14 +232,14 @@ RSpec.resource 'Apps', type: [:api, :legacy_api] do
 
   get '/v2/apps/:guid/env' do
     include_context 'guid_parameter'
-    let(:process) { VCAP::CloudController::ProcessModelFactory.make(detected_buildpack: 'buildpack-name', environment_json: { env_var: 'env_val' }) }
+    let(:process) { CloudController::ProcessModelFactory.make(detected_buildpack: 'buildpack-name', environment_json: { env_var: 'env_val' }) }
 
     before do
-      group = VCAP::CloudController::EnvironmentVariableGroup.staging
+      group = CloudController::EnvironmentVariableGroup.staging
       group.environment_json = { STAGING_ENV: 'staging_value' }
       group.save
 
-      group = VCAP::CloudController::EnvironmentVariableGroup.running
+      group = CloudController::EnvironmentVariableGroup.running
       group.environment_json = { RUNNING_ENV: 'running_value' }
       group.save
     end
@@ -267,7 +267,7 @@ RSpec.resource 'Apps', type: [:api, :legacy_api] do
   get '/v2/apps/:guid/instances' do
     include_context 'guid_parameter'
 
-    let(:process) { VCAP::CloudController::ProcessModelFactory.make(state: 'STARTED') }
+    let(:process) { CloudController::ProcessModelFactory.make(state: 'STARTED') }
 
     example 'Get the instance information for a STARTED App' do
       explanation <<-EOD
@@ -321,10 +321,10 @@ RSpec.resource 'Apps', type: [:api, :legacy_api] do
     include_context 'guid_parameter'
     parameter :index, 'The index of the App Instance to terminate'
 
-    let(:process) { VCAP::CloudController::ProcessModelFactory.make(state: 'STARTED', instances: 2, diego: false) }
+    let(:process) { CloudController::ProcessModelFactory.make(state: 'STARTED', instances: 2, diego: false) }
 
     example 'Terminate the running App Instance at the given index' do
-      expect_any_instance_of(VCAP::CloudController::Diego::Runner).to receive(:stop_index)
+      expect_any_instance_of(CloudController::Diego::Runner).to receive(:stop_index)
       client.delete "/v2/apps/#{process.guid}/instances/0", {}, headers
       expect(status).to eq(204)
     end
@@ -333,7 +333,7 @@ RSpec.resource 'Apps', type: [:api, :legacy_api] do
   get '/v2/apps/:guid/stats' do
     include_context 'guid_parameter'
 
-    let(:process) { VCAP::CloudController::ProcessModelFactory.make(state: 'STARTED') }
+    let(:process) { CloudController::ProcessModelFactory.make(state: 'STARTED') }
 
     example 'Get detailed stats for a STARTED App' do
       explanation <<-EOD

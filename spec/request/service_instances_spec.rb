@@ -3,16 +3,16 @@ require 'spec_helper'
 RSpec.describe 'Service Instances' do
   let(:user_email) { 'user@email.example.com' }
   let(:user_name) { 'username' }
-  let(:user) { VCAP::CloudController::User.make }
+  let(:user) { CloudController::User.make }
   let(:user_header) { headers_for(user) }
   let(:admin_header) { admin_headers_for(user, email: user_email, user_name: user_name) }
-  let(:space) { VCAP::CloudController::Space.make }
-  let(:another_space) { VCAP::CloudController::Space.make }
-  let(:target_space) { VCAP::CloudController::Space.make }
-  let(:feature_flag) { VCAP::CloudController::FeatureFlag.make(name: 'service_instance_sharing', enabled: false, error_message: nil) }
-  let!(:service_instance1) { VCAP::CloudController::ManagedServiceInstance.make(space: space, name: 'rabbitmq') }
-  let!(:service_instance2) { VCAP::CloudController::ManagedServiceInstance.make(space: space, name: 'redis') }
-  let!(:service_instance3) { VCAP::CloudController::ManagedServiceInstance.make(space: another_space, name: 'mysql') }
+  let(:space) { CloudController::Space.make }
+  let(:another_space) { CloudController::Space.make }
+  let(:target_space) { CloudController::Space.make }
+  let(:feature_flag) { CloudController::FeatureFlag.make(name: 'service_instance_sharing', enabled: false, error_message: nil) }
+  let!(:service_instance1) { CloudController::ManagedServiceInstance.make(space: space, name: 'rabbitmq') }
+  let!(:service_instance2) { CloudController::ManagedServiceInstance.make(space: space, name: 'redis') }
+  let!(:service_instance3) { CloudController::ManagedServiceInstance.make(space: another_space, name: 'mysql') }
 
   describe 'GET /v3/service_instances' do
     it 'returns a paginated list of service instances the user has access to' do
@@ -274,7 +274,7 @@ RSpec.describe 'Service Instances' do
 
   describe 'POST /v3/service_instances/:guid/relationships/shared_spaces' do
     before do
-      VCAP::CloudController::FeatureFlag.make(name: 'service_instance_sharing', enabled: true, error_message: nil)
+      CloudController::FeatureFlag.make(name: 'service_instance_sharing', enabled: true, error_message: nil)
     end
 
     it 'shares the service instance with the target space' do
@@ -300,7 +300,7 @@ RSpec.describe 'Service Instances' do
 
       expect(parsed_response).to be_a_response_like(expected_response)
 
-      event = VCAP::CloudController::Event.last
+      event = CloudController::Event.last
       expect(event.values).to include({
         type:              'audit.service_instance.share',
         actor:             user.guid,
@@ -340,7 +340,7 @@ RSpec.describe 'Service Instances' do
       delete "/v3/service_instances/#{service_instance1.guid}/relationships/shared_spaces/#{target_space.guid}", nil, admin_header
       expect(last_response.status).to eq(204)
 
-      event = VCAP::CloudController::Event.last
+      event = CloudController::Event.last
       expect(event.values).to include({
         type:              'audit.service_instance.unshare',
         actor:             user.guid,
@@ -357,10 +357,10 @@ RSpec.describe 'Service Instances' do
     end
 
     it 'deletes associated bindings in target space when service instance is unshared' do
-      process = VCAP::CloudController::ProcessModelFactory.make(diego: false, space: target_space)
+      process = CloudController::ProcessModelFactory.make(diego: false, space: target_space)
 
       enable_feature_flag!
-      service_binding = VCAP::CloudController::ServiceBinding.make(service_instance: service_instance1, app: process.app, credentials: { secret: 'key' })
+      service_binding = CloudController::ServiceBinding.make(service_instance: service_instance1, app: process.app, credentials: { secret: 'key' })
       disable_feature_flag!
 
       get "/v2/service_bindings/#{service_binding.guid}", nil, admin_header

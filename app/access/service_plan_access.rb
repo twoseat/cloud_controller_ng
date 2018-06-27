@@ -1,4 +1,4 @@
-module VCAP::CloudController
+module CloudController
   class ServicePlanAccess < BaseAccess
     def create?(object, params=nil)
       admin_user?
@@ -70,7 +70,7 @@ module VCAP::CloudController
     end
 
     def object_is_visible_to_user?(service_plan, user)
-      VCAP::CloudController::ServicePlan.user_visible(user, false, :read).where(guid: service_plan.guid).count > 0
+      CloudController::ServicePlan.user_visible(user, false, :read).where(guid: service_plan.guid).count > 0
     end
   end
 end

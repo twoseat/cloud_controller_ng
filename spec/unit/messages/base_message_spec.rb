@@ -1,7 +1,7 @@
 require 'spec_helper'
 require 'messages/base_message'
 
-module VCAP::CloudController
+module CloudController
   RSpec.describe BaseMessage do
     describe '.initialize' do
       let(:fake_class) do
@@ -151,7 +151,7 @@ module VCAP::CloudController
       let(:fake_class) do
         Class.new(BaseMessage) do
           register_allowed_keys [:allowed]
-          validates_with VCAP::CloudController::BaseMessage::NoAdditionalKeysValidator
+          validates_with CloudController::BaseMessage::NoAdditionalKeysValidator
         end
       end
 
@@ -173,7 +173,7 @@ module VCAP::CloudController
       let(:fake_class) do
         Class.new(BaseMessage) do
           register_allowed_keys [:allowed]
-          validates_with VCAP::CloudController::BaseMessage::NoAdditionalParamsValidator
+          validates_with CloudController::BaseMessage::NoAdditionalParamsValidator
         end
       end
 
@@ -195,7 +195,7 @@ module VCAP::CloudController
       let(:fake_class) do
         Class.new(BaseMessage) do
           register_allowed_keys [:include]
-          validates_with VCAP::CloudController::BaseMessage::IncludeParamValidator, valid_values: ['foo', 'bar']
+          validates_with CloudController::BaseMessage::IncludeParamValidator, valid_values: ['foo', 'bar']
         end
       end
 

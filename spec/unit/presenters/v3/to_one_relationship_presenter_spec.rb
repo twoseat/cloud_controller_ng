@@ -1,7 +1,7 @@
 require 'spec_helper'
 require 'presenters/v3/to_one_relationship_presenter'
 
-module VCAP::CloudController::Presenters::V3
+module CloudController::Presenters::V3
   RSpec.describe ToOneRelationshipPresenter do
     let(:book_class) {
       Class.new do

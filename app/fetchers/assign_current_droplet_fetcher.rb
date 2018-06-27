@@ -1,4 +1,4 @@
-module VCAP::CloudController
+module CloudController
   class AssignCurrentDropletFetcher
     def fetch(app_guid, droplet_guid)
       app = AppModel.where(guid: app_guid).eager(:processes, :space, :droplets, space: :organization).all.first

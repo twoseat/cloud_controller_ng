@@ -1,6 +1,6 @@
 module CloudController
   class ControllerFactory
-    include VCAP::CloudController
+    include CloudController
 
     def initialize(config, logger, env, params, body, sinatra=nil)
       @config  = config

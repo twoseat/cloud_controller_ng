@@ -1,4 +1,4 @@
-module VCAP::CloudController
+module CloudController
   class RouteBindingDelete < ServiceKeyDelete
   end
 end

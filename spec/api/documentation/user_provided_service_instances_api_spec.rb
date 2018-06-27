@@ -3,13 +3,13 @@ require 'rspec_api_documentation/dsl'
 
 RSpec.resource 'User Provided Service Instances', type: [:api, :legacy_api] do
   let(:admin_auth_header) { admin_headers['HTTP_AUTHORIZATION'] }
-  let!(:service_instance) { VCAP::CloudController::UserProvidedServiceInstance.make }
+  let!(:service_instance) { CloudController::UserProvidedServiceInstance.make }
   let(:guid) { service_instance.guid }
 
   authenticated_request
 
   describe 'Standard endpoints' do
-    standard_model_list :user_provided_service_instance, VCAP::CloudController::UserProvidedServiceInstancesController
+    standard_model_list :user_provided_service_instance, CloudController::UserProvidedServiceInstancesController
     standard_model_get :user_provided_service_instance, nested_attributes: [:space]
     standard_model_delete_without_async :user_provided_service_instance
 
@@ -21,7 +21,7 @@ RSpec.resource 'User Provided Service Instances', type: [:api, :legacy_api] do
       field :route_service_url, 'URL to which requests for bound routes will be forwarded.', required: false, example_values: ['https://logger.example.com']
 
       example 'Creating a User Provided Service Instance' do
-        space_guid = VCAP::CloudController::Space.make.guid
+        space_guid = CloudController::Space.make.guid
         request_hash = {
           space_guid: space_guid,
           name: 'my-user-provided-instance',
@@ -56,32 +56,32 @@ RSpec.resource 'User Provided Service Instances', type: [:api, :legacy_api] do
   describe 'Nested endpoints' do
     describe 'Service Bindings' do
       before do
-        VCAP::CloudController::ServiceBinding.make(service_instance: service_instance)
+        CloudController::ServiceBinding.make(service_instance: service_instance)
       end
 
       field :guid, 'The guid of the Service Instance.', required: true
 
-      standard_model_list :service_binding, VCAP::CloudController::ServiceBindingsController,
+      standard_model_list :service_binding, CloudController::ServiceBindingsController,
         outer_model: :user_provided_service_instance,
         exclude_parameters: ['service_instance_guid'],
         export_attributes: [:app_guid, :service_instance_guid, :credentials, :binding_options, :gateway_data, :gateway_name, :syslog_drain_url, :volume_mounts]
     end
 
     describe 'Routes' do
-      let(:route) { VCAP::CloudController::Route.make(space: service_instance.space) }
+      let(:route) { CloudController::Route.make(space: service_instance.space) }
       let(:route_guid) { route.guid }
-      let(:associated_route) { VCAP::CloudController::Route.make(space: service_instance.space) }
+      let(:associated_route) { CloudController::Route.make(space: service_instance.space) }
       let(:associated_route_guid) { associated_route.guid }
-      let(:service_instance) { VCAP::CloudController::UserProvidedServiceInstance.make(:routing) }
+      let(:service_instance) { CloudController::UserProvidedServiceInstance.make(:routing) }
       let(:guid) { service_instance.guid }
 
       before do
-        binding = VCAP::CloudController::RouteBinding.make(route: associated_route, service_instance: service_instance)
+        binding = CloudController::RouteBinding.make(route: associated_route, service_instance: service_instance)
         associated_route.route_binding = binding
         associated_route.save
       end
 
-      standard_model_list :routes, VCAP::CloudController::RoutesController, outer_model: :user_provided_service_instance
+      standard_model_list :routes, CloudController::RoutesController, outer_model: :user_provided_service_instance
       nested_model_associate :route, :user_provided_service_instance
 
       # Can't user nested_model_remove because it expects a 201

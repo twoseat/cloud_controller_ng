@@ -1,4 +1,4 @@
-module VCAP::CloudController
+module CloudController
   class ServicePlanVisibilitiesController < RestController::ModelController
     define_attributes do
       to_one :service_plan

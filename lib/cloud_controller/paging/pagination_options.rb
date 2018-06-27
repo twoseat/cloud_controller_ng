@@ -1,7 +1,7 @@
 require 'active_model'
 require 'mappers/order_by_mapper'
 
-module VCAP::CloudController
+module CloudController
   class PaginationOptions
     include ActiveModel::Model
 

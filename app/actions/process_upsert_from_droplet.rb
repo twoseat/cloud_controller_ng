@@ -1,6 +1,6 @@
 require 'actions/process_create'
 
-module VCAP::CloudController
+module CloudController
   class ProcessUpsertFromDroplet
     class DropletNotFound < StandardError; end
     class ProcessTypesNotFound < StandardError; end

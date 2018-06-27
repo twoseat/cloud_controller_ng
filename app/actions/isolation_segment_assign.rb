@@ -1,4 +1,4 @@
-module VCAP::CloudController
+module CloudController
   class IsolationSegmentAssign
     def assign(isolation_segment, organizations)
       isolation_segment.db.transaction do

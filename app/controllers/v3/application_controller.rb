@@ -32,7 +32,7 @@ module V3ErrorsHelper
 end
 
 class ApplicationController < ActionController::Base
-  include VCAP::CloudController
+  include CloudController
   include V3ErrorsHelper
 
   UNSCOPED_PAGES = ['not_found', 'internal_error', 'bad_request', 'v3_root'].map(&:freeze).freeze
@@ -66,19 +66,19 @@ class ApplicationController < ActionController::Base
   end
 
   def roles
-    VCAP::CloudController::SecurityContext.roles
+    CloudController::SecurityContext.roles
   end
 
   def current_user
-    VCAP::CloudController::SecurityContext.current_user
+    CloudController::SecurityContext.current_user
   end
 
   def current_user_email
-    VCAP::CloudController::SecurityContext.current_user_email
+    CloudController::SecurityContext.current_user_email
   end
 
   def user_audit_info
-    VCAP::CloudController::UserAuditInfo.from_context(VCAP::CloudController::SecurityContext)
+    CloudController::UserAuditInfo.from_context(CloudController::SecurityContext)
   end
 
   def request_id
@@ -98,7 +98,7 @@ class ApplicationController < ActionController::Base
   end
 
   def permission_queryer
-    @cached_permission_queryer ||= VCAP::CloudController::Permissions::Queryer.build(
+    @cached_permission_queryer ||= CloudController::Permissions::Queryer.build(
       perm_client,
       statsd_client,
       SecurityContext,
@@ -189,7 +189,7 @@ class ApplicationController < ActionController::Base
   def validate_token!
     return if current_user
 
-    if VCAP::CloudController::SecurityContext.missing_token?
+    if CloudController::SecurityContext.missing_token?
       raise CloudController::Errors::NotAuthenticated
     end
 

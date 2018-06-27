@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-module VCAP::CloudController
+module CloudController
   RSpec.describe SecurityGroupAccess, type: :access do
     subject(:access) { SecurityGroupAccess.new(Security::AccessContext.new) }
     let(:space) { Space.make }

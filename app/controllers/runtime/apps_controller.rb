@@ -7,14 +7,14 @@ require 'actions/v2/route_mapping_create'
 require 'models/helpers/process_types'
 require 'controllers/runtime/mixins/find_process_through_app'
 
-module VCAP::CloudController
+module CloudController
   class AppsController < RestController::ModelController
     include FindProcessThroughApp
 
     model_class_name :ProcessModel
     self.not_found_exception_name = 'AppNotFound'
 
-    VCAP::CloudController.set_controller_for_model_name(
+    CloudController.set_controller_for_model_name(
       model_name: 'ProcessModel',
       controller: self
     )
@@ -222,7 +222,7 @@ module VCAP::CloudController
 
     def verify_enable_ssh(space)
       app_enable_ssh   = request_attrs['enable_ssh']
-      global_allow_ssh = VCAP::CloudController::Config.config.get(:allow_app_ssh_access)
+      global_allow_ssh = CloudController::Config.config.get(:allow_app_ssh_access)
       ssh_allowed      = global_allow_ssh && (space.allow_ssh || roles.admin?)
 
       if app_enable_ssh && !ssh_allowed
@@ -304,11 +304,11 @@ module VCAP::CloudController
 
       begin
         V2::RouteMappingCreate.new(user_audit_info, route, process, request_attrs, logger).add
-      rescue ::VCAP::CloudController::V2::RouteMappingCreate::DuplicateRouteMapping
+      rescue ::CloudController::V2::RouteMappingCreate::DuplicateRouteMapping
         # the route is already mapped, consider the request successful
-      rescue ::VCAP::CloudController::V2::RouteMappingCreate::RoutingApiDisabledError
+      rescue ::CloudController::V2::RouteMappingCreate::RoutingApiDisabledError
         raise CloudController::Errors::ApiError.new_from_details('RoutingApiDisabled')
-      rescue ::VCAP::CloudController::V2::RouteMappingCreate::SpaceMismatch
+      rescue ::CloudController::V2::RouteMappingCreate::SpaceMismatch
         raise CloudController::Errors::InvalidRelation.new(
           'The app cannot be mapped to this route because the route is not in this space. Apps must be mapped to routes in the same space.')
       end
@@ -374,12 +374,12 @@ module VCAP::CloudController
     rescue CloudController::Errors::ApiError => e
       if e.name == 'NotAuthorized'
         process    = find_guid(guid, ProcessModel)
-        membership = VCAP::CloudController::Membership.new(current_user)
+        membership = CloudController::Membership.new(current_user)
 
         basic_access = [
-          VCAP::CloudController::Membership::SPACE_MANAGER,
-          VCAP::CloudController::Membership::SPACE_AUDITOR,
-          VCAP::CloudController::Membership::ORG_MANAGER,
+          CloudController::Membership::SPACE_MANAGER,
+          CloudController::Membership::SPACE_AUDITOR,
+          CloudController::Membership::ORG_MANAGER,
         ]
 
         raise e unless membership.has_any_roles?(basic_access, process.space.guid, process.organization.guid)

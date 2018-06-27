@@ -2,7 +2,7 @@ require 'spec_helper'
 
 RSpec.describe 'Service Broker API integration' do
   describe 'v2.5' do
-    include VCAP::CloudController::BrokerApiHelper
+    include CloudController::BrokerApiHelper
 
     describe 'Arbitrary Parameters' do
       let(:catalog) { default_catalog plan_updateable: true }
@@ -11,7 +11,7 @@ RSpec.describe 'Service Broker API integration' do
       before do
         setup_cc
         setup_broker(catalog)
-        @broker = VCAP::CloudController::ServiceBroker.find guid: @broker_guid
+        @broker = CloudController::ServiceBroker.find guid: @broker_guid
       end
 
       it 'sends params to broker for service instance provision' do
@@ -35,7 +35,7 @@ RSpec.describe 'Service Broker API integration' do
 
       it 'sends params to broker for service instance bind' do
         provision_service
-        service_instance = VCAP::CloudController::ManagedServiceInstance.find(guid: @service_instance_guid)
+        service_instance = CloudController::ManagedServiceInstance.find(guid: @service_instance_guid)
 
         create_app
         bind_service parameters: parameters
@@ -48,7 +48,7 @@ RSpec.describe 'Service Broker API integration' do
 
       it 'sends params to broker for service instance key creation' do
         provision_service
-        service_instance = VCAP::CloudController::ManagedServiceInstance.find(guid: @service_instance_guid)
+        service_instance = CloudController::ManagedServiceInstance.find(guid: @service_instance_guid)
 
         create_service_key parameters: parameters
 

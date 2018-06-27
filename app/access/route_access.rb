@@ -1,4 +1,4 @@
-module VCAP::CloudController
+module CloudController
   class RouteAccess < BaseAccess
     def create?(route, params=nil)
       can_write_to_route(route, true)

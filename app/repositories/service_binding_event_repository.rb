@@ -1,6 +1,6 @@
 require 'repositories/mixins/app_manifest_event_mixins'
 
-module VCAP::CloudController
+module CloudController
   module Repositories
     class ServiceBindingEventRepository
       extend AppManifestEventMixins

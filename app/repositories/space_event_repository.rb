@@ -1,4 +1,4 @@
-module VCAP::CloudController
+module CloudController
   module Repositories
     class SpaceEventRepository
       def record_space_create(space, user_audit_info, request_attrs)

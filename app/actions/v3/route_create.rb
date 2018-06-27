@@ -1,4 +1,4 @@
-module VCAP::CloudController
+module CloudController
   module V3
     class RouteCreate
       class << self

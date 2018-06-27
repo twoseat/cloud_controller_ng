@@ -1,6 +1,6 @@
 require 'actions/service_binding_delete'
 
-module VCAP::CloudController
+module CloudController
   class ServiceInstancePurger
     def initialize(event_repository)
       @event_repository = event_repository

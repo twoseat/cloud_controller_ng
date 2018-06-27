@@ -1,4 +1,4 @@
-module VCAP::CloudController
+module CloudController
   class UsernamesAndRolesPopulator
     attr_reader :uaa_client
 

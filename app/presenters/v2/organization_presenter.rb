@@ -4,7 +4,7 @@ module CloudController
       class OrganizationPresenter < BasePresenter
         extend PresenterProvider
 
-        present_for_class 'VCAP::CloudController::Organization'
+        present_for_class 'CloudController::Organization'
 
         def entity_hash(controller, org, opts, depth, parents, orphans=nil)
           entity = {

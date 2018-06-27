@@ -1,7 +1,7 @@
 require 'cloud_controller/app_manifest/manifest_route'
 require 'actions/v3/route_create'
 
-module VCAP::CloudController
+module CloudController
   class ManifestRouteUpdate
     class InvalidRoute < StandardError
     end

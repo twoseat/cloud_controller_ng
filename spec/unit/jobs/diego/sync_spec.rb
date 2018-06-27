@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-module VCAP::CloudController
+module CloudController
   module Jobs::Diego
     RSpec.describe Sync, job_context: :clock do
       let(:processes_sync) { instance_double(Diego::ProcessesSync) }

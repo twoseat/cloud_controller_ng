@@ -1,6 +1,6 @@
 require 'statsd'
 
-module VCAP::CloudController
+module CloudController
   module Metrics
     class RequestMetrics
       def initialize(statsd=Statsd.new)

@@ -1,4 +1,4 @@
-module VCAP::CloudController
+module CloudController
   class AppEventsController < RestController::ModelController
     define_attributes do
       to_one :app

@@ -1,4 +1,4 @@
-module VCAP::CloudController
+module CloudController
   class SpaceSummariesController < RestController::ModelController
     def self.dependencies
       [:instances_reporters]

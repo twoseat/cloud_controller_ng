@@ -1,10 +1,10 @@
 require 'spec_helper'
 require 'presenters/v3/process_stats_presenter'
 
-module VCAP::CloudController::Presenters::V3
+module CloudController::Presenters::V3
   RSpec.describe ProcessStatsPresenter do
     subject(:presenter) { ProcessStatsPresenter.new(process.type, stats_for_process) }
-    let(:process) { VCAP::CloudController::ProcessModelFactory.make }
+    let(:process) { CloudController::ProcessModelFactory.make }
 
     describe '#present_stats_hash' do
       let(:process_usage) { process.type.usage }

@@ -1,11 +1,11 @@
 require 'spec_helper'
 
-module VCAP::CloudController
+module CloudController
   RSpec.describe RouteMappingModel do
     describe 'validations' do
-      let(:space) { VCAP::CloudController::Space.make }
-      let(:route) { VCAP::CloudController::Route.make(space: space) }
-      let(:app_model) { VCAP::CloudController::AppModel.make(space: space) }
+      let(:space) { CloudController::Space.make }
+      let(:route) { CloudController::Route.make(space: space) }
+      let(:app_model) { CloudController::AppModel.make(space: space) }
 
       it 'must define an app_port' do
         invalid_route_mapping_opts = { app: app_model, route: route, process_type: 'buckeyes', app_port: nil }

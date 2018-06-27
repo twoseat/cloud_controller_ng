@@ -1,6 +1,6 @@
 require 'cloud_controller/dependency_locator'
 
-module VCAP::CloudController
+module CloudController
   class AdminBuildpacksPresenter
     def self.enabled_buildpacks
       new.enabled

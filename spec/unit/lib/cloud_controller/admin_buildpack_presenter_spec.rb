@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-module VCAP::CloudController
+module CloudController
   RSpec.describe AdminBuildpacksPresenter do
     let(:url_generator) { double(:url_generator) }
 

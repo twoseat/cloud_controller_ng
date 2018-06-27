@@ -1,11 +1,11 @@
 require 'spec_helper'
 
-module VCAP::CloudController
+module CloudController
   RSpec.describe SharedDomainAccess, type: :access do
     subject(:access) { SharedDomainAccess.new(Security::AccessContext.new) }
 
-    let(:user) { VCAP::CloudController::User.make }
-    let(:object) { VCAP::CloudController::SharedDomain.new }
+    let(:user) { CloudController::User.make }
+    let(:object) { CloudController::SharedDomain.new }
 
     before { set_current_user(user) }
 

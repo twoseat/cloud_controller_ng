@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-module VCAP::CloudController
+module CloudController
   RSpec.describe EnvironmentVariableGroupsController do
     describe 'GET /v2/config/environment_variable_groups/:name' do
       context 'when the name is not one of running, staging' do

@@ -51,10 +51,10 @@ class DropletsController < ApplicationController
     unauthorized! unless can_write?(space.guid)
 
     delete_action = DropletDelete.new(user_audit_info)
-    deletion_job = VCAP::CloudController::Jobs::DeleteActionJob.new(DropletModel, droplet.guid, delete_action)
+    deletion_job = CloudController::Jobs::DeleteActionJob.new(DropletModel, droplet.guid, delete_action)
     pollable_job = Jobs::Enqueuer.new(deletion_job, queue: 'cc-generic').enqueue_pollable
 
-    url_builder = VCAP::CloudController::Presenters::ApiUrlBuilder.new
+    url_builder = CloudController::Presenters::ApiUrlBuilder.new
     head HTTP::ACCEPTED, 'Location' => url_builder.build_url(path: "/v3/jobs/#{pollable_job.guid}")
   end
 

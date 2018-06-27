@@ -1,7 +1,7 @@
 require 'spec_helper'
 require 'actions/process_terminate'
 
-module VCAP::CloudController
+module CloudController
   RSpec.describe ProcessTerminate do
     subject(:process_terminate) { ProcessTerminate.new(user_audit_info, process, index) }
     let(:app) { AppModel.make }

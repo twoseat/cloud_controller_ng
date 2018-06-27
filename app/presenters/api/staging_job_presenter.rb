@@ -7,7 +7,7 @@ class StagingJobPresenter < JobPresenter
   end
 
   def status_url
-    config = VCAP::CloudController::Config.config
+    config = CloudController::Config.config
 
     if @scheme == 'https'
       URI::HTTPS.build(

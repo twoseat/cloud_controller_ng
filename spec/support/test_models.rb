@@ -1,4 +1,4 @@
-module VCAP::CloudController
+module CloudController
   class TestModelDestroyDep < Sequel::Model; end
   class TestModelNullifyDep < Sequel::Model; end
   class TestModelManyToOne < Sequel::Model

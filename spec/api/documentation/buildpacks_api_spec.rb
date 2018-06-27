@@ -3,7 +3,7 @@ require 'rspec_api_documentation/dsl'
 
 RSpec.resource 'Buildpacks', type: [:api, :legacy_api] do
   let(:admin_auth_header) { admin_headers['HTTP_AUTHORIZATION'] }
-  let!(:buildpacks) { (1..3).map { |i| VCAP::CloudController::Buildpack.make(name: "name_#{i}", position: i) } }
+  let!(:buildpacks) { (1..3).map { |i| CloudController::Buildpack.make(name: "name_#{i}", position: i) } }
   let(:guid) { buildpacks.first.guid }
 
   authenticated_request
@@ -26,7 +26,7 @@ RSpec.resource 'Buildpacks', type: [:api, :legacy_api] do
       field :filename, 'The name of the uploaded buildpack file'
     end
 
-    standard_model_list(:buildpack, VCAP::CloudController::BuildpacksController)
+    standard_model_list(:buildpack, CloudController::BuildpacksController)
     standard_model_get(:buildpack)
     standard_model_delete(:buildpack)
 
@@ -56,7 +56,7 @@ RSpec.resource 'Buildpacks', type: [:api, :legacy_api] do
           expect(status).to eq(201)
           standard_entity_response parsed_response, :buildpack, expected_values: { position: 3 }
         }.to change {
-          VCAP::CloudController::Buildpack.order(:position).map { |bp| [bp.name, bp.position] }
+          CloudController::Buildpack.order(:position).map { |bp| [bp.name, bp.position] }
         }.from(
           [['name_1', 1], ['name_2', 2], ['name_3', 3]]
         ).to(
@@ -70,7 +70,7 @@ RSpec.resource 'Buildpacks', type: [:api, :legacy_api] do
           expect(status).to eq 201
           standard_entity_response parsed_response, :buildpack, expected_values: { enabled: false }
         }.to change {
-          VCAP::CloudController::Buildpack.find(guid: guid).enabled
+          CloudController::Buildpack.find(guid: guid).enabled
         }.from(true).to(false)
 
         expect {
@@ -78,7 +78,7 @@ RSpec.resource 'Buildpacks', type: [:api, :legacy_api] do
           expect(status).to eq 201
           standard_entity_response parsed_response, :buildpack, expected_values: { enabled: true }
         }.to change {
-          VCAP::CloudController::Buildpack.find(guid: guid).enabled
+          CloudController::Buildpack.find(guid: guid).enabled
         }.from(false).to(true)
       end
 
@@ -88,7 +88,7 @@ RSpec.resource 'Buildpacks', type: [:api, :legacy_api] do
           expect(status).to eq 201
           standard_entity_response parsed_response, :buildpack, expected_values: { locked: true }
         }.to change {
-          VCAP::CloudController::Buildpack.find(guid: guid).locked
+          CloudController::Buildpack.find(guid: guid).locked
         }.from(false).to(true)
 
         expect {
@@ -96,7 +96,7 @@ RSpec.resource 'Buildpacks', type: [:api, :legacy_api] do
           expect(status).to eq 201
           standard_entity_response parsed_response, :buildpack, expected_values: { locked: false }
         }.to change {
-          VCAP::CloudController::Buildpack.find(guid: guid).locked
+          CloudController::Buildpack.find(guid: guid).locked
         }.from(true).to(false)
       end
     end

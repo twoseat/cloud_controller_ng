@@ -3,7 +3,7 @@ require 'rspec_api_documentation/dsl'
 
 RSpec.resource 'Service Plans', type: [:api, :legacy_api] do
   let(:admin_auth_header) { admin_headers['HTTP_AUTHORIZATION'] }
-  let!(:service_plan) { VCAP::CloudController::ServicePlan.make }
+  let!(:service_plan) { CloudController::ServicePlan.make }
   let(:guid) { service_plan.guid }
   authenticated_request
 
@@ -11,9 +11,9 @@ RSpec.resource 'Service Plans', type: [:api, :legacy_api] do
     field :guid, 'The guid of the service plan', required: false
     field :public, 'A boolean describing that the plan is visible to the all users', required: false, default: true
 
-    expected_attributes = VCAP::CloudController::ServicePlan.new.export_attrs - [:create_instance_schema] - [:update_instance_schema] - [:create_binding_schema] + [:schemas]
+    expected_attributes = CloudController::ServicePlan.new.export_attrs - [:create_instance_schema] - [:update_instance_schema] - [:create_binding_schema] + [:schemas]
 
-    standard_model_list(:service_plans, VCAP::CloudController::ServicePlansController, export_attributes: expected_attributes)
+    standard_model_list(:service_plans, CloudController::ServicePlansController, export_attributes: expected_attributes)
     standard_model_get(:service_plans, export_attributes: expected_attributes)
     standard_model_delete(:service_plans)
 
@@ -32,11 +32,11 @@ RSpec.resource 'Service Plans', type: [:api, :legacy_api] do
 
     describe 'Service Instances' do
       before do
-        VCAP::CloudController::ManagedServiceInstance.make(service_plan: service_plan)
+        CloudController::ManagedServiceInstance.make(service_plan: service_plan)
       end
 
       standard_model_list :managed_service_instance,
-                          VCAP::CloudController::ServiceInstancesController,
+                          CloudController::ServiceInstancesController,
                           outer_model: :service_plan,
                           path: :service_instances,
                           exclude_parameters: ['organization_guid', 'service_plan_guid']

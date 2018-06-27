@@ -1,7 +1,7 @@
-module VCAP::CloudController
+module CloudController
   module Jobs
     module Runtime
-      class ExpiredBlobCleanup < VCAP::CloudController::Jobs::CCJob
+      class ExpiredBlobCleanup < CloudController::Jobs::CCJob
         def perform
           logger.info('Deleting package and droplet blobs that are expired or failed')
 

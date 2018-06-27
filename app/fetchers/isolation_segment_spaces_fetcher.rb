@@ -1,4 +1,4 @@
-module VCAP::CloudController
+module CloudController
   class IsolationSegmentSpacesFetcher
     def initialize(isolation_segment)
       @isolation_segment = isolation_segment

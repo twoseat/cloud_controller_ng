@@ -1,10 +1,10 @@
 require 'cloud_controller/dependency_locator'
 require 'cloud_controller/diego/desire_app_handler'
 
-module VCAP::CloudController
+module CloudController
   module Diego
     class Messenger
-      def initialize(statsd_updater=VCAP::CloudController::Metrics::StatsdUpdater.new)
+      def initialize(statsd_updater=CloudController::Metrics::StatsdUpdater.new)
         @statsd_updater = statsd_updater
       end
 

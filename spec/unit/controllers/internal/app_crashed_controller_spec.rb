@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-module VCAP::CloudController
+module CloudController
   RSpec.describe AppCrashedController do
     describe 'POST /internal/v4/apps/:process_guid/crashed' do
       let(:diego_process) { ProcessModelFactory.make(state: 'STARTED', diego: true) }

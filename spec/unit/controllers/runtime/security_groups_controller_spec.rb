@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-module VCAP::CloudController
+module CloudController
   RSpec.describe SecurityGroupsController do
     let(:group) { SecurityGroup.make }
 
@@ -74,7 +74,7 @@ module VCAP::CloudController
         end
 
         before do
-          stub_const('VCAP::CloudController::SecurityGroup::MAX_RULES_CHAR_LENGTH', 20)
+          stub_const('CloudController::SecurityGroup::MAX_RULES_CHAR_LENGTH', 20)
         end
 
         it 'returns SecurityGroupInvalid' do

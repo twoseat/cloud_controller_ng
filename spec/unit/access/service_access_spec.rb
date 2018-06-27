@@ -1,11 +1,11 @@
 require 'spec_helper'
 
-module VCAP::CloudController
+module CloudController
   RSpec.describe ServiceAccess, type: :access do
     subject(:access) { ServiceAccess.new(Security::AccessContext.new) }
-    let(:user) { VCAP::CloudController::User.make }
-    let!(:service_plan) { VCAP::CloudController::ServicePlan.make(service: object) }
-    let(:object) { VCAP::CloudController::Service.make }
+    let(:user) { CloudController::User.make }
+    let!(:service_plan) { CloudController::ServicePlan.make(service: object) }
+    let(:object) { CloudController::Service.make }
 
     it_behaves_like :admin_full_access
     it_behaves_like :admin_read_only_access

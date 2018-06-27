@@ -1,6 +1,6 @@
 require 'messages/base_message'
 
-module VCAP::CloudController
+module CloudController
   class AppShowMessage < BaseMessage
     register_allowed_keys [:include]
 

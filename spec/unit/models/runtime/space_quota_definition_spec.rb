@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-module VCAP::CloudController
+module CloudController
   RSpec.describe SpaceQuotaDefinition, type: :model do
     let(:space_quota_definition) { SpaceQuotaDefinition.make }
 

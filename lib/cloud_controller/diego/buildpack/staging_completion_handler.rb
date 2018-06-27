@@ -1,10 +1,10 @@
 require 'cloud_controller/diego/staging_completion_handler'
 require 'utils/uri_utils'
 
-module VCAP::CloudController
+module CloudController
   module Diego
     module Buildpack
-      class StagingCompletionHandler < VCAP::CloudController::Diego::StagingCompletionHandler
+      class StagingCompletionHandler < CloudController::Diego::StagingCompletionHandler
         def logger_prefix
           'diego.staging.buildpack.'
         end

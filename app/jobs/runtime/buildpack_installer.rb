@@ -1,7 +1,7 @@
-module VCAP::CloudController
+module CloudController
   module Jobs
     module Runtime
-      class BuildpackInstaller < VCAP::CloudController::Jobs::CCJob
+      class BuildpackInstaller < CloudController::Jobs::CCJob
         attr_accessor :name, :file, :opts
 
         def initialize(name, file, opts)
@@ -65,7 +65,7 @@ module VCAP::CloudController
         private
 
         def find_existing_buildpacks
-          stack = VCAP::CloudController::Buildpacks::StackNameExtractor.extract_from_file(file)
+          stack = CloudController::Buildpacks::StackNameExtractor.extract_from_file(file)
           if stack.present?
             buildpacks_by_stack = Buildpack.where(name: name, stack: stack)
             return buildpacks_by_stack if buildpacks_by_stack.any?

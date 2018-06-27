@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-module VCAP::CloudController
+module CloudController
   RSpec.describe ServiceBindingOperation, type: :model do
     let(:updated_at_time) { Time.now }
     let(:created_at_time) { Time.now }

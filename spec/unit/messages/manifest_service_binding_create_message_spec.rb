@@ -1,7 +1,7 @@
 require 'spec_helper'
 require 'messages/manifest_service_binding_create_message'
 
-module VCAP::CloudController
+module CloudController
   RSpec.describe ManifestServiceBindingCreateMessage do
     describe 'validations' do
       let(:body) {

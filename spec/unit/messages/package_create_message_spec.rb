@@ -1,7 +1,7 @@
 require 'spec_helper'
 require 'messages/package_create_message'
 
-module VCAP::CloudController
+module CloudController
   RSpec.describe PackageCreateMessage do
     describe 'validations' do
       let(:relationships) { { app: { data: { guid: 'some-guid' } } } }

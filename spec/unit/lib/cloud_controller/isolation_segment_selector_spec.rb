@@ -1,16 +1,16 @@
 require 'spec_helper'
 
-module VCAP::CloudController
+module CloudController
   RSpec.describe IsolationSegmentSelector do
     describe '.for_space' do
       let(:space) { Space.make }
       let(:org) { space.organization }
-      let(:assigner) { VCAP::CloudController::IsolationSegmentAssign.new }
-      let(:isolation_segment_model) { VCAP::CloudController::IsolationSegmentModel.make }
-      let(:isolation_segment_model_2) { VCAP::CloudController::IsolationSegmentModel.make }
+      let(:assigner) { CloudController::IsolationSegmentAssign.new }
+      let(:isolation_segment_model) { CloudController::IsolationSegmentModel.make }
+      let(:isolation_segment_model_2) { CloudController::IsolationSegmentModel.make }
       let(:shared_isolation_segment) do
-        VCAP::CloudController::IsolationSegmentModel.first(
-          guid: VCAP::CloudController::IsolationSegmentModel::SHARED_ISOLATION_SEGMENT_GUID
+        CloudController::IsolationSegmentModel.first(
+          guid: CloudController::IsolationSegmentModel::SHARED_ISOLATION_SEGMENT_GUID
         )
       end
 

@@ -1,7 +1,7 @@
 require 'spec_helper'
 require 'actions/app_delete'
 
-module VCAP::CloudController
+module CloudController
   RSpec.describe AppDelete do
     subject(:app_delete) { AppDelete.new(user_audit_info) }
     let(:user) { User.make }

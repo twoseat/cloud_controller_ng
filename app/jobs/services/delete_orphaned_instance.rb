@@ -1,7 +1,7 @@
-module VCAP::CloudController
+module CloudController
   module Jobs
     module Services
-      class DeleteOrphanedInstance < VCAP::CloudController::Jobs::CCJob
+      class DeleteOrphanedInstance < CloudController::Jobs::CCJob
         attr_accessor :name, :client_attrs, :service_instance_guid, :service_plan_guid
 
         def initialize(name, client_attrs, service_instance_guid, service_plan_guid)

@@ -1,7 +1,7 @@
 require 'spec_helper'
 
-module VCAP::CloudController
-  RSpec.describe VCAP::CloudController::InfoController do
+module CloudController
+  RSpec.describe CloudController::InfoController do
     describe 'GET /v2/info' do
       it "returns a 'user' entry when authenticated" do
         set_current_user(User.make)
@@ -27,7 +27,7 @@ module VCAP::CloudController
         expect(hash['description']).to eq(TestConfig.config[:info][:description])
         expect(hash['authorization_endpoint']).to eq(TestConfig.config[:login][:url])
         expect(hash['token_endpoint']).to eq(TestConfig.config[:uaa][:url])
-        expect(hash['api_version']).to eq(VCAP::CloudController::Constants::API_VERSION)
+        expect(hash['api_version']).to eq(CloudController::Constants::API_VERSION)
         expect(hash['app_ssh_endpoint']).to eq(TestConfig.config[:info][:app_ssh_endpoint])
         expect(hash['app_ssh_host_key_fingerprint']).to eq(TestConfig.config[:info][:app_ssh_host_key_fingerprint])
         expect(hash['app_ssh_oauth_client']).to eq(TestConfig.config[:info][:app_ssh_oauth_client])

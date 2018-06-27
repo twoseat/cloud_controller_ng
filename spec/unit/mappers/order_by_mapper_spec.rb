@@ -1,7 +1,7 @@
 require 'spec_helper'
 require 'mappers/order_by_mapper'
 
-module VCAP::CloudController
+module CloudController
   RSpec.describe OrderByMapper do
     describe '#from-param' do
       let(:order_by) { 'name' }

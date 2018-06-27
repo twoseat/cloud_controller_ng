@@ -32,7 +32,7 @@ require 'perm'
 module CloudController
   class DependencyLocator
     include Singleton
-    include VCAP::CloudController
+    include CloudController
 
     LARGE_COLLECTION_SIZE = 10_000
     BUILDPACK_CACHE_DIR = 'buildpack_cache'.freeze
@@ -41,7 +41,7 @@ module CloudController
     attr_writer :config
 
     def initialize
-      @config = VCAP::CloudController::Config.config
+      @config = CloudController::Config.config
       @dependencies = {}
     end
 
@@ -59,11 +59,11 @@ module CloudController
     end
 
     def runners
-      @dependencies[:runners] || register(:runners, VCAP::CloudController::Runners.new(config))
+      @dependencies[:runners] || register(:runners, CloudController::Runners.new(config))
     end
 
     def stagers
-      @dependencies[:stagers] || register(:stagers, VCAP::CloudController::Stagers.new(config))
+      @dependencies[:stagers] || register(:stagers, CloudController::Stagers.new(config))
     end
 
     def copilot_client
@@ -190,7 +190,7 @@ module CloudController
     end
 
     def droplet_url_generator
-      VCAP::CloudController::Diego::Buildpack::DropletUrlGenerator.new(
+      CloudController::Diego::Buildpack::DropletUrlGenerator.new(
         internal_service_hostname: config.get(:internal_service_hostname),
         external_port: config.get(:external_port),
         tls_port: config.get(:tls_port),
@@ -359,7 +359,7 @@ module CloudController
         client_key_file: config.get(:diego, :bbs, :key_file),
       )
 
-      VCAP::CloudController::Diego::BbsStagerClient.new(bbs_client)
+      CloudController::Diego::BbsStagerClient.new(bbs_client)
     end
 
     def build_copilot_client
@@ -380,7 +380,7 @@ module CloudController
         client_key_file: config.get(:diego, :bbs, :key_file),
       )
 
-      VCAP::CloudController::Diego::BbsAppsClient.new(bbs_client)
+      CloudController::Diego::BbsAppsClient.new(bbs_client)
     end
 
     def build_bbs_task_client
@@ -391,7 +391,7 @@ module CloudController
         client_key_file: config.get(:diego, :bbs, :key_file)
       )
 
-      VCAP::CloudController::Diego::BbsTaskClient.new(bbs_client)
+      CloudController::Diego::BbsTaskClient.new(bbs_client)
     end
 
     def build_bbs_instances_client
@@ -402,7 +402,7 @@ module CloudController
         client_key_file: config.get(:diego, :bbs, :key_file),
       )
 
-      VCAP::CloudController::Diego::BbsInstancesClient.new(bbs_client)
+      CloudController::Diego::BbsInstancesClient.new(bbs_client)
     end
 
     def build_traffic_controller_client
@@ -410,25 +410,25 @@ module CloudController
     end
 
     def create_object_renderer(opts={})
-      eager_loader = VCAP::CloudController::RestController::SecureEagerLoader.new
-      serializer = VCAP::CloudController::RestController::PreloadedObjectSerializer.new
+      eager_loader = CloudController::RestController::SecureEagerLoader.new
+      serializer = CloudController::RestController::PreloadedObjectSerializer.new
       object_transformer = opts[:object_transformer]
 
-      VCAP::CloudController::RestController::ObjectRenderer.new(eager_loader, serializer, {
+      CloudController::RestController::ObjectRenderer.new(eager_loader, serializer, {
         max_inline_relations_depth: config.get(:renderer, :max_inline_relations_depth),
         object_transformer: object_transformer,
       })
     end
 
     def create_paginated_collection_renderer(opts={})
-      eager_loader = opts[:eager_loader] || VCAP::CloudController::RestController::SecureEagerLoader.new
-      serializer = opts[:serializer] || VCAP::CloudController::RestController::PreloadedObjectSerializer.new
+      eager_loader = opts[:eager_loader] || CloudController::RestController::SecureEagerLoader.new
+      serializer = opts[:serializer] || CloudController::RestController::PreloadedObjectSerializer.new
       max_results_per_page = opts[:max_results_per_page] || config.get(:renderer, :max_results_per_page)
       default_results_per_page = opts[:default_results_per_page] || config.get(:renderer, :default_results_per_page)
       max_inline_relations_depth = opts[:max_inline_relations_depth] || config.get(:renderer, :max_inline_relations_depth)
       collection_transformer = opts[:collection_transformer]
 
-      VCAP::CloudController::RestController::PaginatedCollectionRenderer.new(eager_loader, serializer, {
+      CloudController::RestController::PaginatedCollectionRenderer.new(eager_loader, serializer, {
         max_results_per_page: max_results_per_page,
         default_results_per_page: default_results_per_page,
         max_inline_relations_depth: max_inline_relations_depth,
@@ -437,7 +437,7 @@ module CloudController
     end
 
     def build_perm_client
-      VCAP::CloudController::Perm::Client.build_from_config(config, File)
+      CloudController::Perm::Client.build_from_config(config, File)
     end
   end
 end

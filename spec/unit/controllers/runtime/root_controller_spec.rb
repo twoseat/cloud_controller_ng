@@ -1,7 +1,7 @@
 require 'spec_helper'
 
-module VCAP::CloudController
-  RSpec.describe VCAP::CloudController::RootController do
+module CloudController
+  RSpec.describe CloudController::RootController do
     describe 'GET /' do
       it 'returns a link to itself' do
         get '/'
@@ -18,7 +18,7 @@ module VCAP::CloudController
           {
             'href' => expected_uri,
             'meta' => {
-              'version' => VCAP::CloudController::Constants::API_VERSION
+              'version' => CloudController::Constants::API_VERSION
             }
           }
         )
@@ -32,7 +32,7 @@ module VCAP::CloudController
           {
             'href' => expected_uri,
             'meta' => {
-              'version' => VCAP::CloudController::Constants::API_VERSION_V3
+              'version' => CloudController::Constants::API_VERSION_V3
             }
           }
         )

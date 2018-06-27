@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-module VCAP::CloudController
+module CloudController
   module Diego
     class Protocol
       RSpec.describe ContainerNetworkInfo do

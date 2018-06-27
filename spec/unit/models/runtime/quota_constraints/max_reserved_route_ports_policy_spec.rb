@@ -1,9 +1,9 @@
 require 'spec_helper'
 
-module VCAP::CloudController
+module CloudController
   RSpec.describe MaxReservedRoutePortsPolicy do
     let(:quota_definition) do
-      instance_double(VCAP::CloudController::QuotaDefinition,
+      instance_double(CloudController::QuotaDefinition,
                       total_reserved_route_ports: 4,
                       total_routes: 4)
     end
@@ -41,7 +41,7 @@ module VCAP::CloudController
 
       context 'when total allowed reserved route ports is unlimited and total routes is finite' do
         let(:quota_definition) do
-          instance_double(VCAP::CloudController::QuotaDefinition,
+          instance_double(CloudController::QuotaDefinition,
                           total_reserved_route_ports: -1,
                           total_routes: 4)
         end
@@ -76,7 +76,7 @@ module VCAP::CloudController
 
       context 'when an unlimited amount of routes are available' do
         let(:quota_definition) do
-          instance_double(VCAP::CloudController::QuotaDefinition,
+          instance_double(CloudController::QuotaDefinition,
                           total_reserved_route_ports: -1,
                           total_routes: -1)
         end

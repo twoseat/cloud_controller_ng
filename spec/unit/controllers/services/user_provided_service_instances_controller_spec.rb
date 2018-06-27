@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-module VCAP::CloudController
+module CloudController
   RSpec.describe UserProvidedServiceInstancesController, :services do
     describe 'Query Parameters' do
       it { expect(UserProvidedServiceInstancesController).to be_queryable_by(:name) }
@@ -696,7 +696,7 @@ module VCAP::CloudController
     describe 'PUT', '/v2/user_provided_service_instances/:guid/routes/:route_guid' do
       let(:space) { Space.make }
       let(:developer) { make_developer_for_space(space) }
-      let(:route) { VCAP::CloudController::Route.make(space: space) }
+      let(:route) { CloudController::Route.make(space: space) }
       let(:opts) { {} }
       let(:service_instance) { UserProvidedServiceInstance.make(:routing, space: space) }
 
@@ -714,7 +714,7 @@ module VCAP::CloudController
         put "/v2/user_provided_service_instances/#{service_instance.guid}/routes/#{route.guid}"
         expect(last_response).to have_status_code(201)
 
-        event = VCAP::CloudController::Event.first(type: 'audit.service_instance.bind_route')
+        event = CloudController::Event.first(type: 'audit.service_instance.bind_route')
         expect(event).not_to be_nil
         expect(event.type).to eq('audit.service_instance.bind_route')
         expect(event.actor_type).to eq('user')
@@ -897,7 +897,7 @@ module VCAP::CloudController
           delete "/v2/user_provided_service_instances/#{service_instance.guid}/routes/#{route.guid}"
           expect(last_response).to have_status_code(204)
           expect(last_response.body).to be_empty
-          event = VCAP::CloudController::Event.first(type: 'audit.service_instance.unbind_route')
+          event = CloudController::Event.first(type: 'audit.service_instance.unbind_route')
           expect(event).not_to be_nil
           expect(event.type).to eq('audit.service_instance.unbind_route')
           expect(event.actor_type).to eq('user')

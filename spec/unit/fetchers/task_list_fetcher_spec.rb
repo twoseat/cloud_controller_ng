@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-module VCAP::CloudController
+module CloudController
   RSpec.describe TaskListFetcher do
     let(:space1) { Space.make }
     let(:app_in_space1) { AppModel.make(space_guid: space1.guid) }

@@ -41,7 +41,7 @@ module ServiceBrokerHelpers
     status = opts[:status] || 200
     body = opts[:body] || '{}'
 
-    fake_service_binding = opts[:fake_service_binding] || VCAP::CloudController::ServiceBinding.new(service_instance: service_instance, guid: '')
+    fake_service_binding = opts[:fake_service_binding] || CloudController::ServiceBinding.new(service_instance: service_instance, guid: '')
 
     if block
       stub_request(:put, /#{service_binding_url(fake_service_binding)}[A-Za-z0-9-]+/).
@@ -78,7 +78,7 @@ module ServiceBrokerHelpers
     status = opts[:status] || 200
     body = opts[:body] || '{}'
 
-    fake_service_binding = VCAP::CloudController::ServiceBinding.new(service_instance: service_instance, guid: '')
+    fake_service_binding = CloudController::ServiceBinding.new(service_instance: service_instance, guid: '')
 
     stub_request(:delete, /#{service_binding_url(fake_service_binding)}[A-Za-z0-9-]+/).
       to_return(status: status, body: body)

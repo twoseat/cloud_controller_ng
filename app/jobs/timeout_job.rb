@@ -1,6 +1,6 @@
 require 'jobs/wrapping_job'
 
-module VCAP::CloudController
+module CloudController
   module Jobs
     class TimeoutJob < WrappingJob
       def initialize(job, timeout)

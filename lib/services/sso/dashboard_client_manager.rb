@@ -31,7 +31,7 @@ module VCAP::Services::SSO
 
       return false unless all_clients_can_be_claimed_in_db?(catalog)
 
-      existing_ccdb_clients    = VCAP::CloudController::ServiceDashboardClient.find_claimed_client(broker)
+      existing_ccdb_clients    = CloudController::ServiceDashboardClient.find_claimed_client(broker)
       existing_ccdb_client_ids = existing_ccdb_clients.map(&:uaa_id)
 
       existing_uaa_client_ids  = fetch_clients_from_uaa(requested_client_ids | existing_ccdb_client_ids).map { |c| c['client_id'] }
@@ -45,7 +45,7 @@ module VCAP::Services::SSO
       return unless cc_configured_to_modify_uaa_clients?
 
       requested_clients       = []
-      existing_db_clients     = VCAP::CloudController::ServiceDashboardClient.find_claimed_client(broker)
+      existing_db_clients     = CloudController::ServiceDashboardClient.find_claimed_client(broker)
       existing_db_client_ids  = existing_db_clients.map(&:uaa_id)
       existing_uaa_client_ids = fetch_clients_from_uaa(existing_db_client_ids).map { |client| client['client_id'] }
 
@@ -65,7 +65,7 @@ module VCAP::Services::SSO
 
       unclaimable_ids = []
       requested_clients.each do |client|
-        existing_client_in_ccdb = VCAP::CloudController::ServiceDashboardClient.find_client_by_uaa_id(client['id'])
+        existing_client_in_ccdb = CloudController::ServiceDashboardClient.find_client_by_uaa_id(client['id'])
         unclaimable_ids << existing_client_in_ccdb.uaa_id unless client_claimable_by_broker?(existing_client_in_ccdb)
       end
 
@@ -79,7 +79,7 @@ module VCAP::Services::SSO
     def all_clients_can_be_claimed_in_uaa?(existing_uaa_client_ids, catalog)
       unclaimable_ids = []
       existing_uaa_client_ids.each do |id|
-        existing_client_in_ccdb = VCAP::CloudController::ServiceDashboardClient.find_client_by_uaa_id(id)
+        existing_client_in_ccdb = CloudController::ServiceDashboardClient.find_client_by_uaa_id(id)
         unclaimable_ids << id if existing_client_in_ccdb.nil?
       end
 
@@ -92,7 +92,7 @@ module VCAP::Services::SSO
 
     def fetch_clients_from_uaa(requested_client_ids)
       client_manager.get_clients(requested_client_ids)
-    rescue VCAP::CloudController::UaaError => e
+    rescue CloudController::UaaError => e
       raise CloudController::Errors::ApiError.new_from_details('ServiceBrokerDashboardClientFailure', e.message)
     end
 
@@ -111,7 +111,7 @@ module VCAP::Services::SSO
           db_changeset.each(&:db_command)
           client_manager.modify_transaction(uaa_changeset)
         end
-      rescue VCAP::CloudController::UaaError => e
+      rescue CloudController::UaaError => e
         raise CloudController::Errors::ApiError.new_from_details('ServiceBrokerDashboardClientFailure', e.message)
       end
 
@@ -136,8 +136,8 @@ module VCAP::Services::SSO
     end
 
     def cc_configured_to_modify_uaa_clients?
-      uaa_client = VCAP::CloudController::Config.config.get(:uaa_client_name)
-      uaa_client_secret = VCAP::CloudController::Config.config.get(:uaa_client_secret)
+      uaa_client = CloudController::Config.config.get(:uaa_client_name)
+      uaa_client_secret = CloudController::Config.config.get(:uaa_client_secret)
       uaa_client && uaa_client_secret
     end
   end

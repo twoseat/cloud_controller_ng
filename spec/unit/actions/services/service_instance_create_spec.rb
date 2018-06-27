@@ -1,7 +1,7 @@
 require 'spec_helper'
 require 'actions/services/service_instance_create'
 
-module VCAP::CloudController
+module CloudController
   RSpec.describe ServiceInstanceCreate do
     let(:event_repository) { instance_double(Repositories::ServiceEventRepository, record_service_instance_event: nil, user_audit_info: user_audit_info) }
     let(:user_audit_info) { instance_double(UserAuditInfo) }

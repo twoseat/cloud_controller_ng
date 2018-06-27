@@ -2,7 +2,7 @@ require 'spec_helper'
 require 'actions/v2/app_stop'
 require 'actions/staging_cancel'
 
-module VCAP::CloudController
+module CloudController
   RSpec.describe V2::AppStop do
     let(:cancel_action) { instance_double(StagingCancel, cancel: nil) }
 

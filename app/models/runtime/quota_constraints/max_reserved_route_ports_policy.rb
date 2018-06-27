@@ -1,4 +1,4 @@
-module VCAP::CloudController
+module CloudController
   class MaxReservedRoutePortsPolicy
     def initialize(quota_defintion, port_counter)
       @quota_definition = quota_defintion
@@ -10,8 +10,8 @@ module VCAP::CloudController
       number_of_existing_ports = @port_counter.count
       total_routes = @quota_definition.total_routes
 
-      if reservable_ports == VCAP::CloudController::QuotaDefinition::UNLIMITED
-        return false if total_routes <= number_of_existing_ports && total_routes != VCAP::CloudController::QuotaDefinition::UNLIMITED
+      if reservable_ports == CloudController::QuotaDefinition::UNLIMITED
+        return false if total_routes <= number_of_existing_ports && total_routes != CloudController::QuotaDefinition::UNLIMITED
         return true
       end
 

@@ -1,6 +1,6 @@
 require 'support/fake_nginx_reverse_proxy'
 
-class FakeFrontController < VCAP::CloudController::FrontController
+class FakeFrontController < CloudController::FrontController
   use(FakeNginxReverseProxy)
 
   def initialize(config)

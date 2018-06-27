@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-module VCAP::CloudController
+module CloudController
   RSpec.describe ServiceInstanceDeprovisioner do
     describe '#deprovision_service_instance' do
       let(:event_repository) { Repositories::ServiceEventRepository.new(UserAuditInfo.new(user_guid: User.make.guid, user_email: 'email')) }

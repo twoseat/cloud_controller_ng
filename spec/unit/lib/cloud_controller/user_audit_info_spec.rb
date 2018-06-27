@@ -1,7 +1,7 @@
 require 'spec_helper'
 require 'cloud_controller/user_audit_info'
 
-module VCAP::CloudController
+module CloudController
   RSpec.describe UserAuditInfo do
     let(:security_context) do
       class_double(SecurityContext,

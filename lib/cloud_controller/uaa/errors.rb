@@ -1,4 +1,4 @@
-module VCAP::CloudController
+module CloudController
   class UaaError < StandardError; end
 
   class UaaResourceNotFound < UaaError

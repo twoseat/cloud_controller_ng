@@ -5,24 +5,24 @@ module VCAP::Services
     RSpec.describe OrphanMitigator do
       let(:client_attrs) { { uri: 'broker.com' } }
 
-      let(:plan) { VCAP::CloudController::ServicePlan.make }
-      let(:space) { VCAP::CloudController::Space.make }
-      let(:service_instance) { VCAP::CloudController::ManagedServiceInstance.new(service_plan: plan, space: space) }
-      let(:service_binding) { VCAP::CloudController::ServiceBinding.make }
-      let(:service_key) { VCAP::CloudController::ServiceKey.make }
+      let(:plan) { CloudController::ServicePlan.make }
+      let(:space) { CloudController::Space.make }
+      let(:service_instance) { CloudController::ManagedServiceInstance.new(service_plan: plan, space: space) }
+      let(:service_binding) { CloudController::ServiceBinding.make }
+      let(:service_key) { CloudController::ServiceKey.make }
       let(:name) { 'fake-name' }
 
       describe 'cleanup_failed_provision' do
         it 'enqueues a deprovison job' do
           mock_enqueuer = double(:enqueuer, enqueue: nil)
-          allow(VCAP::CloudController::Jobs::Enqueuer).to receive(:new).and_return(mock_enqueuer)
+          allow(CloudController::Jobs::Enqueuer).to receive(:new).and_return(mock_enqueuer)
 
           OrphanMitigator.new.cleanup_failed_provision(client_attrs, service_instance)
 
-          expect(VCAP::CloudController::Jobs::Enqueuer).to have_received(:new) do |job, opts|
+          expect(CloudController::Jobs::Enqueuer).to have_received(:new) do |job, opts|
             expect(opts[:queue]).to eq 'cc-generic'
 
-            expect(job).to be_a VCAP::CloudController::Jobs::Services::DeleteOrphanedInstance
+            expect(job).to be_a CloudController::Jobs::Services::DeleteOrphanedInstance
             expect(job.name).to eq 'service-instance-deprovision'
             expect(job.client_attrs).to eq client_attrs
             expect(job.service_instance_guid).to eq service_instance.guid
@@ -48,14 +48,14 @@ module VCAP::Services
       describe 'cleanup_failed_bind' do
         it 'enqueues an unbind job' do
           mock_enqueuer = double(:enqueuer, enqueue: nil)
-          allow(VCAP::CloudController::Jobs::Enqueuer).to receive(:new).and_return(mock_enqueuer)
+          allow(CloudController::Jobs::Enqueuer).to receive(:new).and_return(mock_enqueuer)
 
           OrphanMitigator.new.cleanup_failed_bind(client_attrs, service_binding)
 
-          expect(VCAP::CloudController::Jobs::Enqueuer).to have_received(:new) do |job, opts|
+          expect(CloudController::Jobs::Enqueuer).to have_received(:new) do |job, opts|
             expect(opts[:queue]).to eq 'cc-generic'
 
-            expect(job).to be_a VCAP::CloudController::Jobs::Services::DeleteOrphanedBinding
+            expect(job).to be_a CloudController::Jobs::Services::DeleteOrphanedBinding
             expect(job.name).to eq 'service-instance-unbind'
             expect(job.client_attrs).to eq client_attrs
             expect(job.binding_info.guid).to eq service_binding.guid
@@ -81,14 +81,14 @@ module VCAP::Services
       describe 'cleanup_failed_key' do
         it 'enqueues an service_key_delete job' do
           mock_enqueuer = double(:enqueuer, enqueue: nil)
-          allow(VCAP::CloudController::Jobs::Enqueuer).to receive(:new).and_return(mock_enqueuer)
+          allow(CloudController::Jobs::Enqueuer).to receive(:new).and_return(mock_enqueuer)
 
           OrphanMitigator.new.cleanup_failed_key(client_attrs, service_key)
 
-          expect(VCAP::CloudController::Jobs::Enqueuer).to have_received(:new) do |job, opts|
+          expect(CloudController::Jobs::Enqueuer).to have_received(:new) do |job, opts|
             expect(opts[:queue]).to eq 'cc-generic'
 
-            expect(job).to be_a VCAP::CloudController::Jobs::Services::DeleteOrphanedKey
+            expect(job).to be_a CloudController::Jobs::Services::DeleteOrphanedKey
             expect(job.name).to eq 'service-key-delete'
             expect(job.client_attrs).to eq client_attrs
             expect(job.key_guid).to eq service_key.guid

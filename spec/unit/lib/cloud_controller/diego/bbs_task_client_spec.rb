@@ -1,7 +1,7 @@
 require 'spec_helper'
 require 'cloud_controller/diego/bbs_task_client'
 
-module VCAP::CloudController::Diego
+module CloudController::Diego
   RSpec.describe BbsTaskClient do
     let(:task_guid) { 'task-guid' }
     let(:domain) { 'foobar-domain' }

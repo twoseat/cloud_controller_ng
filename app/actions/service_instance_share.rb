@@ -1,6 +1,6 @@
 require 'repositories/service_instance_share_event_repository'
 
-module VCAP::CloudController
+module CloudController
   class ServiceInstanceShare
     class Error < ::StandardError
     end

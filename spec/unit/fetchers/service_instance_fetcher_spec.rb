@@ -1,7 +1,7 @@
 require 'spec_helper'
 require 'fetchers/service_instance_fetcher'
 
-module VCAP::CloudController
+module CloudController
   RSpec.describe ServiceInstanceFetcher do
     describe '#fetch' do
       let(:org) { Organization.make }

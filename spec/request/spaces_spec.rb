@@ -1,14 +1,14 @@
 require 'spec_helper'
 
 RSpec.describe 'Spaces' do
-  let(:user) { VCAP::CloudController::User.make }
+  let(:user) { CloudController::User.make }
   let(:user_header) { headers_for(user) }
   let(:admin_header) { admin_headers_for(user) }
-  let(:organization)       { VCAP::CloudController::Organization.make name: 'Boardgames' }
-  let!(:space1)            { VCAP::CloudController::Space.make name: 'Catan', organization: organization }
-  let!(:space2)            { VCAP::CloudController::Space.make name: 'Ticket to Ride', organization: organization }
-  let!(:space3)            { VCAP::CloudController::Space.make name: 'Agricola', organization: organization }
-  let!(:unaccesable_space) { VCAP::CloudController::Space.make name: 'Ghost Stories', organization: organization }
+  let(:organization)       { CloudController::Organization.make name: 'Boardgames' }
+  let!(:space1)            { CloudController::Space.make name: 'Catan', organization: organization }
+  let!(:space2)            { CloudController::Space.make name: 'Ticket to Ride', organization: organization }
+  let!(:space3)            { CloudController::Space.make name: 'Agricola', organization: organization }
+  let!(:unaccesable_space) { CloudController::Space.make name: 'Ghost Stories', organization: organization }
 
   before do
     organization.add_user(user)
@@ -31,10 +31,10 @@ RSpec.describe 'Spaces' do
       expect {
         post '/v3/spaces', request_body, admin_header
       }.to change {
-        VCAP::CloudController::Space.count
+        CloudController::Space.count
       }.by 1
 
-      created_space = VCAP::CloudController::Space.last
+      created_space = CloudController::Space.last
 
       expect(last_response.status).to eq(201)
 

@@ -1,4 +1,4 @@
-module VCAP::CloudController
+module CloudController
   module Repositories
     class UserEventRepository
       def record_space_role_add(space, assignee, role, actor_audit_info, request_attrs={})

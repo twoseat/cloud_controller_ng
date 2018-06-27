@@ -21,7 +21,7 @@ module CloudFoundry
         unless skip_rate_limiting?(env, request)
           user_guid = user_token?(env) ? env['cf.user_guid'] : client_ip(request)
 
-          request_count = VCAP::CloudController::RequestCount.find_or_create(user_guid: user_guid) do |created_request_count|
+          request_count = CloudController::RequestCount.find_or_create(user_guid: user_guid) do |created_request_count|
             created_request_count.valid_until = Time.now + @interval.minutes
           end
 
@@ -68,7 +68,7 @@ module CloudFoundry
       end
 
       def increment_request_count!(request_count)
-        VCAP::CloudController::RequestCount.where(id: request_count.id).update(count: Sequel.expr(1) + :count)
+        CloudController::RequestCount.where(id: request_count.id).update(count: Sequel.expr(1) + :count)
       end
 
       def request_limit(env)
@@ -107,7 +107,7 @@ module CloudFoundry
       end
 
       def not_admin
-        !(VCAP::CloudController::SecurityContext.admin? || VCAP::CloudController::SecurityContext.admin_read_only?)
+        !(CloudController::SecurityContext.admin? || CloudController::SecurityContext.admin_read_only?)
       end
     end
   end

@@ -1,7 +1,7 @@
 require 'jobs/wrapping_job'
 require 'presenters/error_presenter'
 
-module VCAP::CloudController
+module CloudController
   module Jobs
     class LoggingContextJob < WrappingJob
       attr_reader :request_id

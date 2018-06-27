@@ -1,4 +1,4 @@
-module VCAP::CloudController
+module CloudController
   module Perm
     class Error < StandardError; end
   end

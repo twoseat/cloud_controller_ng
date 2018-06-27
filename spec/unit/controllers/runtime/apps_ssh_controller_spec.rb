@@ -1,7 +1,7 @@
 require 'spec_helper'
 require 'cloud_controller/diego/process_guid'
 
-module VCAP::CloudController
+module CloudController
   RSpec.describe AppsSSHController do
     let(:diego) { true }
     let(:enable_ssh) { true }
@@ -25,7 +25,7 @@ module VCAP::CloudController
         it 'returns a 200 and ProcessGuid' do
           get "/internal/apps/#{process.guid}/ssh_access/#{instance_index}"
           expect(last_response.status).to eq(200)
-          expected_process_guid = VCAP::CloudController::Diego::ProcessGuid.from_process(process)
+          expected_process_guid = CloudController::Diego::ProcessGuid.from_process(process)
           expect(decoded_response['process_guid']).to eq(expected_process_guid)
         end
 
@@ -134,7 +134,7 @@ module VCAP::CloudController
         it 'returns a 200 and ProcessGuid' do
           get "/internal/apps/#{process.guid}/ssh_access/#{instance_index}"
           expect(last_response.status).to eq(200)
-          expected_process_guid = VCAP::CloudController::Diego::ProcessGuid.from_process(process)
+          expected_process_guid = CloudController::Diego::ProcessGuid.from_process(process)
           expect(decoded_response['process_guid']).to eq(expected_process_guid)
         end
 

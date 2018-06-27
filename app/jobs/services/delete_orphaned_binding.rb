@@ -1,4 +1,4 @@
-module VCAP::CloudController
+module CloudController
   module Jobs
     module Services
       class OrphanedBindingInfo
@@ -21,7 +21,7 @@ module VCAP::CloudController
         end
       end
 
-      class DeleteOrphanedBinding < VCAP::CloudController::Jobs::CCJob
+      class DeleteOrphanedBinding < CloudController::Jobs::CCJob
         attr_accessor :name, :client_attrs, :binding_info
 
         def initialize(name, client_attrs, binding_info)

@@ -1,6 +1,6 @@
 require 'presenters/v3/base_presenter'
 
-module VCAP::CloudController::Presenters::V3
+module CloudController::Presenters::V3
   class DeploymentPresenter < BasePresenter
     def to_hash
       {
@@ -29,7 +29,7 @@ module VCAP::CloudController::Presenters::V3
     end
 
     def build_links
-      url_builder = VCAP::CloudController::Presenters::ApiUrlBuilder.new
+      url_builder = CloudController::Presenters::ApiUrlBuilder.new
 
       {
         self: {

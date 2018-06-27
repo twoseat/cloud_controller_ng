@@ -1,6 +1,6 @@
 require 'scientist'
 
-module VCAP::CloudController
+module CloudController
   module Science
     class Experiment < Scientist::Default
       include Scientist::Experiment

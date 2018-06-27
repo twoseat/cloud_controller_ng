@@ -1,4 +1,4 @@
-module VCAP::CloudController::RestController
+module CloudController::RestController
   # DSL that is available inside define_attributes on a rest controller
   # class.
   module ControllerDSL

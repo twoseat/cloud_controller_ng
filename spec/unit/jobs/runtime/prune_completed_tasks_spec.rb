@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-module VCAP::CloudController
+module CloudController
   module Jobs::Runtime
     RSpec.describe PruneCompletedTasks, job_context: :worker do
       let(:cutoff_age_in_days) { 30 }

@@ -1,6 +1,6 @@
 require 'cloud_controller/backends/non_quota_validating_staging_memory_calculator'
 
-module VCAP::CloudController
+module CloudController
   class QuotaValidatingStagingMemoryCalculator < NonQuotaValidatingStagingMemoryCalculator
     class SpaceQuotaExceeded < StandardError; end
     class OrgQuotaExceeded < StandardError; end

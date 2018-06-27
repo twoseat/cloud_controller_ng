@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-module VCAP::CloudController
+module CloudController
   RSpec.describe Stack, type: :model do
     let(:file) { File.join(Paths::FIXTURES, 'config/stacks.yml') }
 

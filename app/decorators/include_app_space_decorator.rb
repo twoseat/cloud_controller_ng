@@ -1,4 +1,4 @@
-module VCAP::CloudController
+module CloudController
   class IncludeAppSpaceDecorator
     class << self
       def decorate(hash, apps)

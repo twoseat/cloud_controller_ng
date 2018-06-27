@@ -1,7 +1,7 @@
 require 'spec_helper'
 
-module VCAP::CloudController
-  RSpec.describe VCAP::CloudController::AppEvent, type: :model do
+module CloudController
+  RSpec.describe CloudController::AppEvent, type: :model do
     it { is_expected.to have_timestamp_columns }
 
     describe 'Associations' do

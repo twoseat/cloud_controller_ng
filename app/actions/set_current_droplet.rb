@@ -1,4 +1,4 @@
-module VCAP::CloudController
+module CloudController
   class SetCurrentDroplet
     class InvalidApp < StandardError; end
     class Error < StandardError; end

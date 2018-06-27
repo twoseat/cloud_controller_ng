@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-module VCAP::CloudController
+module CloudController
   RSpec.describe InstallBuildpacks do
     describe 'installs buildpacks' do
       let(:installer) { InstallBuildpacks.new(TestConfig.config_instance) }

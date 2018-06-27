@@ -1,30 +1,30 @@
 module UserHelpers
   def set_current_user(user, opts={})
-    token_decoder = VCAP::CloudController::UaaTokenDecoder.new(TestConfig.config_instance.get(:uaa))
+    token_decoder = CloudController::UaaTokenDecoder.new(TestConfig.config_instance.get(:uaa))
     header_token = user ? "bearer #{user_token(user, opts)}" : nil
     token_information = opts[:token] ? opts[:token] : token_decoder.decode_token(header_token)
-    VCAP::CloudController::SecurityContext.set(user, token_information, header_token)
+    CloudController::SecurityContext.set(user, token_information, header_token)
     user
   end
 
   # rubocop:disable all
   def set_current_user_as_admin(opts={})
     # rubocop:enable all
-    user = opts.delete(:user) || VCAP::CloudController::User.make
+    user = opts.delete(:user) || CloudController::User.make
     set_current_user(user, { admin: true }.merge(opts))
   end
 
   # rubocop:disable all
   def set_current_user_as_admin_read_only(opts={})
     # rubocop:enable all
-    user = opts.delete(:user) || VCAP::CloudController::User.make
+    user = opts.delete(:user) || CloudController::User.make
     set_current_user(user, { admin_read_only: true }.merge(opts))
   end
 
   # rubocop:disable all
   def set_current_user_as_global_auditor(opts={})
     # rubocop:enable all
-    user = opts.delete(:user) || VCAP::CloudController::User.make
+    user = opts.delete(:user) || CloudController::User.make
     set_current_user(user, { global_auditor: true }.merge(opts))
   end
 
@@ -37,7 +37,7 @@ module UserHelpers
   # rubocop:disable all
   def set_current_user_as_reader_and_writer(opts={})
     # rubocop:enable all
-    user = opts.delete(:user) || VCAP::CloudController::User.make
+    user = opts.delete(:user) || CloudController::User.make
     scopes = { scopes: %w(cloud_controller.read cloud_controller.write) }
     set_current_user(user, scopes.merge(opts))
   end
@@ -45,7 +45,7 @@ module UserHelpers
   # rubocop:disable all
   def set_current_user_as_reader(opts={})
     # rubocop:enable all
-    user = opts.delete(:user) || VCAP::CloudController::User.make
+    user = opts.delete(:user) || CloudController::User.make
     scopes = { scopes: %w(cloud_controller.read) }
     set_current_user(user, scopes.merge(opts))
   end
@@ -53,7 +53,7 @@ module UserHelpers
   # rubocop:disable all
   def set_current_user_as_writer(opts={})
     # rubocop:enable all
-    user = opts.delete(:user) || VCAP::CloudController::User.make
+    user = opts.delete(:user) || CloudController::User.make
     scopes = { scopes: %w(cloud_controller.write) }
     set_current_user(user, scopes.merge(opts))
   end
@@ -61,7 +61,7 @@ module UserHelpers
   # rubocop:disable all
   def set_current_user_as_role(role:, org: nil, space: nil, user: nil, scopes: nil)
     # rubocop:enable all
-    current_user = user || VCAP::CloudController::User.make
+    current_user = user || CloudController::User.make
     current_user = set_current_user(current_user, scopes: scopes)
 
     scope_roles = %w(admin admin_read_only global_auditor reader_and_writer reader writer)
@@ -213,8 +213,8 @@ module UserHelpers
   def permissions_double(user)
     @permissions ||= {}
     @permissions[user.guid] ||= begin
-      instance_double(VCAP::CloudController::Permissions).tap do |permissions|
-        allow(VCAP::CloudController::Permissions).to receive(:new).with(user).and_return(permissions)
+      instance_double(CloudController::Permissions).tap do |permissions|
+        allow(CloudController::Permissions).to receive(:new).with(user).and_return(permissions)
         allow(permissions).to receive(:can_read_globally?).and_return(false)
       end
     end

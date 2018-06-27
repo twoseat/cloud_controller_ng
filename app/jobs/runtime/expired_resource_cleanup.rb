@@ -1,7 +1,7 @@
-module VCAP::CloudController
+module CloudController
   module Jobs
     module Runtime
-      class ExpiredResourceCleanup < VCAP::CloudController::Jobs::CCJob
+      class ExpiredResourceCleanup < CloudController::Jobs::CCJob
         def perform
           logger.info('Deleting expired droplet and package models')
           deleted_expired_droplets.each(&:destroy)

@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-module VCAP::CloudController
+module CloudController
   module Diego
     RSpec.describe TasksSync, job_context: :clock do
       subject { TasksSync.new(config: config) }
@@ -49,10 +49,10 @@ module VCAP::CloudController
             expect(bbs_task_client).to have_received(:fetch_task).with(running_task.guid)
             expect(bbs_task_client).to have_received(:fetch_task).with(canceling_task.guid)
 
-            expect(running_task.reload.state).to eq(VCAP::CloudController::TaskModel::FAILED_STATE)
+            expect(running_task.reload.state).to eq(CloudController::TaskModel::FAILED_STATE)
             expect(running_task.reload.failure_reason).to eq(BULKER_TASK_FAILURE)
 
-            expect(canceling_task.reload.state).to eq(VCAP::CloudController::TaskModel::FAILED_STATE)
+            expect(canceling_task.reload.state).to eq(CloudController::TaskModel::FAILED_STATE)
             expect(canceling_task.reload.failure_reason).to eq(BULKER_TASK_FAILURE)
           end
 
@@ -236,7 +236,7 @@ module VCAP::CloudController
           let!(:bbs_tasks) { [] }
 
           before do
-            stub_const('VCAP::CloudController::Diego::TasksSync::BATCH_SIZE', 5)
+            stub_const('CloudController::Diego::TasksSync::BATCH_SIZE', 5)
             (TasksSync::BATCH_SIZE + 1).times do |_|
               task = TaskModel.make(:running, created_at: 1.minute.ago)
               bbs_tasks << ::Diego::Bbs::Models::Task.new(task_guid: task.guid)

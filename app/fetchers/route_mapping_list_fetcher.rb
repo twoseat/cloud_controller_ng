@@ -1,4 +1,4 @@
-module VCAP::CloudController
+module CloudController
   class RouteMappingListFetcher
     def initialize(message:)
       @message = message

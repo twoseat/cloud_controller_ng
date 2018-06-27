@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-module VCAP::CloudController
+module CloudController
   RSpec.describe SharedDomainsController do
     describe 'Query Parameters' do
       it { expect(SharedDomainsController).to be_queryable_by(:name) }

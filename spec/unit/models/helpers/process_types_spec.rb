@@ -1,7 +1,7 @@
 require 'spec_helper'
 require 'models/helpers/process_types'
 
-module VCAP::CloudController
+module CloudController
   RSpec.describe ProcessTypes do
     describe '.webish?' do
       it 'returns true for web' do

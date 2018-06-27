@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-module VCAP::CloudController
+module CloudController
   RSpec.describe InstancesReporters do
     subject(:instances_reporters) { InstancesReporters.new }
 

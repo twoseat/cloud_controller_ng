@@ -2,10 +2,10 @@ require 'spec_helper'
 require 'isolation_segment_assign'
 
 RSpec.describe 'IsolationSegmentModels' do
-  let(:user) { VCAP::CloudController::User.make }
+  let(:user) { CloudController::User.make }
   let(:user_header) { admin_headers_for(user) }
-  let(:space) { VCAP::CloudController::Space.make }
-  let(:assigner) { VCAP::CloudController::IsolationSegmentAssign.new }
+  let(:space) { CloudController::Space.make }
+  let(:assigner) { CloudController::IsolationSegmentAssign.new }
 
   describe 'POST /v3/isolation_segments' do
     it 'creates an isolation segment' do
@@ -18,7 +18,7 @@ RSpec.describe 'IsolationSegmentModels' do
       parsed_response = MultiJson.load(last_response.body)
       expect(last_response.status).to eq(201)
 
-      created_isolation_segment = VCAP::CloudController::IsolationSegmentModel.last
+      created_isolation_segment = CloudController::IsolationSegmentModel.last
       expected_response = {
         'name'       => 'my_segment',
         'guid'       => created_isolation_segment.guid,
@@ -35,9 +35,9 @@ RSpec.describe 'IsolationSegmentModels' do
   end
 
   describe 'GET /v3/isolation_segments/:guid/relationships/organizations' do
-    let(:org1) { VCAP::CloudController::Organization.make }
-    let(:org2) { VCAP::CloudController::Organization.make }
-    let(:isolation_segment_model) { VCAP::CloudController::IsolationSegmentModel.make }
+    let(:org1) { CloudController::Organization.make }
+    let(:org2) { CloudController::Organization.make }
+    let(:isolation_segment_model) { CloudController::IsolationSegmentModel.make }
 
     before do
       assigner.assign(isolation_segment_model, [org1, org2])
@@ -68,9 +68,9 @@ RSpec.describe 'IsolationSegmentModels' do
   end
 
   describe 'GET /v3/isolation_segments/:guid/relationships/spaces' do
-    let(:space1) { VCAP::CloudController::Space.make }
-    let(:space2) { VCAP::CloudController::Space.make }
-    let(:isolation_segment_model) { VCAP::CloudController::IsolationSegmentModel.make }
+    let(:space1) { CloudController::Space.make }
+    let(:space2) { CloudController::Space.make }
+    let(:isolation_segment_model) { CloudController::IsolationSegmentModel.make }
 
     before do
       assigner.assign(isolation_segment_model, [space1.organization, space2.organization])
@@ -94,9 +94,9 @@ RSpec.describe 'IsolationSegmentModels' do
   end
 
   describe 'POST /v3/isolation_segments/:guid/relationships/organizations' do
-    let(:org1) { VCAP::CloudController::Organization.make }
-    let(:org2) { VCAP::CloudController::Organization.make }
-    let(:isolation_segment) { VCAP::CloudController::IsolationSegmentModel.make }
+    let(:org1) { CloudController::Organization.make }
+    let(:org2) { CloudController::Organization.make }
+    let(:isolation_segment) { CloudController::IsolationSegmentModel.make }
 
     it 'assigns the isolation segment to the organization' do
       assign_request = {
@@ -125,9 +125,9 @@ RSpec.describe 'IsolationSegmentModels' do
   end
 
   describe 'DELETE /v3/isolation_segments/:guid/relationships/organizations/:org_guid' do
-    let(:org1) { VCAP::CloudController::Organization.make }
-    let(:org2) { VCAP::CloudController::Organization.make }
-    let(:isolation_segment) { VCAP::CloudController::IsolationSegmentModel.make }
+    let(:org1) { CloudController::Organization.make }
+    let(:org2) { CloudController::Organization.make }
+    let(:isolation_segment) { CloudController::IsolationSegmentModel.make }
 
     before do
       assigner.assign(isolation_segment, [org1, org2])
@@ -144,7 +144,7 @@ RSpec.describe 'IsolationSegmentModels' do
   end
 
   describe 'GET /v3/isolation_segments/:guid' do
-    let(:isolation_segment_model) { VCAP::CloudController::IsolationSegmentModel.make }
+    let(:isolation_segment_model) { CloudController::IsolationSegmentModel.make }
 
     context 'as an admin' do
       it 'returns the requested isolation segment' do
@@ -201,8 +201,8 @@ RSpec.describe 'IsolationSegmentModels' do
   end
 
   describe 'GET /v3/isolation_segments' do
-    let(:org1) { VCAP::CloudController::Organization.make }
-    let(:org2) { VCAP::CloudController::Organization.make }
+    let(:org1) { CloudController::Organization.make }
+    let(:org2) { CloudController::Organization.make }
 
     it 'returns the seeded isolation segment' do
       get '/v3/isolation_segments', nil, user_header
@@ -210,7 +210,7 @@ RSpec.describe 'IsolationSegmentModels' do
       expect(last_response.status).to eq 200
       parsed_response = MultiJson.load(last_response.body)
 
-      shared_guid = VCAP::CloudController::IsolationSegmentModel::SHARED_ISOLATION_SEGMENT_GUID
+      shared_guid = CloudController::IsolationSegmentModel::SHARED_ISOLATION_SEGMENT_GUID
 
       expected_response = {
         'pagination' => {
@@ -241,12 +241,12 @@ RSpec.describe 'IsolationSegmentModels' do
     context 'when there are multiple isolation segments' do
       let!(:models) {
         [
-          VCAP::CloudController::IsolationSegmentModel.make(name: 'segment1'),
-          VCAP::CloudController::IsolationSegmentModel.make(name: 'segment2'),
-          VCAP::CloudController::IsolationSegmentModel.make(name: 'segment3'),
-          VCAP::CloudController::IsolationSegmentModel.make(name: 'segment4'),
-          VCAP::CloudController::IsolationSegmentModel.make(name: 'segment5'),
-          VCAP::CloudController::IsolationSegmentModel.make(name: 'segment6')
+          CloudController::IsolationSegmentModel.make(name: 'segment1'),
+          CloudController::IsolationSegmentModel.make(name: 'segment2'),
+          CloudController::IsolationSegmentModel.make(name: 'segment3'),
+          CloudController::IsolationSegmentModel.make(name: 'segment4'),
+          CloudController::IsolationSegmentModel.make(name: 'segment5'),
+          CloudController::IsolationSegmentModel.make(name: 'segment6')
         ]
       }
 
@@ -361,7 +361,7 @@ RSpec.describe 'IsolationSegmentModels' do
 
   describe 'PATCH /v3/isolation_segments/:guid' do
     it 'updates the specified isolation segment' do
-      isolation_segment_model = VCAP::CloudController::IsolationSegmentModel.make(name: 'my_segment')
+      isolation_segment_model = CloudController::IsolationSegmentModel.make(name: 'my_segment')
 
       update_request = {
         name:                  'your_segment'
@@ -388,7 +388,7 @@ RSpec.describe 'IsolationSegmentModels' do
 
   describe 'DELETE /v3/isolation_segments/:guid' do
     it 'deletes the specified isolation segment' do
-      isolation_segment_model = VCAP::CloudController::IsolationSegmentModel.make(name: 'my_segment')
+      isolation_segment_model = CloudController::IsolationSegmentModel.make(name: 'my_segment')
 
       delete "/v3/isolation_segments/#{isolation_segment_model.guid}", nil, user_header
       expect(last_response.status).to eq(204)

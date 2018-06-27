@@ -1,7 +1,7 @@
 require 'spec_helper'
 require 'fetchers/space_list_fetcher'
 
-module VCAP::CloudController
+module CloudController
   RSpec.describe SpaceListFetcher do
     let!(:space1) { Space.make(name: 'Lamb') }
     let!(:space2) { Space.make(name: 'Alpaca') }

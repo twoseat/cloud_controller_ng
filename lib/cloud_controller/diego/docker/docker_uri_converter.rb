@@ -1,4 +1,4 @@
-module VCAP::CloudController
+module CloudController
   class DockerURIConverter
     DOCKER_INDEX_SERVER = 'docker.io'.freeze
 

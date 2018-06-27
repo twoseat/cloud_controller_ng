@@ -1,12 +1,12 @@
 require 'spec_helper'
 require 'messages/validators'
 
-module VCAP::CloudController::Validators
+module CloudController::Validators
   RSpec.describe 'Validators' do
     let(:fake_class) do
       Class.new do
         include ActiveModel::Model
-        include VCAP::CloudController::Validators
+        include CloudController::Validators
 
         attr_accessor :field
       end
@@ -291,7 +291,7 @@ module VCAP::CloudController::Validators
     end
 
     describe 'RelationshipValidator' do
-      class RelationshipMessage < VCAP::CloudController::BaseMessage
+      class RelationshipMessage < CloudController::BaseMessage
         register_allowed_keys [:relationships]
 
         def relationships_message
@@ -300,7 +300,7 @@ module VCAP::CloudController::Validators
 
         validates_with RelationshipValidator
 
-        class Relationships < VCAP::CloudController::BaseMessage
+        class Relationships < CloudController::BaseMessage
           register_allowed_keys [:foo]
 
           validates :foo, numericality: true
@@ -321,11 +321,11 @@ module VCAP::CloudController::Validators
     end
 
     describe 'DataValidator' do
-      class DataMessage < VCAP::CloudController::BaseMessage
+      class DataMessage < CloudController::BaseMessage
         register_allowed_keys [:data]
         validates_with DataValidator
 
-        class Data < VCAP::CloudController::BaseMessage
+        class Data < CloudController::BaseMessage
           register_allowed_keys [:foo]
 
           validates :foo, numericality: true

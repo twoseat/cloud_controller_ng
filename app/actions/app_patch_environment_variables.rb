@@ -1,4 +1,4 @@
-module VCAP::CloudController
+module CloudController
   class AppPatchEnvironmentVariables
     class InvalidApp < StandardError
     end

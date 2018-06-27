@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-module VCAP::CloudController
+module CloudController
   RSpec.describe BuildModel do
     let(:package) { PackageModel.make(state: PackageModel::READY_STATE) }
     let(:build_model) { BuildModel.make(package: package) }

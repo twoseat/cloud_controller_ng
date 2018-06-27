@@ -54,8 +54,8 @@ shared_context 'resource pool' do
   end
 
   before do
-    @resource_pool = VCAP::CloudController::ResourcePool.new(
-      VCAP::CloudController::Config.new(resource_pool: resource_pool_config)
+    @resource_pool = CloudController::ResourcePool.new(
+      CloudController::Config.new(resource_pool: resource_pool_config)
     )
   end
 

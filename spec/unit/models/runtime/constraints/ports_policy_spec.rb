@@ -1,7 +1,7 @@
 require 'spec_helper'
 
 RSpec.describe PortsPolicy do
-  let!(:process) { VCAP::CloudController::ProcessModelFactory.make }
+  let!(:process) { CloudController::ProcessModelFactory.make }
   let(:validator) { PortsPolicy.new(process) }
 
   context 'invalid apps request' do

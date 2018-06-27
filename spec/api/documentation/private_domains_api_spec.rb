@@ -3,8 +3,8 @@ require 'rspec_api_documentation/dsl'
 
 RSpec.resource 'Private Domains', type: [:api, :legacy_api] do
   let(:admin_auth_header) { admin_headers['HTTP_AUTHORIZATION'] }
-  let(:guid) { VCAP::CloudController::PrivateDomain.first.guid }
-  let!(:domains) { 3.times { VCAP::CloudController::PrivateDomain.make } }
+  let(:guid) { CloudController::PrivateDomain.first.guid }
+  let!(:domains) { 3.times { CloudController::PrivateDomain.make } }
 
   authenticated_request
 
@@ -18,14 +18,14 @@ RSpec.resource 'Private Domains', type: [:api, :legacy_api] do
       field :owning_organization_guid, 'The organization that owns the domain.', required: true
     end
 
-    standard_model_list :private_domain, VCAP::CloudController::PrivateDomainsController
+    standard_model_list :private_domain, CloudController::PrivateDomainsController
     standard_model_get :private_domain, nested_associations: [:owning_organization]
     standard_model_delete :private_domain
 
     post '/v2/private_domains' do
       include_context 'updatable_fields'
       example 'Create a Private Domain owned by the given Organization' do
-        org_guid = VCAP::CloudController::Organization.make.guid
+        org_guid = CloudController::Organization.make.guid
         payload  = MultiJson.dump(
           {
             name:                     'exmaple.com',
@@ -44,13 +44,13 @@ RSpec.resource 'Private Domains', type: [:api, :legacy_api] do
     end
 
     get '/v2/private_domains' do
-      standard_list_parameters VCAP::CloudController::PrivateDomainsController
+      standard_list_parameters CloudController::PrivateDomainsController
 
       describe 'querying by name' do
         let(:q) { 'name:my-domain.com' }
 
         before do
-          VCAP::CloudController::PrivateDomain.make name: 'my-domain.com'
+          CloudController::PrivateDomain.make name: 'my-domain.com'
         end
 
         example 'Filtering Private Domains by name' do
@@ -76,12 +76,12 @@ RSpec.resource 'Private Domains', type: [:api, :legacy_api] do
 
     describe 'Shared Organizations' do
       before do
-        pd  = VCAP::CloudController::PrivateDomain[guid: guid]
-        org = VCAP::CloudController::Organization.make
+        pd  = CloudController::PrivateDomain[guid: guid]
+        org = CloudController::Organization.make
         org.add_private_domain(pd)
       end
 
-      standard_model_list :organization, VCAP::CloudController::OrganizationsController, outer_model: :private_domain, path: :shared_organizations
+      standard_model_list :organization, CloudController::OrganizationsController, outer_model: :private_domain, path: :shared_organizations
     end
   end
 end

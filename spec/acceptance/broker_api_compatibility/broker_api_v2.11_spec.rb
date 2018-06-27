@@ -2,7 +2,7 @@ require 'spec_helper'
 
 RSpec.describe 'Service Broker API integration' do
   describe 'v2.11' do
-    include VCAP::CloudController::BrokerApiHelper
+    include CloudController::BrokerApiHelper
 
     let(:catalog) do
       catalog = default_catalog(plan_updateable: true)
@@ -14,7 +14,7 @@ RSpec.describe 'Service Broker API integration' do
     before do
       setup_cc
       setup_broker(catalog)
-      @broker = VCAP::CloudController::ServiceBroker.find guid: @broker_guid
+      @broker = CloudController::ServiceBroker.find guid: @broker_guid
       provision_service
       create_app
     end

@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-module VCAP::CloudController::Diego
+module CloudController::Diego
   RSpec.describe BbsAppsClient do
     subject(:client) { BbsAppsClient.new(bbs_client) }
 

@@ -1,7 +1,7 @@
 require 'actions/v2/app_stop'
 require 'actions/staging_cancel'
 
-module VCAP::CloudController
+module CloudController
   module V2
     class AppUpdate
       def initialize(access_validator:, stagers:)
@@ -153,7 +153,7 @@ module VCAP::CloudController
       end
 
       def custom_buildpacks_disabled?
-        VCAP::CloudController::Config.config.get(:disable_custom_buildpacks)
+        CloudController::Config.config.get(:disable_custom_buildpacks)
       end
 
       def staging_necessary?(process, request_attrs)

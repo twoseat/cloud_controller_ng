@@ -2,7 +2,7 @@ require 'cloud_controller/diego/lifecycles/buildpack_info'
 require 'cloud_controller/diego/lifecycles/buildpack_lifecycle_data_validator'
 require 'fetchers/buildpack_lifecycle_fetcher'
 
-module VCAP::CloudController
+module CloudController
   class BuildpackLifecycle
     attr_reader :staging_message, :buildpack_infos
 
@@ -22,7 +22,7 @@ module VCAP::CloudController
     end
 
     def create_lifecycle_data_model(build)
-      VCAP::CloudController::BuildpackLifecycleDataModel.create(
+      CloudController::BuildpackLifecycleDataModel.create(
         buildpacks: Array(buildpacks_to_use),
         stack:     staging_stack,
         build:     build
@@ -36,7 +36,7 @@ module VCAP::CloudController
     end
 
     def staging_stack
-      requested_stack || app_stack || VCAP::CloudController::Stack.default.name
+      requested_stack || app_stack || CloudController::Stack.default.name
     end
 
     private

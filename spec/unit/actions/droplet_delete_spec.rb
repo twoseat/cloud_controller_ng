@@ -1,7 +1,7 @@
 require 'spec_helper'
 require 'actions/droplet_delete'
 
-module VCAP::CloudController
+module CloudController
   RSpec.describe DropletDelete do
     let(:user) { User.make }
     let(:user_email) { 'user@example.com' }
@@ -39,7 +39,7 @@ module VCAP::CloudController
         }.by(1)
 
         job = Delayed::Job.last
-        expect(job.handler).to include('VCAP::CloudController::Jobs::Runtime::BlobstoreDelete')
+        expect(job.handler).to include('CloudController::Jobs::Runtime::BlobstoreDelete')
         expect(job.handler).to include("key: #{droplet.blobstore_key}")
         expect(job.handler).to include('droplet_blobstore')
         expect(job.queue).to eq('cc-generic')

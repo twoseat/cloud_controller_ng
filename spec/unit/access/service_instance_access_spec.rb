@@ -1,17 +1,17 @@
 require 'spec_helper'
 
-module VCAP::CloudController
+module CloudController
   RSpec.describe ServiceInstanceAccess, type: :access do
     subject(:access) { ServiceInstanceAccess.new(Security::AccessContext.new) }
     let(:scopes) { ['cloud_controller.read', 'cloud_controller.write'] }
-    let(:user) { VCAP::CloudController::User.make }
+    let(:user) { CloudController::User.make }
 
-    let(:org) { VCAP::CloudController::Organization.make }
-    let(:space) { VCAP::CloudController::Space.make(organization: org) }
-    let(:service) { VCAP::CloudController::Service.make }
+    let(:org) { CloudController::Organization.make }
+    let(:space) { CloudController::Space.make(organization: org) }
+    let(:service) { CloudController::Service.make }
     let(:service_plan_active) { true }
-    let(:service_plan) { VCAP::CloudController::ServicePlan.make(service: service, active: service_plan_active) }
-    let(:service_instance) { VCAP::CloudController::ManagedServiceInstance.make(service_plan: service_plan, space: space) }
+    let(:service_plan) { CloudController::ServicePlan.make(service: service, active: service_plan_active) }
+    let(:service_instance) { CloudController::ManagedServiceInstance.make(service_plan: service_plan, space: space) }
 
     before { set_current_user(user, scopes: scopes) }
 
@@ -36,7 +36,7 @@ module VCAP::CloudController
       end
 
       context 'user provided service instance' do
-        let(:service_instance) { VCAP::CloudController::UserProvidedServiceInstance.make(space: space) }
+        let(:service_instance) { CloudController::UserProvidedServiceInstance.make(space: space) }
 
         it 'does not delegate to the UserProvidedServiceInstanceAccess' do
           expect_any_instance_of(UserProvidedServiceInstanceAccess).not_to receive(:allowed?).with(service_instance)
@@ -152,7 +152,7 @@ module VCAP::CloudController
     context 'space developer in a space that the service instance has been shared into' do
       before do
         org.add_user(user)
-        target_space = VCAP::CloudController::Space.make(organization: org)
+        target_space = CloudController::Space.make(organization: org)
         target_space.add_developer(user)
         service_instance.add_shared_space(target_space)
       end
@@ -319,7 +319,7 @@ module VCAP::CloudController
 
     context 'user in a different organization (defensive)' do
       before do
-        different_organization = VCAP::CloudController::Organization.make
+        different_organization = CloudController::Organization.make
         different_organization.add_user(user)
       end
 
@@ -342,7 +342,7 @@ module VCAP::CloudController
 
     context 'manager in a different organization (defensive)' do
       before do
-        different_organization = VCAP::CloudController::Organization.make
+        different_organization = CloudController::Organization.make
         different_organization.add_manager(user)
       end
 
@@ -441,7 +441,7 @@ module VCAP::CloudController
       end
 
       context 'user provided service instance' do
-        let(:service_instance) { VCAP::CloudController::UserProvidedServiceInstance.make(space: space) }
+        let(:service_instance) { CloudController::UserProvidedServiceInstance.make(space: space) }
 
         it 'delegates to the UserProvidedServiceInstanceAccess' do
           expect_any_instance_of(UserProvidedServiceInstanceAccess).to receive(:allowed?).with(service_instance)

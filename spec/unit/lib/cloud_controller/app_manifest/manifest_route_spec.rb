@@ -1,7 +1,7 @@
 require 'spec_helper'
 require 'cloud_controller/app_manifest/manifest_route'
 
-module VCAP::CloudController
+module CloudController
   RSpec.describe ManifestRoute do
     describe 'validating routes' do
       describe 'valid route' do

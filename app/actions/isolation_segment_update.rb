@@ -1,4 +1,4 @@
-module VCAP::CloudController
+module CloudController
   class IsolationSegmentUpdate
     class InvalidIsolationSegment < StandardError; end
 

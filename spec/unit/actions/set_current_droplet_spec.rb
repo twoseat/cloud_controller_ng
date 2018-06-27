@@ -1,7 +1,7 @@
 require 'spec_helper'
 require 'actions/app_update'
 
-module VCAP::CloudController
+module CloudController
   RSpec.describe SetCurrentDroplet do
     subject(:set_current_droplet) { SetCurrentDroplet.new(user_audit_info) }
 

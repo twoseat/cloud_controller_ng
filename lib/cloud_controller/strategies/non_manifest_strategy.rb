@@ -1,4 +1,4 @@
-module VCAP::CloudController
+module CloudController
   class NonManifestStrategy
     def initialize(message, process)
       @process = process

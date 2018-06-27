@@ -1,7 +1,7 @@
-module VCAP::CloudController
+module CloudController
   module Jobs
     module Runtime
-      class ExpiredOrphanedBlobCleanup < VCAP::CloudController::Jobs::CCJob
+      class ExpiredOrphanedBlobCleanup < CloudController::Jobs::CCJob
         CUTOFF_AGE_IN_DAYS = 90
 
         def perform

@@ -1,17 +1,17 @@
 require 'spec_helper'
 
-module VCAP::CloudController
+module CloudController
   RSpec.describe RouteMappingModelAccess, type: :access do
     subject(:access) { RouteMappingModelAccess.new(Security::AccessContext.new) }
     let(:scopes) { ['cloud_controller.read', 'cloud_controller.write'] }
 
-    let(:user) { VCAP::CloudController::User.make }
-    let(:org) { VCAP::CloudController::Organization.make }
-    let(:space) { VCAP::CloudController::Space.make(organization: org) }
-    let(:domain) { VCAP::CloudController::PrivateDomain.make(owning_organization: org) }
-    let(:process) { VCAP::CloudController::ProcessModelFactory.make(space: space) }
-    let(:route) { VCAP::CloudController::Route.make(domain: domain, space: space) }
-    let(:object) { VCAP::CloudController::RouteMappingModel.make(route: route, app: process) }
+    let(:user) { CloudController::User.make }
+    let(:org) { CloudController::Organization.make }
+    let(:space) { CloudController::Space.make(organization: org) }
+    let(:domain) { CloudController::PrivateDomain.make(owning_organization: org) }
+    let(:process) { CloudController::ProcessModelFactory.make(space: space) }
+    let(:route) { CloudController::Route.make(domain: domain, space: space) }
+    let(:object) { CloudController::RouteMappingModel.make(route: route, app: process) }
 
     before { set_current_user(user, scopes: scopes) }
 

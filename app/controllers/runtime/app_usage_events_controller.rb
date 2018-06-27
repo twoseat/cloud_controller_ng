@@ -1,6 +1,6 @@
 require 'repositories/app_usage_event_repository'
 
-module VCAP::CloudController
+module CloudController
   class AppUsageEventsController < RestController::ModelController
     def self.dependencies
       [:large_paginated_collection_renderer]

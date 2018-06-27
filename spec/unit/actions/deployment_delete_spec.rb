@@ -1,7 +1,7 @@
 require 'spec_helper'
 require 'actions/deployment_delete'
 
-module VCAP::CloudController
+module CloudController
   RSpec.describe DeploymentDelete do
     subject(:deployment_delete) { DeploymentDelete.new }
 

@@ -1,7 +1,7 @@
 require 'spec_helper'
 require 'actions/service_binding_create'
 
-module VCAP::CloudController
+module CloudController
   RSpec.describe ServiceBindingCreate do
     RSpec::Matchers.define_negated_matcher :not_change, :change
 
@@ -282,7 +282,7 @@ module VCAP::CloudController
         let(:accepts_incomplete) { true }
 
         it 'passes the accepts_incomplete parameter to the broker client' do
-          expect(client).to receive(:bind).with(instance_of(VCAP::CloudController::ServiceBinding), anything, true)
+          expect(client).to receive(:bind).with(instance_of(CloudController::ServiceBinding), anything, true)
           service_binding_create.create(app, service_instance, message, volume_mount_services_enabled, accepts_incomplete)
         end
 
@@ -375,7 +375,7 @@ module VCAP::CloudController
         let(:accepts_incomplete) { false }
 
         it 'passes the accepts_incomplete parameter to the broker client' do
-          expect(client).to receive(:bind).with(instance_of(VCAP::CloudController::ServiceBinding), anything, false)
+          expect(client).to receive(:bind).with(instance_of(CloudController::ServiceBinding), anything, false)
           service_binding_create.create(app, service_instance, message, volume_mount_services_enabled, accepts_incomplete)
         end
       end

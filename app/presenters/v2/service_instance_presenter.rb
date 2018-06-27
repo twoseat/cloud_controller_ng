@@ -7,9 +7,9 @@ module CloudController
       class ServiceInstancePresenter < BasePresenter
         extend PresenterProvider
 
-        present_for_class 'VCAP::CloudController::ServiceInstance'
-        present_for_class 'VCAP::CloudController::ManagedServiceInstance'
-        present_for_class 'VCAP::CloudController::UserProvidedServiceInstance'
+        present_for_class 'CloudController::ServiceInstance'
+        present_for_class 'CloudController::ManagedServiceInstance'
+        present_for_class 'CloudController::UserProvidedServiceInstance'
 
         def entity_hash(controller, obj, opts, depth, parents, orphans=nil)
           export_attrs = opts.delete(:export_attrs) if depth == 0
@@ -25,7 +25,7 @@ module CloudController
 
           if obj.service_plan_id
             # TODO: add eager loading to other endpoints and remove this database query
-            service_plan = obj.service_plan || VCAP::CloudController::ServicePlan.find(id: obj.service_plan_id)
+            service_plan = obj.service_plan || CloudController::ServicePlan.find(id: obj.service_plan_id)
             obj_hash['service_plan_guid'] = service_plan.guid
             obj_hash['service_guid'] = service_plan.service.guid
             rel_hash['service_url'] = "/v2/services/#{service_plan.service.guid}"

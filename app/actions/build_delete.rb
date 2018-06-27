@@ -1,4 +1,4 @@
-module VCAP::CloudController
+module CloudController
   class BuildDelete
     def initialize(cancel_action)
       @cancel_action = cancel_action

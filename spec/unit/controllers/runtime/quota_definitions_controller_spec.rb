@@ -1,14 +1,14 @@
 require 'spec_helper'
 
-module VCAP::CloudController
-  RSpec.describe VCAP::CloudController::QuotaDefinitionsController do
+module CloudController
+  RSpec.describe CloudController::QuotaDefinitionsController do
     describe 'Query Parameters' do
-      it { expect(VCAP::CloudController::QuotaDefinitionsController).to be_queryable_by(:name) }
+      it { expect(CloudController::QuotaDefinitionsController).to be_queryable_by(:name) }
     end
 
     describe 'Attributes' do
       it do
-        expect(VCAP::CloudController::QuotaDefinitionsController).to have_creatable_attributes({
+        expect(CloudController::QuotaDefinitionsController).to have_creatable_attributes({
           name: { type: 'string', required: true },
           non_basic_services_allowed: { type: 'bool', required: true },
           total_services: { type: 'integer', required: true },
@@ -24,7 +24,7 @@ module VCAP::CloudController
       end
 
       it do
-        expect(VCAP::CloudController::QuotaDefinitionsController).to have_updatable_attributes({
+        expect(CloudController::QuotaDefinitionsController).to have_updatable_attributes({
           name: { type: 'string' },
           non_basic_services_allowed: { type: 'bool' },
           total_services: { type: 'integer' },
@@ -54,7 +54,7 @@ module VCAP::CloudController
           app_task_limit: 10
         }
       end
-      let(:existing_quota) { VCAP::CloudController::QuotaDefinition.make }
+      let(:existing_quota) { CloudController::QuotaDefinition.make }
 
       context 'when the user is a cf admin' do
         let(:quota_name) { 'quota 1' }

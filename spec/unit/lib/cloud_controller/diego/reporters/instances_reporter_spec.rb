@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-module VCAP::CloudController
+module CloudController
   module Diego
     RSpec.describe InstancesReporter do
       subject(:instances_reporter) { InstancesReporter.new(bbs_instances_client) }

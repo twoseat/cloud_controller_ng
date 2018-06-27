@@ -1,7 +1,7 @@
 require 'cloud_controller/resource_pool_wrapper'
 require 'cloud_controller/bits_service_resource_pool_wrapper'
 
-module VCAP::CloudController
+module CloudController
   class ResourceMatchesController < RestController::BaseController
     put '/v2/resource_match', :match
     def match

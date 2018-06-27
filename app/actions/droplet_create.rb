@@ -1,4 +1,4 @@
-module VCAP::CloudController
+module CloudController
   class DropletCreate
     def create_docker_droplet(build)
       droplet = droplet_from_build(build)

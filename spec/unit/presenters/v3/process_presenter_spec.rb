@@ -1,13 +1,13 @@
 require 'spec_helper'
 require 'presenters/v3/process_presenter'
 
-module VCAP::CloudController::Presenters::V3
+module CloudController::Presenters::V3
   RSpec.describe ProcessPresenter do
     describe '#to_hash' do
-      let(:app_model) { VCAP::CloudController::AppModel.make }
+      let(:app_model) { CloudController::AppModel.make }
       let(:health_check_type) { 'http' }
       let(:process) {
-        VCAP::CloudController::ProcessModel.make(
+        CloudController::ProcessModel.make(
           diego:                true,
           app_guid:             app_model.guid,
           instances:            3,
@@ -37,7 +37,7 @@ module VCAP::CloudController::Presenters::V3
 
       context 'when the process does not have a start command' do
         let(:droplet) do
-          VCAP::CloudController::DropletModel.make(app: app_model, process_types: { web: 'detected-start-command' })
+          CloudController::DropletModel.make(app: app_model, process_types: { web: 'detected-start-command' })
         end
 
         before do

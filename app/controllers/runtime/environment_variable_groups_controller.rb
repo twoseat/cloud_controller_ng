@@ -1,4 +1,4 @@
-module VCAP::CloudController
+module CloudController
   class EnvironmentVariableGroupsController < RestController::ModelController
     def self.path
       "#{V2_ROUTE_PREFIX}/config/environment_variable_groups"

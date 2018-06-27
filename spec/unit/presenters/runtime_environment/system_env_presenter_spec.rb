@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-module VCAP::CloudController
+module CloudController
   RSpec.describe SystemEnvPresenter do
     subject(:system_env_presenter) { SystemEnvPresenter.new(app.service_bindings) }
 

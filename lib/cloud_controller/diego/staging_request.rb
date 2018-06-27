@@ -1,4 +1,4 @@
-module VCAP::CloudController
+module CloudController
   module Diego
     class StagingRequest
       attr_accessor :app_id, :file_descriptors, :memory_mb, :disk_mb, :environment, :isolation_segment

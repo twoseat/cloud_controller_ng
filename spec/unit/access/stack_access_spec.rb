@@ -1,10 +1,10 @@
 require 'spec_helper'
 
-module VCAP::CloudController
+module CloudController
   RSpec.describe StackAccess, type: :access do
     subject(:access) { StackAccess.new(Security::AccessContext.new) }
-    let(:user) { VCAP::CloudController::User.make }
-    let(:object) { VCAP::CloudController::Stack.make }
+    let(:user) { CloudController::User.make }
+    let(:object) { CloudController::Stack.make }
 
     before { set_current_user(user) }
 

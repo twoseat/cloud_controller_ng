@@ -1,10 +1,10 @@
 require 'spec_helper'
 require 'presenters/v3/service_instance_presenter'
 
-module VCAP::CloudController::Presenters::V3
+module CloudController::Presenters::V3
   RSpec.describe ServiceInstancePresenter do
     let(:presenter) { ServiceInstancePresenter.new(service_instance) }
-    let(:service_instance) { VCAP::CloudController::ManagedServiceInstance.make(name: 'denise-db') }
+    let(:service_instance) { CloudController::ManagedServiceInstance.make(name: 'denise-db') }
 
     describe '#to_hash' do
       let(:result) { presenter.to_hash }

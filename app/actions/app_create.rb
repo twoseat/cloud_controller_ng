@@ -1,7 +1,7 @@
 require 'process_create'
 require 'models/helpers/process_types'
 
-module VCAP::CloudController
+module CloudController
   class AppCreate
     class InvalidApp < StandardError; end
 
@@ -48,7 +48,7 @@ module VCAP::CloudController
     end
 
     def custom_buildpacks_disabled?
-      VCAP::CloudController::Config.config.get(:disable_custom_buildpacks)
+      CloudController::Config.config.get(:disable_custom_buildpacks)
     end
   end
 end

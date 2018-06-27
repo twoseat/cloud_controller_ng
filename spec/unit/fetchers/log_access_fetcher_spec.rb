@@ -1,7 +1,7 @@
 require 'spec_helper'
 require 'fetchers/log_access_fetcher'
 
-module VCAP::CloudController
+module CloudController
   RSpec.describe LogAccessFetcher do
     let(:space) { Space.make }
     let(:process) { AppModel.make(space_guid: space.guid) }

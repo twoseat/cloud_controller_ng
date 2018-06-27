@@ -2,10 +2,10 @@ require 'rails_helper'
 
 RSpec.describe SpacesV3Controller, type: :controller do
   describe '#show' do
-    let(:user) { set_current_user(VCAP::CloudController::User.make) }
+    let(:user) { set_current_user(CloudController::User.make) }
 
-    let!(:org) { VCAP::CloudController::Organization.make(name: 'Lyle\'s Farm') }
-    let!(:space) { VCAP::CloudController::Space.make(name: 'Cat', organization: org) }
+    let!(:org) { CloudController::Organization.make(name: 'Lyle\'s Farm') }
+    let!(:space) { CloudController::Space.make(name: 'Cat', organization: org) }
 
     describe 'permissions by role' do
       before do
@@ -47,13 +47,13 @@ RSpec.describe SpacesV3Controller, type: :controller do
   end
 
   describe '#index' do
-    let(:user) { set_current_user(VCAP::CloudController::User.make) }
+    let(:user) { set_current_user(CloudController::User.make) }
 
-    let!(:org1) { VCAP::CloudController::Organization.make(name: 'Lyle\'s Farm') }
-    let!(:org2) { VCAP::CloudController::Organization.make(name: 'Greg\'s Ranch') }
-    let!(:org1_space) { VCAP::CloudController::Space.make(name: 'Alpaca', organization: org1) }
-    let!(:org1_other_space) { VCAP::CloudController::Space.make(name: 'Lamb', organization: org1) }
-    let!(:org2_space) { VCAP::CloudController::Space.make(name: 'Horse', organization: org2) }
+    let!(:org1) { CloudController::Organization.make(name: 'Lyle\'s Farm') }
+    let!(:org2) { CloudController::Organization.make(name: 'Greg\'s Ranch') }
+    let!(:org1_space) { CloudController::Space.make(name: 'Alpaca', organization: org1) }
+    let!(:org1_other_space) { CloudController::Space.make(name: 'Lamb', organization: org1) }
+    let!(:org2_space) { CloudController::Space.make(name: 'Horse', organization: org2) }
     names_in_associated_org    = %w/Alpaca Lamb/
     names_in_associated_space  = %w/Alpaca/
     names_in_nonassociated_org = %w/Horse/
@@ -219,28 +219,28 @@ RSpec.describe SpacesV3Controller, type: :controller do
 
     describe 'order_by' do
       let!(:org1_space) do
-        VCAP::CloudController::Space.make(
+        CloudController::Space.make(
           name: 'Alpaca',
           organization: org1,
           created_at: Time.new(2017, 1, 3)
         )
       end
       let!(:org1_other_space) do
-        VCAP::CloudController::Space.make(
+        CloudController::Space.make(
           name: 'Lamb',
           organization: org1,
           created_at: Time.new(2017, 1, 2)
         )
       end
       let!(:org1_third_space) do
-        VCAP::CloudController::Space.make(
+        CloudController::Space.make(
           name: 'Dog',
           organization: org1,
           created_at: Time.new(2017, 1, 4)
         )
       end
       let!(:org2_space) do
-        VCAP::CloudController::Space.make(
+        CloudController::Space.make(
           name: 'Horse',
           organization: org2,
           created_at: Time.new(2017, 1, 1)
@@ -371,9 +371,9 @@ RSpec.describe SpacesV3Controller, type: :controller do
   end
 
   describe '#create' do
-    let(:user) { VCAP::CloudController::User.make }
-    let(:user_without_role) { VCAP::CloudController::User.make }
-    let(:org) { VCAP::CloudController::Organization.make }
+    let(:user) { CloudController::User.make }
+    let(:user_without_role) { CloudController::User.make }
+    let(:org) { CloudController::Organization.make }
 
     let(:name) { 'space1' }
     let(:org_guid) { org.guid }
@@ -466,7 +466,7 @@ RSpec.describe SpacesV3Controller, type: :controller do
       let(:name) { 'not-unique' }
 
       before do
-        VCAP::CloudController::Space.make name: name, organization: org
+        CloudController::Space.make name: name, organization: org
       end
 
       it 'returns a 422 and a helpful error' do
@@ -480,17 +480,17 @@ RSpec.describe SpacesV3Controller, type: :controller do
   end
 
   describe '#update_isolation_segment' do
-    let(:user) { set_current_user(VCAP::CloudController::User.make) }
+    let(:user) { set_current_user(CloudController::User.make) }
 
-    let!(:org1) { VCAP::CloudController::Organization.make(name: 'Lyle\'s Farm') }
-    let!(:org2) { VCAP::CloudController::Organization.make(name: 'Greg\'s Ranch') }
-    let!(:space1) { VCAP::CloudController::Space.make(name: 'Lamb', organization: org1) }
-    let!(:space2) { VCAP::CloudController::Space.make(name: 'Alpaca', organization: org1) }
-    let!(:space3) { VCAP::CloudController::Space.make(name: 'Horse', organization: org2) }
-    let!(:space4) { VCAP::CloudController::Space.make(name: 'Buffalo') }
-    let!(:isolation_segment_model) { VCAP::CloudController::IsolationSegmentModel.make }
+    let!(:org1) { CloudController::Organization.make(name: 'Lyle\'s Farm') }
+    let!(:org2) { CloudController::Organization.make(name: 'Greg\'s Ranch') }
+    let!(:space1) { CloudController::Space.make(name: 'Lamb', organization: org1) }
+    let!(:space2) { CloudController::Space.make(name: 'Alpaca', organization: org1) }
+    let!(:space3) { CloudController::Space.make(name: 'Horse', organization: org2) }
+    let!(:space4) { CloudController::Space.make(name: 'Buffalo') }
+    let!(:isolation_segment_model) { CloudController::IsolationSegmentModel.make }
     let!(:update_message) { { 'data' => { 'guid' => isolation_segment_model.guid } } }
-    let(:assigner) { VCAP::CloudController::IsolationSegmentAssign.new }
+    let(:assigner) { CloudController::IsolationSegmentAssign.new }
 
     context 'when the user is an admin' do
       before do
@@ -596,12 +596,12 @@ RSpec.describe SpacesV3Controller, type: :controller do
   end
 
   describe '#show_isolation_segment' do
-    let(:user) { set_current_user(VCAP::CloudController::User.make) }
+    let(:user) { set_current_user(CloudController::User.make) }
 
-    let!(:org) { VCAP::CloudController::Organization.make(name: 'Lyle\'s Farm') }
-    let!(:space) { VCAP::CloudController::Space.make(name: 'Lamb', organization: org) }
-    let!(:isolation_segment_model) { VCAP::CloudController::IsolationSegmentModel.make }
-    let(:assigner) { VCAP::CloudController::IsolationSegmentAssign.new }
+    let!(:org) { CloudController::Organization.make(name: 'Lyle\'s Farm') }
+    let!(:space) { CloudController::Space.make(name: 'Lamb', organization: org) }
+    let!(:isolation_segment_model) { CloudController::IsolationSegmentModel.make }
+    let(:assigner) { CloudController::IsolationSegmentAssign.new }
 
     context 'when the user has permissions to read from the space' do
       before do

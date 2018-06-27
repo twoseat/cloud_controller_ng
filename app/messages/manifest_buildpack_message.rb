@@ -1,6 +1,6 @@
 require 'messages/base_message'
 
-module VCAP::CloudController
+module CloudController
   class ManifestBuildpackMessage < BaseMessage
     register_allowed_keys [:buildpack]
 

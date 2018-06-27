@@ -1,4 +1,4 @@
-module VCAP::CloudController
+module CloudController
   class LegacyApiBase < RestController::BaseController
     include CloudController::Errors
 

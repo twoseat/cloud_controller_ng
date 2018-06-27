@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-module VCAP::CloudController
+module CloudController
   RSpec.describe ServiceUsageEventsController do
     let(:event_guid1) { SecureRandom.uuid }
 

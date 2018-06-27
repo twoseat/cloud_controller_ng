@@ -3,7 +3,7 @@ require 'fetchers/space_user_roles_fetcher'
 require 'cloud_controller/roles'
 require 'controllers/runtime/mixins/uaa_origin_validator'
 
-module VCAP::CloudController
+module CloudController
   class SpacesController < RestController::ModelController
     include UaaOriginValidator
 
@@ -170,11 +170,11 @@ module VCAP::CloudController
       role_delete_action = PermSpaceRolesDelete.new(@perm_client)
       delete_action = SpaceDelete.new(UserAuditInfo.from_context(SecurityContext), @services_event_repository, role_delete_action)
 
-      deletion_job = VCAP::CloudController::Jobs::DeleteActionJob.new(Space, guid, delete_action)
+      deletion_job = CloudController::Jobs::DeleteActionJob.new(Space, guid, delete_action)
       enqueue_deletion_job(deletion_job)
     end
 
-    VCAP::CloudController::Roles::SPACE_ROLE_NAMES.each do |role|
+    CloudController::Roles::SPACE_ROLE_NAMES.each do |role|
       plural_role = role.to_s.pluralize
 
       put "/v2/spaces/:guid/#{plural_role}/:user_id", "add_#{role}_by_user_id".to_sym
@@ -207,7 +207,7 @@ module VCAP::CloudController
       end
     end
 
-    VCAP::CloudController::Roles::SPACE_ROLE_NAMES.each do |role|
+    CloudController::Roles::SPACE_ROLE_NAMES.each do |role|
       plural_role = role.to_s.pluralize
 
       delete "/v2/spaces/:guid/#{plural_role}/:user_id", "remove_#{role}_by_user_id".to_sym
@@ -327,7 +327,7 @@ module VCAP::CloudController
     end
 
     def after_create(space)
-      VCAP::CloudController::Roles::SPACE_ROLE_NAMES.each do |role|
+      CloudController::Roles::SPACE_ROLE_NAMES.each do |role|
         @perm_client.create_space_role(role: role, space_id: space.guid)
       end
 
@@ -368,7 +368,7 @@ module VCAP::CloudController
     def get_current_role_guids(space)
       current_role_guids = {}
 
-      VCAP::CloudController::Roles::SPACE_ROLE_NAMES.map(&:to_s).each do |role|
+      CloudController::Roles::SPACE_ROLE_NAMES.map(&:to_s).each do |role|
         key = "#{role}_guids"
 
         if request_attrs[key]
@@ -385,7 +385,7 @@ module VCAP::CloudController
     def generate_role_events_on_update(space, current_role_guids)
       user_audit_info = UserAuditInfo.from_context(SecurityContext)
 
-      VCAP::CloudController::Roles::SPACE_ROLE_NAMES.map(&:to_s).each do |role|
+      CloudController::Roles::SPACE_ROLE_NAMES.map(&:to_s).each do |role|
         key = "#{role}_guids"
 
         user_guids_removed = []

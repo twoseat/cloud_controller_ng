@@ -18,8 +18,8 @@ module CloudController::Presenters::V2
 
     describe 'ManagedServiceInstance' do
       describe '#entity_hash' do
-        let(:service_instance) { VCAP::CloudController::ManagedServiceInstance.make }
-        let(:service_plan) { VCAP::CloudController::ServicePlan.make }
+        let(:service_instance) { CloudController::ManagedServiceInstance.make }
+        let(:service_plan) { CloudController::ServicePlan.make }
 
         before do
           service_instance.service_plan_id = service_plan.id
@@ -45,7 +45,7 @@ module CloudController::Presenters::V2
 
     describe 'UserProvidedServiceInstance' do
       describe '#entity_hash' do
-        let(:service_instance) { VCAP::CloudController::UserProvidedServiceInstance.make }
+        let(:service_instance) { CloudController::UserProvidedServiceInstance.make }
 
         it 'returns the service instance entity' do
           expect(subject.entity_hash(controller, service_instance, opts, depth, parents, orphans)).to eq(

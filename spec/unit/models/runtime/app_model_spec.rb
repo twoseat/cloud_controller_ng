@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-module VCAP::CloudController
+module CloudController
   RSpec.describe AppModel do
     let(:app_model) { AppModel.create(space: space, name: 'some-name') }
     let(:space) { Space.make }

@@ -1,7 +1,7 @@
 require 'spec_helper'
 require 'cloud_controller/diego/docker/lifecycle_data'
 
-module VCAP::CloudController
+module CloudController
   module Diego
     module Docker
       RSpec.describe LifecycleData do

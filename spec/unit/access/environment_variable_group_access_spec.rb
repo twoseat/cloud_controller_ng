@@ -1,10 +1,10 @@
 require 'spec_helper'
 
-module VCAP::CloudController
+module CloudController
   RSpec.describe EnvironmentVariableGroupAccess, type: :access do
     subject(:access) { EnvironmentVariableGroupAccess.new(Security::AccessContext.new) }
-    let(:user) { VCAP::CloudController::User.make }
-    let(:object) { VCAP::CloudController::FeatureFlag.make }
+    let(:user) { CloudController::User.make }
+    let(:object) { CloudController::FeatureFlag.make }
 
     it_behaves_like :admin_full_access
     it_behaves_like :admin_read_only_access

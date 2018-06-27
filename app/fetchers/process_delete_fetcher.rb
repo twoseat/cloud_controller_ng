@@ -1,4 +1,4 @@
-module VCAP::CloudController
+module CloudController
   class ProcessDeleteFetcher
     def fetch(process_guid)
       process = ProcessModel.where(guid: process_guid).eager(:space).all.first

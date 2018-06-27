@@ -1,4 +1,4 @@
-module VCAP::CloudController
+module CloudController
   class ServiceBindingOperation < Sequel::Model
     export_attributes :state, :description, :updated_at, :created_at
 

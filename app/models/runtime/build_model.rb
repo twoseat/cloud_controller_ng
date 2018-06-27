@@ -1,6 +1,6 @@
 require 'repositories/app_usage_event_repository'
 
-module VCAP::CloudController
+module CloudController
   class BuildModel < Sequel::Model(:builds)
     STAGING_MEMORY = 1024
     BUILD_STATES = [
@@ -16,21 +16,21 @@ module VCAP::CloudController
                                 BuildpackReleaseFailed InsufficientResources NoCompatibleCell).map(&:freeze).freeze
 
     many_to_one :app,
-      class: 'VCAP::CloudController::AppModel',
+      class: 'CloudController::AppModel',
       key: :app_guid,
       primary_key: :guid,
       without_guid_generation: true
     one_to_one :droplet,
-      class: 'VCAP::CloudController::DropletModel',
+      class: 'CloudController::DropletModel',
       key: :build_guid,
       primary_key: :guid
     many_to_one :package,
-      class: 'VCAP::CloudController::PackageModel',
+      class: 'CloudController::PackageModel',
       key: :package_guid,
       primary_key: :guid,
       without_guid_generation: true
     one_to_one :buildpack_lifecycle_data,
-      class:       'VCAP::CloudController::BuildpackLifecycleDataModel',
+      class:       'CloudController::BuildpackLifecycleDataModel',
       key:         :build_guid,
       primary_key: :guid
 

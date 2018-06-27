@@ -86,12 +86,12 @@ module Sinatra
         logger_name = opts[:logger_name] || 'vcap.api'
         env['rack.logger'] = Steno.logger(logger_name)
 
-        ::VCAP::CloudController::Diagnostics.new.request_received(request)
+        ::CloudController::Diagnostics.new.request_received(request)
       end
 
       after do
         headers['Content-Type'] = 'application/json;charset=utf-8'
-        ::VCAP::CloudController::Diagnostics.new.request_complete
+        ::CloudController::Diagnostics.new.request_complete
         nil
       end
     end

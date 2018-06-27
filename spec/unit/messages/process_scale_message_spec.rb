@@ -1,7 +1,7 @@
 require 'spec_helper'
 require 'messages/process_scale_message'
 
-module VCAP::CloudController
+module CloudController
   RSpec.describe ProcessScaleMessage do
     context 'when unexpected keys are requested' do
       let(:params) { { instances: 3, memory_in_mb: 2048, unexpected: 'foo' } }

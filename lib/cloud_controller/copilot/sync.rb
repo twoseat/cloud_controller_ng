@@ -1,4 +1,4 @@
-module VCAP::CloudController
+module CloudController
   module Copilot
     class Sync
       def self.sync

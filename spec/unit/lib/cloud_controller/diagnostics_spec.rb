@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-module VCAP::CloudController
+module CloudController
   RSpec.describe Diagnostics do
     let(:request_method) { 'GET' }
     let(:path) { '/path' }

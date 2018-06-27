@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-module VCAP::CloudController
+module CloudController
   RSpec.describe Domain do
     it { is_expected.to have_timestamp_columns }
 

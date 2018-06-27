@@ -4,7 +4,7 @@ module CloudController
       class ServicePlanPresenter < BasePresenter
         extend PresenterProvider
 
-        present_for_class 'VCAP::CloudController::ServicePlan'
+        present_for_class 'CloudController::ServicePlan'
 
         def entity_hash(controller, plan, opts, depth, parents, orphans=nil)
           entity = DefaultPresenter.new.entity_hash(controller, plan, opts, depth, parents, orphans)

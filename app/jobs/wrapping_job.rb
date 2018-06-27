@@ -1,6 +1,6 @@
-module VCAP::CloudController
+module CloudController
   module Jobs
-    class WrappingJob < VCAP::CloudController::Jobs::CCJob
+    class WrappingJob < CloudController::Jobs::CCJob
       attr_reader :handler
 
       def initialize(handler)

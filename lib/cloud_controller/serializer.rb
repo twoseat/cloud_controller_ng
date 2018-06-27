@@ -1,4 +1,4 @@
-module VCAP::CloudController::Serializer
+module CloudController::Serializer
   extend ActiveSupport::Concern
 
   module ClassMethods

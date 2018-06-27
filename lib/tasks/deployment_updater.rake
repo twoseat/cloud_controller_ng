@@ -5,6 +5,6 @@ namespace :deployment_updater do
 
     RakeConfig.context = :deployment_updater
     BackgroundJobEnvironment.new(RakeConfig.config).setup_environment
-    VCAP::CloudController::DeploymentUpdater::Scheduler.start
+    CloudController::DeploymentUpdater::Scheduler.start
   end
 end

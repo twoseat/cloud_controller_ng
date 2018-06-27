@@ -1,7 +1,7 @@
 require 'spec_helper'
 require 'messages/package_upload_message'
 
-module VCAP::CloudController
+module CloudController
   RSpec.describe PackageUploadMessage do
     before { TestConfig.override(directories: { tmpdir: '/tmp/' }) }
 

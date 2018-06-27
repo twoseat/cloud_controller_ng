@@ -2,7 +2,7 @@ require 'spec_helper'
 require 'cloud_controller/paging/sequel_paginator'
 require 'cloud_controller/paging/pagination_options'
 
-module VCAP::CloudController
+module CloudController
   RSpec.describe SequelPaginator do
     let(:paginator) { SequelPaginator.new }
 

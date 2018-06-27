@@ -1,7 +1,7 @@
 require 'spec_helper'
 require 'cloud_controller/backends/quota_validating_staging_memory_calculator'
 
-module VCAP::CloudController
+module CloudController
   RSpec.describe QuotaValidatingStagingMemoryCalculator do
     let(:calculator) { QuotaValidatingStagingMemoryCalculator.new }
 

@@ -2,7 +2,7 @@ require 'messages/base_message'
 require 'messages/validators/bits_data_validator'
 require 'messages/validators/docker_data_validator'
 
-module VCAP::CloudController
+module CloudController
   class PackageCreateMessage < BaseMessage
     register_allowed_keys [:relationships, :type, :data]
 
@@ -35,7 +35,7 @@ module VCAP::CloudController
       result = super
 
       if result['data']
-        result['data']['password'] = VCAP::CloudController::Presenters::Censorship::REDACTED_CREDENTIAL
+        result['data']['password'] = CloudController::Presenters::Censorship::REDACTED_CREDENTIAL
       end
 
       result

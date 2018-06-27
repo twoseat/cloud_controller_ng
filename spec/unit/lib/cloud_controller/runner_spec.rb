@@ -1,12 +1,12 @@
 require 'spec_helper'
 
-module VCAP::CloudController
+module CloudController
   RSpec.describe Runner do
     let(:valid_config_file_path) { File.join(Paths::CONFIG, 'cloud_controller.yml') }
     let(:config_file) { File.new(valid_config_file_path) }
-    let(:diagnostics) { instance_double(VCAP::CloudController::Diagnostics) }
-    let(:periodic_updater) { instance_double(VCAP::CloudController::Metrics::PeriodicUpdater) }
-    let(:routing_api_client) { instance_double(VCAP::CloudController::RoutingApi::Client, router_group_guid: '') }
+    let(:diagnostics) { instance_double(CloudController::Diagnostics) }
+    let(:periodic_updater) { instance_double(CloudController::Metrics::PeriodicUpdater) }
+    let(:routing_api_client) { instance_double(CloudController::RoutingApi::Client, router_group_guid: '') }
 
     let(:argv) { [] }
 
@@ -15,10 +15,10 @@ module VCAP::CloudController
       allow(CloudController::DependencyLocator.instance).to receive(:routing_api_client).and_return(routing_api_client)
       allow(EM).to receive(:run).and_yield
       allow(EM).to receive(:add_timer).and_yield
-      allow(VCAP::CloudController::Metrics::PeriodicUpdater).to receive(:new).and_return(periodic_updater)
+      allow(CloudController::Metrics::PeriodicUpdater).to receive(:new).and_return(periodic_updater)
       allow(periodic_updater).to receive(:setup_updates)
       allow(VCAP::PidFile).to receive(:new) { double(:pidfile, unlink_at_exit: nil) }
-      allow(VCAP::CloudController::Diagnostics).to receive(:new).and_return(diagnostics)
+      allow(CloudController::Diagnostics).to receive(:new).and_return(diagnostics)
       allow(diagnostics).to receive(:collect)
     end
 

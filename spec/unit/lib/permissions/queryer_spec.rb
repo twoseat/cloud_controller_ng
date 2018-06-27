@@ -1,10 +1,10 @@
 require 'securerandom'
 require 'spec_helper'
 
-module VCAP::CloudController
+module CloudController
   RSpec.describe Permissions::Queryer do
-    let(:db_permissions) { instance_double(VCAP::CloudController::Permissions) }
-    let(:perm_permissions) { instance_double(VCAP::CloudController::Perm::Permissions) }
+    let(:db_permissions) { instance_double(CloudController::Permissions) }
+    let(:perm_permissions) { instance_double(CloudController::Perm::Permissions) }
 
     let(:statsd_client) { spy(Statsd, gauge: nil) }
     let(:logger) { instance_double(Steno::Logger, info: nil, debug: nil) }
@@ -216,10 +216,10 @@ module VCAP::CloudController
 
     describe '.build' do
       it 'makes a new queryer object' do
-        security_context = class_double(VCAP::CloudController::SecurityContext)
+        security_context = class_double(CloudController::SecurityContext)
         perm_client = spy(:perm_client)
 
-        roles = instance_double(VCAP::CloudController::Roles)
+        roles = instance_double(CloudController::Roles)
         allow(security_context).to receive(:roles).and_return(roles)
 
         issuer = 'some-issuer'
@@ -229,9 +229,9 @@ module VCAP::CloudController
         allow(security_context).to receive(:current_user).and_return(current_user)
         allow(security_context).to receive(:issuer).and_return(issuer)
 
-        allow(VCAP::CloudController::Permissions).to receive(:new).and_return(db_permissions)
-        allow(VCAP::CloudController::Perm::Permissions).to receive(:new).and_return(perm_permissions)
-        allow(VCAP::CloudController::Science::Experiment).to receive(:raise_on_mismatches=)
+        allow(CloudController::Permissions).to receive(:new).and_return(db_permissions)
+        allow(CloudController::Perm::Permissions).to receive(:new).and_return(perm_permissions)
+        allow(CloudController::Science::Experiment).to receive(:raise_on_mismatches=)
 
         expected_queryer = double(:queryer)
 
@@ -249,8 +249,8 @@ module VCAP::CloudController
 
         expect(actual_queryer).to eq(expected_queryer)
 
-        expect(VCAP::CloudController::Permissions).to have_received(:new).with(current_user)
-        expect(VCAP::CloudController::Perm::Permissions).to have_received(:new).with(
+        expect(CloudController::Permissions).to have_received(:new).with(current_user)
+        expect(CloudController::Perm::Permissions).to have_received(:new).with(
           perm_client: perm_client,
           roles: roles,
           user_id: current_user_guid,

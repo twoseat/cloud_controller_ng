@@ -1,7 +1,7 @@
 require 'spec_helper'
 require 'actions/app_restart'
 
-module VCAP::CloudController
+module CloudController
   RSpec.describe AppRestart do
     let(:user_guid) { 'some-guid' }
     let(:user_email) { '1@2.3' }
@@ -24,8 +24,8 @@ module VCAP::CloudController
       let!(:droplet) { DropletModel.make(app: app) }
       let!(:process1) { ProcessModel.make(:process, state: desired_state, app: app) }
       let!(:process2) { ProcessModel.make(:process, state: desired_state, app: app) }
-      let(:runner1) { instance_double(VCAP::CloudController::Diego::Runner) }
-      let(:runner2) { instance_double(VCAP::CloudController::Diego::Runner) }
+      let(:runner1) { instance_double(CloudController::Diego::Runner) }
+      let(:runner2) { instance_double(CloudController::Diego::Runner) }
 
       before do
         app.update(droplet: droplet)
@@ -35,11 +35,11 @@ module VCAP::CloudController
         allow(runner2).to receive(:stop)
         allow(runner2).to receive(:start)
 
-        allow(VCAP::CloudController::Diego::Runner).to receive(:new) do |process, _|
+        allow(CloudController::Diego::Runner).to receive(:new) do |process, _|
           process.guid == process1.guid ? runner1 : runner2
         end
 
-        VCAP::CloudController::FeatureFlag.make(name: 'diego_docker', enabled: true)
+        CloudController::FeatureFlag.make(name: 'diego_docker', enabled: true)
       end
 
       it 'does NOT invoke the ProcessObserver after the transaction commits', isolation: :truncation do

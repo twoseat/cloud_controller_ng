@@ -1,6 +1,6 @@
 require 'actions/staging_cancel'
 
-module VCAP::CloudController
+module CloudController
   module Diego
     class StagingCompletionHandler
       DEFAULT_STAGING_ERROR = 'StagingError'.freeze

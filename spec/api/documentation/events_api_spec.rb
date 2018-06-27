@@ -97,11 +97,11 @@ RSpec.resource 'Events', type: [:api, :legacy_api] do
 
   before do
     3.times do
-      VCAP::CloudController::Event.make
+      CloudController::Event.make
     end
   end
 
-  let(:guid) { VCAP::CloudController::Event.first.guid }
+  let(:guid) { CloudController::Event.first.guid }
 
   response_field :guid, 'The guid of the event.', required: false
   response_field :type, 'The type of the event.', required: false, readonly: true, valid_values: DOCUMENTED_EVENT_TYPES, example_values: %w(app.crash audit.app.update)
@@ -117,26 +117,26 @@ RSpec.resource 'Events', type: [:api, :legacy_api] do
   response_field :space_guid, 'The guid of the associated space.', required: false, readonly: true
   response_field :organization_guid, 'The guid of the associated organization.', required: false, readonly: true
 
-  standard_model_list(:event, VCAP::CloudController::EventsController)
+  standard_model_list(:event, CloudController::EventsController)
   standard_model_get(:event)
 
   get '/v2/events' do
-    standard_list_parameters VCAP::CloudController::EventsController
+    standard_list_parameters CloudController::EventsController
 
-    let(:test_app) { VCAP::CloudController::ProcessModel.make }
-    let(:test_v3app) { VCAP::CloudController::AppModel.make }
-    let(:test_assignee) { VCAP::CloudController::User.make }
-    let(:test_user) { VCAP::CloudController::User.make }
+    let(:test_app) { CloudController::ProcessModel.make }
+    let(:test_v3app) { CloudController::AppModel.make }
+    let(:test_assignee) { CloudController::User.make }
+    let(:test_user) { CloudController::User.make }
     let(:test_user_email) { 'user@example.com' }
-    let(:test_space) { VCAP::CloudController::Space.make }
-    let(:test_route) { VCAP::CloudController::Route.make }
-    let(:test_organization) { VCAP::CloudController::Organization.make }
+    let(:test_space) { CloudController::Space.make }
+    let(:test_route) { CloudController::Route.make }
+    let(:test_organization) { CloudController::Organization.make }
 
-    let(:test_broker) { VCAP::CloudController::ServiceBroker.make }
-    let(:test_service) { VCAP::CloudController::Service.make(service_broker: test_broker) }
-    let(:test_plan) { VCAP::CloudController::ServicePlan.make(service: test_service) }
+    let(:test_broker) { CloudController::ServiceBroker.make }
+    let(:test_service) { CloudController::Service.make(service_broker: test_broker) }
+    let(:test_plan) { CloudController::ServicePlan.make(service: test_service) }
     let(:test_plan_visibility) do
-      VCAP::CloudController::ServicePlanVisibility.make(organization_guid: test_organization.guid, service_plan_guid: test_plan.guid)
+      CloudController::ServicePlanVisibility.make(organization_guid: test_organization.guid, service_plan_guid: test_plan.guid)
     end
 
     let(:app_request) do
@@ -176,30 +176,30 @@ RSpec.resource 'Events', type: [:api, :legacy_api] do
     end
 
     let(:app_event_repository) do
-      VCAP::CloudController::Repositories::AppEventRepository.new
+      CloudController::Repositories::AppEventRepository.new
     end
 
     let(:space_event_repository) do
-      VCAP::CloudController::Repositories::SpaceEventRepository.new
+      CloudController::Repositories::SpaceEventRepository.new
     end
 
     let(:user_event_repository) do
-      VCAP::CloudController::Repositories::UserEventRepository.new
+      CloudController::Repositories::UserEventRepository.new
     end
 
     let(:route_event_repository) do
-      VCAP::CloudController::Repositories::RouteEventRepository.new
+      CloudController::Repositories::RouteEventRepository.new
     end
 
     let(:service_event_repository) do
-      VCAP::CloudController::Repositories::ServiceEventRepository.new(user_audit_info)
+      CloudController::Repositories::ServiceEventRepository.new(user_audit_info)
     end
 
     let(:organization_event_repository) do
-      VCAP::CloudController::Repositories::OrganizationEventRepository.new
+      CloudController::Repositories::OrganizationEventRepository.new
     end
 
-    let(:user_audit_info) { VCAP::CloudController::UserAuditInfo.new(user_guid: test_user.guid, user_email: test_user_email) }
+    let(:user_audit_info) { CloudController::UserAuditInfo.new(user_guid: test_user.guid, user_email: test_user_email) }
 
     example 'List Organization Create Events' do
       organization_event_repository.record_organization_create(test_organization, user_audit_info, {})
@@ -561,9 +561,9 @@ RSpec.resource 'Events', type: [:api, :legacy_api] do
         'redirect_uri' => 'example.com/redirect'
       }
 
-      VCAP::CloudController::ServiceDashboardClient.new(
+      CloudController::ServiceDashboardClient.new(
         uaa_id:         client_attrs['id'],
-        service_broker: VCAP::CloudController::ServiceBroker.make
+        service_broker: CloudController::ServiceBroker.make
       ).save
 
       service_event_repository.record_service_dashboard_client_event(:create, client_attrs, test_broker)
@@ -590,9 +590,9 @@ RSpec.resource 'Events', type: [:api, :legacy_api] do
         'id' => 'client_id'
       }
 
-      VCAP::CloudController::ServiceDashboardClient.new(
+      CloudController::ServiceDashboardClient.new(
         uaa_id:         client_attrs['id'],
-        service_broker: VCAP::CloudController::ServiceBroker.make
+        service_broker: CloudController::ServiceBroker.make
       ).save
 
       service_event_repository.record_service_dashboard_client_event(:delete, client_attrs, test_broker)
@@ -612,7 +612,7 @@ RSpec.resource 'Events', type: [:api, :legacy_api] do
     end
 
     example 'List Service Plan Create Events' do
-      new_plan = VCAP::CloudController::ServicePlan.new(
+      new_plan = CloudController::ServicePlan.new(
         guid:                   'guid',
         name:                   'plan-name',
         service:                test_service,
@@ -761,7 +761,7 @@ RSpec.resource 'Events', type: [:api, :legacy_api] do
     end
 
     example 'List Service Create Events' do
-      new_service = VCAP::CloudController::Service.new(
+      new_service = CloudController::Service.new(
         guid:            'guid',
         label:           'label',
         description:     'BOOOO',
@@ -853,7 +853,7 @@ RSpec.resource 'Events', type: [:api, :legacy_api] do
         auth_username: 'panda',
         auth_password: 'password'
       }
-      broker = VCAP::CloudController::ServiceBroker.make(params)
+      broker = CloudController::ServiceBroker.make(params)
       service_event_repository.record_broker_event(:create, broker, params)
 
       client.get '/v2/events?q=type:audit.service_broker.create', {}, headers
@@ -882,7 +882,7 @@ RSpec.resource 'Events', type: [:api, :legacy_api] do
         broker_url:    'http://www.pancakes.com',
         auth_password: 'password'
       }
-      broker = VCAP::CloudController::ServiceBroker.make
+      broker = CloudController::ServiceBroker.make
       service_event_repository.record_broker_event(:update, broker, params)
 
       client.get '/v2/events?q=type:audit.service_broker.update', {}, headers
@@ -905,7 +905,7 @@ RSpec.resource 'Events', type: [:api, :legacy_api] do
     end
 
     example 'List Service Broker Delete Events' do
-      broker = VCAP::CloudController::ServiceBroker.make
+      broker = CloudController::ServiceBroker.make
       service_event_repository.record_broker_event(:delete, broker, {})
 
       client.get '/v2/events?q=type:audit.service_broker.delete', {}, headers
@@ -923,7 +923,7 @@ RSpec.resource 'Events', type: [:api, :legacy_api] do
     end
 
     example 'List Service Instance Create Events' do
-      instance = VCAP::CloudController::ManagedServiceInstance.make
+      instance = CloudController::ManagedServiceInstance.make
       service_event_repository.record_service_instance_event(:create, instance, {
         'name'              => instance.name,
         'service_plan_guid' => instance.service_plan.guid,
@@ -952,7 +952,7 @@ RSpec.resource 'Events', type: [:api, :legacy_api] do
     end
 
     example 'List Service Instance Update Events' do
-      instance = VCAP::CloudController::ManagedServiceInstance.make
+      instance = CloudController::ManagedServiceInstance.make
       service_event_repository.record_service_instance_event(:update, instance, {
         'service_plan_guid' => instance.service_plan.guid,
       })
@@ -977,7 +977,7 @@ RSpec.resource 'Events', type: [:api, :legacy_api] do
     end
 
     example 'List Service Instance Delete Events' do
-      instance = VCAP::CloudController::ManagedServiceInstance.make
+      instance = CloudController::ManagedServiceInstance.make
       service_event_repository.record_service_instance_event(:delete, instance, {})
 
       client.get '/v2/events?q=type:audit.service_instance.delete', {}, headers
@@ -999,9 +999,9 @@ RSpec.resource 'Events', type: [:api, :legacy_api] do
     end
 
     example 'List Service Instance Bind Route Events' do
-      space    = VCAP::CloudController::Space.make
-      instance = VCAP::CloudController::ManagedServiceInstance.make(space: space)
-      route    = VCAP::CloudController::Route.make(space: space)
+      space    = CloudController::Space.make
+      instance = CloudController::ManagedServiceInstance.make(space: space)
+      route    = CloudController::Route.make(space: space)
 
       service_event_repository.record_service_instance_event(:bind_route, instance, { route_guid: route.guid })
 
@@ -1025,9 +1025,9 @@ RSpec.resource 'Events', type: [:api, :legacy_api] do
     end
 
     example 'List Service Instance Unbind Route Events' do
-      space    = VCAP::CloudController::Space.make
-      instance = VCAP::CloudController::ManagedServiceInstance.make(space: space)
-      route    = VCAP::CloudController::Route.make(space: space)
+      space    = CloudController::Space.make
+      instance = CloudController::ManagedServiceInstance.make(space: space)
+      route    = CloudController::Route.make(space: space)
 
       service_event_repository.record_service_instance_event(:unbind_route, instance, { route_guid: route.guid })
 
@@ -1051,7 +1051,7 @@ RSpec.resource 'Events', type: [:api, :legacy_api] do
     end
 
     example 'List User Provided Service Instance Create Events' do
-      instance = VCAP::CloudController::UserProvidedServiceInstance.make
+      instance = CloudController::UserProvidedServiceInstance.make
       service_event_repository.record_user_provided_service_instance_event(:create, instance, {
         'name'       => instance.name,
         'space_guid' => instance.space_guid,
@@ -1077,7 +1077,7 @@ RSpec.resource 'Events', type: [:api, :legacy_api] do
     end
 
     example 'List User Provided Service Instance Update Events' do
-      instance = VCAP::CloudController::UserProvidedServiceInstance.make
+      instance = CloudController::UserProvidedServiceInstance.make
       service_event_repository.record_user_provided_service_instance_event(:update, instance, {
         'credentials' => { 'username' => 'myUser' }
       })
@@ -1101,7 +1101,7 @@ RSpec.resource 'Events', type: [:api, :legacy_api] do
     end
 
     example 'List User Provided Service Instance Delete Events' do
-      instance = VCAP::CloudController::UserProvidedServiceInstance.make
+      instance = CloudController::UserProvidedServiceInstance.make
       service_event_repository.record_user_provided_service_instance_event(:delete, instance, {})
 
       client.get '/v2/events?q=type:audit.user_provided_service_instance.delete', {}, headers
@@ -1121,12 +1121,12 @@ RSpec.resource 'Events', type: [:api, :legacy_api] do
     end
 
     example 'List Service Binding Create Events' do
-      space           = VCAP::CloudController::Space.make
-      instance        = VCAP::CloudController::ManagedServiceInstance.make(space: space)
-      process         = VCAP::CloudController::ProcessModelFactory.make(space: space)
-      service_binding = VCAP::CloudController::ServiceBinding.make(service_instance: instance, app: process.app)
+      space           = CloudController::Space.make
+      instance        = CloudController::ManagedServiceInstance.make(space: space)
+      process         = CloudController::ProcessModelFactory.make(space: space)
+      service_binding = CloudController::ServiceBinding.make(service_instance: instance, app: process.app)
 
-      VCAP::CloudController::Repositories::ServiceBindingEventRepository.record_create(service_binding, user_audit_info, { foo: 'bar' })
+      CloudController::Repositories::ServiceBindingEventRepository.record_create(service_binding, user_audit_info, { foo: 'bar' })
 
       client.get '/v2/events?q=type:audit.service_binding.create', {}, headers
       expect(status).to eq(200)
@@ -1147,12 +1147,12 @@ RSpec.resource 'Events', type: [:api, :legacy_api] do
     end
 
     example 'List Service Binding Delete Events' do
-      space           = VCAP::CloudController::Space.make
-      instance        = VCAP::CloudController::ManagedServiceInstance.make(space: space)
-      process         = VCAP::CloudController::ProcessModelFactory.make(space: space)
-      service_binding = VCAP::CloudController::ServiceBinding.make(service_instance: instance, app: process.app)
+      space           = CloudController::Space.make
+      instance        = CloudController::ManagedServiceInstance.make(space: space)
+      process         = CloudController::ProcessModelFactory.make(space: space)
+      service_binding = CloudController::ServiceBinding.make(service_instance: instance, app: process.app)
 
-      VCAP::CloudController::Repositories::ServiceBindingEventRepository.record_delete(service_binding, user_audit_info)
+      CloudController::Repositories::ServiceBindingEventRepository.record_delete(service_binding, user_audit_info)
 
       client.get '/v2/events?q=type:audit.service_binding.delete', {}, headers
       expect(status).to eq(200)
@@ -1174,9 +1174,9 @@ RSpec.resource 'Events', type: [:api, :legacy_api] do
     end
 
     example 'List Service Key Create Events' do
-      space       = VCAP::CloudController::Space.make
-      instance    = VCAP::CloudController::ManagedServiceInstance.make(space: space)
-      service_key = VCAP::CloudController::ServiceKey.make(service_instance: instance)
+      space       = CloudController::Space.make
+      instance    = CloudController::ManagedServiceInstance.make(space: space)
+      service_key = CloudController::ServiceKey.make(service_instance: instance)
 
       service_event_repository.record_service_key_event(:create, service_key)
 
@@ -1200,9 +1200,9 @@ RSpec.resource 'Events', type: [:api, :legacy_api] do
     end
 
     example 'List Service Key Delete Events' do
-      space       = VCAP::CloudController::Space.make
-      instance    = VCAP::CloudController::ManagedServiceInstance.make(space: space)
-      service_key = VCAP::CloudController::ServiceKey.make(service_instance: instance)
+      space       = CloudController::Space.make
+      instance    = CloudController::ManagedServiceInstance.make(space: space)
+      service_key = CloudController::ServiceKey.make(service_instance: instance)
 
       service_event_repository.record_service_key_event(:delete, service_key)
 

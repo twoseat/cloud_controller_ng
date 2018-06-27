@@ -1,6 +1,6 @@
 require 'actions/process_upsert_from_droplet'
 
-module VCAP::CloudController
+module CloudController
   class AppRestart
     class Error < StandardError
     end

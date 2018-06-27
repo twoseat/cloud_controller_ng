@@ -1,7 +1,7 @@
 require 'spec_helper'
 require 'actions/app_start'
 
-module VCAP::CloudController
+module CloudController
   RSpec.describe AppStart do
     let(:user_guid) { 'some-guid' }
     let(:user_email) { '1@2.3' }
@@ -25,7 +25,7 @@ module VCAP::CloudController
 
         before do
           app.update(droplet: droplet)
-          VCAP::CloudController::FeatureFlag.make(name: 'diego_docker', enabled: true, error_message: nil)
+          CloudController::FeatureFlag.make(name: 'diego_docker', enabled: true, error_message: nil)
         end
 
         it 'starts the app' do

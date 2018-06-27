@@ -6,6 +6,6 @@ require 'jobs/runtime/blobstore_delete'
 require 'jobs/runtime/blobstore_upload'
 require 'jobs/runtime/model_deletion'
 
-BlobstoreDelete = VCAP::CloudController::Jobs::Runtime::BlobstoreDelete
-BlobstoreUpload = VCAP::CloudController::Jobs::Runtime::BlobstoreUpload
-ModelDeletionJob = VCAP::CloudController::Jobs::Runtime::ModelDeletion
+BlobstoreDelete = CloudController::Jobs::Runtime::BlobstoreDelete
+BlobstoreUpload = CloudController::Jobs::Runtime::BlobstoreUpload
+ModelDeletionJob = CloudController::Jobs::Runtime::ModelDeletion

@@ -39,14 +39,14 @@ module CloudController
           (relationships || {}).each do |relationship_name, association|
             associated_model = get_associated_model_class_for(obj, association.association_name)
             next unless associated_model
-            associated_controller = VCAP::CloudController.controller_from_relationship(association)
-            associated_controller ||= VCAP::CloudController.controller_from_model_name(associated_model.name)
+            associated_controller = CloudController.controller_from_relationship(association)
+            associated_controller ||= CloudController.controller_from_model_name(associated_model.name)
             next unless associated_controller
             add_relationship_url_to_response(response, controller, associated_controller, relationship_name, association, obj)
             next if relationship_link_only?(association, associated_controller, relationship_name, opts, depth, parents)
             associated_model_instance = get_preloaded_association_contents!(obj, association)
 
-            if association.is_a?(VCAP::CloudController::RestController::ControllerDSL::ToOneAttribute)
+            if association.is_a?(CloudController::RestController::ControllerDSL::ToOneAttribute)
               serialize_to_one_relationship(response, associated_model_instance, associated_controller, relationship_name, depth, opts, parents, orphans)
             else
               serialize_to_many_relationship(response, associated_model_instance, associated_controller, relationship_name, depth, opts, parents, orphans)
@@ -83,7 +83,7 @@ module CloudController
         end
 
         def add_relationship_url_to_response(response, controller, associated_controller, relationship_name, association, obj)
-          if association.is_a?(VCAP::CloudController::RestController::ControllerDSL::ToOneAttribute)
+          if association.is_a?(CloudController::RestController::ControllerDSL::ToOneAttribute)
             associated_model_instance = get_preloaded_association_contents!(obj, association)
             if associated_model_instance
               associated_url = associated_controller.url_for_guid(associated_model_instance.guid)

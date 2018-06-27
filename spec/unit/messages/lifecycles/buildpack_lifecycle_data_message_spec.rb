@@ -1,7 +1,7 @@
 require 'spec_helper'
 require 'messages/buildpack_lifecycle_data_message'
 
-module VCAP::CloudController
+module CloudController
   RSpec.describe BuildpackLifecycleDataMessage do
     describe 'validations' do
       context 'allowed keys' do

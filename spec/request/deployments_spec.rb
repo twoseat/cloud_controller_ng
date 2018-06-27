@@ -4,8 +4,8 @@ RSpec.describe 'Deployments' do
   let(:user) { make_developer_for_space(space) }
   let(:space) { app_model.space }
   let(:app_model) { droplet.app }
-  let(:droplet) { VCAP::CloudController::DropletModel.make }
-  let!(:process_model) { VCAP::CloudController::ProcessModel.make(app: app_model) }
+  let(:droplet) { CloudController::DropletModel.make }
+  let!(:process_model) { CloudController::ProcessModel.make(app: app_model) }
   let(:user_header) { headers_for(user, email: user_email, user_name: user_name) }
   let(:user_email) { Sham.email }
   let(:user_name) { 'some-username' }
@@ -33,7 +33,7 @@ RSpec.describe 'Deployments' do
       expect(last_response.status).to eq(201)
       parsed_response = MultiJson.load(last_response.body)
 
-      deployment = VCAP::CloudController::DeploymentModel.last
+      deployment = CloudController::DeploymentModel.last
 
       expect(parsed_response).to be_a_response_like({
         'guid' => deployment.guid,
@@ -63,10 +63,10 @@ RSpec.describe 'Deployments' do
   end
 
   describe 'GET /v3/deployments/:guid' do
-    let(:original_droplet) { VCAP::CloudController::DropletModel.make }
+    let(:original_droplet) { CloudController::DropletModel.make }
 
     it 'should get and display the deployment' do
-      deployment = VCAP::CloudController::DeploymentModel.make(state: 'DEPLOYING', app: app_model, droplet: original_droplet)
+      deployment = CloudController::DeploymentModel.make(state: 'DEPLOYING', app: app_model, droplet: original_droplet)
 
       get "/v3/deployments/#{deployment.guid}", nil, user_header
       expect(last_response.status).to eq(200)
@@ -107,21 +107,21 @@ RSpec.describe 'Deployments' do
 
     let(:space) { app_model.space }
     let(:app_model) { droplet.app }
-    let(:droplet) { VCAP::CloudController::DropletModel.make }
-    let!(:deployment) { VCAP::CloudController::DeploymentModel.make(state: 'DEPLOYING', app: app_model, droplet: app_model.droplet) }
+    let(:droplet) { CloudController::DropletModel.make }
+    let!(:deployment) { CloudController::DeploymentModel.make(state: 'DEPLOYING', app: app_model, droplet: app_model.droplet) }
 
     context 'with an admin who can see all deployments' do
       let(:admin_user_header) { headers_for(user, scopes: %w(cloud_controller.admin)) }
 
-      let(:droplet2) { VCAP::CloudController::DropletModel.make }
-      let(:droplet3) { VCAP::CloudController::DropletModel.make }
-      let(:droplet4) { VCAP::CloudController::DropletModel.make }
+      let(:droplet2) { CloudController::DropletModel.make }
+      let(:droplet3) { CloudController::DropletModel.make }
+      let(:droplet4) { CloudController::DropletModel.make }
       let(:app2) { droplet2.app }
       let(:app3) { droplet3.app }
       let(:app4) { droplet4.app }
-      let!(:deployment2) { VCAP::CloudController::DeploymentModel.make(state: 'DEPLOYING', app: app2, droplet: app2.droplet) }
-      let!(:deployment3) { VCAP::CloudController::DeploymentModel.make(state: 'DEPLOYING', app: app3, droplet: app3.droplet) }
-      let!(:deployment4) { VCAP::CloudController::DeploymentModel.make(state: 'DEPLOYING', app: app4, droplet: app4.droplet) }
+      let!(:deployment2) { CloudController::DeploymentModel.make(state: 'DEPLOYING', app: app2, droplet: app2.droplet) }
+      let!(:deployment3) { CloudController::DeploymentModel.make(state: 'DEPLOYING', app: app3, droplet: app3.droplet) }
+      let!(:deployment4) { CloudController::DeploymentModel.make(state: 'DEPLOYING', app: app4, droplet: app4.droplet) }
 
       it 'should list all deployments' do
         get '/v3/deployments?per_page=2', nil, admin_user_header
@@ -199,9 +199,9 @@ RSpec.describe 'Deployments' do
 
     context 'when there are other spaces the developer cannot see' do
       let(:another_app) { another_droplet.app }
-      let(:another_droplet) { VCAP::CloudController::DropletModel.make }
+      let(:another_droplet) { CloudController::DropletModel.make }
       let(:another_space) { another_app.space }
-      let!(:another_deployment) { VCAP::CloudController::DeploymentModel.make(state: 'DEPLOYING', app: another_app, droplet: another_droplet) }
+      let!(:another_deployment) { CloudController::DeploymentModel.make(state: 'DEPLOYING', app: another_app, droplet: another_droplet) }
 
       let(:user_header) { headers_for(user) }
 

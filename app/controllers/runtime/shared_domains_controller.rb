@@ -1,4 +1,4 @@
-module VCAP::CloudController
+module CloudController
   class SharedDomainsController < RestController::ModelController
     attr_reader :routing_api_client
 

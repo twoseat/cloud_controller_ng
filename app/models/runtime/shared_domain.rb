@@ -1,6 +1,6 @@
 require 'models/runtime/domain'
 
-module VCAP::CloudController
+module CloudController
   class SharedDomain < Domain
     set_dataset(shared_domains)
 

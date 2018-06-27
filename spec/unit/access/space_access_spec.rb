@@ -1,20 +1,20 @@
 require 'spec_helper'
 
-module VCAP::CloudController
+module CloudController
   RSpec.describe SpaceAccess, type: :access do
     let(:queryer) { instance_spy(Permissions::Queryer) }
 
     subject(:access) { SpaceAccess.new(Security::AccessContext.new(queryer)) }
-    let(:org) { VCAP::CloudController::Organization.make }
-    let(:user) { VCAP::CloudController::User.make }
+    let(:org) { CloudController::Organization.make }
+    let(:user) { CloudController::User.make }
     let(:scopes) { nil }
 
-    let(:object) { VCAP::CloudController::Space.make(organization: org) }
+    let(:object) { CloudController::Space.make(organization: org) }
     let(:space) { object }
 
     describe 'when the parent organization is suspended' do
       before(:each) do
-        org.status = VCAP::CloudController::Organization::SUSPENDED
+        org.status = CloudController::Organization::SUSPENDED
         org.save
       end
 

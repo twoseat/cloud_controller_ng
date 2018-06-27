@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-module VCAP::CloudController
+module CloudController
   RSpec.describe ServiceDashboardClient do
     let(:service_broker) { ServiceBroker.make }
     let(:other_broker) { ServiceBroker.make }
@@ -122,7 +122,7 @@ module VCAP::CloudController
     end
 
     def client_claimed?(uaa_id, service_broker)
-      VCAP::CloudController::ServiceDashboardClient.where(service_broker_id: service_broker.id, uaa_id: uaa_id).any?
+      CloudController::ServiceDashboardClient.where(service_broker_id: service_broker.id, uaa_id: uaa_id).any?
     end
   end
 end

@@ -1,7 +1,7 @@
 require 'spec_helper'
 require 'messages/isolation_segment_create_message'
 
-module VCAP::CloudController
+module CloudController
   RSpec.describe IsolationSegmentCreateMessage do
     describe 'validations' do
       context 'when unexpected keys are requested' do

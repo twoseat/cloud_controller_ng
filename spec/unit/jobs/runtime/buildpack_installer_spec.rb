@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-module VCAP::CloudController
+module CloudController
   module Jobs::Runtime
     RSpec.describe BuildpackInstaller, job_context: :worker do
       let(:buildpack_name) { 'mybuildpack' }

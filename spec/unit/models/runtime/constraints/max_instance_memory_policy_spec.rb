@@ -8,7 +8,7 @@ RSpec.describe 'max instance memory policies' do
     subject(:validator) { AppMaxInstanceMemoryPolicy.new(process, policy_target, error_name) }
 
     context 'app starts off STARTED with memory under quota' do
-      let(:process) { VCAP::CloudController::ProcessModelFactory.make(memory: 100, state: 'STARTED') }
+      let(:process) { CloudController::ProcessModelFactory.make(memory: 100, state: 'STARTED') }
 
       it 'gives error when app memory exceeds instance memory limit' do
         process.memory = 200
@@ -37,7 +37,7 @@ RSpec.describe 'max instance memory policies' do
       end
 
       context 'when instance memory limit is unlimited' do
-        let(:policy_target) { double(instance_memory_limit: VCAP::CloudController::QuotaDefinition::UNLIMITED) }
+        let(:policy_target) { double(instance_memory_limit: CloudController::QuotaDefinition::UNLIMITED) }
 
         it 'does not give error' do
           process.memory = 200
@@ -53,7 +53,7 @@ RSpec.describe 'max instance memory policies' do
     end
 
     context 'app starts off STARTED with memory over quota' do
-      let(:process) { VCAP::CloudController::ProcessModelFactory.make(memory: 200, state: 'STARTED') }
+      let(:process) { CloudController::ProcessModelFactory.make(memory: 200, state: 'STARTED') }
 
       subject(:validator) { AppMaxInstanceMemoryPolicy.new(process, policy_target, error_name) }
 
@@ -63,7 +63,7 @@ RSpec.describe 'max instance memory policies' do
     end
 
     context 'app starts off STARTED with memory at quota' do
-      let(:process) { VCAP::CloudController::ProcessModelFactory.make(memory: 150, state: 'STARTED') }
+      let(:process) { CloudController::ProcessModelFactory.make(memory: 150, state: 'STARTED') }
 
       it 'does not give an error when the app is created' do
         expect(validator).to validate_without_error(process)
@@ -72,7 +72,7 @@ RSpec.describe 'max instance memory policies' do
     end
 
     context 'app starts off STOPPED with memory under quota' do
-      let(:process) { VCAP::CloudController::ProcessModelFactory.make(memory: 100, state: 'STOPPED') }
+      let(:process) { CloudController::ProcessModelFactory.make(memory: 100, state: 'STOPPED') }
 
       it 'gives error when app memory exceeds instance memory limit' do
         process.memory = 200
@@ -101,7 +101,7 @@ RSpec.describe 'max instance memory policies' do
       end
 
       context 'when instance memory limit is unlimited' do
-        let(:policy_target) { double(instance_memory_limit: VCAP::CloudController::QuotaDefinition::UNLIMITED) }
+        let(:policy_target) { double(instance_memory_limit: CloudController::QuotaDefinition::UNLIMITED) }
 
         it 'does not give error' do
           process.memory = 200
@@ -117,7 +117,7 @@ RSpec.describe 'max instance memory policies' do
     end
 
     context 'app starts off STOPPED with memory over quota' do
-      let(:process) { VCAP::CloudController::ProcessModelFactory.make(memory: 200, state: 'STOPPED') }
+      let(:process) { CloudController::ProcessModelFactory.make(memory: 200, state: 'STOPPED') }
 
       it 'gives an error when the app is created' do
         expect(validator).to validate_without_error(process)
@@ -125,7 +125,7 @@ RSpec.describe 'max instance memory policies' do
     end
 
     context 'app starts off STOPPED with memory at quota' do
-      let(:process) { VCAP::CloudController::ProcessModelFactory.make(memory: 150, state: 'STOPPED') }
+      let(:process) { CloudController::ProcessModelFactory.make(memory: 150, state: 'STOPPED') }
 
       it 'does not give an error when the app is created' do
         expect(validator).to validate_without_error(process)
@@ -135,7 +135,7 @@ RSpec.describe 'max instance memory policies' do
   end
 
   describe TaskMaxInstanceMemoryPolicy do
-    let(:task) { VCAP::CloudController::TaskModel.make }
+    let(:task) { CloudController::TaskModel.make }
 
     subject(:validator) { TaskMaxInstanceMemoryPolicy.new(task, policy_target, error_name) }
 
@@ -166,7 +166,7 @@ RSpec.describe 'max instance memory policies' do
     end
 
     context 'when instance memory limit is unlimited' do
-      let(:policy_target) { double(instance_memory_limit: VCAP::CloudController::QuotaDefinition::UNLIMITED) }
+      let(:policy_target) { double(instance_memory_limit: CloudController::QuotaDefinition::UNLIMITED) }
 
       it 'does not give error' do
         task.memory_in_mb = 200

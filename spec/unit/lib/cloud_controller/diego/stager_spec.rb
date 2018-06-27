@@ -3,7 +3,7 @@ require 'cloud_controller/diego/stager'
 require 'cloud_controller/diego/messenger'
 require 'cloud_controller/diego/buildpack/staging_completion_handler'
 
-module VCAP::CloudController
+module CloudController
   module Diego
     RSpec.describe Stager do
       subject(:stager) { Stager.new(config) }
@@ -33,7 +33,7 @@ module VCAP::CloudController
         let(:staging_memory_in_mb) { 1024 }
         let(:staging_disk_in_mb) { 1024 }
         let(:staging_details) do
-          details                       = VCAP::CloudController::Diego::StagingDetails.new
+          details                       = CloudController::Diego::StagingDetails.new
           details.package               = package
           details.environment_variables = environment_variables
           details.staging_memory_in_mb  = staging_memory_in_mb

@@ -10,7 +10,7 @@ require 'models/helpers/health_check_types'
 
 require_relative 'buildpack'
 
-module VCAP::CloudController
+module CloudController
   class ProcessModel < Sequel::Model(:processes)
     include Serializer
 
@@ -31,9 +31,9 @@ module VCAP::CloudController
     DEFAULT_HTTP_PORT     = 8080
     DEFAULT_PORTS         = [DEFAULT_HTTP_PORT].freeze
 
-    many_to_one :app, class: 'VCAP::CloudController::AppModel', key: :app_guid, primary_key: :guid, without_guid_generation: true
+    many_to_one :app, class: 'CloudController::AppModel', key: :app_guid, primary_key: :guid, without_guid_generation: true
     one_to_many :service_bindings, key: :app_guid, primary_key: :app_guid, without_guid_generation: true
-    one_to_many :events, class: VCAP::CloudController::AppEvent, key: :app_id
+    one_to_many :events, class: CloudController::AppEvent, key: :app_id
 
     one_through_one :space,
       join_table:        AppModel.table_name,
@@ -51,21 +51,21 @@ module VCAP::CloudController
     end
 
     one_through_one :latest_package,
-      class:             'VCAP::CloudController::PackageModel',
+      class:             'CloudController::PackageModel',
       join_table:        AppModel.table_name,
       left_primary_key:  :app_guid, left_key: :guid,
       right_primary_key: :app_guid, right_key: :guid,
       order:             [Sequel.desc(:created_at), Sequel.desc(:id)], limit: 1
 
     one_through_one :latest_droplet,
-      class:             'VCAP::CloudController::DropletModel',
+      class:             'CloudController::DropletModel',
       join_table:        AppModel.table_name,
       left_primary_key:  :app_guid, left_key: :guid,
       right_primary_key: :app_guid, right_key: :guid,
       order:             [Sequel.desc(:created_at), Sequel.desc(:id)], limit: 1
 
     one_through_one :latest_build,
-      class:             'VCAP::CloudController::BuildModel',
+      class:             'CloudController::BuildModel',
       join_table:        AppModel.table_name,
       left_primary_key:  :app_guid, left_key: :guid,
       right_primary_key: :app_guid, right_key: :guid,
@@ -104,12 +104,12 @@ module VCAP::CloudController
       order:        Sequel.asc(:id)
 
     one_through_one :current_droplet,
-      class:             '::VCAP::CloudController::DropletModel',
+      class:             '::CloudController::DropletModel',
       join_table:        AppModel.table_name,
       left_primary_key:  :app_guid, left_key: :guid,
       right_primary_key: :guid, right_key: :droplet_guid
 
-    one_to_many :route_mappings, class: 'VCAP::CloudController::RouteMappingModel', primary_key: [:app_guid, :type], key: [:app_guid, :process_type]
+    one_to_many :route_mappings, class: 'CloudController::RouteMappingModel', primary_key: [:app_guid, :type], key: [:app_guid, :process_type]
 
     add_association_dependencies events: :delete
 
@@ -442,7 +442,7 @@ module VCAP::CloudController
     end
 
     def max_app_disk_in_mb
-      VCAP::CloudController::Config.config.get(:maximum_app_disk_in_mb)
+      CloudController::Config.config.get(:maximum_app_disk_in_mb)
     end
 
     def self.user_visibility_filter(user)
@@ -518,7 +518,7 @@ module VCAP::CloudController
     end
 
     def to_hash(opts={})
-      opts[:redact] = if !VCAP::CloudController::Security::AccessContext.new.can?(:read_env, self)
+      opts[:redact] = if !CloudController::Security::AccessContext.new.can?(:read_env, self)
                         %w(environment_json system_env_json)
                       end
       super(opts)

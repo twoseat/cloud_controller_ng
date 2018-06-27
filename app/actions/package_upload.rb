@@ -1,4 +1,4 @@
-module VCAP::CloudController
+module CloudController
   class PackageUpload
     class InvalidPackage < StandardError; end
 

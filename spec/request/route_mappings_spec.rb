@@ -1,10 +1,10 @@
 require 'spec_helper'
 
 RSpec.describe 'Route Mappings' do
-  let(:space) { VCAP::CloudController::Space.make }
-  let(:app_model) { VCAP::CloudController::AppModel.make(space: space) }
-  let(:process) { VCAP::CloudController::ProcessModel.make(:process, app: app_model, type: 'worker', ports: [8080]) }
-  let(:route) { VCAP::CloudController::Route.make(space: space) }
+  let(:space) { CloudController::Space.make }
+  let(:app_model) { CloudController::AppModel.make(space: space) }
+  let(:process) { CloudController::ProcessModel.make(:process, app: app_model, type: 'worker', ports: [8080]) }
+  let(:route) { CloudController::Route.make(space: space) }
   let(:developer) { make_developer_for_space(space) }
   let(:user_name) { 'roto' }
   let(:developer_headers) do
@@ -23,7 +23,7 @@ RSpec.describe 'Route Mappings' do
 
       post '/v3/route_mappings', body.to_json, developer_headers
 
-      route_mapping = VCAP::CloudController::RouteMappingModel.last
+      route_mapping = CloudController::RouteMappingModel.last
 
       expected_response = {
         'guid'       => route_mapping.guid,
@@ -53,7 +53,7 @@ RSpec.describe 'Route Mappings' do
       expect(route_mapping.app_port).to eq(8080)
 
       # verify audit event
-      event = VCAP::CloudController::Event.last
+      event = CloudController::Event.last
       expect(event.values).to include({
         type:              'audit.app.map-route',
         actee:             app_model.guid,
@@ -75,10 +75,10 @@ RSpec.describe 'Route Mappings' do
   end
 
   describe 'GET /v3/route_mappings' do
-    let!(:route_mapping1) { VCAP::CloudController::RouteMappingModel.make(app: app_model, route: route) }
-    let!(:route_mapping2) { VCAP::CloudController::RouteMappingModel.make(app: app_model, route: route, process_type: 'worker') }
-    let!(:route_mapping3) { VCAP::CloudController::RouteMappingModel.make(app: app_model, route: route, process_type: 'other') }
-    let!(:route_mapping4) { VCAP::CloudController::RouteMappingModel.make }
+    let!(:route_mapping1) { CloudController::RouteMappingModel.make(app: app_model, route: route) }
+    let!(:route_mapping2) { CloudController::RouteMappingModel.make(app: app_model, route: route, process_type: 'worker') }
+    let!(:route_mapping3) { CloudController::RouteMappingModel.make(app: app_model, route: route, process_type: 'other') }
+    let!(:route_mapping4) { CloudController::RouteMappingModel.make }
 
     it 'retrieves all the route mappings the user has access to' do
       get '/v3/route_mappings?per_page=2', nil, developer_headers
@@ -129,8 +129,8 @@ RSpec.describe 'Route Mappings' do
 
     context 'faceted list' do
       context 'by app_guids' do
-        let(:app_model2) { VCAP::CloudController::AppModel.make(space: space) }
-        let!(:route_mapping5) { VCAP::CloudController::RouteMappingModel.make(app: app_model2, route: route, process_type: 'other') }
+        let(:app_model2) { CloudController::AppModel.make(space: space) }
+        let!(:route_mapping5) { CloudController::RouteMappingModel.make(app: app_model2, route: route, process_type: 'other') }
 
         it 'returns only the matching route mappings' do
           get "/v3/route_mappings?app_guids=#{app_model.guid},#{app_model2.guid}", nil, developer_headers
@@ -155,8 +155,8 @@ RSpec.describe 'Route Mappings' do
       end
 
       context 'by route_guids' do
-        let(:route2) { VCAP::CloudController::Route.make(space: space) }
-        let!(:route_mapping5) { VCAP::CloudController::RouteMappingModel.make(app: app_model, route: route2, process_type: 'other') }
+        let(:route2) { CloudController::Route.make(space: space) }
+        let!(:route_mapping5) { CloudController::RouteMappingModel.make(app: app_model, route: route2, process_type: 'other') }
 
         it 'returns only the matching route mappings' do
           get "/v3/route_mappings?route_guids=#{route.guid},#{route2.guid}", nil, developer_headers
@@ -183,7 +183,7 @@ RSpec.describe 'Route Mappings' do
   end
 
   describe 'GET /v3/route_mappings/:route_mapping_guid' do
-    let(:route_mapping) { VCAP::CloudController::RouteMappingModel.make(app: app_model, route: route, process_type: 'worker', app_port: 8080) }
+    let(:route_mapping) { CloudController::RouteMappingModel.make(app: app_model, route: route, process_type: 'worker', app_port: 8080) }
 
     it 'retrieves the requests route mapping' do
       get "/v3/route_mappings/#{route_mapping.guid}", nil, developer_headers
@@ -210,7 +210,7 @@ RSpec.describe 'Route Mappings' do
   end
 
   describe 'DELETE /v3/route_mappings/:route_mapping_guid' do
-    let!(:route_mapping) { VCAP::CloudController::RouteMappingModel.make(app: app_model, route: route, process_type: 'buckeyes') }
+    let!(:route_mapping) { CloudController::RouteMappingModel.make(app: app_model, route: route, process_type: 'buckeyes') }
 
     it 'deletes the specified route mapping' do
       delete "/v3/route_mappings/#{route_mapping.guid}", nil, developer_headers
@@ -220,7 +220,7 @@ RSpec.describe 'Route Mappings' do
       expect(route_mapping.exists?).to be_falsey
 
       # verify audit event
-      event = VCAP::CloudController::Event.last
+      event = CloudController::Event.last
       expect(event.values).to include({
         type:              'audit.app.unmap-route',
         actee:             app_model.guid,
@@ -241,9 +241,9 @@ RSpec.describe 'Route Mappings' do
   end
 
   describe 'GET /v3/apps/:guid/route_mappings' do
-    let!(:route_mapping1) { VCAP::CloudController::RouteMappingModel.make(app: app_model, route: route) }
-    let!(:route_mapping2) { VCAP::CloudController::RouteMappingModel.make(app: app_model, route: route, process_type: 'worker') }
-    let!(:route_mapping3) { VCAP::CloudController::RouteMappingModel.make(app: app_model, route: route, process_type: 'other') }
+    let!(:route_mapping1) { CloudController::RouteMappingModel.make(app: app_model, route: route) }
+    let!(:route_mapping2) { CloudController::RouteMappingModel.make(app: app_model, route: route, process_type: 'worker') }
+    let!(:route_mapping3) { CloudController::RouteMappingModel.make(app: app_model, route: route, process_type: 'other') }
 
     it 'retrieves all the route mappings associated with the given app' do
       get "/v3/apps/#{app_model.guid}/route_mappings?per_page=2", nil, developer_headers
@@ -294,9 +294,9 @@ RSpec.describe 'Route Mappings' do
 
     context 'faceted list' do
       context 'by route_guids' do
-        let(:route2) { VCAP::CloudController::Route.make(space: space) }
-        let!(:route_mapping4) { VCAP::CloudController::RouteMappingModel.make(app: app_model, process_type: 'other') }
-        let!(:route_mapping5) { VCAP::CloudController::RouteMappingModel.make(app: app_model, route: route2, process_type: 'other') }
+        let(:route2) { CloudController::Route.make(space: space) }
+        let!(:route_mapping4) { CloudController::RouteMappingModel.make(app: app_model, process_type: 'other') }
+        let!(:route_mapping5) { CloudController::RouteMappingModel.make(app: app_model, route: route2, process_type: 'other') }
 
         it 'returns only the matching route mappings' do
           get "/v3/apps/#{app_model.guid}/route_mappings?route_guids=#{route.guid},#{route2.guid}", nil, developer_headers

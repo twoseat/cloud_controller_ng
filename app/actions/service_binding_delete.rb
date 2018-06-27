@@ -1,8 +1,8 @@
 require 'actions/services/locks/lock_check'
 
-module VCAP::CloudController
+module CloudController
   class ServiceBindingDelete
-    include VCAP::CloudController::LockCheck
+    include CloudController::LockCheck
 
     def initialize(user_audit_info)
       @user_audit_info = user_audit_info

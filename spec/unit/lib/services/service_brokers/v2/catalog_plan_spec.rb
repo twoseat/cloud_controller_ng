@@ -128,8 +128,8 @@ module VCAP::Services::ServiceBrokers::V2
     end
 
     describe '#cc_plan' do
-      let(:service_broker) { VCAP::CloudController::ServiceBroker.make }
-      let(:cc_service) { VCAP::CloudController::Service.make(service_broker: service_broker) }
+      let(:service_broker) { CloudController::ServiceBroker.make }
+      let(:cc_service) { CloudController::Service.make(service_broker: service_broker) }
       let(:plan_broker_provided_id) { SecureRandom.uuid }
       let(:catalog_service) do
         CatalogService.new(service_broker,
@@ -154,7 +154,7 @@ module VCAP::Services::ServiceBrokers::V2
 
       context 'when a ServicePlan exists for the same Service with the same broker_provided_id' do
         let!(:cc_plan) do
-          VCAP::CloudController::ServicePlan.make(service: cc_service, unique_id: plan_broker_provided_id)
+          CloudController::ServicePlan.make(service: cc_service, unique_id: plan_broker_provided_id)
         end
 
         it 'returns that ServicePlan' do
@@ -164,7 +164,7 @@ module VCAP::Services::ServiceBrokers::V2
 
       context 'when a ServicePlan exists for a different Service with the same broker_provided_id' do
         before do
-          VCAP::CloudController::ServicePlan.make(unique_id: plan_broker_provided_id)
+          CloudController::ServicePlan.make(unique_id: plan_broker_provided_id)
         end
 
         it 'returns nil' do

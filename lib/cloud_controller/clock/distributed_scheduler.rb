@@ -1,7 +1,7 @@
 require 'clockwork'
 require 'cloud_controller/clock/distributed_executor'
 
-module VCAP::CloudController
+module CloudController
   class DistributedScheduler
     def schedule_periodic_job(name:, interval:, at: nil, thread: nil, fudge:, timeout: nil)
       clock_opts      = {}

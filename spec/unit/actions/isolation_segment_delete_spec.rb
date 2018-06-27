@@ -2,10 +2,10 @@ require 'spec_helper'
 require 'isolation_segment_delete'
 require 'isolation_segment_assign'
 
-module VCAP::CloudController
+module CloudController
   RSpec.describe IsolationSegmentDelete do
     let(:isolation_segment_model) { IsolationSegmentModel.make }
-    let(:shared_isolation_segment_model) { IsolationSegmentModel.first(guid: VCAP::CloudController::IsolationSegmentModel::SHARED_ISOLATION_SEGMENT_GUID) }
+    let(:shared_isolation_segment_model) { IsolationSegmentModel.first(guid: CloudController::IsolationSegmentModel::SHARED_ISOLATION_SEGMENT_GUID) }
     let(:assigner) { IsolationSegmentAssign.new }
 
     it 'can delete isolation segments' do
@@ -32,7 +32,7 @@ module VCAP::CloudController
       it 'raises an error' do
         expect {
           subject.delete(isolation_segment_model)
-        }.to raise_error(VCAP::CloudController::IsolationSegmentDelete::AssociationNotEmptyError,
+        }.to raise_error(CloudController::IsolationSegmentDelete::AssociationNotEmptyError,
           'Revoke the Organization entitlements for your Isolation Segment.')
       end
     end
@@ -49,7 +49,7 @@ module VCAP::CloudController
       it 'raises an error' do
         expect {
           subject.delete(isolation_segment_model)
-        }.to raise_error(VCAP::CloudController::IsolationSegmentDelete::AssociationNotEmptyError,
+        }.to raise_error(CloudController::IsolationSegmentDelete::AssociationNotEmptyError,
           'Revoke the Organization entitlements for your Isolation Segment.')
       end
     end

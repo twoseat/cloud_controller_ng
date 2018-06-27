@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-module VCAP::CloudController
+module CloudController
   RSpec.describe SharedDomain, type: :model do
     subject { SharedDomain.make name: 'test.example.com', router_group_guid: router_group_guid, router_group_type: 'tcp' }
 
@@ -105,8 +105,8 @@ module VCAP::CloudController
 
     describe '#tcp?' do
       let(:router_group_type) { 'http' }
-      let(:ra_client) { instance_double(VCAP::CloudController::RoutingApi::Client, router_group: rg) }
-      let(:rg) { instance_double(VCAP::CloudController::RoutingApi::RouterGroup, type: router_group_type) }
+      let(:ra_client) { instance_double(CloudController::RoutingApi::Client, router_group: rg) }
+      let(:rg) { instance_double(CloudController::RoutingApi::RouterGroup, type: router_group_type) }
       let(:shared_domain) { SharedDomain.make(name: 'tcp.com', router_group_guid: '123') }
 
       before do
@@ -136,8 +136,8 @@ module VCAP::CloudController
 
       context 'when the router group doesnt match' do
         let(:router_group_type) { 'http' }
-        let(:ra_client) { instance_double(VCAP::CloudController::RoutingApi::Client, router_group: nil) }
-        let(:rg) { instance_double(VCAP::CloudController::RoutingApi::RouterGroup, type: router_group_type) }
+        let(:ra_client) { instance_double(CloudController::RoutingApi::Client, router_group: nil) }
+        let(:rg) { instance_double(CloudController::RoutingApi::RouterGroup, type: router_group_type) }
         let(:shared_domain) { SharedDomain.make(name: 'tcp.com', router_group_guid: '123') }
 
         it 'returns false' do

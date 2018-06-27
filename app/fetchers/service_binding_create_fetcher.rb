@@ -1,4 +1,4 @@
-module VCAP::CloudController
+module CloudController
   class ServiceBindingCreateFetcher
     def fetch(app_guid, service_instance_guid)
       instance = ServiceInstance.first(guid: service_instance_guid)

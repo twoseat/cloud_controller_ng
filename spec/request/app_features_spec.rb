@@ -1,10 +1,10 @@
 require 'spec_helper'
 
 RSpec.describe 'App Features' do
-  let(:user) { VCAP::CloudController::User.make }
+  let(:user) { CloudController::User.make }
   let(:user_header) { headers_for(user, email: Sham.email, user_name: 'some-username') }
-  let(:space) { VCAP::CloudController::Space.make }
-  let(:app_model) { VCAP::CloudController::AppModel.make(space: space, enable_ssh: true) }
+  let(:space) { CloudController::Space.make }
+  let(:app_model) { CloudController::AppModel.make(space: space, enable_ssh: true) }
 
   before do
     space.organization.add_user(user)

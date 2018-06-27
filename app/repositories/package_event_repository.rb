@@ -1,4 +1,4 @@
-module VCAP::CloudController
+module CloudController
   module Repositories
     class PackageEventRepository
       def self.record_app_package_create(package, user_audit_info, request_attrs)

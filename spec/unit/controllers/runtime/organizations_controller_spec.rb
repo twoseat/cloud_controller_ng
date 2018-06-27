@@ -1,9 +1,9 @@
 require 'spec_helper'
 
-module VCAP::CloudController
-  RSpec.describe VCAP::CloudController::OrganizationsController do
+module CloudController
+  RSpec.describe CloudController::OrganizationsController do
     let(:org) { Organization.make }
-    let(:assigner) { VCAP::CloudController::IsolationSegmentAssign.new }
+    let(:assigner) { CloudController::IsolationSegmentAssign.new }
     let(:user_email) { Sham.email }
     let(:uaa_client) { instance_double(UaaClient) }
 
@@ -12,18 +12,18 @@ module VCAP::CloudController
     end
 
     describe 'Query Parameters' do
-      it { expect(VCAP::CloudController::OrganizationsController).to be_queryable_by(:name) }
-      it { expect(VCAP::CloudController::OrganizationsController).to be_queryable_by(:space_guid) }
-      it { expect(VCAP::CloudController::OrganizationsController).to be_queryable_by(:user_guid) }
-      it { expect(VCAP::CloudController::OrganizationsController).to be_queryable_by(:manager_guid) }
-      it { expect(VCAP::CloudController::OrganizationsController).to be_queryable_by(:billing_manager_guid) }
-      it { expect(VCAP::CloudController::OrganizationsController).to be_queryable_by(:auditor_guid) }
-      it { expect(VCAP::CloudController::OrganizationsController).to be_queryable_by(:status) }
+      it { expect(CloudController::OrganizationsController).to be_queryable_by(:name) }
+      it { expect(CloudController::OrganizationsController).to be_queryable_by(:space_guid) }
+      it { expect(CloudController::OrganizationsController).to be_queryable_by(:user_guid) }
+      it { expect(CloudController::OrganizationsController).to be_queryable_by(:manager_guid) }
+      it { expect(CloudController::OrganizationsController).to be_queryable_by(:billing_manager_guid) }
+      it { expect(CloudController::OrganizationsController).to be_queryable_by(:auditor_guid) }
+      it { expect(CloudController::OrganizationsController).to be_queryable_by(:status) }
     end
 
     describe 'Attributes' do
       it do
-        expect(VCAP::CloudController::OrganizationsController).to have_creatable_attributes(
+        expect(CloudController::OrganizationsController).to have_creatable_attributes(
           {
             name:                  { type: 'string', required: true },
             billing_enabled:       { type: 'bool', default: false },
@@ -38,7 +38,7 @@ module VCAP::CloudController
       end
 
       it do
-        expect(VCAP::CloudController::OrganizationsController).to have_updatable_attributes(
+        expect(CloudController::OrganizationsController).to have_updatable_attributes(
           {
             name:                         { type: 'string' },
             billing_enabled:              { type: 'bool' },
@@ -56,13 +56,13 @@ module VCAP::CloudController
       end
 
       it 'can order by name and id when listing' do
-        expect(VCAP::CloudController::OrganizationsController.sortable_parameters).to match_array([:id, :name])
+        expect(CloudController::OrganizationsController.sortable_parameters).to match_array([:id, :name])
       end
     end
 
     describe 'Associations' do
       it do
-        expect(VCAP::CloudController::OrganizationsController).to have_nested_routes(
+        expect(CloudController::OrganizationsController).to have_nested_routes(
           {
             spaces:                  [:get, :put, :delete],
             domains:                 [:get, :delete],
@@ -940,7 +940,7 @@ module VCAP::CloudController
       let(:queryer) { instance_double(Permissions::Queryer) }
 
       before do
-        allow(VCAP::CloudController::Permissions::Queryer).to receive(:build).and_return(queryer)
+        allow(CloudController::Permissions::Queryer).to receive(:build).and_return(queryer)
         allow(queryer).to receive(:can_read_globally?).and_return(false)
         set_current_user_as_admin
       end

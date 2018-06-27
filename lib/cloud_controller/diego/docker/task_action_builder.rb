@@ -3,7 +3,7 @@ require 'cloud_controller/diego/docker/docker_uri_converter'
 require 'cloud_controller/diego/task_environment_variable_collector'
 require 'credhub/config_helpers'
 
-module VCAP::CloudController
+module CloudController
   module Diego
     module Docker
       class TaskActionBuilder

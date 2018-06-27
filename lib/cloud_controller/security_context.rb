@@ -1,4 +1,4 @@
-module VCAP::CloudController
+module CloudController
   module SecurityContext
     def self.clear
       Thread.current[:vcap_user] = nil
@@ -33,7 +33,7 @@ module VCAP::CloudController
     end
 
     def self.roles
-      VCAP::CloudController::Roles.new(token)
+      CloudController::Roles.new(token)
     end
 
     def self.token

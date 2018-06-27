@@ -1,22 +1,22 @@
 require 'spec_helper'
 
 RSpec.describe MaxServiceKeysPolicy do
-  let(:org) { VCAP::CloudController::Organization.make quota_definition: quota }
-  let(:space) { VCAP::CloudController::Space.make organization: org }
+  let(:org) { CloudController::Organization.make quota_definition: quota }
+  let(:space) { CloudController::Space.make organization: org }
   let(:service_instance) do
-    service_plan = VCAP::CloudController::ServicePlan.make
-    VCAP::CloudController::ManagedServiceInstance.make space: space, service_plan: service_plan
+    service_plan = CloudController::ServicePlan.make
+    CloudController::ManagedServiceInstance.make space: space, service_plan: service_plan
   end
-  let(:service_key) { VCAP::CloudController::ServiceKey.make_unsaved service_instance: service_instance }
+  let(:service_key) { CloudController::ServiceKey.make_unsaved service_instance: service_instance }
   let(:total_service_keys) { 2 }
-  let(:quota) { VCAP::CloudController::QuotaDefinition.make total_service_keys: total_service_keys }
+  let(:quota) { CloudController::QuotaDefinition.make total_service_keys: total_service_keys }
   let(:existing_service_key_count) { 0 }
   let(:error_name) { :random_error_name }
 
   let(:policy) { MaxServiceKeysPolicy.new(service_key, existing_service_key_count, quota, error_name) }
 
   def make_service_key
-    VCAP::CloudController::ServiceKey.make service_instance: service_instance
+    CloudController::ServiceKey.make service_instance: service_instance
   end
 
   context 'when quota is nil' do
@@ -53,7 +53,7 @@ RSpec.describe MaxServiceKeysPolicy do
 
     context 'and the request is to update an existing service key' do
       let(:service_key) do
-        VCAP::CloudController::ServiceKey.first
+        CloudController::ServiceKey.first
       end
 
       it 'allows updating the service' do

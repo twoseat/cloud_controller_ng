@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-module VCAP::CloudController
+module CloudController
   RSpec.describe PrivateDomainsController do
     describe 'Query Parameters' do
       it { expect(PrivateDomainsController).to be_queryable_by(:name) }
@@ -55,7 +55,7 @@ module VCAP::CloudController
 
     context 'list' do
       let(:user) { User.make }
-      let(:space) { VCAP::CloudController::Space.make }
+      let(:space) { CloudController::Space.make }
       let(:organization) { space.organization }
       let!(:private_domain) { PrivateDomain.make(owning_organization: organization) }
 

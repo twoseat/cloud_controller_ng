@@ -1,6 +1,6 @@
 require 'fetchers/log_access_fetcher'
 
-module VCAP::CloudController
+module CloudController
   class LogAccessController < RestController::BaseController
     get '/internal/v4/log_access/:guid', :lookup
     def lookup(guid)

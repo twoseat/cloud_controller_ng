@@ -1,4 +1,4 @@
-module VCAP::CloudController
+module CloudController
   class BuildListFetcher
     def initialize(message:)
       @message = message

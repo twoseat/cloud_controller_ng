@@ -1,7 +1,7 @@
 require 'spec_helper'
 require 'actions/manifest_route_update'
 
-module VCAP::CloudController
+module CloudController
   RSpec.describe ManifestRouteUpdate do
     let(:message) do
       ManifestRoutesUpdateMessage.new(
@@ -18,12 +18,12 @@ module VCAP::CloudController
       let!(:process) { ProcessModel.make(app: app) }
 
       context 'when the route already exists' do
-        let(:domain) { VCAP::CloudController::SharedDomain.make(name: 'tomato.avocado-toast.com') }
+        let(:domain) { CloudController::SharedDomain.make(name: 'tomato.avocado-toast.com') }
         let!(:route) { Route.make(host: 'potato', domain: domain, path: '/some-path', space: app.space) }
 
         context 'when the route is already mapped to the app' do
           let!(:route_mapping) {
-            RouteMappingModel.make(app: app, route: route, app_port: VCAP::CloudController::ProcessModel::DEFAULT_HTTP_PORT)
+            RouteMappingModel.make(app: app, route: route, app_port: CloudController::ProcessModel::DEFAULT_HTTP_PORT)
           }
 
           it 'does not attempt to re-map the route to the app' do
@@ -54,7 +54,7 @@ module VCAP::CloudController
       context 'when the route does not already exist' do
         context 'when the domain exists' do
           before do
-            VCAP::CloudController::SharedDomain.make(name: 'tomato.avocado-toast.com')
+            CloudController::SharedDomain.make(name: 'tomato.avocado-toast.com')
           end
 
           it 'creates and maps the route to the app' do
@@ -105,7 +105,7 @@ module VCAP::CloudController
             end
 
             before do
-              VCAP::CloudController::PrivateDomain.make(owning_organization: app.space.organization, name: 'private.avocado-toast.com')
+              CloudController::PrivateDomain.make(owning_organization: app.space.organization, name: 'private.avocado-toast.com')
             end
 
             it 'creates and maps the route to the app' do
@@ -132,7 +132,7 @@ module VCAP::CloudController
             end
 
             before do
-              VCAP::CloudController::PrivateDomain.make(owning_organization: app.space.organization, name: 'private.avocado-toast.com')
+              CloudController::PrivateDomain.make(owning_organization: app.space.organization, name: 'private.avocado-toast.com')
             end
 
             it 'creates and maps the route to the app' do
@@ -166,8 +166,8 @@ module VCAP::CloudController
           end
 
           context 'when the route is a tcp route' do
-            let(:ra_client) { instance_double(VCAP::CloudController::RoutingApi::Client, router_group: rg) }
-            let(:rg) { instance_double(VCAP::CloudController::RoutingApi::RouterGroup, type: 'tcp', reservable_ports: [1234]) }
+            let(:ra_client) { instance_double(CloudController::RoutingApi::Client, router_group: rg) }
+            let(:rg) { instance_double(CloudController::RoutingApi::RouterGroup, type: 'tcp', reservable_ports: [1234]) }
             let!(:tcp_domain) { SharedDomain.make(name: 'tcp.tomato.avocado-toast.com', router_group_guid: '123') }
             let(:message) do
               ManifestRoutesUpdateMessage.new(
@@ -199,7 +199,7 @@ module VCAP::CloudController
 
           context 'when route creation feature is disabled' do
             before do
-              VCAP::CloudController::FeatureFlag.make(name: 'route_creation', enabled: false, error_message: 'nope')
+              CloudController::FeatureFlag.make(name: 'route_creation', enabled: false, error_message: 'nope')
             end
 
             it 'raises an unauthorized error' do
@@ -214,14 +214,14 @@ module VCAP::CloudController
           it 'raises a route invalid error' do
             expect {
               ManifestRouteUpdate.update(app.guid, message, user_audit_info)
-            }.to raise_error(VCAP::CloudController::ManifestRouteUpdate::InvalidRoute,
+            }.to raise_error(CloudController::ManifestRouteUpdate::InvalidRoute,
               "No domains exist for route #{message.routes.first[:route]}")
           end
         end
 
         context 'when the organization of the app does not have access to the domain' do
           before do
-            VCAP::CloudController::PrivateDomain.make(name: 'tomato.avocado-toast.com')
+            CloudController::PrivateDomain.make(name: 'tomato.avocado-toast.com')
           end
 
           it 'raises an error' do
@@ -233,8 +233,8 @@ module VCAP::CloudController
       end
 
       context 'when multiple domains exist' do
-        let!(:specific_domain) { VCAP::CloudController::SharedDomain.make(name: 'tomato.avocado-toast.com') }
-        let!(:broader_domain) { VCAP::CloudController::SharedDomain.make(name: 'avocado-toast.com') }
+        let!(:specific_domain) { CloudController::SharedDomain.make(name: 'tomato.avocado-toast.com') }
+        let!(:broader_domain) { CloudController::SharedDomain.make(name: 'avocado-toast.com') }
 
         it 'creates the route in the most specific domain' do
           ManifestRouteUpdate.update(app.guid, message, user_audit_info)
@@ -247,7 +247,7 @@ module VCAP::CloudController
 
       context 'when there is no host provided' do
         before do
-          VCAP::CloudController::SharedDomain.make(name: 'potato.tomato.avocado-toast.com')
+          CloudController::SharedDomain.make(name: 'potato.tomato.avocado-toast.com')
         end
 
         it('raises an error indicating that a host must be provided') do
@@ -258,7 +258,7 @@ module VCAP::CloudController
       end
 
       context 'when the host is invalid' do
-        let!(:domain) { VCAP::CloudController::SharedDomain.make(name: 'avocado-toast.com') }
+        let!(:domain) { CloudController::SharedDomain.make(name: 'avocado-toast.com') }
         let(:message) do
           ManifestRoutesUpdateMessage.new(
             routes: [

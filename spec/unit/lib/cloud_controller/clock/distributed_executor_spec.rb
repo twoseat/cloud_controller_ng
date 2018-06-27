@@ -2,7 +2,7 @@ require 'spec_helper'
 require 'timecop'
 require 'cloud_controller/clock/distributed_executor'
 
-module VCAP::CloudController
+module CloudController
   RSpec.describe DistributedExecutor do
     let(:job_name) { SecureRandom.uuid }
 

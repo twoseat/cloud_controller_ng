@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-module VCAP::CloudController::RestController
+module CloudController::RestController
   RSpec.describe ObjectRenderer do
     subject(:renderer) { ObjectRenderer.new(eager_loader, serializer, renderer_opts) }
     let(:eager_loader) { SecureEagerLoader.new }
@@ -8,10 +8,10 @@ module VCAP::CloudController::RestController
     let(:renderer_opts) { { max_inline_relations_depth: 100_000 } }
 
     describe '#render_json' do
-      let(:controller) { VCAP::CloudController::TestModelSecondLevelsController }
+      let(:controller) { CloudController::TestModelSecondLevelsController }
       let(:opts) { {} }
 
-      let(:instance) { VCAP::CloudController::TestModelSecondLevel.make }
+      let(:instance) { CloudController::TestModelSecondLevel.make }
 
       context 'when asked inline_relations_depth is more than max inline_relations_depth' do
         before { renderer_opts.merge!(max_inline_relations_depth: 10) }
@@ -45,7 +45,7 @@ module VCAP::CloudController::RestController
       end
 
       describe 'object transformer' do
-        let(:instance) { VCAP::CloudController::TestModel.make }
+        let(:instance) { CloudController::TestModel.make }
         let(:object_transformer) { double(:object_transformer) }
 
         before do
@@ -64,14 +64,14 @@ module VCAP::CloudController::RestController
       end
 
       context 'service_plan renderer' do
-        let(:user) { VCAP::CloudController::User.make }
-        let(:organization) { VCAP::CloudController::Organization.make }
-        let(:space) { VCAP::CloudController::Space.make(organization: organization) }
-        let(:controller) { VCAP::CloudController::ServicePlansController }
+        let(:user) { CloudController::User.make }
+        let(:organization) { CloudController::Organization.make }
+        let(:space) { CloudController::Space.make(organization: organization) }
+        let(:controller) { CloudController::ServicePlansController }
         let(:opts) { {} }
-        let(:broker) { VCAP::CloudController::ServiceBroker.make }
-        let(:service) { VCAP::CloudController::Service.make(service_broker: broker) }
-        let(:service_plan) { VCAP::CloudController::ServicePlan.make(service: service, public: false, active: false) }
+        let(:broker) { CloudController::ServiceBroker.make }
+        let(:service) { CloudController::Service.make(service_broker: broker) }
+        let(:service_plan) { CloudController::ServicePlan.make(service: service, public: false, active: false) }
 
         before do
           space.organization.add_user(user)
@@ -80,7 +80,7 @@ module VCAP::CloudController::RestController
         end
 
         it 'renders a service plan accessible via user\'s service instance only' do
-          VCAP::CloudController::ManagedServiceInstance.make(space: space, service_plan: service_plan)
+          CloudController::ManagedServiceInstance.make(space: space, service_plan: service_plan)
           set_current_user(user)
           result = MultiJson.load(subject.render_json_with_read_privileges(controller, service_plan, opts))
           expect(result['entity']['service_guid']).to eq(service.guid)

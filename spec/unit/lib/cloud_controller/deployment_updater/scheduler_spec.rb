@@ -1,7 +1,7 @@
 require 'spec_helper'
 require 'cloud_controller/deployment_updater/scheduler'
 
-module VCAP::CloudController
+module CloudController
   RSpec.describe DeploymentUpdater::Scheduler do
     before do
       TestConfig.context = :deployment_updater

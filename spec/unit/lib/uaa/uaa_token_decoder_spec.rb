@@ -1,7 +1,7 @@
 require 'spec_helper'
 require 'cloud_controller/uaa/uaa_token_decoder'
 
-module VCAP::CloudController
+module CloudController
   RSpec.describe UaaTokenDecoder do
     subject { UaaTokenDecoder.new(uaa_config) }
 
@@ -16,7 +16,7 @@ module VCAP::CloudController
     end
 
     let(:uaa_info) { double(CF::UAA::Info) }
-    let(:uaa_client) { instance_double(VCAP::CloudController::UaaClient) }
+    let(:uaa_client) { instance_double(CloudController::UaaClient) }
     let(:logger) { double(Steno::Logger) }
 
     before do
@@ -24,7 +24,7 @@ module VCAP::CloudController
       allow(uaa_client).to receive(:info).and_return(uaa_info)
       allow(Steno).to receive(:logger).with('cc.uaa_token_decoder').and_return(logger)
       # undo global stubbing in spec_helper.rb
-      allow_any_instance_of(VCAP::CloudController::UaaTokenDecoder).to receive(:uaa_issuer).and_call_original
+      allow_any_instance_of(CloudController::UaaTokenDecoder).to receive(:uaa_issuer).and_call_original
     end
 
     describe '.new' do
@@ -58,7 +58,7 @@ module VCAP::CloudController
       after { Timecop.return }
 
       let(:uaa_issuer_string) { 'https://uaa.my-cf.com/uaa/stuff/here' }
-      let(:uaa_issuer_info_url) { "#{VCAP::CloudController::Config.config.get(:uaa, :internal_url)}/.well-known/openid-configuration" }
+      let(:uaa_issuer_info_url) { "#{CloudController::Config.config.get(:uaa, :internal_url)}/.well-known/openid-configuration" }
 
       context 'when symmetric key is used' do
         before { uaa_config[:symmetric_secret] = 'symmetric-key' }
@@ -145,7 +145,7 @@ module VCAP::CloudController
 
             expect {
               subject.decode_token("bearer #{token_content}")
-            }.to raise_error(VCAP::CloudController::UaaTokenDecoder::BadToken)
+            }.to raise_error(CloudController::UaaTokenDecoder::BadToken)
           end
         end
       end
@@ -198,7 +198,7 @@ module VCAP::CloudController
                 expect(logger).to receive(:warn).with(/invalid bearer token/i)
                 expect {
                   subject.decode_token("bearer #{generate_token(rsa_key, token_content)}")
-                }.to raise_error(VCAP::CloudController::UaaTokenDecoder::BadToken)
+                }.to raise_error(CloudController::UaaTokenDecoder::BadToken)
               end
             end
           end
@@ -264,7 +264,7 @@ module VCAP::CloudController
             expect(logger).to receive(:warn).with(/invalid bearer token/i)
             expect {
               subject.decode_token("bearer #{generate_token(rsa_key, token_content)}")
-            }.to raise_error(VCAP::CloudController::UaaTokenDecoder::BadToken)
+            }.to raise_error(CloudController::UaaTokenDecoder::BadToken)
           end
         end
 
@@ -281,7 +281,7 @@ module VCAP::CloudController
             expect(logger).to receive(:warn).with(/token expired/i)
             expect {
               subject.decode_token("bearer #{generate_token(rsa_key, token_content)}")
-            }.to raise_error(VCAP::CloudController::UaaTokenDecoder::BadToken)
+            }.to raise_error(CloudController::UaaTokenDecoder::BadToken)
           end
         end
 
@@ -290,7 +290,7 @@ module VCAP::CloudController
             expect(logger).to receive(:warn).with(/invalid bearer token/i)
             expect {
               subject.decode_token('bearer invalid-token')
-            }.to raise_error(VCAP::CloudController::UaaTokenDecoder::BadToken)
+            }.to raise_error(CloudController::UaaTokenDecoder::BadToken)
           end
 
           context 'when token is not an access token' do
@@ -310,7 +310,7 @@ module VCAP::CloudController
 
               expect {
                 subject.decode_token("bearer #{token}")
-              }.to raise_error(VCAP::CloudController::UaaTokenDecoder::BadToken)
+              }.to raise_error(CloudController::UaaTokenDecoder::BadToken)
             end
           end
         end
@@ -384,7 +384,7 @@ module VCAP::CloudController
             expect(logger).to receive(:warn).with(/invalid bearer token/i)
             expect {
               subject.decode_token("bearer #{token}")
-            }.to raise_error(VCAP::CloudController::UaaTokenDecoder::BadToken)
+            }.to raise_error(CloudController::UaaTokenDecoder::BadToken)
           end
         end
 
@@ -415,7 +415,7 @@ module VCAP::CloudController
               expect(logger).to receive(:warn).with(/token expired/i)
               expect {
                 subject.decode_token("bearer #{token}")
-              }.to raise_error(VCAP::CloudController::UaaTokenDecoder::BadToken)
+              }.to raise_error(CloudController::UaaTokenDecoder::BadToken)
             end
           end
 
@@ -428,7 +428,7 @@ module VCAP::CloudController
               allow(logger).to receive(:warn)
               expect {
                 subject.decode_token("bearer #{expired_token}")
-              }.to raise_error(VCAP::CloudController::UaaTokenDecoder::BadToken)
+              }.to raise_error(CloudController::UaaTokenDecoder::BadToken)
 
               token_content['exp'] = Time.now.utc.to_i + 1
               valid_token          = generate_token(rsa_key, token_content)

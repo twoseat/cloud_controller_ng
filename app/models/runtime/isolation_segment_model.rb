@@ -1,4 +1,4 @@
-module VCAP::CloudController
+module CloudController
   class IsolationSegmentModel < Sequel::Model(:isolation_segments)
     SHARED_ISOLATION_SEGMENT_GUID = '933b4c58-120b-499a-b85d-4b6fc9e2903b'.freeze
 

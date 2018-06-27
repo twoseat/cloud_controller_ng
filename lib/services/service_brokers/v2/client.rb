@@ -11,7 +11,7 @@ module VCAP::Services::ServiceBrokers::V2
       @response_parser  = VCAP::Services::ServiceBrokers::V2::ResponseParser.new(@http_client.url)
       @attrs            = attrs
       @orphan_mitigator = VCAP::Services::ServiceBrokers::V2::OrphanMitigator.new
-      @config           = VCAP::CloudController::Config.config
+      @config           = CloudController::Config.config
     end
 
     def catalog

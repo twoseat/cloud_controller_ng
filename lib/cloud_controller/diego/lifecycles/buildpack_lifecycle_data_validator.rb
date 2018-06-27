@@ -1,6 +1,6 @@
 require 'active_model'
 
-module VCAP::CloudController
+module CloudController
   class BuildpackLifecycleDataValidator
     include ActiveModel::Model
 

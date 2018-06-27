@@ -4,7 +4,7 @@ module CloudController
       class ServiceBindingPresenter < BasePresenter
         extend PresenterProvider
 
-        present_for_class 'VCAP::CloudController::ServiceBinding'
+        present_for_class 'CloudController::ServiceBinding'
 
         def entity_hash(controller, service_binding, opts, depth, parents, orphans=nil)
           rel_hash = RelationsPresenter.new.to_hash(controller, service_binding, opts, depth, parents, orphans)

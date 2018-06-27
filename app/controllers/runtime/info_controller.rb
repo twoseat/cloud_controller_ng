@@ -1,4 +1,4 @@
-module VCAP::CloudController
+module CloudController
   class InfoController < RestController::BaseController
     allow_unauthenticated_access
 
@@ -14,7 +14,7 @@ module VCAP::CloudController
         token_endpoint: config.get(:uaa, :url),
         min_cli_version: @config.get(:info, :min_cli_version),
         min_recommended_cli_version: @config.get(:info, :min_recommended_cli_version),
-        api_version: VCAP::CloudController::Constants::API_VERSION,
+        api_version: CloudController::Constants::API_VERSION,
         app_ssh_endpoint: @config.get(:info, :app_ssh_endpoint),
         app_ssh_host_key_fingerprint: @config.get(:info, :app_ssh_host_key_fingerprint),
         app_ssh_oauth_client: @config.get(:info, :app_ssh_oauth_client),

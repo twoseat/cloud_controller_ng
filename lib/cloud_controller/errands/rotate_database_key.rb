@@ -1,10 +1,10 @@
-module VCAP::CloudController
+module CloudController
   class RotateDatabaseKey
     class << self
       def perform(batch_size: 1000)
         no_encryption_key! unless Encryptor.current_encryption_key_label.present?
 
-        VCAP::CloudController::Encryptor.encrypted_classes.each do |klass|
+        CloudController::Encryptor.encrypted_classes.each do |klass|
           logger.info("rotating encryption key for class #{klass}")
           rotate_for_class(klass.constantize, batch_size)
           logger.info("done rotating encryption key for class #{klass}")

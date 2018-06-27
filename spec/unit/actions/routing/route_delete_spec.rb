@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-module VCAP::CloudController
+module CloudController
   RSpec.describe RouteDelete do
     subject(:route_delete_action) do
       RouteDelete.new(

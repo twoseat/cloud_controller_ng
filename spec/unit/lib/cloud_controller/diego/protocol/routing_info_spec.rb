@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-module VCAP::CloudController
+module CloudController
   module Diego
     class Protocol
       RSpec.describe RoutingInfo do
@@ -23,8 +23,8 @@ module VCAP::CloudController
 
           let(:router_group_guid) { 'router-group-guid-1' }
           let(:router_group_type) { 'tcp' }
-          let(:routing_api_client) { instance_double(VCAP::CloudController::RoutingApi::Client, router_group: router_group) }
-          let(:router_group) { VCAP::CloudController::RoutingApi::RouterGroup.new({
+          let(:routing_api_client) { instance_double(CloudController::RoutingApi::Client, router_group: router_group) }
+          let(:router_group) { CloudController::RoutingApi::RouterGroup.new({
               'guid' => router_group_guid,
               'type' => router_group_type,
               'name' => 'router-group-1' }
@@ -318,13 +318,13 @@ module VCAP::CloudController
             let(:router_group_guid_2) { 'router-group-guid-2' }
             let(:router_group_type_http) { 'http' }
             let(:router_group_type_tcp) { 'tcp' }
-            let(:router_group_1) { VCAP::CloudController::RoutingApi::RouterGroup.new({
+            let(:router_group_1) { CloudController::RoutingApi::RouterGroup.new({
                                                                                         'guid' => router_group_guid_1,
                                                                                         'type' => router_group_type_http,
                                                                                         'name' => 'router-group-1' }
             )
             }
-            let(:router_group_2) { VCAP::CloudController::RoutingApi::RouterGroup.new({
+            let(:router_group_2) { CloudController::RoutingApi::RouterGroup.new({
                                                                                         'guid' => router_group_guid_2,
                                                                                         'type' => router_group_type_tcp,
                                                                                         'name' => 'router-group-1' }

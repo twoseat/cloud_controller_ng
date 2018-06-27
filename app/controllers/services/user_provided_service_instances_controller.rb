@@ -1,7 +1,7 @@
 require 'cloud_controller/rest_controller'
 require 'actions/services/propagate_instance_credentials'
 
-module VCAP::CloudController
+module CloudController
   class UserProvidedServiceInstancesController < RestController::ModelController
     define_attributes do
       attribute :name, String

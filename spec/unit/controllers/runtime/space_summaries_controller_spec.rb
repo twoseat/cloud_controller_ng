@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-module VCAP::CloudController
+module CloudController
   RSpec.describe SpaceSummariesController do
     let(:space) { Space.make }
     let(:process) { ProcessModelFactory.make(space: space) }

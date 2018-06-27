@@ -1,7 +1,7 @@
 require 'spec_helper'
 require 'messages/orgs_default_iso_seg_update_message'
 
-module VCAP::CloudController
+module CloudController
   RSpec.describe OrgDefaultIsoSegUpdateMessage do
     describe 'validations' do
       context 'when there is no guid in the data' do

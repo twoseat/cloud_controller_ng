@@ -1,7 +1,7 @@
 require 'spec_helper'
 require 'messages/spaces_list_message'
 
-module VCAP::CloudController
+module CloudController
   RSpec.describe SpacesListMessage do
     describe '.from_params' do
       let(:params) do

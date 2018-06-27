@@ -1,4 +1,4 @@
-module VCAP::CloudController
+module CloudController
   module Buildpacks
     class StackNameExtractor
       ONE_MEGABYTE = 1024 * 1024

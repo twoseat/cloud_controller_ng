@@ -1,16 +1,16 @@
 require 'spec_helper'
 require 'actions/set_default_isolation_segment'
 
-module VCAP::CloudController
+module CloudController
   RSpec.describe SetDefaultIsolationSegment do
     subject(:set_default_isolation_segment) { SetDefaultIsolationSegment.new }
 
-    let(:org) { VCAP::CloudController::Organization.make }
-    let(:isolation_segment) { VCAP::CloudController::IsolationSegmentModel.make(name: 'JB') }
+    let(:org) { CloudController::Organization.make }
+    let(:isolation_segment) { CloudController::IsolationSegmentModel.make(name: 'JB') }
     let(:isolation_segment_guid) { isolation_segment.guid }
-    let(:assigner) { VCAP::CloudController::IsolationSegmentAssign.new }
+    let(:assigner) { CloudController::IsolationSegmentAssign.new }
     let(:message) do
-      VCAP::CloudController::OrgDefaultIsoSegUpdateMessage.new(
+      CloudController::OrgDefaultIsoSegUpdateMessage.new(
         {
           data: { guid: isolation_segment_guid }
         }
@@ -48,7 +48,7 @@ module VCAP::CloudController
         it 'raises an invalid relationship error' do
           expect {
             set_default_isolation_segment.set(org, isolation_segment, message)
-          }.to raise_error VCAP::CloudController::SetDefaultIsolationSegment::Error, /Unable to assign/
+          }.to raise_error CloudController::SetDefaultIsolationSegment::Error, /Unable to assign/
         end
       end
 
@@ -59,7 +59,7 @@ module VCAP::CloudController
         it 'raises an invalid relationship error' do
           expect {
             set_default_isolation_segment.set(org, isolation_segment, message)
-          }.to raise_error VCAP::CloudController::SetDefaultIsolationSegment::Error, /Unable to assign/
+          }.to raise_error CloudController::SetDefaultIsolationSegment::Error, /Unable to assign/
         end
       end
 

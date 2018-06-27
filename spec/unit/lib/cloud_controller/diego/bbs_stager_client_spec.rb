@@ -1,7 +1,7 @@
 require 'spec_helper'
 require 'cloud_controller/diego/bbs_stager_client'
 
-module VCAP::CloudController::Diego
+module CloudController::Diego
   RSpec.describe BbsStagerClient do
     let(:staging_guid) { 'staging-guid' }
     let(:bbs_client) { instance_double(::Diego::Client) }

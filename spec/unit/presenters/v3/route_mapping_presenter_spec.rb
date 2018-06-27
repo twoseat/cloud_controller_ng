@@ -2,21 +2,21 @@ require 'spec_helper'
 require 'presenters/v3/route_mapping_presenter'
 require 'messages/route_mappings_list_message'
 
-module VCAP::CloudController::Presenters::V3
+module CloudController::Presenters::V3
   RSpec.describe RouteMappingPresenter do
     subject(:presenter) { RouteMappingPresenter.new(route_mapping) }
 
     let(:route_mapping) do
-      VCAP::CloudController::RouteMappingModel.make(
+      CloudController::RouteMappingModel.make(
         app:          app,
         app_port:     1234,
         route:        route,
         process_type: process.type,
       )
     end
-    let(:app) { VCAP::CloudController::AppModel.make }
-    let(:process) { VCAP::CloudController::ProcessModel.make(app: app, type: 'some-type') }
-    let(:route) { VCAP::CloudController::Route.make(space: app.space) }
+    let(:app) { CloudController::AppModel.make }
+    let(:process) { CloudController::ProcessModel.make(app: app, type: 'some-type') }
+    let(:route) { CloudController::Route.make(space: app.space) }
 
     describe '#to_hash' do
       let(:result) { presenter.to_hash }
@@ -41,7 +41,7 @@ module VCAP::CloudController::Presenters::V3
 
         context 'when the process is gone' do
           let(:route_mapping) do
-            VCAP::CloudController::RouteMappingModel.make(process_type: nil)
+            CloudController::RouteMappingModel.make(process_type: nil)
           end
 
           it 'has a null link for process' do

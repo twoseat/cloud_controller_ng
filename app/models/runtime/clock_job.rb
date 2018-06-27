@@ -1,4 +1,4 @@
-module VCAP::CloudController
+module CloudController
   class ClockJob < Sequel::Model
   end
 end

@@ -1,7 +1,7 @@
 require 'spec_helper'
 require 'messages/manifest_process_update_message'
 
-module VCAP::CloudController
+module CloudController
   RSpec.describe ManifestProcessUpdateMessage do
     let(:message) { ManifestProcessUpdateMessage.new(body) }
     let(:body) { {} }

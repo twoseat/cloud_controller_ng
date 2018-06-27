@@ -1,7 +1,7 @@
 require 'models/runtime/domain'
 require 'public_suffix'
 
-module VCAP::CloudController
+module CloudController
   class PrivateDomain < Domain
     set_dataset(private_domains)
 

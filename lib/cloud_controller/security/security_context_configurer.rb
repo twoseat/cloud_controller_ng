@@ -1,4 +1,4 @@
-module VCAP::CloudController
+module CloudController
   module Security
     class SecurityContextConfigurer
       def initialize(token_decoder)
@@ -6,14 +6,14 @@ module VCAP::CloudController
       end
 
       def configure(header_token)
-        VCAP::CloudController::SecurityContext.clear
+        CloudController::SecurityContext.clear
         token_information = decode_token(header_token)
 
         user = user_from_token(token_information)
 
-        VCAP::CloudController::SecurityContext.set(user, token_information, header_token)
-      rescue VCAP::CloudController::UaaTokenDecoder::BadToken
-        VCAP::CloudController::SecurityContext.set(nil, :invalid_token, header_token)
+        CloudController::SecurityContext.set(user, token_information, header_token)
+      rescue CloudController::UaaTokenDecoder::BadToken
+        CloudController::SecurityContext.set(nil, :invalid_token, header_token)
       end
 
       private

@@ -2,7 +2,7 @@ require 'spec_helper'
 
 module VCAP::Services::ServiceBrokers::V2
   RSpec.describe Client do
-    let(:service_broker) { VCAP::CloudController::ServiceBroker.make }
+    let(:service_broker) { CloudController::ServiceBroker.make }
 
     let(:client_attrs) {
       {
@@ -79,11 +79,11 @@ module VCAP::Services::ServiceBrokers::V2
     end
 
     describe '#provision' do
-      let(:plan) { VCAP::CloudController::ServicePlan.make }
-      let(:space) { VCAP::CloudController::Space.make }
-      let(:service_instance_operation) { VCAP::CloudController::ServiceInstanceOperation.make }
+      let(:plan) { CloudController::ServicePlan.make }
+      let(:space) { CloudController::Space.make }
+      let(:service_instance_operation) { CloudController::ServiceInstanceOperation.make }
       let(:instance) do
-        VCAP::CloudController::ManagedServiceInstance.make(
+        CloudController::ManagedServiceInstance.make(
           service_plan: plan,
           space:        space
         )
@@ -105,7 +105,7 @@ module VCAP::Services::ServiceBrokers::V2
       before do
         allow(http_client).to receive(:put).and_return(response)
         allow(http_client).to receive(:delete).and_return(response)
-        allow(VCAP::CloudController::SecurityContext).to receive(:current_user).and_return(developer)
+        allow(CloudController::SecurityContext).to receive(:current_user).and_return(developer)
 
         instance.service_instance_operation = service_instance_operation
       end
@@ -341,10 +341,10 @@ module VCAP::Services::ServiceBrokers::V2
     end
 
     describe '#fetch_service_instance_last_operation' do
-      let(:plan) { VCAP::CloudController::ServicePlan.make }
-      let(:space) { VCAP::CloudController::Space.make }
+      let(:plan) { CloudController::ServicePlan.make }
+      let(:space) { CloudController::Space.make }
       let(:instance) do
-        VCAP::CloudController::ManagedServiceInstance.make(
+        CloudController::ManagedServiceInstance.make(
           service_plan: plan,
           space:        space
         )
@@ -468,19 +468,19 @@ module VCAP::Services::ServiceBrokers::V2
     end
 
     describe '#update' do
-      let(:old_plan) { VCAP::CloudController::ServicePlan.make }
-      let(:new_plan) { VCAP::CloudController::ServicePlan.make }
+      let(:old_plan) { CloudController::ServicePlan.make }
+      let(:new_plan) { CloudController::ServicePlan.make }
 
-      let(:space) { VCAP::CloudController::Space.make }
+      let(:space) { CloudController::Space.make }
       let(:last_operation) do
-        VCAP::CloudController::ServiceInstanceOperation.make(
+        CloudController::ServiceInstanceOperation.make(
           type:  'create',
           state: 'succeeded'
         )
       end
 
       let(:instance) do
-        VCAP::CloudController::ManagedServiceInstance.make(
+        CloudController::ManagedServiceInstance.make(
           service_plan: old_plan,
           space:        space
         )
@@ -792,9 +792,9 @@ module VCAP::Services::ServiceBrokers::V2
     end
 
     describe '#create_service_key' do
-      let(:instance) { VCAP::CloudController::ManagedServiceInstance.make }
+      let(:instance) { CloudController::ManagedServiceInstance.make }
       let(:key) do
-        VCAP::CloudController::ServiceKey.new(
+        CloudController::ServiceKey.new(
           name:             'fake-service_key',
           service_instance: instance
         )
@@ -927,10 +927,10 @@ module VCAP::Services::ServiceBrokers::V2
     end
 
     describe '#bind' do
-      let(:instance) { VCAP::CloudController::ManagedServiceInstance.make }
-      let(:app) { VCAP::CloudController::AppModel.make(space: instance.space) }
+      let(:instance) { CloudController::ManagedServiceInstance.make }
+      let(:app) { CloudController::AppModel.make(space: instance.space) }
       let(:binding) do
-        VCAP::CloudController::ServiceBinding.new(
+        CloudController::ServiceBinding.new(
           service_instance: instance,
           app:              app,
           type:             'app'
@@ -1053,7 +1053,7 @@ module VCAP::Services::ServiceBrokers::V2
       end
 
       context 'when the binding does not have an app_guid' do
-        let(:binding) { VCAP::CloudController::RouteBinding.make }
+        let(:binding) { CloudController::RouteBinding.make }
 
         it 'does not send the app_guid in the request' do
           client.bind(binding, arbitrary_parameters)
@@ -1158,8 +1158,8 @@ module VCAP::Services::ServiceBrokers::V2
       end
 
       context 'when binding fails' do
-        let(:instance) { VCAP::CloudController::ManagedServiceInstance.make }
-        let(:binding) { VCAP::CloudController::ServiceBinding.make }
+        let(:instance) { CloudController::ManagedServiceInstance.make }
+        let(:binding) { CloudController::ServiceBinding.make }
         let(:uri) { 'some-uri.com/v2/service_instances/instance-guid/service_bindings/binding-guid' }
         let(:response) { HttpResponse.new(body: nil, message: nil, code: nil) }
 
@@ -1220,7 +1220,7 @@ module VCAP::Services::ServiceBrokers::V2
     end
 
     describe '#unbind' do
-      let(:binding) { VCAP::CloudController::ServiceBinding.make }
+      let(:binding) { CloudController::ServiceBinding.make }
 
       let(:response_data) { {} }
 
@@ -1290,7 +1290,7 @@ module VCAP::Services::ServiceBrokers::V2
     end
 
     describe '#deprovision' do
-      let(:instance) { VCAP::CloudController::ManagedServiceInstance.make }
+      let(:instance) { CloudController::ManagedServiceInstance.make }
 
       let(:response_data) { {} }
 
@@ -1407,7 +1407,7 @@ module VCAP::Services::ServiceBrokers::V2
       end
 
       context 'when the broker returns an error' do
-        let(:instance) { VCAP::CloudController::ManagedServiceInstance.make }
+        let(:instance) { CloudController::ManagedServiceInstance.make }
         let(:code) { 204 }
         let(:response_data) do
           { 'description' => 'Could not delete instance' }
@@ -1452,10 +1452,10 @@ module VCAP::Services::ServiceBrokers::V2
     end
 
     describe '#fetch_service_binding' do
-      let(:instance) { VCAP::CloudController::ManagedServiceInstance.make }
-      let(:app) { VCAP::CloudController::AppModel.make(space: instance.space) }
+      let(:instance) { CloudController::ManagedServiceInstance.make }
+      let(:app) { CloudController::AppModel.make(space: instance.space) }
       let(:binding) do
-        VCAP::CloudController::ServiceBinding.new(
+        CloudController::ServiceBinding.new(
           service_instance: instance,
           app:              app,
           type:             'app'
@@ -1481,7 +1481,7 @@ module VCAP::Services::ServiceBrokers::V2
     end
 
     describe '#fetch_service_instance' do
-      let(:instance) { VCAP::CloudController::ManagedServiceInstance.make }
+      let(:instance) { CloudController::ManagedServiceInstance.make }
       let(:broker_response) { HttpResponse.new(code: 200, body: { foo: 'bar' }.to_json) }
 
       before do
@@ -1501,8 +1501,8 @@ module VCAP::Services::ServiceBrokers::V2
     end
 
     describe '#fetch_service_binding_last_operation' do
-      let(:binding) { VCAP::CloudController::ServiceBinding.make }
-      let(:binding_operation) { VCAP::CloudController::ServiceBindingOperation.make }
+      let(:binding) { CloudController::ServiceBinding.make }
+      let(:binding_operation) { CloudController::ServiceBindingOperation.make }
       let(:broker_response) { HttpResponse.new(code: 200, body: { state: 'in progress', description: '10%' }.to_json) }
 
       before do
@@ -1529,7 +1529,7 @@ module VCAP::Services::ServiceBrokers::V2
       end
 
       context 'when the broker provides operation data' do
-        let(:binding_operation) { VCAP::CloudController::ServiceBindingOperation.make(broker_provided_operation: '123') }
+        let(:binding_operation) { CloudController::ServiceBindingOperation.make(broker_provided_operation: '123') }
 
         it 'makes a get request with the correct path' do
           client.fetch_service_binding_last_operation(binding)

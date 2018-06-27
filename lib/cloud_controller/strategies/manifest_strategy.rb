@@ -1,4 +1,4 @@
-module VCAP::CloudController
+module CloudController
   class ManifestStrategy
     NULL_START_COMMANDS = ['default', 'null'].freeze
 

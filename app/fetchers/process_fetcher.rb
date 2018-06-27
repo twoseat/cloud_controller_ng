@@ -1,4 +1,4 @@
-module VCAP::CloudController
+module CloudController
   class ProcessFetcher
     def fetch_for_app_by_type(process_type:, app_guid:)
       app = AppModel.where(guid: app_guid).eager(:space, :organization).all.first

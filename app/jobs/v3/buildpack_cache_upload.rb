@@ -1,4 +1,4 @@
-module VCAP::CloudController
+module CloudController
   module Jobs
     module V3
       class BuildpackCacheUpload

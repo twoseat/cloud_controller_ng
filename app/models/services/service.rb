@@ -1,4 +1,4 @@
-module VCAP::CloudController
+module CloudController
   class Service < Sequel::Model
     plugin :serialization
 
@@ -64,7 +64,7 @@ module VCAP::CloudController
       end
 
       def can_read_globally?(user)
-        VCAP::CloudController::Permissions.new(user).can_read_globally?
+        CloudController::Permissions.new(user).can_read_globally?
       end
     end
 

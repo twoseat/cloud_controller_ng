@@ -1,7 +1,7 @@
 require 'mappers/order_by_mapper'
 require 'presenters/helpers/censorship'
 
-module VCAP::CloudController
+module CloudController
   module Presenters
     module V3
       class PaginatedListPresenter
@@ -25,7 +25,7 @@ module VCAP::CloudController
 
         def present_pagination_hash(filters=nil)
           pagination_options = @paginated_result.pagination_options
-          url_builder = VCAP::CloudController::Presenters::ApiUrlBuilder.new
+          url_builder = CloudController::Presenters::ApiUrlBuilder.new
 
           last_page     = (@paginated_result.total.to_f / pagination_options.per_page.to_f).ceil
           last_page     = 1 if last_page < 1

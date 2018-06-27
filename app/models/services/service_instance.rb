@@ -1,6 +1,6 @@
 require 'repositories/service_usage_event_repository'
 
-module VCAP::CloudController
+module CloudController
   class ServiceInstance < Sequel::Model
     class InvalidServiceBinding < StandardError; end
 
@@ -11,13 +11,13 @@ module VCAP::CloudController
     plugin :single_table_inheritance, :is_gateway_service,
            model_map: lambda { |is_gateway_service|
              if is_gateway_service
-               VCAP::CloudController::ManagedServiceInstance
+               CloudController::ManagedServiceInstance
              else
-               VCAP::CloudController::UserProvidedServiceInstance
+               CloudController::UserProvidedServiceInstance
              end
            },
            key_map: lambda { |klazz|
-             klazz == VCAP::CloudController::ManagedServiceInstance
+             klazz == CloudController::ManagedServiceInstance
            }
     plugin :columns_updated
 
@@ -34,13 +34,13 @@ module VCAP::CloudController
           right_key:         :target_space_guid,
           right_primary_key: :guid,
           join_table:        :service_instance_shares,
-          class: VCAP::CloudController::Space
+          class: CloudController::Space
 
     many_to_many :routes, join_table: :route_bindings
 
     many_to_one :space, after_set: :validate_space
     many_to_one :service_plan_sti_eager_load,
-                class: 'VCAP::CloudController::ServicePlan',
+                class: 'CloudController::ServicePlan',
                 dataset: -> { raise 'Must be used for eager loading' },
                 eager_loader_key: nil, # set up id_map ourselves
                 eager_loader: proc { |eo|
@@ -136,7 +136,7 @@ module VCAP::CloudController
     end
 
     def to_hash(opts={})
-      access_context = VCAP::CloudController::Security::AccessContext.new
+      access_context = CloudController::Security::AccessContext.new
       if access_context.cannot?(:read_env, self)
         opts[:redact] = ['credentials']
       end
@@ -203,7 +203,7 @@ module VCAP::CloudController
     end
 
     def self.managed_organizations_spaces_dataset(managed_organizations_dataset)
-      VCAP::CloudController::Space.dataset.filter({ organization_id: managed_organizations_dataset.select(:organization_id) })
+      CloudController::Space.dataset.filter({ organization_id: managed_organizations_dataset.select(:organization_id) })
     end
 
     private

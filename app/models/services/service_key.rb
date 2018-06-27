@@ -1,4 +1,4 @@
-module VCAP::CloudController
+module CloudController
   class ServiceKey < Sequel::Model
     class InvalidAppAndServiceRelation < StandardError; end
 

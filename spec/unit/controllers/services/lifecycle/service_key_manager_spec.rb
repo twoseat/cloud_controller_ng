@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-module VCAP::CloudController
+module CloudController
   RSpec.describe ServiceKeyManager do
     let(:guid_pattern) { '[[:alnum:]-]+' }
     let(:unbind_status) { 200 }
@@ -29,8 +29,8 @@ module VCAP::CloudController
       end
 
       it 'use the delete action to delete the key' do
-        expect(VCAP::CloudController::ServiceKeyDelete).to receive(:new).and_return(service_key_delete_action)
-        expect(VCAP::CloudController::Jobs::DeleteActionJob).to receive(:new).with(ServiceKey, service_key.guid, service_key_delete_action).and_return(delete_action_job)
+        expect(CloudController::ServiceKeyDelete).to receive(:new).and_return(service_key_delete_action)
+        expect(CloudController::Jobs::DeleteActionJob).to receive(:new).with(ServiceKey, service_key.guid, service_key_delete_action).and_return(delete_action_job)
         expect(delete_action_job).to receive(:perform)
 
         subject.delete_service_key(service_key)

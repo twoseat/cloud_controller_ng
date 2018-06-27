@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-module VCAP::CloudController
+module CloudController
   RSpec.describe ServicesController, :services do
     shared_examples 'enumerate and read service only' do |perm_name|
       include_examples 'permission enumeration', perm_name,
@@ -141,7 +141,7 @@ module VCAP::CloudController
         end
       end
 
-      let(:user) { VCAP::CloudController::User.make }
+      let(:user) { CloudController::User.make }
       let(:service_broker) { ServiceBroker.make(name: 'FreeWidgets') }
       before { set_current_user(user) }
 
@@ -317,7 +317,7 @@ module VCAP::CloudController
 
         context 'a service instance operation is in progress' do
           before do
-            service_instance.save_with_new_operation({}, state: VCAP::CloudController::ManagedServiceInstance::IN_PROGRESS_STRING)
+            service_instance.save_with_new_operation({}, state: CloudController::ManagedServiceInstance::IN_PROGRESS_STRING)
           end
 
           it 'deletes the service and its dependent models' do

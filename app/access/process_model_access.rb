@@ -1,4 +1,4 @@
-module VCAP::CloudController
+module CloudController
   class ProcessModelAccess < BaseAccess
     def read?(object)
       return @ok_read if instance_variable_defined?(:@ok_read)
@@ -109,7 +109,7 @@ module VCAP::CloudController
     private
 
     def has_user_scope?
-      VCAP::CloudController::SecurityContext.scopes.include?('cloud_controller.user')
+      CloudController::SecurityContext.scopes.include?('cloud_controller.user')
     end
   end
 end

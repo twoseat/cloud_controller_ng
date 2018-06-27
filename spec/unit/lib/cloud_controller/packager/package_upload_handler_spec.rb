@@ -5,7 +5,7 @@ module CloudController::Packager
   RSpec.describe PackageUploadHandler do
     subject(:packer) { PackageUploadHandler.new(package.guid, uploaded_files_path, cached_files_fingerprints) }
 
-    let(:package) { VCAP::CloudController::PackageModel.make(state: VCAP::CloudController::PackageModel::PENDING_STATE) }
+    let(:package) { CloudController::PackageModel.make(state: CloudController::PackageModel::PENDING_STATE) }
     let(:uploaded_files_path) { File.expand_path('../../../fixtures/good.zip', File.dirname(__FILE__)) }
     let(:cached_files_fingerprints) { [{ 'sha1' => 'abcde', 'fn' => 'lib.rb' }] }
 
@@ -37,7 +37,7 @@ module CloudController::Packager
       it 'sets the state of the package' do
         expect {
           packer.pack
-        }.to change { package.refresh.state }.to(VCAP::CloudController::PackageModel::READY_STATE)
+        }.to change { package.refresh.state }.to(CloudController::PackageModel::READY_STATE)
       end
 
       it 'removes the compressed path afterwards' do
@@ -46,7 +46,7 @@ module CloudController::Packager
       end
 
       it 'expires any old packages' do
-        expect_any_instance_of(VCAP::CloudController::BitsExpiration).to receive(:expire_packages!)
+        expect_any_instance_of(CloudController::BitsExpiration).to receive(:expire_packages!)
         packer.pack
       end
 
@@ -79,7 +79,7 @@ module CloudController::Packager
         it 'sets the state of the package' do
           expect {
             packer.pack rescue StandardError
-          }.to change { package.refresh.state }.to(VCAP::CloudController::PackageModel::FAILED_STATE)
+          }.to change { package.refresh.state }.to(CloudController::PackageModel::FAILED_STATE)
         end
 
         it 'records the error on the package' do

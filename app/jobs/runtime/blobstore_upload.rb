@@ -1,7 +1,7 @@
-module VCAP::CloudController
+module CloudController
   module Jobs
     module Runtime
-      class BlobstoreUpload < VCAP::CloudController::Jobs::CCJob
+      class BlobstoreUpload < CloudController::Jobs::CCJob
         attr_reader :local_path, :blobstore_key, :blobstore_name
         attr_reader :max_attempts
 

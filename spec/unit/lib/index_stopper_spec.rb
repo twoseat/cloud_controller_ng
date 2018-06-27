@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-module VCAP::CloudController
+module CloudController
   RSpec.describe IndexStopper do
     let(:runners) { double(:runners, runner_for_process: runner) }
     let(:runner) { double(:runner, stop_index: nil) }

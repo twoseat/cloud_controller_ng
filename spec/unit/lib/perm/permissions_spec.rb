@@ -1,15 +1,15 @@
 require 'spec_helper'
 
-module VCAP::CloudController::Perm
+module CloudController::Perm
   RSpec.describe Permissions do
-    let(:perm_client) { instance_double(VCAP::CloudController::Perm::Client) }
+    let(:perm_client) { instance_double(CloudController::Perm::Client) }
     let(:user_id) { 'test-user-id' }
     let(:issuer) { 'test-issuer' }
-    let(:roles) { instance_double(VCAP::CloudController::Roles) }
+    let(:roles) { instance_double(CloudController::Roles) }
     let(:org_id) { 'test-org-id' }
     let(:space_id) { 'test-space-id' }
     subject(:permissions) {
-      VCAP::CloudController::Perm::Permissions.new(perm_client: perm_client, user_id: user_id, issuer: issuer, roles: roles)
+      CloudController::Perm::Permissions.new(perm_client: perm_client, user_id: user_id, issuer: issuer, roles: roles)
     }
 
     describe '#can_read_globally?' do
@@ -91,10 +91,10 @@ module VCAP::CloudController::Perm
       it 'returns all org guids for admins' do
         allow(roles).to receive(:admin?).and_return(true)
 
-        permissions = VCAP::CloudController::Perm::Permissions.new(perm_client: perm_client, user_id: user_id, issuer: issuer, roles: roles)
+        permissions = CloudController::Perm::Permissions.new(perm_client: perm_client, user_id: user_id, issuer: issuer, roles: roles)
 
-        org1 = VCAP::CloudController::Organization.make
-        org2 = VCAP::CloudController::Organization.make
+        org1 = CloudController::Organization.make
+        org2 = CloudController::Organization.make
 
         org_guids = permissions.readable_org_guids
 
@@ -107,10 +107,10 @@ module VCAP::CloudController::Perm
       it 'returns all org guids for read-only admins' do
         allow(roles).to receive(:admin_read_only?).and_return(true)
 
-        permissions = VCAP::CloudController::Perm::Permissions.new(perm_client: perm_client, user_id: user_id, issuer: issuer, roles: roles)
+        permissions = CloudController::Perm::Permissions.new(perm_client: perm_client, user_id: user_id, issuer: issuer, roles: roles)
 
-        org1 = VCAP::CloudController::Organization.make
-        org2 = VCAP::CloudController::Organization.make
+        org1 = CloudController::Organization.make
+        org2 = CloudController::Organization.make
 
         org_guids = permissions.readable_org_guids
 
@@ -123,10 +123,10 @@ module VCAP::CloudController::Perm
       it 'returns all org guids for global auditors' do
         allow(roles).to receive(:global_auditor?).and_return(true)
 
-        permissions = VCAP::CloudController::Perm::Permissions.new(perm_client: perm_client, user_id: user_id, issuer: issuer, roles: roles)
+        permissions = CloudController::Perm::Permissions.new(perm_client: perm_client, user_id: user_id, issuer: issuer, roles: roles)
 
-        org1 = VCAP::CloudController::Organization.make
-        org2 = VCAP::CloudController::Organization.make
+        org1 = CloudController::Organization.make
+        org2 = CloudController::Organization.make
 
         org_guids = permissions.readable_org_guids
 
@@ -245,12 +245,12 @@ module VCAP::CloudController::Perm
       it 'returns all space guids for admins' do
         allow(roles).to receive(:admin?).and_return(true)
 
-        permissions = VCAP::CloudController::Perm::Permissions.new(perm_client: perm_client, user_id: user_id, issuer: issuer, roles: roles)
+        permissions = CloudController::Perm::Permissions.new(perm_client: perm_client, user_id: user_id, issuer: issuer, roles: roles)
 
-        org1 = VCAP::CloudController::Organization.make
-        space1 = VCAP::CloudController::Space.make(organization: org1)
-        org2 = VCAP::CloudController::Organization.make
-        space2 = VCAP::CloudController::Space.make(organization: org2)
+        org1 = CloudController::Organization.make
+        space1 = CloudController::Space.make(organization: org1)
+        org2 = CloudController::Organization.make
+        space2 = CloudController::Space.make(organization: org2)
 
         space_guids = permissions.readable_space_guids
 
@@ -263,12 +263,12 @@ module VCAP::CloudController::Perm
       it 'returns all space guids for read-only admins' do
         allow(roles).to receive(:admin_read_only?).and_return(true)
 
-        permissions = VCAP::CloudController::Perm::Permissions.new(perm_client: perm_client, user_id: user_id, issuer: issuer, roles: roles)
+        permissions = CloudController::Perm::Permissions.new(perm_client: perm_client, user_id: user_id, issuer: issuer, roles: roles)
 
-        org1 = VCAP::CloudController::Organization.make
-        space1 = VCAP::CloudController::Space.make(organization: org1)
-        org2 = VCAP::CloudController::Organization.make
-        space2 = VCAP::CloudController::Space.make(organization: org2)
+        org1 = CloudController::Organization.make
+        space1 = CloudController::Space.make(organization: org1)
+        org2 = CloudController::Organization.make
+        space2 = CloudController::Space.make(organization: org2)
 
         space_guids = permissions.readable_space_guids
 
@@ -281,12 +281,12 @@ module VCAP::CloudController::Perm
       it 'returns all space guids for global auditors' do
         allow(roles).to receive(:global_auditor?).and_return(true)
 
-        permissions = VCAP::CloudController::Perm::Permissions.new(perm_client: perm_client, user_id: user_id, issuer: issuer, roles: roles)
+        permissions = CloudController::Perm::Permissions.new(perm_client: perm_client, user_id: user_id, issuer: issuer, roles: roles)
 
-        org1 = VCAP::CloudController::Organization.make
-        space1 = VCAP::CloudController::Space.make(organization: org1)
-        org2 = VCAP::CloudController::Organization.make
-        space2 = VCAP::CloudController::Space.make(organization: org2)
+        org1 = CloudController::Organization.make
+        space1 = CloudController::Space.make(organization: org1)
+        org2 = CloudController::Organization.make
+        space2 = CloudController::Space.make(organization: org2)
 
         space_guids = permissions.readable_space_guids
 
@@ -297,14 +297,14 @@ module VCAP::CloudController::Perm
       end
 
       it 'returns the list of space guids that the user can read via space roles and as an org manager without duplicates' do
-        org1 = VCAP::CloudController::Organization.make
-        org2 = VCAP::CloudController::Organization.make
+        org1 = CloudController::Organization.make
+        org2 = CloudController::Organization.make
         managed_org_guids = [org1.guid, org2.guid]
 
-        space1 = VCAP::CloudController::Space.make(organization: org1)
-        space2 = VCAP::CloudController::Space.make(organization: org1)
-        space3 = VCAP::CloudController::Space.make(organization: org2)
-        space4 = VCAP::CloudController::Space.make(organization: org2)
+        space1 = CloudController::Space.make(organization: org1)
+        space2 = CloudController::Space.make(organization: org1)
+        space3 = CloudController::Space.make(organization: org2)
+        space4 = CloudController::Space.make(organization: org2)
 
         managed_org_space_guids = [space1.guid, space2.guid, space3.guid, space4.guid]
         org_actions = %w(org.manager)
@@ -588,14 +588,14 @@ module VCAP::CloudController::Perm
       it 'returns all route guids for admins' do
         allow(roles).to receive(:admin?).and_return(true)
 
-        permissions = VCAP::CloudController::Perm::Permissions.new(perm_client: perm_client, user_id: user_id, issuer: issuer, roles: roles)
+        permissions = CloudController::Perm::Permissions.new(perm_client: perm_client, user_id: user_id, issuer: issuer, roles: roles)
 
-        org1 = VCAP::CloudController::Organization.make
-        space1 = VCAP::CloudController::Space.make(organization: org1)
-        route1 = VCAP::CloudController::Route.make(space: space1)
-        org2 = VCAP::CloudController::Organization.make
-        space2 = VCAP::CloudController::Space.make(organization: org2)
-        route2 = VCAP::CloudController::Route.make(space: space2)
+        org1 = CloudController::Organization.make
+        space1 = CloudController::Space.make(organization: org1)
+        route1 = CloudController::Route.make(space: space1)
+        org2 = CloudController::Organization.make
+        space2 = CloudController::Space.make(organization: org2)
+        route2 = CloudController::Route.make(space: space2)
 
         route_guids = permissions.readable_route_guids
 
@@ -608,14 +608,14 @@ module VCAP::CloudController::Perm
       it 'returns all route guids for read-only admins' do
         allow(roles).to receive(:admin_read_only?).and_return(true)
 
-        permissions = VCAP::CloudController::Perm::Permissions.new(perm_client: perm_client, user_id: user_id, issuer: issuer, roles: roles)
+        permissions = CloudController::Perm::Permissions.new(perm_client: perm_client, user_id: user_id, issuer: issuer, roles: roles)
 
-        org1 = VCAP::CloudController::Organization.make
-        space1 = VCAP::CloudController::Space.make(organization: org1)
-        route1 = VCAP::CloudController::Route.make(space: space1)
-        org2 = VCAP::CloudController::Organization.make
-        space2 = VCAP::CloudController::Space.make(organization: org2)
-        route2 = VCAP::CloudController::Route.make(space: space2)
+        org1 = CloudController::Organization.make
+        space1 = CloudController::Space.make(organization: org1)
+        route1 = CloudController::Route.make(space: space1)
+        org2 = CloudController::Organization.make
+        space2 = CloudController::Space.make(organization: org2)
+        route2 = CloudController::Route.make(space: space2)
 
         route_guids = permissions.readable_route_guids
 
@@ -628,14 +628,14 @@ module VCAP::CloudController::Perm
       it 'returns all route guids for global auditors' do
         allow(roles).to receive(:global_auditor?).and_return(true)
 
-        permissions = VCAP::CloudController::Perm::Permissions.new(perm_client: perm_client, user_id: user_id, issuer: issuer, roles: roles)
+        permissions = CloudController::Perm::Permissions.new(perm_client: perm_client, user_id: user_id, issuer: issuer, roles: roles)
 
-        org1 = VCAP::CloudController::Organization.make
-        space1 = VCAP::CloudController::Space.make(organization: org1)
-        route1 = VCAP::CloudController::Route.make(space: space1)
-        org2 = VCAP::CloudController::Organization.make
-        space2 = VCAP::CloudController::Space.make(organization: org2)
-        route2 = VCAP::CloudController::Route.make(space: space2)
+        org1 = CloudController::Organization.make
+        space1 = CloudController::Space.make(organization: org1)
+        route1 = CloudController::Route.make(space: space1)
+        org2 = CloudController::Organization.make
+        space2 = CloudController::Space.make(organization: org2)
+        route2 = CloudController::Route.make(space: space2)
 
         route_guids = permissions.readable_route_guids
 
@@ -646,16 +646,16 @@ module VCAP::CloudController::Perm
       end
 
       it 'returns the list of route guids that the user can read via org and space roles' do
-        org1 = VCAP::CloudController::Organization.make
-        org2 = VCAP::CloudController::Organization.make
+        org1 = CloudController::Organization.make
+        org2 = CloudController::Organization.make
         org_guids = [org1.guid, org2.guid]
 
-        space1 = VCAP::CloudController::Space.make(organization: org1)
-        route1 = VCAP::CloudController::Route.make(space: space1)
-        route2 = VCAP::CloudController::Route.make(space: space1)
+        space1 = CloudController::Space.make(organization: org1)
+        route1 = CloudController::Route.make(space: space1)
+        route2 = CloudController::Route.make(space: space1)
 
-        space2 = VCAP::CloudController::Space.make(organization: org2)
-        route3 = VCAP::CloudController::Route.make(space: space2)
+        space2 = CloudController::Space.make(organization: org2)
+        route3 = CloudController::Route.make(space: space2)
 
         org_route_guids = [route1.guid, route2.guid, route3.guid]
         org_actions = %w(org.manager org.auditor)
@@ -664,11 +664,11 @@ module VCAP::CloudController::Perm
           with(user_id: user_id, issuer: issuer, actions: org_actions).
           and_return(org_guids)
 
-        org3 = VCAP::CloudController::Organization.make
-        space3 = VCAP::CloudController::Space.make(organization: org3)
-        route4 = VCAP::CloudController::Route.make(space: space3)
-        space4 = VCAP::CloudController::Space.make(organization: org3)
-        route5 = VCAP::CloudController::Route.make(space: space4)
+        org3 = CloudController::Organization.make
+        space3 = CloudController::Space.make(organization: org3)
+        route4 = CloudController::Route.make(space: space3)
+        space4 = CloudController::Space.make(organization: org3)
+        route5 = CloudController::Route.make(space: space4)
 
         readable_space_guids = [space3.guid, space4.guid]
         readable_route_guids = [route4.guid, route5.guid]
@@ -749,14 +749,14 @@ module VCAP::CloudController::Perm
       it 'returns all app guids for admins' do
         allow(roles).to receive(:admin?).and_return(true)
 
-        permissions = VCAP::CloudController::Perm::Permissions.new(perm_client: perm_client, user_id: user_id, issuer: issuer, roles: roles)
+        permissions = CloudController::Perm::Permissions.new(perm_client: perm_client, user_id: user_id, issuer: issuer, roles: roles)
 
-        org1 = VCAP::CloudController::Organization.make
-        space1 = VCAP::CloudController::Space.make(organization: org1)
-        app1 = VCAP::CloudController::AppModel.make(space: space1)
-        org2 = VCAP::CloudController::Organization.make
-        space2 = VCAP::CloudController::Space.make(organization: org2)
-        app2 = VCAP::CloudController::AppModel.make(space: space2)
+        org1 = CloudController::Organization.make
+        space1 = CloudController::Space.make(organization: org1)
+        app1 = CloudController::AppModel.make(space: space1)
+        org2 = CloudController::Organization.make
+        space2 = CloudController::Space.make(organization: org2)
+        app2 = CloudController::AppModel.make(space: space2)
 
         app_guids = permissions.readable_app_guids
 
@@ -769,14 +769,14 @@ module VCAP::CloudController::Perm
       it 'returns all app guids for read-only admins' do
         allow(roles).to receive(:admin_read_only?).and_return(true)
 
-        permissions = VCAP::CloudController::Perm::Permissions.new(perm_client: perm_client, user_id: user_id, issuer: issuer, roles: roles)
+        permissions = CloudController::Perm::Permissions.new(perm_client: perm_client, user_id: user_id, issuer: issuer, roles: roles)
 
-        org1 = VCAP::CloudController::Organization.make
-        space1 = VCAP::CloudController::Space.make(organization: org1)
-        app1 = VCAP::CloudController::AppModel.make(space: space1)
-        org2 = VCAP::CloudController::Organization.make
-        space2 = VCAP::CloudController::Space.make(organization: org2)
-        app2 = VCAP::CloudController::AppModel.make(space: space2)
+        org1 = CloudController::Organization.make
+        space1 = CloudController::Space.make(organization: org1)
+        app1 = CloudController::AppModel.make(space: space1)
+        org2 = CloudController::Organization.make
+        space2 = CloudController::Space.make(organization: org2)
+        app2 = CloudController::AppModel.make(space: space2)
 
         app_guids = permissions.readable_app_guids
 
@@ -789,14 +789,14 @@ module VCAP::CloudController::Perm
       it 'returns all app guids for global auditors' do
         allow(roles).to receive(:global_auditor?).and_return(true)
 
-        permissions = VCAP::CloudController::Perm::Permissions.new(perm_client: perm_client, user_id: user_id, issuer: issuer, roles: roles)
+        permissions = CloudController::Perm::Permissions.new(perm_client: perm_client, user_id: user_id, issuer: issuer, roles: roles)
 
-        org1 = VCAP::CloudController::Organization.make
-        space1 = VCAP::CloudController::Space.make(organization: org1)
-        app1 = VCAP::CloudController::AppModel.make(space: space1)
-        org2 = VCAP::CloudController::Organization.make
-        space2 = VCAP::CloudController::Space.make(organization: org2)
-        app2 = VCAP::CloudController::AppModel.make(space: space2)
+        org1 = CloudController::Organization.make
+        space1 = CloudController::Space.make(organization: org1)
+        app1 = CloudController::AppModel.make(space: space1)
+        org2 = CloudController::Organization.make
+        space2 = CloudController::Space.make(organization: org2)
+        app2 = CloudController::AppModel.make(space: space2)
 
         app_guids = permissions.readable_app_guids
 
@@ -807,16 +807,16 @@ module VCAP::CloudController::Perm
       end
 
       it 'returns the list of app guids that the user can read via org and space roles' do
-        org1 = VCAP::CloudController::Organization.make
-        org2 = VCAP::CloudController::Organization.make
+        org1 = CloudController::Organization.make
+        org2 = CloudController::Organization.make
         org_guids = [org1.guid, org2.guid]
 
-        space1 = VCAP::CloudController::Space.make(organization: org1)
-        app1 = VCAP::CloudController::AppModel.make(space: space1)
-        app2 = VCAP::CloudController::AppModel.make(space: space1)
+        space1 = CloudController::Space.make(organization: org1)
+        app1 = CloudController::AppModel.make(space: space1)
+        app2 = CloudController::AppModel.make(space: space1)
 
-        space2 = VCAP::CloudController::Space.make(organization: org2)
-        app3 = VCAP::CloudController::AppModel.make(space: space2)
+        space2 = CloudController::Space.make(organization: org2)
+        app3 = CloudController::AppModel.make(space: space2)
 
         org_app_guids = [app1.guid, app2.guid, app3.guid]
         org_actions = %w(org.manager)
@@ -825,11 +825,11 @@ module VCAP::CloudController::Perm
           with(user_id: user_id, issuer: issuer, actions: org_actions).
           and_return(org_guids)
 
-        org3 = VCAP::CloudController::Organization.make
-        space3 = VCAP::CloudController::Space.make(organization: org3)
-        app4 = VCAP::CloudController::AppModel.make(space: space3)
-        space4 = VCAP::CloudController::Space.make(organization: org3)
-        app5 = VCAP::CloudController::AppModel.make(space: space4)
+        org3 = CloudController::Organization.make
+        space3 = CloudController::Space.make(organization: org3)
+        app4 = CloudController::AppModel.make(space: space3)
+        space4 = CloudController::Space.make(organization: org3)
+        app5 = CloudController::AppModel.make(space: space4)
 
         readable_space_guids = [space3.guid, space4.guid]
         readable_app_guids = [app4.guid, app5.guid]
@@ -855,16 +855,16 @@ module VCAP::CloudController::Perm
       it 'returns all route mapping guids for admins' do
         allow(roles).to receive(:admin?).and_return(true)
 
-        permissions = VCAP::CloudController::Perm::Permissions.new(perm_client: perm_client, user_id: user_id, issuer: issuer, roles: roles)
+        permissions = CloudController::Perm::Permissions.new(perm_client: perm_client, user_id: user_id, issuer: issuer, roles: roles)
 
-        org1 = VCAP::CloudController::Organization.make
-        space1 = VCAP::CloudController::Space.make(organization: org1)
-        app1 = VCAP::CloudController::AppModel.make(space: space1)
-        route_mapping1 = VCAP::CloudController::RouteMappingModel.make(app: app1)
-        org2 = VCAP::CloudController::Organization.make
-        space2 = VCAP::CloudController::Space.make(organization: org2)
-        app2 = VCAP::CloudController::AppModel.make(space: space2)
-        route_mapping2 = VCAP::CloudController::RouteMappingModel.make(app: app2)
+        org1 = CloudController::Organization.make
+        space1 = CloudController::Space.make(organization: org1)
+        app1 = CloudController::AppModel.make(space: space1)
+        route_mapping1 = CloudController::RouteMappingModel.make(app: app1)
+        org2 = CloudController::Organization.make
+        space2 = CloudController::Space.make(organization: org2)
+        app2 = CloudController::AppModel.make(space: space2)
+        route_mapping2 = CloudController::RouteMappingModel.make(app: app2)
 
         route_mapping_guids = permissions.readable_route_mapping_guids
 
@@ -877,16 +877,16 @@ module VCAP::CloudController::Perm
       it 'returns all route mapping guids for read-only admins' do
         allow(roles).to receive(:admin_read_only?).and_return(true)
 
-        permissions = VCAP::CloudController::Perm::Permissions.new(perm_client: perm_client, user_id: user_id, issuer: issuer, roles: roles)
+        permissions = CloudController::Perm::Permissions.new(perm_client: perm_client, user_id: user_id, issuer: issuer, roles: roles)
 
-        org1 = VCAP::CloudController::Organization.make
-        space1 = VCAP::CloudController::Space.make(organization: org1)
-        app1 = VCAP::CloudController::AppModel.make(space: space1)
-        route_mapping1 = VCAP::CloudController::RouteMappingModel.make(app: app1)
-        org2 = VCAP::CloudController::Organization.make
-        space2 = VCAP::CloudController::Space.make(organization: org2)
-        app2 = VCAP::CloudController::AppModel.make(space: space2)
-        route_mapping2 = VCAP::CloudController::RouteMappingModel.make(app: app2)
+        org1 = CloudController::Organization.make
+        space1 = CloudController::Space.make(organization: org1)
+        app1 = CloudController::AppModel.make(space: space1)
+        route_mapping1 = CloudController::RouteMappingModel.make(app: app1)
+        org2 = CloudController::Organization.make
+        space2 = CloudController::Space.make(organization: org2)
+        app2 = CloudController::AppModel.make(space: space2)
+        route_mapping2 = CloudController::RouteMappingModel.make(app: app2)
 
         route_mapping_guids = permissions.readable_route_mapping_guids
 
@@ -899,16 +899,16 @@ module VCAP::CloudController::Perm
       it 'returns all route mapping guids for global auditors' do
         allow(roles).to receive(:global_auditor?).and_return(true)
 
-        permissions = VCAP::CloudController::Perm::Permissions.new(perm_client: perm_client, user_id: user_id, issuer: issuer, roles: roles)
+        permissions = CloudController::Perm::Permissions.new(perm_client: perm_client, user_id: user_id, issuer: issuer, roles: roles)
 
-        org1 = VCAP::CloudController::Organization.make
-        space1 = VCAP::CloudController::Space.make(organization: org1)
-        app1 = VCAP::CloudController::AppModel.make(space: space1)
-        route_mapping1 = VCAP::CloudController::RouteMappingModel.make(app: app1)
-        org2 = VCAP::CloudController::Organization.make
-        space2 = VCAP::CloudController::Space.make(organization: org2)
-        app2 = VCAP::CloudController::AppModel.make(space: space2)
-        route_mapping2 = VCAP::CloudController::RouteMappingModel.make(app: app2)
+        org1 = CloudController::Organization.make
+        space1 = CloudController::Space.make(organization: org1)
+        app1 = CloudController::AppModel.make(space: space1)
+        route_mapping1 = CloudController::RouteMappingModel.make(app: app1)
+        org2 = CloudController::Organization.make
+        space2 = CloudController::Space.make(organization: org2)
+        app2 = CloudController::AppModel.make(space: space2)
+        route_mapping2 = CloudController::RouteMappingModel.make(app: app2)
 
         route_mapping_guids = permissions.readable_route_mapping_guids
 
@@ -919,19 +919,19 @@ module VCAP::CloudController::Perm
       end
 
       it 'returns the list of route mapping guids that the user can read via org and space roles' do
-        org1 = VCAP::CloudController::Organization.make
-        org2 = VCAP::CloudController::Organization.make
+        org1 = CloudController::Organization.make
+        org2 = CloudController::Organization.make
         org_guids = [org1.guid, org2.guid]
 
-        space1 = VCAP::CloudController::Space.make(organization: org1)
-        app1 = VCAP::CloudController::AppModel.make(space: space1)
-        route_mapping1 = VCAP::CloudController::RouteMappingModel.make(app: app1)
-        app2 = VCAP::CloudController::AppModel.make(space: space1)
-        route_mapping2 = VCAP::CloudController::RouteMappingModel.make(app: app2)
+        space1 = CloudController::Space.make(organization: org1)
+        app1 = CloudController::AppModel.make(space: space1)
+        route_mapping1 = CloudController::RouteMappingModel.make(app: app1)
+        app2 = CloudController::AppModel.make(space: space1)
+        route_mapping2 = CloudController::RouteMappingModel.make(app: app2)
 
-        space2 = VCAP::CloudController::Space.make(organization: org2)
-        app3 = VCAP::CloudController::AppModel.make(space: space2)
-        route_mapping3 = VCAP::CloudController::RouteMappingModel.make(app: app3)
+        space2 = CloudController::Space.make(organization: org2)
+        app3 = CloudController::AppModel.make(space: space2)
+        route_mapping3 = CloudController::RouteMappingModel.make(app: app3)
 
         org_route_mapping_guids = [route_mapping1.guid, route_mapping2.guid, route_mapping3.guid]
         org_actions = %w(org.manager)
@@ -940,13 +940,13 @@ module VCAP::CloudController::Perm
           with(user_id: user_id, issuer: issuer, actions: org_actions).
           and_return(org_guids)
 
-        org3 = VCAP::CloudController::Organization.make
-        space3 = VCAP::CloudController::Space.make(organization: org3)
-        app4 = VCAP::CloudController::AppModel.make(space: space3)
-        route_mapping4 = VCAP::CloudController::RouteMappingModel.make(app: app4)
-        space4 = VCAP::CloudController::Space.make(organization: org3)
-        app5 = VCAP::CloudController::AppModel.make(space: space4)
-        route_mapping5 = VCAP::CloudController::RouteMappingModel.make(app: app5)
+        org3 = CloudController::Organization.make
+        space3 = CloudController::Space.make(organization: org3)
+        app4 = CloudController::AppModel.make(space: space3)
+        route_mapping4 = CloudController::RouteMappingModel.make(app: app4)
+        space4 = CloudController::Space.make(organization: org3)
+        app5 = CloudController::AppModel.make(space: space4)
+        route_mapping5 = CloudController::RouteMappingModel.make(app: app5)
 
         readable_space_guids = [space3.guid, space4.guid]
         readable_route_mapping_guids = [route_mapping4.guid, route_mapping5.guid]

@@ -1,4 +1,4 @@
-module VCAP::CloudController
+module CloudController
   class PrivateDomainsController < RestController::ModelController
     define_attributes do
       attribute :name, String

@@ -1,9 +1,9 @@
 require 'spec_helper'
 
-module VCAP::CloudController
+module CloudController
   # port of the legacy cc info spec, minus legacy token support. i.e. this is jwt
   # tokens only.
-  RSpec.describe VCAP::CloudController::LegacyInfo do
+  RSpec.describe CloudController::LegacyInfo do
     it 'is deprecated' do
       get '/info'
       expect(last_response).to be_a_deprecated_response

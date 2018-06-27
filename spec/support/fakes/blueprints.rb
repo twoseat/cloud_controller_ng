@@ -29,7 +29,7 @@ Sham.define do
   stack               { |index| "cflinuxfs-#{index}" }
 end
 
-module VCAP::CloudController
+module CloudController
   IsolationSegmentModel.blueprint do
     guid { Sham.guid }
     name { Sham.name }
@@ -53,26 +53,26 @@ module VCAP::CloudController
   BuildModel.blueprint do
     guid     { Sham.guid }
     app      { AppModel.make }
-    state    { VCAP::CloudController::BuildModel::STAGED_STATE }
+    state    { CloudController::BuildModel::STAGED_STATE }
   end
 
   BuildModel.blueprint(:docker) do
     guid     { Sham.guid }
-    state    { VCAP::CloudController::DropletModel::STAGING_STATE }
+    state    { CloudController::DropletModel::STAGING_STATE }
     app { AppModel.make(droplet_guid: guid) }
     buildpack_lifecycle_data { nil.tap { |_| object.save } }
   end
 
   PackageModel.blueprint do
     guid     { Sham.guid }
-    state    { VCAP::CloudController::PackageModel::CREATED_STATE }
+    state    { CloudController::PackageModel::CREATED_STATE }
     type     { 'bits' }
     app { AppModel.make }
   end
 
   PackageModel.blueprint(:docker) do
     guid     { Sham.guid }
-    state    { VCAP::CloudController::PackageModel::READY_STATE }
+    state    { CloudController::PackageModel::READY_STATE }
     type     { 'docker' }
     app { AppModel.make }
     docker_image { "org/image-#{Sham.guid}:latest" }
@@ -80,7 +80,7 @@ module VCAP::CloudController
 
   DropletModel.blueprint do
     guid     { Sham.guid }
-    state    { VCAP::CloudController::DropletModel::STAGED_STATE }
+    state    { CloudController::DropletModel::STAGED_STATE }
     app { AppModel.make(droplet_guid: guid) }
     droplet_hash { Sham.guid }
     sha256_checksum { Sham.guid }
@@ -91,13 +91,13 @@ module VCAP::CloudController
     guid { Sham.guid }
     droplet_hash { nil }
     sha256_checksum { nil }
-    state { VCAP::CloudController::DropletModel::STAGING_STATE }
+    state { CloudController::DropletModel::STAGING_STATE }
     app { AppModel.make(droplet_guid: guid) }
     buildpack_lifecycle_data { nil.tap { |_| object.save } }
   end
 
   DeploymentModel.blueprint do
-    state { VCAP::CloudController::DeploymentModel::DEPLOYING_STATE }
+    state { CloudController::DeploymentModel::DEPLOYING_STATE }
     app { AppModel.make }
     droplet { DropletModel.make(app: app) }
     webish_process { ProcessModel.make(app: app, type: "web-deployment-#{Sham.guid}") }
@@ -109,7 +109,7 @@ module VCAP::CloudController
     name { Sham.name }
     droplet { DropletModel.make(app: app) }
     command { 'bundle exec rake' }
-    state { VCAP::CloudController::TaskModel::RUNNING_STATE }
+    state { CloudController::TaskModel::RUNNING_STATE }
     memory_in_mb { 256 }
     sequence_id { Sham.sequence_id }
   end
@@ -120,7 +120,7 @@ module VCAP::CloudController
     name { Sham.name }
     droplet { DropletModel.make(app: app) }
     command { 'bundle exec rake' }
-    state { VCAP::CloudController::TaskModel::RUNNING_STATE }
+    state { CloudController::TaskModel::RUNNING_STATE }
     memory_in_mb { 256 }
     sequence_id { Sham.sequence_id }
   end
@@ -131,7 +131,7 @@ module VCAP::CloudController
     name { Sham.name }
     droplet { DropletModel.make(app: app) }
     command { 'bundle exec rake' }
-    state { VCAP::CloudController::TaskModel::CANCELING_STATE }
+    state { CloudController::TaskModel::CANCELING_STATE }
     memory_in_mb { 256 }
     sequence_id { Sham.sequence_id }
   end
@@ -142,7 +142,7 @@ module VCAP::CloudController
     name { Sham.name }
     droplet { DropletModel.make(app: app) }
     command { 'bundle exec rake' }
-    state { VCAP::CloudController::TaskModel::SUCCEEDED_STATE }
+    state { CloudController::TaskModel::SUCCEEDED_STATE }
     memory_in_mb { 256 }
     sequence_id { Sham.sequence_id }
   end
@@ -153,7 +153,7 @@ module VCAP::CloudController
     name { Sham.name }
     droplet { DropletModel.make(app: app) }
     command { 'bundle exec rake' }
-    state { VCAP::CloudController::TaskModel::PENDING_STATE }
+    state { CloudController::TaskModel::PENDING_STATE }
     memory_in_mb { 256 }
     sequence_id { Sham.sequence_id }
   end

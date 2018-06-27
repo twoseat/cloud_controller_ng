@@ -1,4 +1,4 @@
-module VCAP::CloudController
+module CloudController
   module Repositories
     class ServiceUsageEventRepository
       DELETED_EVENT_STATE = 'DELETED'.freeze

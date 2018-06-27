@@ -1,4 +1,4 @@
-module VCAP::CloudController
+module CloudController
   class RouteMappingCreate
     class InvalidRouteMapping < StandardError
     end
@@ -19,7 +19,7 @@ module VCAP::CloudController
           app: process.app,
           route: route,
           process_type: process.type,
-          app_port: VCAP::CloudController::ProcessModel::DEFAULT_HTTP_PORT
+          app_port: CloudController::ProcessModel::DEFAULT_HTTP_PORT
         )
 
         route_handler = ProcessRouteHandler.new(process)

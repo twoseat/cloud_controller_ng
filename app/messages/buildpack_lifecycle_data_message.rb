@@ -1,4 +1,4 @@
-module VCAP::CloudController
+module CloudController
   class BuildpackLifecycleDataMessage < BaseMessage
     register_allowed_keys [:buildpacks, :stack]
 

@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-module VCAP::CloudController
+module CloudController
   module Jobs::Runtime
     RSpec.describe ExpiredResourceCleanup, job_context: :worker do
       subject(:job) { ExpiredResourceCleanup.new }

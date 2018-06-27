@@ -8,7 +8,7 @@ require 'cloud_controller/diego/ssh_key'
 require 'credhub/config_helpers'
 require 'models/helpers/health_check_types'
 
-module VCAP::CloudController
+module CloudController
   module Diego
     class AppRecipeBuilder
       include ::Diego::ActionBuilder

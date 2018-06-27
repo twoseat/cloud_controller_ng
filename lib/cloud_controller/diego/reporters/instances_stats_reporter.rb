@@ -1,7 +1,7 @@
 require 'traffic_controller/client'
 require 'cloud_controller/diego/reporters/reporter_mixins'
 
-module VCAP::CloudController
+module CloudController
   module Diego
     class InstancesStatsReporter
       include ReporterMixins
@@ -19,7 +19,7 @@ module VCAP::CloudController
         logger.debug('stats_for_app.fetching_container_metrics', process_guid: process.guid)
         envelopes = @traffic_controller_client.container_metrics(
           app_guid: process.guid,
-          auth_token: VCAP::CloudController::SecurityContext.auth_token,
+          auth_token: CloudController::SecurityContext.auth_token,
         )
         actual_lrps = bbs_instances_client.lrp_instances(process)
         desired_lrp = bbs_instances_client.desired_lrp_instance(process)

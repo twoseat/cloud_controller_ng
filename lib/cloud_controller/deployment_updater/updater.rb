@@ -1,4 +1,4 @@
-module VCAP::CloudController
+module CloudController
   module DeploymentUpdater
     class Updater
       def self.update
@@ -35,7 +35,7 @@ module VCAP::CloudController
 
       def self.ready_to_scale?(deployment, logger)
         instances = instance_reporters.all_instances_for_app(deployment.webish_process)
-        instances.all? { |_, val| val[:state] == VCAP::CloudController::Diego::LRP_RUNNING }
+        instances.all? { |_, val| val[:state] == CloudController::Diego::LRP_RUNNING }
       rescue CloudController::Errors::ApiError # the instances_reporter re-raises InstancesUnavailable as ApiError
         logger.info("skipping-deployment-update-for-#{deployment.guid}")
         return false

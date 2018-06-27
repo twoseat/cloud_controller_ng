@@ -1,7 +1,7 @@
 require 'spec_helper'
 require 'actions/package_update'
 
-module VCAP::CloudController
+module CloudController
   RSpec.describe PackageUpdate do
     subject(:package_update) { PackageUpdate.new }
 

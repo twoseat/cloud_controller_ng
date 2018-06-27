@@ -1,8 +1,8 @@
 require 'spec_helper'
 
 RSpec.describe 'ServiceKeys' do
-  let(:user) { VCAP::CloudController::User.make }
-  let(:space) { VCAP::CloudController::Space.make }
+  let(:user) { CloudController::User.make }
+  let(:space) { CloudController::Space.make }
 
   before do
     space.organization.add_user(user)
@@ -10,9 +10,9 @@ RSpec.describe 'ServiceKeys' do
   end
 
   describe 'GET /v2/service_keys' do
-    let(:service_instance) { VCAP::CloudController::ManagedServiceInstance.make(space: space) }
-    let!(:service_key1) { VCAP::CloudController::ServiceKey.make(service_instance: service_instance, credentials: { secret: 'key' }) }
-    let!(:service_key2) { VCAP::CloudController::ServiceKey.make(service_instance: service_instance, credentials: { secret: 'key' }) }
+    let(:service_instance) { CloudController::ManagedServiceInstance.make(space: space) }
+    let!(:service_key1) { CloudController::ServiceKey.make(service_instance: service_instance, credentials: { secret: 'key' }) }
+    let!(:service_key2) { CloudController::ServiceKey.make(service_instance: service_instance, credentials: { secret: 'key' }) }
 
     it 'lists service keys' do
       get '/v2/service_keys', nil, headers_for(user)
@@ -63,8 +63,8 @@ RSpec.describe 'ServiceKeys' do
   end
 
   describe 'GET /v2/service_keys/:guid' do
-    let(:service_instance) { VCAP::CloudController::ManagedServiceInstance.make(space: space) }
-    let!(:service_key1) { VCAP::CloudController::ServiceKey.make(service_instance: service_instance, credentials: { secret: 'key' }, name: 'key') }
+    let(:service_instance) { CloudController::ManagedServiceInstance.make(space: space) }
+    let!(:service_key1) { CloudController::ServiceKey.make(service_instance: service_instance, credentials: { secret: 'key' }, name: 'key') }
 
     it 'displays the service key' do
       get "/v2/service_keys/#{service_key1.guid}", nil, headers_for(user)
@@ -92,10 +92,10 @@ RSpec.describe 'ServiceKeys' do
   end
 
   describe 'GET /v2/service_keys/:guid/parameters' do
-    let(:service) { VCAP::CloudController::Service.make(bindings_retrievable: true) }
-    let(:service_plan) { VCAP::CloudController::ServicePlan.make(service: service) }
-    let(:service_instance) { VCAP::CloudController::ManagedServiceInstance.make(space: space, service_plan: service_plan) }
-    let!(:service_key) { VCAP::CloudController::ServiceKey.make(service_instance: service_instance) }
+    let(:service) { CloudController::Service.make(bindings_retrievable: true) }
+    let(:service_plan) { CloudController::ServicePlan.make(service: service) }
+    let(:service_instance) { CloudController::ManagedServiceInstance.make(space: space, service_plan: service_plan) }
+    let!(:service_key) { CloudController::ServiceKey.make(service_instance: service_instance) }
 
     before do
       allow(VCAP::Services::ServiceBrokers::V2::Client).to receive(:new) do |*args, **kwargs, &block|

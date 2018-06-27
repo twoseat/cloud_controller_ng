@@ -1,7 +1,7 @@
 require 'spec_helper'
 require 'actions/services/service_binding_read'
 
-module VCAP::CloudController
+module CloudController
   RSpec.describe ServiceBindingRead do
     describe '#fetch_parameters' do
       context 'managed service instance' do

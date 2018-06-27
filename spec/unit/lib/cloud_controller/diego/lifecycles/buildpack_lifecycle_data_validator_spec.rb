@@ -1,7 +1,7 @@
 require 'spec_helper'
 require 'cloud_controller/diego/lifecycles/buildpack_lifecycle_data_validator'
 
-module VCAP::CloudController
+module CloudController
   RSpec.describe BuildpackLifecycleDataValidator do
     subject(:validator) { BuildpackLifecycleDataValidator.new({ stack: stack, buildpack_infos: buildpack_infos }) }
     let(:stack) { Stack.make }

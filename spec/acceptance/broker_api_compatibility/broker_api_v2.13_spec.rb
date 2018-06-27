@@ -2,14 +2,14 @@ require 'spec_helper'
 
 RSpec.describe 'Service Broker API integration' do
   describe 'v2.13' do
-    include VCAP::CloudController::BrokerApiHelper
+    include CloudController::BrokerApiHelper
 
     let(:catalog) { default_catalog }
 
     before do
       setup_cc
       setup_broker(catalog)
-      @broker = VCAP::CloudController::ServiceBroker.find guid: @broker_guid
+      @broker = CloudController::ServiceBroker.find guid: @broker_guid
     end
 
     describe 'configuration parameter schemas' do
@@ -228,10 +228,10 @@ RSpec.describe 'Service Broker API integration' do
       let(:catalog) { default_catalog(plan_updateable: true) }
 
       context 'service broker registration' do
-        let(:user) { VCAP::CloudController::User.make }
+        let(:user) { CloudController::User.make }
         before do
           setup_broker_with_user(user)
-          @broker = VCAP::CloudController::ServiceBroker.find guid: @broker_guid
+          @broker = CloudController::ServiceBroker.find guid: @broker_guid
         end
 
         it 'receives the user_id in the X-Broker-API-Originating-Identity header' do
@@ -246,7 +246,7 @@ RSpec.describe 'Service Broker API integration' do
       end
 
       context 'service provision request' do
-        let(:user) { VCAP::CloudController::User.make }
+        let(:user) { CloudController::User.make }
         before do
           provision_service(user: user)
         end
@@ -263,7 +263,7 @@ RSpec.describe 'Service Broker API integration' do
       end
 
       context 'service deprovision request' do
-        let(:user) { VCAP::CloudController::User.make }
+        let(:user) { CloudController::User.make }
 
         before do
           provision_service(user: user)
@@ -282,7 +282,7 @@ RSpec.describe 'Service Broker API integration' do
       end
 
       context 'service update request' do
-        let(:user) { VCAP::CloudController::User.make }
+        let(:user) { CloudController::User.make }
         before do
           provision_service(user: user)
           update_service_instance(200, user: user)
@@ -300,7 +300,7 @@ RSpec.describe 'Service Broker API integration' do
       end
 
       context 'service binding request' do
-        let(:user) { VCAP::CloudController::User.make }
+        let(:user) { CloudController::User.make }
         before do
           provision_service
           create_app
@@ -319,7 +319,7 @@ RSpec.describe 'Service Broker API integration' do
       end
 
       context 'service unbind request' do
-        let(:user) { VCAP::CloudController::User.make }
+        let(:user) { CloudController::User.make }
         let(:async) { false }
 
         before do
@@ -327,7 +327,7 @@ RSpec.describe 'Service Broker API integration' do
           create_app
           bind_service
           unbind_service(user: user, async: async)
-          VCAP::CloudController::SecurityContext.clear
+          CloudController::SecurityContext.clear
           Delayed::Worker.new.work_off
         end
 
@@ -364,7 +364,7 @@ RSpec.describe 'Service Broker API integration' do
       end
 
       context 'create service key request' do
-        let(:user) { VCAP::CloudController::User.make }
+        let(:user) { CloudController::User.make }
         before do
           provision_service
           create_service_key(user: user)
@@ -382,7 +382,7 @@ RSpec.describe 'Service Broker API integration' do
       end
 
       context 'delete service key request' do
-        let(:user) { VCAP::CloudController::User.make }
+        let(:user) { CloudController::User.make }
         before do
           provision_service
           create_service_key
@@ -402,8 +402,8 @@ RSpec.describe 'Service Broker API integration' do
 
       context 'create route binding' do
         let(:catalog) { default_catalog(plan_updateable: true, requires: ['route_forwarding']) }
-        let(:user) { VCAP::CloudController::User.make }
-        let(:route) { VCAP::CloudController::Route.make(space: @space) }
+        let(:user) { CloudController::User.make }
+        let(:route) { CloudController::Route.make(space: @space) }
 
         before do
           provision_service
@@ -423,8 +423,8 @@ RSpec.describe 'Service Broker API integration' do
 
       context 'delete route binding' do
         let(:catalog) { default_catalog(plan_updateable: true, requires: ['route_forwarding']) }
-        let(:user) { VCAP::CloudController::User.make }
-        let(:route) { VCAP::CloudController::Route.make(space: @space) }
+        let(:user) { CloudController::User.make }
+        let(:route) { CloudController::Route.make(space: @space) }
 
         before do
           provision_service
@@ -444,9 +444,9 @@ RSpec.describe 'Service Broker API integration' do
       end
 
       context 'when multiple users operate on a service instance' do
-        let(:user_a) { VCAP::CloudController::User.make }
-        let(:user_b) { VCAP::CloudController::User.make }
-        let(:user_c) { VCAP::CloudController::User.make }
+        let(:user_a) { CloudController::User.make }
+        let(:user_b) { CloudController::User.make }
+        let(:user_c) { CloudController::User.make }
 
         before do
           provision_service(user: user_a)
@@ -536,7 +536,7 @@ RSpec.describe 'Service Broker API integration' do
 
       context 'for bind route service' do
         let(:catalog) { default_catalog(requires: ['route_forwarding']) }
-        let(:route) { VCAP::CloudController::Route.make(space: @space) }
+        let(:route) { CloudController::Route.make(space: @space) }
         before do
           provision_service
           create_route_binding(route)

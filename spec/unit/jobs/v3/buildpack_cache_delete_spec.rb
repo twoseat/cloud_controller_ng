@@ -1,7 +1,7 @@
 require 'spec_helper'
 require 'jobs/v3/buildpack_cache_delete'
 
-module VCAP::CloudController
+module CloudController
   module Jobs::V3
     RSpec.describe BuildpackCacheDelete, job_context: :worker do
       let(:app_guid) { 'some-guid' }

@@ -1,4 +1,4 @@
-module VCAP::CloudController
+module CloudController
   module UaaOriginValidator
     def validate_origin_for_username!(origin, username)
       origins_for_username = @uaa_client.origins_for_username(username)

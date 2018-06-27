@@ -1,11 +1,11 @@
 require 'spec_helper'
 
-module VCAP::CloudController
+module CloudController
   RSpec.describe ServiceInstance, type: :model do
     let(:service_instance_attrs)  do
       {
         name: 'my favorite service',
-        space: VCAP::CloudController::Space.make
+        space: CloudController::Space.make
       }
     end
 
@@ -73,7 +73,7 @@ module VCAP::CloudController
       end
 
       describe 'when one service instance is renamed to an existing service instance name' do
-        let(:space) { VCAP::CloudController::Space.make }
+        let(:space) { CloudController::Space.make }
         let(:service_instance_attrs_foo) { { name: 'foo', space: space } }
         let(:service_instance_attrs_bar) { { name: 'bar', space: space } }
 
@@ -157,7 +157,7 @@ module VCAP::CloudController
         it 'returns a UserProvidedServiceInstance' do
           service_instance_attrs[:is_gateway_service] = false
           service_instance = ServiceInstance.create(service_instance_attrs)
-          expect(ServiceInstance.find(guid: service_instance.guid).class).to eq(VCAP::CloudController::UserProvidedServiceInstance)
+          expect(ServiceInstance.find(guid: service_instance.guid).class).to eq(CloudController::UserProvidedServiceInstance)
         end
       end
 
@@ -165,7 +165,7 @@ module VCAP::CloudController
         it 'returns a ManagedServiceInstance' do
           service_instance_attrs[:is_gateway_service] = true
           service_instance = ServiceInstance.create(service_instance_attrs)
-          expect(ServiceInstance.find(guid: service_instance.guid).class).to eq(VCAP::CloudController::ManagedServiceInstance)
+          expect(ServiceInstance.find(guid: service_instance.guid).class).to eq(CloudController::ManagedServiceInstance)
         end
       end
     end
@@ -259,22 +259,22 @@ module VCAP::CloudController
 
     describe '#type' do
       it 'returns the model name for API consumption' do
-        managed_instance = VCAP::CloudController::ManagedServiceInstance.new
+        managed_instance = CloudController::ManagedServiceInstance.new
         expect(managed_instance.type).to eq 'managed_service_instance'
 
-        user_provided_instance = VCAP::CloudController::UserProvidedServiceInstance.new
+        user_provided_instance = CloudController::UserProvidedServiceInstance.new
         expect(user_provided_instance.type).to eq 'user_provided_service_instance'
       end
     end
 
     describe '#user_provided_instance?' do
       it 'returns true for ManagedServiceInstance instances' do
-        managed_instance = VCAP::CloudController::ManagedServiceInstance.new
+        managed_instance = CloudController::ManagedServiceInstance.new
         expect(managed_instance.user_provided_instance?).to eq(false)
       end
 
       it 'returns false for ManagedServiceInstance instances' do
-        user_provided_instance = VCAP::CloudController::UserProvidedServiceInstance.new
+        user_provided_instance = CloudController::UserProvidedServiceInstance.new
         expect(user_provided_instance.user_provided_instance?).to eq(true)
       end
     end
@@ -297,11 +297,11 @@ module VCAP::CloudController
 
     describe '#as_summary_json' do
       it 'contains name, guid, and binding count' do
-        instance = VCAP::CloudController::ServiceInstance.make(
+        instance = CloudController::ServiceInstance.make(
           guid: 'ABCDEFG12',
           name: 'Random-Number-Service',
         )
-        VCAP::CloudController::ServiceBinding.make(service_instance: instance)
+        CloudController::ServiceBinding.make(service_instance: instance)
 
         expect(instance.as_summary_json).to eq({
           'guid' => 'ABCDEFG12',
@@ -312,8 +312,8 @@ module VCAP::CloudController
     end
 
     describe '#in_suspended_org?' do
-      let(:space) { VCAP::CloudController::Space.make }
-      subject(:service_instance) { VCAP::CloudController::ServiceInstance.new(space: space) }
+      let(:space) { CloudController::Space.make }
+      subject(:service_instance) { CloudController::ServiceInstance.new(space: space) }
 
       context 'when in a suspended organization' do
         before { allow(space).to receive(:in_suspended_org?).and_return(true) }
@@ -345,22 +345,22 @@ module VCAP::CloudController
       let(:user)      { make_user_for_space(service_instance.space) }
 
       it 'does not redact creds for an admin' do
-        allow(VCAP::CloudController::SecurityContext).to receive(:admin?).and_return(true)
+        allow(CloudController::SecurityContext).to receive(:admin?).and_return(true)
         expect(service_instance.to_hash['credentials']).not_to eq({ redacted_message: '[PRIVATE DATA HIDDEN]' })
       end
 
       it 'does not redact creds for a space developer' do
-        allow(VCAP::CloudController::SecurityContext).to receive(:current_user).and_return(developer)
+        allow(CloudController::SecurityContext).to receive(:current_user).and_return(developer)
         expect(service_instance.to_hash['credentials']).not_to eq({ redacted_message: '[PRIVATE DATA HIDDEN]' })
       end
 
       it 'redacts creds for a space auditor' do
-        allow(VCAP::CloudController::SecurityContext).to receive(:current_user).and_return(auditor)
+        allow(CloudController::SecurityContext).to receive(:current_user).and_return(auditor)
         expect(service_instance.to_hash(opts)['credentials']).to eq({ redacted_message: '[PRIVATE DATA HIDDEN]' })
       end
 
       it 'redacts creds for a space user' do
-        allow(VCAP::CloudController::SecurityContext).to receive(:current_user).and_return(user)
+        allow(CloudController::SecurityContext).to receive(:current_user).and_return(user)
         expect(service_instance.to_hash(opts)['credentials']).to eq({ redacted_message: '[PRIVATE DATA HIDDEN]' })
       end
     end
@@ -408,7 +408,7 @@ module VCAP::CloudController
       end
 
       context 'when the service instance is shared' do
-        let(:target_space)     { VCAP::CloudController::Space.make }
+        let(:target_space)     { CloudController::Space.make }
         let(:target_space_dev) { make_developer_for_space(target_space) }
         let(:target_org_user) { make_user_for_org(target_space.organization) }
         let(:target_space_auditor) { make_auditor_for_space(target_space) }

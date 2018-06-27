@@ -1,6 +1,6 @@
 require 'presenters/v3/base_presenter'
 
-module VCAP::CloudController
+module CloudController
   module Presenters
     module V3
       class RouteMappingPresenter < BasePresenter
@@ -21,7 +21,7 @@ module VCAP::CloudController
 
         def build_links
           process_link = nil
-          url_builder = VCAP::CloudController::Presenters::ApiUrlBuilder.new
+          url_builder = CloudController::Presenters::ApiUrlBuilder.new
 
           unless route_mapping.process_type.blank?
             process_link = { href: url_builder.build_url(path: "/v3/apps/#{route_mapping.app.guid}/processes/#{route_mapping.process_type}") }

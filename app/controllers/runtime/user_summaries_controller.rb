@@ -1,6 +1,6 @@
 require 'presenters/api/user_summary_presenter'
 
-module VCAP::CloudController
+module CloudController
   class UserSummariesController < RestController::ModelController
     path_base 'users'
     model_class_name :User

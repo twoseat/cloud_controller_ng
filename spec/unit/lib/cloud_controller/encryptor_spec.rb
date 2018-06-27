@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-module VCAP::CloudController
+module CloudController
   RSpec.describe Encryptor do
     let(:salt) { Encryptor.generate_salt }
 
@@ -29,7 +29,7 @@ module VCAP::CloudController
       end
 
       it 'depends on the db_encryption_key from the CC config file' do
-        allow(VCAP::CloudController::Encryptor).to receive(:db_encryption_key).and_return('a-totally-different-key')
+        allow(CloudController::Encryptor).to receive(:db_encryption_key).and_return('a-totally-different-key')
         expect(Encryptor.encrypt(input, salt)).not_to eql(encrypted_string)
       end
 
@@ -177,7 +177,7 @@ module VCAP::CloudController
   RSpec.describe Encryptor::FieldEncryptor do
     let(:base_class) do
       Class.new do
-        include VCAP::CloudController::Encryptor::FieldEncryptor
+        include CloudController::Encryptor::FieldEncryptor
         def self.columns
           raise '<dynamic class>.columns: not implemented'
         end

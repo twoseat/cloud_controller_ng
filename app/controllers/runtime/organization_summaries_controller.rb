@@ -1,4 +1,4 @@
-module VCAP::CloudController
+module CloudController
   class OrganizationSummariesController < RestController::ModelController
     path_base 'organizations'
     model_class_name :Organization

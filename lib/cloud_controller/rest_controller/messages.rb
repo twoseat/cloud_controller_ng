@@ -1,4 +1,4 @@
-module VCAP::CloudController::RestController
+module CloudController::RestController
   # Auto generation of Message classes based on the attributes
   # exposed by a rest endpoint.
   module Messages

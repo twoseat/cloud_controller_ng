@@ -1,7 +1,7 @@
 require 'diego/client'
 require 'diego/actual_lrp_group_resolver'
 
-module VCAP::CloudController
+module CloudController
   module Diego
     class BbsInstancesClient
       def initialize(client)

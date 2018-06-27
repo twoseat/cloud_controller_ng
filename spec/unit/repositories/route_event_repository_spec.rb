@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-module VCAP::CloudController
+module CloudController
   module Repositories
     RSpec.describe RouteEventRepository do
       let(:user) { User.make }

@@ -8,11 +8,11 @@ require 'security_context_setter'
 require 'rate_limiter'
 require 'new_relic_custom_attributes'
 
-module VCAP::CloudController
+module CloudController
   class RackAppBuilder
     def build(config, request_metrics)
-      token_decoder = VCAP::CloudController::UaaTokenDecoder.new(config.get(:uaa))
-      configurer = VCAP::CloudController::Security::SecurityContextConfigurer.new(token_decoder)
+      token_decoder = CloudController::UaaTokenDecoder.new(config.get(:uaa))
+      configurer = CloudController::Security::SecurityContextConfigurer.new(token_decoder)
 
       logger = access_log(config)
 

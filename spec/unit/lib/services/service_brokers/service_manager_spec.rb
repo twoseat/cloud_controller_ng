@@ -5,14 +5,14 @@ require 'cloud_controller/security_context'
 
 module VCAP::Services::ServiceBrokers
   RSpec.describe ServiceManager do
-    let(:broker) { VCAP::CloudController::ServiceBroker.make }
+    let(:broker) { CloudController::ServiceBroker.make }
 
     let(:service_id) { Sham.guid }
     let(:service_name) { Sham.name }
     let(:service_description) { Sham.description }
     let(:service_event_repository) do
-      VCAP::CloudController::Repositories::ServiceEventRepository.new(
-        VCAP::CloudController::UserAuditInfo.from_context(VCAP::CloudController::SecurityContext)
+      CloudController::Repositories::ServiceEventRepository.new(
+        CloudController::UserAuditInfo.from_context(CloudController::SecurityContext)
       )
     end
 
@@ -94,13 +94,13 @@ module VCAP::Services::ServiceBrokers
         'email' => user_email,
       }
     end
-    let(:user) { VCAP::CloudController::User.make }
+    let(:user) { CloudController::User.make }
 
     before do
-      VCAP::CloudController::SecurityContext.set(user, token)
+      CloudController::SecurityContext.set(user, token)
     end
     after do
-      VCAP::CloudController::SecurityContext.clear
+      CloudController::SecurityContext.clear
     end
 
     describe 'initializing' do
@@ -114,9 +114,9 @@ module VCAP::Services::ServiceBrokers
       it 'creates services from the catalog' do
         expect {
           service_manager.sync_services_and_plans(catalog)
-        }.to change(VCAP::CloudController::Service, :count).by(1)
+        }.to change(CloudController::Service, :count).by(1)
 
-        service = VCAP::CloudController::Service.last
+        service = CloudController::Service.last
         expect(service.service_broker).to eq(broker)
         expect(service.label).to eq(service_name)
         expect(service.description).to eq(service_description)
@@ -132,8 +132,8 @@ module VCAP::Services::ServiceBrokers
       it 'records an audit event for each service and plan' do
         service_manager.sync_services_and_plans(catalog)
 
-        event = VCAP::CloudController::Event.first(type: 'audit.service.create')
-        service = VCAP::CloudController::Service.last
+        event = CloudController::Event.first(type: 'audit.service.create')
+        service = CloudController::Service.last
         expect(event.type).to eq('audit.service.create')
         expect(event.actor_type).to eq('service_broker')
         expect(event.actor).to eq(broker.guid)
@@ -165,8 +165,8 @@ module VCAP::Services::ServiceBrokers
           'instances_retrievable' => service.instances_retrievable,
         })
 
-        event = VCAP::CloudController::Event.first(type: 'audit.service_plan.create')
-        service_plan = VCAP::CloudController::ServicePlan.last
+        event = CloudController::Event.first(type: 'audit.service_plan.create')
+        service_plan = CloudController::ServicePlan.last
         expect(event.type).to eq('audit.service_plan.create')
         expect(event.actor_type).to eq('service_broker')
         expect(event.actor).to eq(broker.guid)
@@ -198,7 +198,7 @@ module VCAP::Services::ServiceBrokers
 
         it 'leaves the extra field as nil' do
           service_manager.sync_services_and_plans(catalog)
-          service = VCAP::CloudController::Service.last
+          service = CloudController::Service.last
           expect(service.extra).to be_nil
         end
       end
@@ -208,7 +208,7 @@ module VCAP::Services::ServiceBrokers
 
         it 'leaves the extra field as nil' do
           service_manager.sync_services_and_plans(catalog)
-          service = VCAP::CloudController::Service.last
+          service = CloudController::Service.last
           expect(service.extra).to be_nil
         end
       end
@@ -217,10 +217,10 @@ module VCAP::Services::ServiceBrokers
         it 'creates plans from the catalog' do
           expect {
             service_manager.sync_services_and_plans(catalog)
-          }.to change(VCAP::CloudController::ServicePlan, :count).by(1)
+          }.to change(CloudController::ServicePlan, :count).by(1)
 
-          plan = VCAP::CloudController::ServicePlan.last
-          expect(plan.service).to eq(VCAP::CloudController::Service.last)
+          plan = CloudController::ServicePlan.last
+          expect(plan.service).to eq(CloudController::Service.last)
           expect(plan.name).to eq(plan_name)
           expect(plan.description).to eq(plan_description)
           expect(JSON.parse(plan.extra)).to eq({ 'cost' => '0.0' })
@@ -233,7 +233,7 @@ module VCAP::Services::ServiceBrokers
 
         it 'marks the plan as private' do
           service_manager.sync_services_and_plans(catalog)
-          plan = VCAP::CloudController::ServicePlan.last
+          plan = CloudController::ServicePlan.last
           expect(plan.public).to be false
         end
       end
@@ -243,7 +243,7 @@ module VCAP::Services::ServiceBrokers
 
         it 'leaves the plan extra field as nil' do
           service_manager.sync_services_and_plans(catalog)
-          plan = VCAP::CloudController::ServicePlan.last
+          plan = CloudController::ServicePlan.last
           expect(plan.extra).to be_nil
         end
       end
@@ -253,7 +253,7 @@ module VCAP::Services::ServiceBrokers
 
         it 'leaves the plan extra field as nil' do
           service_manager.sync_services_and_plans(catalog)
-          plan = VCAP::CloudController::ServicePlan.last
+          plan = CloudController::ServicePlan.last
           expect(plan.extra).to be_nil
         end
       end
@@ -288,7 +288,7 @@ module VCAP::Services::ServiceBrokers
 
           it 'persists the schemas in the catalog' do
             service_manager.sync_services_and_plans(catalog)
-            plan = VCAP::CloudController::ServicePlan.last
+            plan = CloudController::ServicePlan.last
             expect(plan.create_instance_schema).to eq(
               '{"$schema":"http://json-schema.org/draft-04/schema","type":"object","anything_youd_like":"woohooo"}'
             )
@@ -306,7 +306,7 @@ module VCAP::Services::ServiceBrokers
 
           it 'leaves the plan schemas field as nil' do
             service_manager.sync_services_and_plans(catalog)
-            plan = VCAP::CloudController::ServicePlan.last
+            plan = CloudController::ServicePlan.last
             expect(plan.create_instance_schema).to be_nil
             expect(plan.update_instance_schema).to be_nil
             expect(plan.create_binding_schema).to be_nil
@@ -330,7 +330,7 @@ module VCAP::Services::ServiceBrokers
 
           it 'persists everything else' do
             service_manager.sync_services_and_plans(catalog)
-            plan = VCAP::CloudController::ServicePlan.last
+            plan = CloudController::ServicePlan.last
             expect(plan.create_instance_schema).to be_nil
             expect(plan.update_instance_schema).to be_nil
             expect(plan.create_binding_schema).to eq(
@@ -353,7 +353,7 @@ module VCAP::Services::ServiceBrokers
 
           it 'sets all schemas to nil' do
             service_manager.sync_services_and_plans(catalog)
-            plan = VCAP::CloudController::ServicePlan.last
+            plan = CloudController::ServicePlan.last
             expect(plan.create_instance_schema).to be_nil
           end
         end
@@ -372,7 +372,7 @@ module VCAP::Services::ServiceBrokers
 
           it 'sets all schemas to nil' do
             service_manager.sync_services_and_plans(catalog)
-            plan = VCAP::CloudController::ServicePlan.last
+            plan = CloudController::ServicePlan.last
             expect(plan.update_instance_schema).to be_nil
           end
         end
@@ -391,7 +391,7 @@ module VCAP::Services::ServiceBrokers
 
           it 'sets all schemas to nil' do
             service_manager.sync_services_and_plans(catalog)
-            plan = VCAP::CloudController::ServicePlan.last
+            plan = CloudController::ServicePlan.last
             expect(plan.create_binding_schema).to be_nil
           end
         end
@@ -401,7 +401,7 @@ module VCAP::Services::ServiceBrokers
 
           it 'leaves the plan schemas field as nil' do
             service_manager.sync_services_and_plans(catalog)
-            plan = VCAP::CloudController::ServicePlan.last
+            plan = CloudController::ServicePlan.last
             expect(plan.create_instance_schema).to be_nil
             expect(plan.update_instance_schema).to be_nil
             expect(plan.create_binding_schema).to be_nil
@@ -413,7 +413,7 @@ module VCAP::Services::ServiceBrokers
 
           it 'leaves the plan schemas field as nil' do
             service_manager.sync_services_and_plans(catalog)
-            plan = VCAP::CloudController::ServicePlan.last
+            plan = CloudController::ServicePlan.last
             expect(plan.create_instance_schema).to be_nil
             expect(plan.update_instance_schema).to be_nil
           end
@@ -424,7 +424,7 @@ module VCAP::Services::ServiceBrokers
 
           it 'leaves the plan schemas field as nil' do
             service_manager.sync_services_and_plans(catalog)
-            plan = VCAP::CloudController::ServicePlan.last
+            plan = CloudController::ServicePlan.last
             expect(plan.create_binding_schema).to be_nil
           end
         end
@@ -432,7 +432,7 @@ module VCAP::Services::ServiceBrokers
 
       context 'when a service already exists' do
         let!(:service) do
-          VCAP::CloudController::Service.make(
+          CloudController::Service.make(
             service_broker: broker,
             unique_id: service_id
           )
@@ -444,7 +444,7 @@ module VCAP::Services::ServiceBrokers
 
           expect {
             service_manager.sync_services_and_plans(catalog)
-          }.to_not change(VCAP::CloudController::Service, :count)
+          }.to_not change(CloudController::Service, :count)
 
           service.reload
           expect(service.label).to eq(service_name)
@@ -452,9 +452,9 @@ module VCAP::Services::ServiceBrokers
         end
 
         context 'when the broker is different' do
-          let(:different_broker) { VCAP::CloudController::ServiceBroker.make }
+          let(:different_broker) { CloudController::ServiceBroker.make }
           let!(:service) do
-            VCAP::CloudController::Service.make(
+            CloudController::Service.make(
               service_broker: different_broker,
               unique_id: service_id
             )
@@ -470,10 +470,10 @@ module VCAP::Services::ServiceBrokers
         it 'creates the new plan' do
           expect {
             service_manager.sync_services_and_plans(catalog)
-          }.to change(VCAP::CloudController::ServicePlan, :count).by(1)
+          }.to change(CloudController::ServicePlan, :count).by(1)
 
-          plan = VCAP::CloudController::ServicePlan.last
-          expect(plan.service).to eq(VCAP::CloudController::Service.last)
+          plan = CloudController::ServicePlan.last
+          expect(plan.service).to eq(CloudController::Service.last)
           expect(plan.name).to eq(plan_name)
           expect(plan.description).to eq(plan_description)
 
@@ -483,7 +483,7 @@ module VCAP::Services::ServiceBrokers
 
         context 'and a plan already exists' do
           let!(:plan) do
-            VCAP::CloudController::ServicePlan.make(
+            CloudController::ServicePlan.make(
               service: service,
               unique_id: plan_id,
               free: true,
@@ -504,7 +504,7 @@ module VCAP::Services::ServiceBrokers
 
             expect {
               service_manager.sync_services_and_plans(catalog)
-            }.to_not change(VCAP::CloudController::ServicePlan, :count)
+            }.to_not change(CloudController::ServicePlan, :count)
 
             plan.reload
             expect(plan.name).to eq(plan_name)
@@ -519,9 +519,9 @@ module VCAP::Services::ServiceBrokers
           it 'creates service audit events for each service plan updated' do
             service_manager.sync_services_and_plans(catalog)
 
-            service_plan = VCAP::CloudController::ServicePlan.last
+            service_plan = CloudController::ServicePlan.last
 
-            event = VCAP::CloudController::Event.first(type: 'audit.service_plan.update')
+            event = CloudController::Event.first(type: 'audit.service_plan.update')
             expect(event.type).to eq('audit.service_plan.update')
             expect(event.actor_type).to eq('service_broker')
             expect(event.actor).to eq(broker.guid)
@@ -560,7 +560,7 @@ module VCAP::Services::ServiceBrokers
         context 'and a plan exists that has been removed from the broker catalog' do
           let(:missing_plan_name) { '111' }
           let!(:missing_plan) do
-            VCAP::CloudController::ServicePlan.make(
+            CloudController::ServicePlan.make(
               service: service,
               unique_id: 'nolongerexists',
               name: missing_plan_name,
@@ -569,13 +569,13 @@ module VCAP::Services::ServiceBrokers
 
           it 'deletes the plan from the db' do
             service_manager.sync_services_and_plans(catalog)
-            expect(VCAP::CloudController::ServicePlan.find(id: missing_plan.id)).to be_nil
+            expect(CloudController::ServicePlan.find(id: missing_plan.id)).to be_nil
           end
 
           it 'creates service audit events for each service plan deleted' do
             service_manager.sync_services_and_plans(catalog)
 
-            event = VCAP::CloudController::Event.first(type: 'audit.service_plan.delete')
+            event = CloudController::Event.first(type: 'audit.service_plan.delete')
             expect(event.type).to eq('audit.service_plan.delete')
             expect(event.actor_type).to eq('service_broker')
             expect(event.actor).to eq(broker.guid)
@@ -596,10 +596,10 @@ module VCAP::Services::ServiceBrokers
             let(:missing_service2_plan_name) { '111-B' }
 
             before do
-              VCAP::CloudController::ManagedServiceInstance.make(service_plan: missing_plan)
+              CloudController::ManagedServiceInstance.make(service_plan: missing_plan)
 
-              missing_plan2 = VCAP::CloudController::ServicePlan.make(service: service, unique_id: 'plan2_nolongerexists', name: missing_plan2_name)
-              VCAP::CloudController::ManagedServiceInstance.make(service_plan: missing_plan2)
+              missing_plan2 = CloudController::ServicePlan.make(service: service, unique_id: 'plan2_nolongerexists', name: missing_plan2_name)
+              CloudController::ManagedServiceInstance.make(service_plan: missing_plan2)
             end
 
             it 'marks the existing plan as inactive' do
@@ -613,9 +613,9 @@ module VCAP::Services::ServiceBrokers
 
             context 'when there are existing service instances' do
               before do
-                missing_service2 = VCAP::CloudController::Service.make(service_broker: broker, label: missing_service2_name)
-                missing_service2_plan = VCAP::CloudController::ServicePlan.make(service: missing_service2, unique_id: 'i_be_gone', name: missing_service2_plan_name)
-                VCAP::CloudController::ManagedServiceInstance.make(service_plan: missing_service2_plan)
+                missing_service2 = CloudController::Service.make(service_broker: broker, label: missing_service2_name)
+                missing_service2_plan = CloudController::ServicePlan.make(service: missing_service2, unique_id: 'i_be_gone', name: missing_service2_plan_name)
+                CloudController::ManagedServiceInstance.make(service_plan: missing_service2_plan)
               end
 
               it 'adds a formatted warning' do
@@ -650,7 +650,7 @@ HEREDOC
 
       context 'when a service no longer exists' do
         let!(:service) do
-          VCAP::CloudController::Service.make(
+          CloudController::Service.make(
             service_broker: broker,
             unique_id: 'nolongerexists',
             label: 'was-an-awesome-service',
@@ -658,9 +658,9 @@ HEREDOC
         end
 
         let!(:service_owned_by_other_broker) do
-          other_service_broker = VCAP::CloudController::ServiceBroker.make
+          other_service_broker = CloudController::ServiceBroker.make
 
-          VCAP::CloudController::Service.make(
+          CloudController::Service.make(
             service_broker: other_service_broker,
             unique_id: 'other-service-id'
           )
@@ -668,13 +668,13 @@ HEREDOC
 
         it 'should delete the service' do
           service_manager.sync_services_and_plans(catalog)
-          expect(VCAP::CloudController::Service.find(id: service.id)).to be_nil
+          expect(CloudController::Service.find(id: service.id)).to be_nil
         end
 
         it 'creates service audit events for each service deleted' do
           service_manager.sync_services_and_plans(catalog)
 
-          event = VCAP::CloudController::Event.first(type: 'audit.service.delete')
+          event = CloudController::Event.first(type: 'audit.service.delete')
           expect(event.type).to eq('audit.service.delete')
           expect(event.actor_type).to eq('service_broker')
           expect(event.actor).to eq(broker.guid)
@@ -690,22 +690,22 @@ HEREDOC
 
         it 'should not delete services owned by other brokers' do
           service_manager.sync_services_and_plans(catalog)
-          expect(VCAP::CloudController::Service.find(id: service_owned_by_other_broker.id)).not_to be_nil
+          expect(CloudController::Service.find(id: service_owned_by_other_broker.id)).not_to be_nil
         end
 
         context 'but it has an active plan' do
           before do
-            plan = VCAP::CloudController::ServicePlan.make(
+            plan = CloudController::ServicePlan.make(
               service: service,
               unique_id: 'also_no_longer_in_catalog'
             )
-            VCAP::CloudController::ManagedServiceInstance.make(service_plan: plan)
+            CloudController::ManagedServiceInstance.make(service_plan: plan)
 
-            other_broker_plan = VCAP::CloudController::ServicePlan.make(
+            other_broker_plan = CloudController::ServicePlan.make(
               service: service_owned_by_other_broker,
               unique_id: 'in-another-brokers-catalog'
             )
-            VCAP::CloudController::ManagedServiceInstance.make(service_plan: other_broker_plan)
+            CloudController::ManagedServiceInstance.make(service_plan: other_broker_plan)
           end
 
           it 'marks the existing service as inactive' do

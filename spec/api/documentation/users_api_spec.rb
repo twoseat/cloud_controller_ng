@@ -3,9 +3,9 @@ require 'rspec_api_documentation/dsl'
 
 RSpec.resource 'Users', type: [:api, :legacy_api] do
   let(:admin_auth_header) { admin_headers['HTTP_AUTHORIZATION'] }
-  let!(:user) { VCAP::CloudController::User.make(default_space: space) }
+  let!(:user) { CloudController::User.make(default_space: space) }
   let(:guid) { user.guid }
-  let(:space) { VCAP::CloudController::Space.make }
+  let(:space) { CloudController::Space.make }
 
   authenticated_request
 
@@ -19,11 +19,11 @@ RSpec.resource 'Users', type: [:api, :legacy_api] do
   end
 
   before do
-    allow_any_instance_of(VCAP::CloudController::UaaClient).to receive(:usernames_for_ids).and_return({ guid => 'user@example.com' })
+    allow_any_instance_of(CloudController::UaaClient).to receive(:usernames_for_ids).and_return({ guid => 'user@example.com' })
   end
 
   describe 'Standard endpoints' do
-    standard_model_list(:user, VCAP::CloudController::UsersController)
+    standard_model_list(:user, CloudController::UsersController)
     standard_model_get(:user, nested_associations: [:default_space])
     standard_model_delete(:user)
 
@@ -44,7 +44,7 @@ RSpec.resource 'Users', type: [:api, :legacy_api] do
       include_context 'updatable_fields'
 
       example 'Updating a User' do
-        new_space = VCAP::CloudController::Space.make
+        new_space = CloudController::Space.make
         client.put "/v2/users/#{guid}", MultiJson.dump({ default_space_guid: new_space.guid }, pretty: true), headers
 
         expect(status).to eq 201
@@ -64,12 +64,12 @@ RSpec.resource 'Users', type: [:api, :legacy_api] do
         space.organization.add_user(user)
       end
 
-      let!(:associated_space) { VCAP::CloudController::Space.make }
+      let!(:associated_space) { CloudController::Space.make }
       let(:associated_space_guid) { associated_space.guid }
-      let(:space) { VCAP::CloudController::Space.make }
+      let(:space) { CloudController::Space.make }
       let(:space_guid) { space.guid }
 
-      standard_model_list :space, VCAP::CloudController::SpacesController, outer_model: :user
+      standard_model_list :space, CloudController::SpacesController, outer_model: :user
 
       context 'has space guid param' do
         parameter :space_guid, 'The guid of the space'
@@ -87,12 +87,12 @@ RSpec.resource 'Users', type: [:api, :legacy_api] do
         managed_space.organization.add_user(user)
       end
 
-      let!(:associated_managed_space) { VCAP::CloudController::Space.make }
+      let!(:associated_managed_space) { CloudController::Space.make }
       let(:associated_managed_space_guid) { associated_managed_space.guid }
-      let(:managed_space) { VCAP::CloudController::Space.make }
+      let(:managed_space) { CloudController::Space.make }
       let(:managed_space_guid) { managed_space.guid }
 
-      standard_model_list :space, VCAP::CloudController::SpacesController, outer_model: :user, path: :managed_spaces
+      standard_model_list :space, CloudController::SpacesController, outer_model: :user, path: :managed_spaces
 
       context 'has space guid param' do
         parameter :managed_space_guid, 'The guid of the managed space'
@@ -110,12 +110,12 @@ RSpec.resource 'Users', type: [:api, :legacy_api] do
         audited_space.organization.add_user(user)
       end
 
-      let!(:associated_audited_space) { VCAP::CloudController::Space.make }
+      let!(:associated_audited_space) { CloudController::Space.make }
       let(:associated_audited_space_guid) { associated_audited_space.guid }
-      let(:audited_space) { VCAP::CloudController::Space.make }
+      let(:audited_space) { CloudController::Space.make }
       let(:audited_space_guid) { audited_space.guid }
 
-      standard_model_list :space, VCAP::CloudController::SpacesController, outer_model: :user, path: :audited_spaces
+      standard_model_list :space, CloudController::SpacesController, outer_model: :user, path: :audited_spaces
 
       context 'has space guid param' do
         parameter :audited_space_guid, 'The guid of the audited space'
@@ -130,12 +130,12 @@ RSpec.resource 'Users', type: [:api, :legacy_api] do
         associated_organization.add_user(user)
       end
 
-      let!(:associated_organization) { VCAP::CloudController::Organization.make }
+      let!(:associated_organization) { CloudController::Organization.make }
       let(:associated_organization_guid) { associated_organization.guid }
-      let(:organization) { VCAP::CloudController::Organization.make }
+      let(:organization) { CloudController::Organization.make }
       let(:organization_guid) { organization.guid }
 
-      standard_model_list :organization, VCAP::CloudController::OrganizationsController, outer_model: :user
+      standard_model_list :organization, CloudController::OrganizationsController, outer_model: :user
 
       context 'has organization guid param' do
         parameter :organization_guid, 'The guid of the organization'
@@ -153,12 +153,12 @@ RSpec.resource 'Users', type: [:api, :legacy_api] do
         associated_managed_organization.add_manager(user)
       end
 
-      let!(:associated_managed_organization) { VCAP::CloudController::Organization.make }
+      let!(:associated_managed_organization) { CloudController::Organization.make }
       let(:associated_managed_organization_guid) { associated_managed_organization.guid }
-      let(:managed_organization) { VCAP::CloudController::Organization.make }
+      let(:managed_organization) { CloudController::Organization.make }
       let(:managed_organization_guid) { managed_organization.guid }
 
-      standard_model_list :organization, VCAP::CloudController::OrganizationsController, outer_model: :user, path: :managed_organizations
+      standard_model_list :organization, CloudController::OrganizationsController, outer_model: :user, path: :managed_organizations
 
       context 'has organization guid param' do
         parameter :managed_organization_guid, 'The guid of the managed_organization'
@@ -175,12 +175,12 @@ RSpec.resource 'Users', type: [:api, :legacy_api] do
         associated_billing_managed_organization.add_billing_manager(user)
       end
 
-      let!(:associated_billing_managed_organization) { VCAP::CloudController::Organization.make }
+      let!(:associated_billing_managed_organization) { CloudController::Organization.make }
       let(:associated_billing_managed_organization_guid) { associated_billing_managed_organization.guid }
-      let(:billing_managed_organization) { VCAP::CloudController::Organization.make }
+      let(:billing_managed_organization) { CloudController::Organization.make }
       let(:billing_managed_organization_guid) { billing_managed_organization.guid }
 
-      standard_model_list :organization, VCAP::CloudController::OrganizationsController, outer_model: :user, path: :billing_managed_organizations
+      standard_model_list :organization, CloudController::OrganizationsController, outer_model: :user, path: :billing_managed_organizations
 
       context 'has organization guid param' do
         parameter :billing_managed_organization_guid, 'The guid of the billing managed organization'
@@ -197,12 +197,12 @@ RSpec.resource 'Users', type: [:api, :legacy_api] do
         associated_audited_organization.add_auditor(user)
       end
 
-      let!(:associated_audited_organization) { VCAP::CloudController::Organization.make }
+      let!(:associated_audited_organization) { CloudController::Organization.make }
       let(:associated_audited_organization_guid) { associated_audited_organization.guid }
-      let(:audited_organization) { VCAP::CloudController::Organization.make }
+      let(:audited_organization) { CloudController::Organization.make }
       let(:audited_organization_guid) { audited_organization.guid }
 
-      standard_model_list :organization, VCAP::CloudController::OrganizationsController, outer_model: :user, path: :audited_organizations
+      standard_model_list :organization, CloudController::OrganizationsController, outer_model: :user, path: :audited_organizations
 
       context 'has organization guid param' do
         parameter :audited_organization_guid, 'The guid of the audited organization'

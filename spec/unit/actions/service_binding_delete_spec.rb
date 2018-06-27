@@ -1,7 +1,7 @@
 require 'spec_helper'
 require 'actions/service_binding_delete'
 
-module VCAP::CloudController
+module CloudController
   RSpec.describe ServiceBindingDelete do
     subject(:service_binding_delete) { ServiceBindingDelete.new(UserAuditInfo.new(user_guid: user_guid, user_email: user_email)) }
     let(:user_guid) { 'user-guid' }

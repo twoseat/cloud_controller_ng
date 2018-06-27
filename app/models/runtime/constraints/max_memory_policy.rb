@@ -41,16 +41,16 @@ class AppMaxMemoryPolicy < BaseMaxMemoryPolicy
   end
 
   def requested_memory
-    calculator = VCAP::CloudController::AppMemoryCalculator.new(resource)
+    calculator = CloudController::AppMemoryCalculator.new(resource)
     calculator.additional_memory_requested
   end
 end
 
 class TaskMaxMemoryPolicy < BaseMaxMemoryPolicy
   IGNORED_STATES = [
-    VCAP::CloudController::TaskModel::CANCELING_STATE,
-    VCAP::CloudController::TaskModel::SUCCEEDED_STATE,
-    VCAP::CloudController::TaskModel::FAILED_STATE,
+    CloudController::TaskModel::CANCELING_STATE,
+    CloudController::TaskModel::SUCCEEDED_STATE,
+    CloudController::TaskModel::FAILED_STATE,
   ].freeze
 
   private

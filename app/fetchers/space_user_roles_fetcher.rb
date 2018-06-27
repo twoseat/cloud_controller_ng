@@ -1,4 +1,4 @@
-module VCAP::CloudController
+module CloudController
   class SpaceUserRolesFetcher
     def fetch(space)
       space.developers_dataset.

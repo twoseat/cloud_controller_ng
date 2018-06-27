@@ -1,7 +1,7 @@
 require 'spec_helper'
 require 'cloud_controller/diego/task_completion_callback_generator'
 
-module VCAP::CloudController
+module CloudController
   module Diego
     RSpec.describe TaskCompletionCallbackGenerator do
       subject(:generator) { TaskCompletionCallbackGenerator.new(TestConfig.config_instance) }

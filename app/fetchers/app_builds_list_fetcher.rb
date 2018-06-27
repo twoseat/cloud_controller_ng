@@ -1,4 +1,4 @@
-module VCAP::CloudController
+module CloudController
   class AppBuildsListFetcher
     def initialize(app_guid, message)
       @app_guid = app_guid

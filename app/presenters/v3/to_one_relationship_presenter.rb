@@ -1,4 +1,4 @@
-module VCAP::CloudController
+module CloudController
   module Presenters
     module V3
       class ToOneRelationshipPresenter
@@ -21,7 +21,7 @@ module VCAP::CloudController
         attr_reader :resource_path, :relationship_name, :related_instance, :related_resource_name
 
         def url_builder
-          @url_builder ||= VCAP::CloudController::Presenters::ApiUrlBuilder.new
+          @url_builder ||= CloudController::Presenters::ApiUrlBuilder.new
         end
 
         def build_relation

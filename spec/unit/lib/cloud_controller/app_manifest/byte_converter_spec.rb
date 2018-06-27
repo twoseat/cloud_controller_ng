@@ -1,7 +1,7 @@
 require 'spec_helper'
 require 'cloud_controller/app_manifest/byte_converter'
 
-module VCAP::CloudController
+module CloudController
   RSpec.describe ByteConverter do
     subject { ByteConverter.new }
 

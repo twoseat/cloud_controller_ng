@@ -3,15 +3,15 @@ require 'rspec_api_documentation/dsl'
 
 RSpec.resource 'Apps', type: [:api, :legacy_api] do
   let(:admin_auth_header) { admin_headers['HTTP_AUTHORIZATION'] }
-  let(:space) { VCAP::CloudController::Space.make }
-  let(:process) { VCAP::CloudController::ProcessModelFactory.make space: space }
+  let(:space) { CloudController::Space.make }
+  let(:process) { CloudController::ProcessModelFactory.make space: space }
   let(:user) { make_developer_for_space(process.space) }
-  let(:stager) { instance_double(VCAP::CloudController::Diego::Stager, stage: nil) }
+  let(:stager) { instance_double(CloudController::Diego::Stager, stage: nil) }
 
   before do
-    allow_any_instance_of(VCAP::CloudController::Stagers).to receive(:validate_process)
-    allow_any_instance_of(VCAP::CloudController::Stagers).to receive(:stager_for_app).and_return(stager)
-    VCAP::CloudController::Buildpack.make
+    allow_any_instance_of(CloudController::Stagers).to receive(:validate_process)
+    allow_any_instance_of(CloudController::Stagers).to receive(:stager_for_app).and_return(stager)
+    CloudController::Buildpack.make
   end
 
   authenticated_request

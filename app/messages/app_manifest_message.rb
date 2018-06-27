@@ -8,7 +8,7 @@ require 'cloud_controller/app_manifest/byte_converter'
 require 'models/helpers/health_check_types'
 require 'presenters/helpers/censorship'
 
-module VCAP::CloudController
+module CloudController
   class AppManifestMessage < BaseMessage
     register_allowed_keys [
       :buildpack,

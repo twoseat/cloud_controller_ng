@@ -1,7 +1,7 @@
 require 'spec_helper'
 require 'jobs/services/service_binding_state_fetch'
 
-module VCAP::CloudController
+module CloudController
   module Jobs
     module Services
       RSpec.describe ServiceBindingStateFetch, job_context: :worker do
@@ -36,7 +36,7 @@ module VCAP::CloudController
         end
 
         describe '#perform' do
-          let(:job) { VCAP::CloudController::Jobs::Services::ServiceBindingStateFetch.new(service_binding.guid, user_info, request_attrs) }
+          let(:job) { CloudController::Jobs::Services::ServiceBindingStateFetch.new(service_binding.guid, user_info, request_attrs) }
           let(:state) { 'in progress' }
           let(:description) { '10%' }
           let(:client) { instance_double(VCAP::Services::ServiceBrokers::V2::Client) }
@@ -416,7 +416,7 @@ module VCAP::CloudController
           end
 
           context 'when the service binding has been purged' do
-            let(:job) { VCAP::CloudController::Jobs::Services::ServiceBindingStateFetch.new('bad-binding-guid', user_info, request_attrs) }
+            let(:job) { CloudController::Jobs::Services::ServiceBindingStateFetch.new('bad-binding-guid', user_info, request_attrs) }
 
             it 'successfully exits the job' do
               # executes job and enqueues another job

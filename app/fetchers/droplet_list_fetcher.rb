@@ -1,4 +1,4 @@
-module VCAP::CloudController
+module CloudController
   class DropletListFetcher
     def initialize(message:)
       @message = message

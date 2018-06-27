@@ -1,14 +1,14 @@
 require 'spec_helper'
 
-module VCAP::CloudController
+module CloudController
   module Jobs::Services
     RSpec.describe DeleteOrphanedBinding, job_context: :worker do
       let(:client) { instance_double('VCAP::Services::ServiceBrokers::V2::Client') }
-      let(:service_binding) { VCAP::CloudController::ServiceBinding.make }
+      let(:service_binding) { CloudController::ServiceBinding.make }
       let(:binding_info) { OrphanedBindingInfo.new(service_binding) }
 
       let(:name) { 'fake-name' }
-      subject(:job) { VCAP::CloudController::Jobs::Services::DeleteOrphanedBinding.new(name, {}, binding_info) }
+      subject(:job) { CloudController::Jobs::Services::DeleteOrphanedBinding.new(name, {}, binding_info) }
 
       describe '#perform' do
         before do

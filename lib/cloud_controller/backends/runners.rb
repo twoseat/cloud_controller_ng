@@ -6,7 +6,7 @@ require 'cloud_controller/diego/docker/lifecycle_protocol'
 require 'cloud_controller/diego/egress_rules'
 require 'cloud_controller/backends/copilot_runner_delegator'
 
-module VCAP::CloudController
+module CloudController
   class Runners
     def initialize(config)
       @config = config

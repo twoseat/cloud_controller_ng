@@ -8,7 +8,7 @@ module VCAP::Services::SSO::Commands
     end
 
     def db_command
-      VCAP::CloudController::ServiceDashboardClient.claim_client(client_id, service_broker)
+      CloudController::ServiceDashboardClient.claim_client(client_id, service_broker)
     end
   end
 end

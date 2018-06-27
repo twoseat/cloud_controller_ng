@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-module VCAP::CloudController
+module CloudController
   RSpec.describe UaaClient do
     let(:url) { 'http://uaa.example.com' }
     let(:client_id) { 'client_id' }

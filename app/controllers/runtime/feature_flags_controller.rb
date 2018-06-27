@@ -1,6 +1,6 @@
 require 'presenters/api/feature_flag_presenter'
 
-module VCAP::CloudController
+module CloudController
   class FeatureFlagsController < RestController::ModelController
     def self.path
       "#{V2_ROUTE_PREFIX}/config/feature_flags"

@@ -1,6 +1,6 @@
 require 'presenters/api/job_presenter'
 
-module VCAP::CloudController::RestController
+module CloudController::RestController
   # Wraps models and presents collection and per object rest end points
   class ModelController < BaseController
     include Routes
@@ -128,10 +128,10 @@ module VCAP::CloudController::RestController
       [self.class.to_one_relationships, self.class.to_many_relationships].each do |rel|
         all_relationships.merge!(rel) if rel && rel.any?
       end
-      associated_controller = VCAP::CloudController.controller_from_relationship(all_relationships[name])
-      associated_controller ||= VCAP::CloudController.controller_from_model_name(associated_model)
+      associated_controller = CloudController.controller_from_relationship(all_relationships[name])
+      associated_controller ||= CloudController.controller_from_model_name(associated_model)
 
-      querier = associated_model == VCAP::CloudController::ProcessModel ? AppQuery : Query
+      querier = associated_model == CloudController::ProcessModel ? AppQuery : Query
       filtered_dataset =
         querier.filtered_dataset_from_query_params(
           associated_model,
@@ -315,7 +315,7 @@ module VCAP::CloudController::RestController
     end
 
     class << self
-      include VCAP::CloudController
+      include CloudController
 
       attr_accessor :attributes
       attr_accessor :to_many_relationships
@@ -342,7 +342,7 @@ module VCAP::CloudController::RestController
       # @return [Sequel::Model] The class of the model associated with
       # this rest endpoint.
       def model(name=nil)
-        @model ||= VCAP::CloudController.const_get(model_class_name(name))
+        @model ||= CloudController.const_get(model_class_name(name))
       end
 
       # Get and set the model class name associated with this rest/api endpoint.

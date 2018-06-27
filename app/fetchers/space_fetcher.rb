@@ -1,4 +1,4 @@
-module VCAP::CloudController
+module CloudController
   class SpaceFetcher
     def fetch(space_guid)
       Space.find(guid: space_guid)

@@ -1,4 +1,4 @@
-module VCAP::CloudController
+module CloudController
   class OrderByMapper
     class << self
       def from_param(order_by)

@@ -1,9 +1,9 @@
 require 'spec_helper'
 require 'presenters/v3/isolation_segment_presenter'
 
-module VCAP::CloudController::Presenters::V3
+module CloudController::Presenters::V3
   RSpec.describe IsolationSegmentPresenter do
-    let(:isolation_segment) { VCAP::CloudController::IsolationSegmentModel.make }
+    let(:isolation_segment) { CloudController::IsolationSegmentModel.make }
 
     describe '#to_hash' do
       let(:result) { IsolationSegmentPresenter.new(isolation_segment).to_hash }

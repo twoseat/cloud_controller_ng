@@ -1,7 +1,7 @@
 require 'spec_helper'
 
-module VCAP::CloudController
-  RSpec.describe VCAP::CloudController::AppsController do
+module CloudController
+  RSpec.describe CloudController::AppsController do
     let(:admin_user) { User.make }
     let(:non_admin_user) { User.make }
     let(:app_event_repository) { Repositories::AppEventRepository.new }
@@ -11,11 +11,11 @@ module VCAP::CloudController
     end
 
     describe 'Query Parameters' do
-      it { expect(VCAP::CloudController::AppsController).to be_queryable_by(:name) }
-      it { expect(VCAP::CloudController::AppsController).to be_queryable_by(:space_guid) }
-      it { expect(VCAP::CloudController::AppsController).to be_queryable_by(:organization_guid) }
-      it { expect(VCAP::CloudController::AppsController).to be_queryable_by(:diego) }
-      it { expect(VCAP::CloudController::AppsController).to be_queryable_by(:stack_guid) }
+      it { expect(CloudController::AppsController).to be_queryable_by(:name) }
+      it { expect(CloudController::AppsController).to be_queryable_by(:space_guid) }
+      it { expect(CloudController::AppsController).to be_queryable_by(:organization_guid) }
+      it { expect(CloudController::AppsController).to be_queryable_by(:diego) }
+      it { expect(CloudController::AppsController).to be_queryable_by(:stack_guid) }
     end
 
     describe 'query by org_guid' do
@@ -50,7 +50,7 @@ module VCAP::CloudController
 
     describe 'Attributes' do
       it do
-        expect(VCAP::CloudController::AppsController).to have_creatable_attributes(
+        expect(CloudController::AppsController).to have_creatable_attributes(
           {
             enable_ssh:                 { type: 'bool' },
             buildpack:                  { type: 'string' },
@@ -77,7 +77,7 @@ module VCAP::CloudController
       end
 
       it do
-        expect(VCAP::CloudController::AppsController).to have_updatable_attributes(
+        expect(CloudController::AppsController).to have_updatable_attributes(
           {
             enable_ssh:                 { type: 'bool' },
             buildpack:                  { type: 'string' },
@@ -107,7 +107,7 @@ module VCAP::CloudController
 
     describe 'Associations' do
       it do
-        expect(VCAP::CloudController::AppsController).to have_nested_routes(
+        expect(CloudController::AppsController).to have_nested_routes(
           {
             events:           [:get, :put, :delete],
             service_bindings: [:get],
@@ -440,8 +440,8 @@ module VCAP::CloudController
 
         context 'when the package is invalid' do
           before do
-            allow(VCAP::CloudController::PackageCreate).to receive(:create_without_event).
-              and_raise(VCAP::CloudController::PackageCreate::InvalidPackage.new('oops'))
+            allow(CloudController::PackageCreate).to receive(:create_without_event).
+              and_raise(CloudController::PackageCreate::InvalidPackage.new('oops'))
           end
 
           it 'returns an UnprocessableEntity error' do
@@ -938,8 +938,8 @@ module VCAP::CloudController
 
         context 'when the package is invalid' do
           before do
-            allow(VCAP::CloudController::PackageCreate).to receive(:create_without_event).
-              and_raise(VCAP::CloudController::PackageCreate::InvalidPackage.new('oops'))
+            allow(CloudController::PackageCreate).to receive(:create_without_event).
+              and_raise(CloudController::PackageCreate::InvalidPackage.new('oops'))
           end
 
           it 'returns an UnprocessableEntity error' do
@@ -1450,7 +1450,7 @@ module VCAP::CloudController
 
       context 'when the space_developer_env_var_visibility feature flag is disabled' do
         before do
-          VCAP::CloudController::FeatureFlag.make(name: 'space_developer_env_var_visibility', enabled: false, error_message: nil)
+          CloudController::FeatureFlag.make(name: 'space_developer_env_var_visibility', enabled: false, error_message: nil)
         end
 
         it 'raises 403 for non-admins' do
@@ -1490,7 +1490,7 @@ module VCAP::CloudController
 
       context 'when the env_var_visibility feature flag is disabled' do
         before do
-          VCAP::CloudController::FeatureFlag.make(name: 'env_var_visibility', enabled: false, error_message: nil)
+          CloudController::FeatureFlag.make(name: 'env_var_visibility', enabled: false, error_message: nil)
         end
 
         it 'raises 403 all user' do
@@ -1503,7 +1503,7 @@ module VCAP::CloudController
 
         context 'when the space_developer_env_var_visibility feature flag is enabled' do
           before do
-            VCAP::CloudController::FeatureFlag.make(name: 'space_developer_env_var_visibility', enabled: true, error_message: nil)
+            CloudController::FeatureFlag.make(name: 'space_developer_env_var_visibility', enabled: true, error_message: nil)
           end
 
           it 'raises 403 for non-admins' do
@@ -1518,7 +1518,7 @@ module VCAP::CloudController
 
       context 'when the env_var_visibility feature flag is enabled' do
         before do
-          VCAP::CloudController::FeatureFlag.make(name: 'env_var_visibility', enabled: true, error_message: nil)
+          CloudController::FeatureFlag.make(name: 'env_var_visibility', enabled: true, error_message: nil)
         end
 
         it 'continues to show 403 for roles that never had access to envs' do
@@ -1558,7 +1558,7 @@ module VCAP::CloudController
 
         context 'when the space_developer_env_var_visibility feature flag is disabled' do
           before do
-            VCAP::CloudController::FeatureFlag.make(name: 'space_developer_env_var_visibility', enabled: false, error_message: nil)
+            CloudController::FeatureFlag.make(name: 'space_developer_env_var_visibility', enabled: false, error_message: nil)
           end
 
           it 'raises 403 for space developers' do
@@ -2161,7 +2161,7 @@ module VCAP::CloudController
 
         before do
           allow_any_instance_of(RouteValidator).to receive(:validate)
-          allow(VCAP::CloudController::RoutingApi::Client).to receive(:new).and_return(routing_api_client)
+          allow(CloudController::RoutingApi::Client).to receive(:new).and_return(routing_api_client)
         end
 
         it 'adds the route to the app' do

@@ -194,7 +194,7 @@ namespace :db do
 
     require 'cloud_controller/seeds'
     BackgroundJobEnvironment.new(RakeConfig.config).setup_environment do
-      VCAP::CloudController::Seeds.write_seed_data(RakeConfig.config)
+      CloudController::Seeds.write_seed_data(RakeConfig.config)
     end
   end
 
@@ -204,8 +204,8 @@ namespace :db do
 
     Steno.init(Steno::Config.new(sinks: [Steno::Sink::IO.new(STDOUT)]))
     db_logger = Steno.logger('cc.db.migrations')
-    VCAP::CloudController::Encryptor.db_encryption_key = RakeConfig.config.get(:db_encryption_key)
-    db = VCAP::CloudController::DB.connect(RakeConfig.config.get(:db), db_logger)
+    CloudController::Encryptor.db_encryption_key = RakeConfig.config.get(:db_encryption_key)
+    db = CloudController::DB.connect(RakeConfig.config.get(:db), db_logger)
 
     latest_migration_in_db = db[:schema_migrations].order(Sequel.desc(:filename)).first[:filename]
     latest_migration_in_dir = File.basename(Dir['db/migrations/*'].sort.last)

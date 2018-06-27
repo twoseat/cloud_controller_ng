@@ -4,12 +4,12 @@ module VCAP::Services::ServiceBrokers
   RSpec.describe ServiceBrokerRemover do
     subject(:remover) { ServiceBrokerRemover.new(services_events_repository) }
     let(:services_events_repository) do
-      VCAP::CloudController::Repositories::ServiceEventRepository.new(VCAP::CloudController::UserAuditInfo.new(user_guid: user.guid, user_email: email))
+      CloudController::Repositories::ServiceEventRepository.new(CloudController::UserAuditInfo.new(user_guid: user.guid, user_email: email))
     end
-    let(:broker) { VCAP::CloudController::ServiceBroker.make }
+    let(:broker) { CloudController::ServiceBroker.make }
     let(:dashboard_client_manager) { instance_double(VCAP::Services::SSO::DashboardClientManager) }
-    let(:security_context) { class_double(VCAP::CloudController::SecurityContext, current_user: user, current_user_email: email) }
-    let(:user) { VCAP::CloudController::User.make }
+    let(:security_context) { class_double(CloudController::SecurityContext, current_user: user, current_user_email: email) }
+    let(:user) { CloudController::User.make }
     let(:email) { 'email@example.com' }
 
     describe '#remove' do
@@ -32,12 +32,12 @@ module VCAP::Services::ServiceBrokers
       end
 
       it 'records service and service_plan deletion events' do
-        service = VCAP::CloudController::Service.make(service_broker: broker)
-        plan = VCAP::CloudController::ServicePlan.make(service: service)
+        service = CloudController::Service.make(service_broker: broker)
+        plan = CloudController::ServicePlan.make(service: service)
 
         remover.remove(broker)
 
-        event = VCAP::CloudController::Event.first(type: 'audit.service.delete')
+        event = CloudController::Event.first(type: 'audit.service.delete')
         expect(event.type).to eq('audit.service.delete')
         expect(event.actor_type).to eq('service_broker')
         expect(event.actor).to eq(broker.guid)
@@ -50,7 +50,7 @@ module VCAP::Services::ServiceBrokers
         expect(event.organization_guid).to eq('')
         expect(event.metadata).to be_empty
 
-        event = VCAP::CloudController::Event.first(type: 'audit.service_plan.delete')
+        event = CloudController::Event.first(type: 'audit.service_plan.delete')
         expect(event.type).to eq('audit.service_plan.delete')
         expect(event.actor_type).to eq('service_broker')
         expect(event.actor).to eq(broker.guid)

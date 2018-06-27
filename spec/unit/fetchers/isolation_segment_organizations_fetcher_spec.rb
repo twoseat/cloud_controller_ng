@@ -1,18 +1,18 @@
 require 'spec_helper'
 require 'fetchers/isolation_segment_organizations_fetcher'
 
-module VCAP::CloudController
+module CloudController
   RSpec.describe IsolationSegmentOrganizationsFetcher do
     subject(:fetcher) { IsolationSegmentOrganizationsFetcher.new(isolation_segment_model) }
 
-    let!(:isolation_segment_model) { VCAP::CloudController::IsolationSegmentModel.make }
+    let!(:isolation_segment_model) { CloudController::IsolationSegmentModel.make }
 
-    let(:assigner) { VCAP::CloudController::IsolationSegmentAssign.new }
+    let(:assigner) { CloudController::IsolationSegmentAssign.new }
 
-    let(:org1) { VCAP::CloudController::Organization.make }
-    let(:org2) { VCAP::CloudController::Organization.make }
-    let(:org3) { VCAP::CloudController::Organization.make }
-    let(:org4) { VCAP::CloudController::Organization.make }
+    let(:org1) { CloudController::Organization.make }
+    let(:org2) { CloudController::Organization.make }
+    let(:org3) { CloudController::Organization.make }
+    let(:org4) { CloudController::Organization.make }
 
     before do
       assigner.assign(isolation_segment_model, [org1, org2, org3])

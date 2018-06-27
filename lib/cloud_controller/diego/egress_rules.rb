@@ -1,8 +1,8 @@
-module VCAP::CloudController
+module CloudController
   module Diego
     class EgressRules
       def staging(app_guid:)
-        space = VCAP::CloudController::AppModel.find(guid: app_guid).space
+        space = CloudController::AppModel.find(guid: app_guid).space
         present_rules(space.staging_security_groups)
       end
 

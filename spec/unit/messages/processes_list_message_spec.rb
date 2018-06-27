@@ -1,7 +1,7 @@
 require 'spec_helper'
 require 'messages/processes_list_message'
 
-module VCAP::CloudController
+module CloudController
   RSpec.describe ProcessesListMessage do
     describe '.from_params' do
       let(:params) do

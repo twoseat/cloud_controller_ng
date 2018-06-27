@@ -1,4 +1,4 @@
-module VCAP::CloudController
+module CloudController
   class BaseAccess
     include Allowy::AccessControl
 
@@ -14,11 +14,11 @@ module VCAP::CloudController
     end
 
     def has_write_scope?
-      VCAP::CloudController::SecurityContext.scopes.include?('cloud_controller.write')
+      CloudController::SecurityContext.scopes.include?('cloud_controller.write')
     end
 
     def has_read_scope?
-      VCAP::CloudController::SecurityContext.scopes.include?('cloud_controller.read')
+      CloudController::SecurityContext.scopes.include?('cloud_controller.read')
     end
 
     def object_is_visible_to_user?(object, user)

@@ -1,8 +1,8 @@
 require 'spec_helper'
 
-module VCAP::CloudController
+module CloudController
   RSpec.describe 'orphan mitigation' do
-    include VCAP::CloudController::BrokerApiHelper
+    include CloudController::BrokerApiHelper
 
     let(:guid_pattern) { '[[:alnum:]-]+' }
     let(:basic_auth) { ['username', 'password'] }

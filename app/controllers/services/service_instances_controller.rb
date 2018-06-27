@@ -10,9 +10,9 @@ require 'fetchers/service_binding_list_fetcher'
 require 'presenters/v2/service_instance_shared_to_presenter'
 require 'presenters/v2/service_instance_shared_from_presenter'
 
-module VCAP::CloudController
+module CloudController
   class ServiceInstancesController < RestController::ModelController
-    include VCAP::CloudController::LockCheck
+    include CloudController::LockCheck
 
     model_class_name :ManagedServiceInstance # Must do this to be backwards compatible with actions other than enumerate
     define_attributes do
@@ -242,7 +242,7 @@ module VCAP::CloudController
 
       validate_access(:read, service_instance.space)
 
-      associated_controller = VCAP::CloudController::SpacesController
+      associated_controller = CloudController::SpacesController
       associated_path = "#{self.class.url_for_guid(guid, service_instance)}/shared_to"
 
       create_paginated_collection_renderer(service_instance).render_json(
@@ -291,7 +291,7 @@ module VCAP::CloudController
 
     def self.url_for_guid(guid, object=nil)
       if object.class == UserProvidedServiceInstance
-        user_provided_path = VCAP::CloudController::UserProvidedServiceInstancesController.path
+        user_provided_path = CloudController::UserProvidedServiceInstancesController.path
         "#{user_provided_path}/#{guid}"
       else
         "#{path}/#{guid}"
@@ -343,7 +343,7 @@ module VCAP::CloudController
 
       req_body = body.string.blank? ? '{}' : body
 
-      json_msg = VCAP::CloudController::RouteBindingMessage.decode(req_body)
+      json_msg = CloudController::RouteBindingMessage.decode(req_body)
       @request_attrs = json_msg.extract(stringify_keys: true)
 
       bind_route(other_guid, guid)
@@ -430,7 +430,7 @@ module VCAP::CloudController
     end
 
     def create_paginated_collection_renderer(service_instance)
-      VCAP::CloudController::RestController::PaginatedCollectionRenderer.new(
+      CloudController::RestController::PaginatedCollectionRenderer.new(
         ServiceInstanceSharedToEagerLoader.new,
         ServiceInstanceSharedToSerializer.new(service_instance),
         {

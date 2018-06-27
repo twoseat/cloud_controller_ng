@@ -1,7 +1,7 @@
 require 'spec_helper'
 require 'messages/manifest_routes_update_message'
 
-module VCAP::CloudController
+module CloudController
   RSpec.describe ManifestRoutesUpdateMessage do
     describe 'yaml validations' do
       context 'when unexpected keys are requested' do

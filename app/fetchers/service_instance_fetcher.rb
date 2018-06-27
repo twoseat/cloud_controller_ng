@@ -1,4 +1,4 @@
-module VCAP::CloudController
+module CloudController
   class ServiceInstanceFetcher
     def fetch(guid)
       instance = ServiceInstance.first(guid: guid)

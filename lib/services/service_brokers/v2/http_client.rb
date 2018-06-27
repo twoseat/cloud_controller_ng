@@ -87,7 +87,7 @@ module VCAP::Services
         @url = attrs.fetch(:url)
         @auth_username = attrs.fetch(:auth_username)
         @auth_password = attrs.fetch(:auth_password)
-        @broker_client_timeout = VCAP::CloudController::Config.config.get(:broker_client_timeout_seconds)
+        @broker_client_timeout = CloudController::Config.config.get(:broker_client_timeout_seconds)
         @logger = logger || Steno.logger('cc.service_broker.v2.http_client')
       end
 
@@ -154,7 +154,7 @@ module VCAP::Services
 
       def redact_credentials(response)
         body = MultiJson.load(response.body)
-        body['credentials'] = VCAP::CloudController::Presenters::Censorship::REDACTED if body['credentials']
+        body['credentials'] = CloudController::Presenters::Censorship::REDACTED if body['credentials']
         body.inspect
       rescue
         'Error parsing body'
@@ -165,19 +165,19 @@ module VCAP::Services
           VCAP::Request::HEADER_BROKER_API_VERSION => '2.13',
           VCAP::Request::HEADER_NAME => VCAP::Request.current_id,
           'Accept' => 'application/json',
-          VCAP::Request::HEADER_API_INFO_LOCATION => "#{VCAP::CloudController::Config.config.get(:external_domain)}/v2/info"
+          VCAP::Request::HEADER_API_INFO_LOCATION => "#{CloudController::Config.config.get(:external_domain)}/v2/info"
         }
       end
 
       def verify_certs?
-        !VCAP::CloudController::Config.config.get(:skip_cert_verify)
+        !CloudController::Config.config.get(:skip_cert_verify)
       end
 
       def user_guid(options)
         if options[:user_guid]
           options[:user_guid]
         else
-          VCAP::CloudController::SecurityContext.current_user_guid
+          CloudController::SecurityContext.current_user_guid
         end
       end
     end

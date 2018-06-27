@@ -2,7 +2,7 @@ require 'messages/base_message'
 require 'messages/validators'
 require 'messages/buildpack_lifecycle_data_message'
 
-module VCAP::CloudController
+module CloudController
   class BuildCreateMessage < BaseMessage
     register_allowed_keys [:staging_memory_in_mb, :staging_disk_in_mb, :environment_variables, :lifecycle, :package]
 
@@ -36,7 +36,7 @@ module VCAP::CloudController
     end
 
     def buildpack_data
-      @buildpack_data ||= VCAP::CloudController::BuildpackLifecycleDataMessage.new(lifecycle_data)
+      @buildpack_data ||= CloudController::BuildpackLifecycleDataMessage.new(lifecycle_data)
     end
 
     def lifecycle_data

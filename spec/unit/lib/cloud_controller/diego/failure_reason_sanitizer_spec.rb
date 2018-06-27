@@ -1,7 +1,7 @@
 require 'spec_helper'
 require 'cloud_controller/diego/failure_reason_sanitizer'
 
-module VCAP::CloudController
+module CloudController
   module Diego
     RSpec.describe FailureReasonSanitizer do
       describe '#sanitize' do

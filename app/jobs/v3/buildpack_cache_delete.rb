@@ -1,7 +1,7 @@
-module VCAP::CloudController
+module CloudController
   module Jobs
     module V3
-      class BuildpackCacheDelete < VCAP::CloudController::Jobs::CCJob
+      class BuildpackCacheDelete < CloudController::Jobs::CCJob
         attr_accessor :app_guid
 
         def initialize(app_guid)

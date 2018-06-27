@@ -1,4 +1,4 @@
-module VCAP::CloudController
+module CloudController
   class OrganizationAccess < BaseAccess
     def create?(org, params=nil)
       return true if context.queryer.can_write_globally?

@@ -1,8 +1,8 @@
 require 'spec_helper'
 
-module VCAP::CloudController::RoutingApi
+module CloudController::RoutingApi
   RSpec.describe Client do
-    let(:uaa_client) { instance_double(VCAP::CloudController::UaaClient, token_info: token_info) }
+    let(:uaa_client) { instance_double(CloudController::UaaClient, token_info: token_info) }
     let(:token_info) { instance_double(CF::UAA::TokenInfo, auth_header: 'bearer my-token') }
     let(:routing_api_url) { 'http://routing-api.example.com' }
     let(:skip_cert_verify) { false }

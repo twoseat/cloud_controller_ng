@@ -17,18 +17,18 @@ module CloudController::Presenters::V2
         allow(RelationsPresenter).to receive(:new).and_return(relations_presenter)
       end
 
-      let(:space) { VCAP::CloudController::Space.make }
-      let(:domain) { VCAP::CloudController::SharedDomain.make }
-      let(:service_instance) { VCAP::CloudController::ManagedServiceInstance.make(:routing, space: space) }
+      let(:space) { CloudController::Space.make }
+      let(:domain) { CloudController::SharedDomain.make }
+      let(:service_instance) { CloudController::ManagedServiceInstance.make(:routing, space: space) }
       let(:route) do
-        VCAP::CloudController::Route.make(
+        CloudController::Route.make(
           host:   'host',
           path:   '/some-path',
           domain: domain,
           space:  space,
         )
       end
-      let!(:route_binding) { VCAP::CloudController::RouteBinding.make(route: route, service_instance: service_instance) }
+      let!(:route_binding) { CloudController::RouteBinding.make(route: route, service_instance: service_instance) }
 
       it 'returns the route entity and associated urls' do
         expect(subject.entity_hash(controller, route, opts, depth, parents, orphans)).to eq(
@@ -48,7 +48,7 @@ module CloudController::Presenters::V2
       end
 
       context 'when the domain is a private domain' do
-        let(:domain) { VCAP::CloudController::PrivateDomain.make(owning_organization: space.organization) }
+        let(:domain) { CloudController::PrivateDomain.make(owning_organization: space.organization) }
 
         it 'uses the private_domains url' do
           expect(subject.entity_hash(controller, route, opts, depth, parents, orphans)).to include(

@@ -8,20 +8,20 @@ RSpec.describe BackgroundJobEnvironment do
       bits_service: { enabled: false },
     )
   end
-  let(:config) { VCAP::CloudController::Config.config }
+  let(:config) { CloudController::Config.config }
 
   subject(:background_job_environment) { BackgroundJobEnvironment.new(config) }
 
   describe '#setup_environment' do
     before do
-      allow(VCAP::CloudController::DB).to receive(:load_models)
+      allow(CloudController::DB).to receive(:load_models)
       allow(Thread).to receive(:new).and_yield
       allow(EM).to receive(:run).and_yield
-      allow(VCAP::CloudController::ResourcePool).to receive(:new)
+      allow(CloudController::ResourcePool).to receive(:new)
     end
 
     it 'loads models' do
-      expect(VCAP::CloudController::DB).to receive(:load_models)
+      expect(CloudController::DB).to receive(:load_models)
       background_job_environment.setup_environment
     end
 
@@ -31,9 +31,9 @@ RSpec.describe BackgroundJobEnvironment do
     end
 
     it 'configures app observer with null stager and runner' do
-      expect(VCAP::CloudController::ProcessObserver).to receive(:configure).with(
-        instance_of(VCAP::CloudController::Stagers),
-        instance_of(VCAP::CloudController::Runners)
+      expect(CloudController::ProcessObserver).to receive(:configure).with(
+        instance_of(CloudController::Stagers),
+        instance_of(CloudController::Runners)
       )
       background_job_environment.setup_environment
     end

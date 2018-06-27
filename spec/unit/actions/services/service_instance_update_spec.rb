@@ -1,7 +1,7 @@
 require 'spec_helper'
 require 'actions/services/service_instance_update'
 
-module VCAP::CloudController
+module CloudController
   RSpec.describe ServiceInstanceUpdate do
     let(:services_event_repo) do
       instance_double(Repositories::ServiceEventRepository, record_service_instance_event: nil, user_audit_info: user_audit_info)

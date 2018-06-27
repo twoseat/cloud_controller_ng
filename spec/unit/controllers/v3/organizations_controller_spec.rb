@@ -2,10 +2,10 @@ require 'rails_helper'
 
 RSpec.describe OrganizationsV3Controller, type: :controller do
   describe '#show' do
-    let(:user) { set_current_user(VCAP::CloudController::User.make) }
+    let(:user) { set_current_user(CloudController::User.make) }
 
-    let!(:org) { VCAP::CloudController::Organization.make(name: 'Eric\'s Farm') }
-    let!(:space) { VCAP::CloudController::Space.make(name: 'Cat', organization: org) }
+    let!(:org) { CloudController::Organization.make(name: 'Eric\'s Farm') }
+    let!(:space) { CloudController::Space.make(name: 'Cat', organization: org) }
 
     describe 'permissions by role' do
       before do
@@ -58,7 +58,7 @@ RSpec.describe OrganizationsV3Controller, type: :controller do
   end
 
   describe '#create' do
-    let(:user) { VCAP::CloudController::User.make }
+    let(:user) { CloudController::User.make }
 
     before do
       set_current_user(user)
@@ -101,7 +101,7 @@ RSpec.describe OrganizationsV3Controller, type: :controller do
 
     context 'when "user_org_creation" feature flag is enabled' do
       before do
-        VCAP::CloudController::FeatureFlag.make(name: 'user_org_creation', enabled: true)
+        CloudController::FeatureFlag.make(name: 'user_org_creation', enabled: true)
       end
 
       it 'lets ALL users create orgs' do
@@ -127,7 +127,7 @@ RSpec.describe OrganizationsV3Controller, type: :controller do
         let(:name) { 'not-unique' }
 
         before do
-          VCAP::CloudController::Organization.make name: name
+          CloudController::Organization.make name: name
         end
 
         it 'responds with 422' do
@@ -140,13 +140,13 @@ RSpec.describe OrganizationsV3Controller, type: :controller do
   end
 
   describe '#index' do
-    let(:user) { set_current_user(VCAP::CloudController::User.make) }
+    let(:user) { set_current_user(CloudController::User.make) }
 
-    let!(:member_org) { VCAP::CloudController::Organization.make(name: 'Marmot') }
-    let!(:manager_org) { VCAP::CloudController::Organization.make(name: 'Rat') }
-    let!(:billing_manager_org) { VCAP::CloudController::Organization.make(name: 'Beaver') }
-    let!(:auditor_org) { VCAP::CloudController::Organization.make(name: 'Capybara') }
-    let!(:other_org) { VCAP::CloudController::Organization.make(name: 'Groundhog') }
+    let!(:member_org) { CloudController::Organization.make(name: 'Marmot') }
+    let!(:manager_org) { CloudController::Organization.make(name: 'Rat') }
+    let!(:billing_manager_org) { CloudController::Organization.make(name: 'Beaver') }
+    let!(:auditor_org) { CloudController::Organization.make(name: 'Capybara') }
+    let!(:other_org) { CloudController::Organization.make(name: 'Groundhog') }
 
     before do
       member_org.add_user(user)
@@ -244,14 +244,14 @@ RSpec.describe OrganizationsV3Controller, type: :controller do
     end
 
     context 'when accessed as an isolation segment subresource' do
-      let(:assigner) { VCAP::CloudController::IsolationSegmentAssign.new }
-      let(:isolation_segment_model) { VCAP::CloudController::IsolationSegmentModel.make }
-      let(:org1) { VCAP::CloudController::Organization.make }
-      let(:org2) { VCAP::CloudController::Organization.make }
-      let(:org3) { VCAP::CloudController::Organization.make }
+      let(:assigner) { CloudController::IsolationSegmentAssign.new }
+      let(:isolation_segment_model) { CloudController::IsolationSegmentModel.make }
+      let(:org1) { CloudController::Organization.make }
+      let(:org2) { CloudController::Organization.make }
+      let(:org3) { CloudController::Organization.make }
 
       before do
-        VCAP::CloudController::Organization.make
+        CloudController::Organization.make
         assigner.assign(isolation_segment_model, [org1, org2])
         org1.add_user(user)
         org2.add_user(user)
@@ -311,7 +311,7 @@ RSpec.describe OrganizationsV3Controller, type: :controller do
       end
 
       context 'when the isolation segment organizations contains organizations the user cannot see' do
-        let(:org4) { VCAP::CloudController::Organization.make }
+        let(:org4) { CloudController::Organization.make }
 
         before do
           assigner.assign(isolation_segment_model, [org4])
@@ -329,11 +329,11 @@ RSpec.describe OrganizationsV3Controller, type: :controller do
   end
 
   describe '#show_default_isolation_segment' do
-    let(:user) { VCAP::CloudController::User.make }
-    let(:org) { VCAP::CloudController::Organization.make(name: 'Water') }
-    let(:isolation_segment) { VCAP::CloudController::IsolationSegmentModel.make(name: 'default_seg') }
-    let(:assigner) { VCAP::CloudController::IsolationSegmentAssign.new }
-    let(:unassigner) { VCAP::CloudController::IsolationSegmentUnassign.new }
+    let(:user) { CloudController::User.make }
+    let(:org) { CloudController::Organization.make(name: 'Water') }
+    let(:isolation_segment) { CloudController::IsolationSegmentModel.make(name: 'default_seg') }
+    let(:assigner) { CloudController::IsolationSegmentAssign.new }
+    let(:unassigner) { CloudController::IsolationSegmentUnassign.new }
 
     before do
       assigner.assign(isolation_segment, [org])
@@ -409,11 +409,11 @@ RSpec.describe OrganizationsV3Controller, type: :controller do
   end
 
   describe '#update_default_isolation_segment' do
-    let(:user) { VCAP::CloudController::User.make }
-    let(:org) { VCAP::CloudController::Organization.make(name: 'Water') }
-    let(:isolation_segment) { VCAP::CloudController::IsolationSegmentModel.make(name: 'default_seg') }
-    let(:assigner) { VCAP::CloudController::IsolationSegmentAssign.new }
-    let(:unassigner) { VCAP::CloudController::IsolationSegmentUnassign.new }
+    let(:user) { CloudController::User.make }
+    let(:org) { CloudController::Organization.make(name: 'Water') }
+    let(:isolation_segment) { CloudController::IsolationSegmentModel.make(name: 'default_seg') }
+    let(:assigner) { CloudController::IsolationSegmentAssign.new }
+    let(:unassigner) { CloudController::IsolationSegmentUnassign.new }
     let(:req_body) do
       {
         data: { guid: isolation_segment.guid }
@@ -460,7 +460,7 @@ RSpec.describe OrganizationsV3Controller, type: :controller do
     end
 
     context 'when the requested isolation segment has not been entitled to the org' do
-      let(:org2) { VCAP::CloudController::Organization.make }
+      let(:org2) { CloudController::Organization.make }
       before do
         allow_user_read_access_for(user, orgs: [org2])
       end
@@ -505,8 +505,8 @@ RSpec.describe OrganizationsV3Controller, type: :controller do
 
     context 'when the assignment fails' do
       before do
-        allow_any_instance_of(VCAP::CloudController::SetDefaultIsolationSegment).to receive(:set).and_raise(
-          VCAP::CloudController::SetDefaultIsolationSegment::Error.new('bad thing happened!'))
+        allow_any_instance_of(CloudController::SetDefaultIsolationSegment).to receive(:set).and_raise(
+          CloudController::SetDefaultIsolationSegment::Error.new('bad thing happened!'))
       end
 
       it 'returns 422' do

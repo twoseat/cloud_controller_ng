@@ -1,4 +1,4 @@
-module VCAP::CloudController
+module CloudController
   module Diego
     class StagingDetails
       attr_accessor :staging_guid, :staging_memory_in_mb, :staging_disk_in_mb, :package,

@@ -1,7 +1,7 @@
 require 'spec_helper'
 require 'actions/process_upsert_from_droplet'
 
-module VCAP::CloudController
+module CloudController
   RSpec.describe ProcessUpsertFromDroplet do
     let(:droplet) { nil }
     let(:app) { AppModel.make(droplet: droplet, name: 'my_app') }

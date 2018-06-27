@@ -1,4 +1,4 @@
-module VCAP::CloudController
+module CloudController
   class ProcessDelete
     def initialize(user_audit_info)
       @user_audit_info = user_audit_info

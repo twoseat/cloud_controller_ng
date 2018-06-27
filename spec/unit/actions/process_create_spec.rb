@@ -1,7 +1,7 @@
 require 'spec_helper'
 require 'actions/process_create'
 
-module VCAP::CloudController
+module CloudController
   RSpec.describe ProcessCreate do
     subject(:process_create) { ProcessCreate.new(user_audit_info) }
     let(:app) { AppModel.make }

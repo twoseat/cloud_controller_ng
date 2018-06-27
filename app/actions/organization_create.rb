@@ -1,4 +1,4 @@
-module VCAP::CloudController
+module CloudController
   class OrganizationCreate
     class Error < ::StandardError
     end
@@ -8,8 +8,8 @@ module VCAP::CloudController
     end
 
     def create(message)
-      org = VCAP::CloudController::Organization.create(name: message.name)
-      VCAP::CloudController::Roles::ORG_ROLE_NAMES.each do |role|
+      org = CloudController::Organization.create(name: message.name)
+      CloudController::Roles::ORG_ROLE_NAMES.each do |role|
         perm_client.create_org_role(role: role, org_id: org.guid)
       end
       org

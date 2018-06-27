@@ -1,6 +1,6 @@
 require 'addressable/uri'
 
-module VCAP::CloudController
+module CloudController
   class ManifestRoute
     SUPPORTED_HTTP_SCHEMES = %w{http https unspecified}.freeze
     SUPPORTED_TCP_SCHEMES = %w{tcp unspecified}.freeze

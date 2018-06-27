@@ -1,7 +1,7 @@
-module VCAP::CloudController
+module CloudController
   module Jobs
     module Runtime
-      class PendingDropletCleanup < VCAP::CloudController::Jobs::CCJob
+      class PendingDropletCleanup < CloudController::Jobs::CCJob
         ADDITIONAL_EXPIRATION_TIME_IN_SECONDS = 300
 
         attr_reader :expiration_in_seconds

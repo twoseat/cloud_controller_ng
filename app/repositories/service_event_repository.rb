@@ -1,4 +1,4 @@
-module VCAP::CloudController
+module CloudController
   module Repositories
     class ServiceEventRepository
       attr_reader :user_audit_info

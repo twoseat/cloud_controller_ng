@@ -1,6 +1,6 @@
 require 'cf-copilot'
 
-module VCAP::CloudController
+module CloudController
   module Copilot
     class Adapter
       class CopilotUnavailable < StandardError

@@ -2,7 +2,7 @@ require 'diego/action_builder'
 require 'cloud_controller/diego/task_environment_variable_collector'
 require 'credhub/config_helpers'
 
-module VCAP::CloudController
+module CloudController
   module Diego
     module Buildpack
       class TaskActionBuilder

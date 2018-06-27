@@ -1,5 +1,5 @@
 module BackgroundJobHelpers
-  include VCAP::CloudController
+  include CloudController
 
   def execute_all_jobs(expected_successes:, expected_failures:)
     successes, failures = Delayed::Worker.new.work_off

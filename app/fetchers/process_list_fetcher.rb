@@ -1,4 +1,4 @@
-module VCAP::CloudController
+module CloudController
   class ProcessListFetcher
     def initialize(message)
       @message = message

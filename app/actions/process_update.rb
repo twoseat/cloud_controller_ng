@@ -1,6 +1,6 @@
 require 'models/helpers/health_check_types'
 
-module VCAP::CloudController
+module CloudController
   class ProcessUpdate
     class InvalidProcess < StandardError; end
 

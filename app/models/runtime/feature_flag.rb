@@ -1,4 +1,4 @@
-module VCAP::CloudController
+module CloudController
   class FeatureFlag < Sequel::Model
     FF_ERROR_MESSAGE_REGEX = /\A[[:alnum:][:punct:][:print:]]+\Z/
 
@@ -74,11 +74,11 @@ module VCAP::CloudController
     end
 
     def self.admin?
-      VCAP::CloudController::SecurityContext.admin?
+      CloudController::SecurityContext.admin?
     end
 
     def self.admin_read_only?
-      VCAP::CloudController::SecurityContext.admin_read_only?
+      CloudController::SecurityContext.admin_read_only?
     end
 
     private_class_method :admin?

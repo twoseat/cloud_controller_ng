@@ -1,7 +1,7 @@
 require 'spec_helper'
 require 'fetchers/space_fetcher'
 
-module VCAP::CloudController
+module CloudController
   RSpec.describe SpaceFetcher do
     describe '#fetch' do
       let(:space) { Space.make }

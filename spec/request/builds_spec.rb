@@ -1,20 +1,20 @@
 require 'spec_helper'
 
 RSpec.describe 'Builds' do
-  let(:bbs_stager_client) { instance_double(VCAP::CloudController::Diego::BbsStagerClient) }
-  let(:space) { VCAP::CloudController::Space.make }
+  let(:bbs_stager_client) { instance_double(CloudController::Diego::BbsStagerClient) }
+  let(:space) { CloudController::Space.make }
   let(:developer) { make_developer_for_space(space) }
   let(:developer_headers) { headers_for(developer, user_name: user_name, email: 'bob@loblaw.com') }
   let(:user_name) { 'bob the builder' }
   let(:parsed_response) { MultiJson.load(last_response.body) }
-  let(:app_model) { VCAP::CloudController::AppModel.make(space_guid: space.guid, name: 'my-app') }
+  let(:app_model) { CloudController::AppModel.make(space_guid: space.guid, name: 'my-app') }
 
   describe 'POST /v3/builds' do
     let(:package) do
-      VCAP::CloudController::PackageModel.make(
+      CloudController::PackageModel.make(
         app_guid: app_model.guid,
-        state: VCAP::CloudController::PackageModel::READY_STATE,
-        type: VCAP::CloudController::PackageModel::BITS_TYPE,
+        state: CloudController::PackageModel::READY_STATE,
+        type: CloudController::PackageModel::BITS_TYPE,
       )
     end
     let(:diego_staging_response) do
@@ -43,11 +43,11 @@ RSpec.describe 'Builds' do
     end
 
     before do
-      stack = (VCAP::CloudController::Stack.find(name: create_request[:lifecycle][:data][:stack]) ||
-               VCAP::CloudController::Stack.make(name: create_request[:lifecycle][:data][:stack]))
+      stack = (CloudController::Stack.find(name: create_request[:lifecycle][:data][:stack]) ||
+               CloudController::Stack.make(name: create_request[:lifecycle][:data][:stack]))
       # putting stack in the App.make call leads to an "App doesn't have a primary key" error
       # message from sequel.
-      process = VCAP::CloudController::ProcessModel.make(app: app_model, memory: 1024, disk_quota: 1536)
+      process = CloudController::ProcessModel.make(app: app_model, memory: 1024, disk_quota: 1536)
       process.stack = stack
       process.save
       allow_any_instance_of(CloudController::Blobstore::UrlGenerator).to receive(:package_download_url).and_return('some-string')
@@ -59,7 +59,7 @@ RSpec.describe 'Builds' do
     it 'creates a Builds resource' do
       post '/v3/builds', create_request.to_json, developer_headers
 
-      created_build = VCAP::CloudController::BuildModel.last
+      created_build = CloudController::BuildModel.last
 
       expected_response =
         {
@@ -97,7 +97,7 @@ RSpec.describe 'Builds' do
       expect(last_response.status).to eq(201)
       expect(parsed_response).to be_a_response_like(expected_response)
 
-      event = VCAP::CloudController::Event.last
+      event = CloudController::Event.last
       expect(event).not_to be_nil
       expect(event.type).to eq('audit.app.build.create')
       expect(event.metadata).to eq({
@@ -109,7 +109,7 @@ RSpec.describe 'Builds' do
 
   describe 'GET /v3/builds' do
     let(:build) do
-      VCAP::CloudController::BuildModel.make(
+      CloudController::BuildModel.make(
         package: package,
         app: app_model,
         created_by_user_name: 'bob the builder',
@@ -118,7 +118,7 @@ RSpec.describe 'Builds' do
       )
     end
     let!(:second_build) do
-      VCAP::CloudController::BuildModel.make(
+      CloudController::BuildModel.make(
         package: package,
         app: app_model,
         created_at: build.created_at - 1.day,
@@ -127,15 +127,15 @@ RSpec.describe 'Builds' do
         created_by_user_email: 'bob@loblaw.com'
       )
     end
-    let(:package) { VCAP::CloudController::PackageModel.make(app_guid: app_model.guid) }
-    let(:droplet) { VCAP::CloudController::DropletModel.make(
-      state: VCAP::CloudController::DropletModel::STAGED_STATE,
+    let(:package) { CloudController::PackageModel.make(app_guid: app_model.guid) }
+    let(:droplet) { CloudController::DropletModel.make(
+      state: CloudController::DropletModel::STAGED_STATE,
       package_guid: package.guid,
       build: build,
     )
     }
-    let(:second_droplet) { VCAP::CloudController::DropletModel.make(
-      state: VCAP::CloudController::DropletModel::STAGED_STATE,
+    let(:second_droplet) { CloudController::DropletModel.make(
+      state: CloudController::DropletModel::STAGED_STATE,
       package_guid: package.guid,
       build: second_build,
     )
@@ -144,19 +144,19 @@ RSpec.describe 'Builds' do
       { lifecycle: { type: 'buildpack', data: { buildpacks: ['http://github.com/myorg/awesome-buildpack'],
                                                 stack: 'cflinuxfs2' } } }
     end
-    let(:staging_message) { VCAP::CloudController::BuildCreateMessage.new(body) }
+    let(:staging_message) { CloudController::BuildCreateMessage.new(body) }
 
     before do
-      VCAP::CloudController::BuildpackLifecycle.new(package, staging_message).create_lifecycle_data_model(build)
-      VCAP::CloudController::BuildpackLifecycle.new(package, staging_message).create_lifecycle_data_model(second_build)
+      CloudController::BuildpackLifecycle.new(package, staging_message).create_lifecycle_data_model(build)
+      CloudController::BuildpackLifecycle.new(package, staging_message).create_lifecycle_data_model(second_build)
       build.update(state: droplet.state, error_description: droplet.error_description)
       second_build.update(state: second_droplet.state, error_description: second_droplet.error_description)
     end
 
     context 'when there are other spaces the developer cannot see' do
-      let(:non_accessible_space) { VCAP::CloudController::Space.make }
-      let(:non_accessible_app_model) { VCAP::CloudController::AppModel.make(space_guid: non_accessible_space.guid, name: 'other-app') }
-      let!(:non_accessible_build) { VCAP::CloudController::BuildModel.make(app: non_accessible_app_model) }
+      let(:non_accessible_space) { CloudController::Space.make }
+      let(:non_accessible_app_model) { CloudController::AppModel.make(space_guid: non_accessible_space.guid, name: 'other-app') }
+      let!(:non_accessible_build) { CloudController::BuildModel.make(app: non_accessible_app_model) }
 
       let(:per_page) { 2 }
       let(:order_by) { '-created_at' }
@@ -235,7 +235,7 @@ RSpec.describe 'Builds' do
 
   describe 'GET /v3/builds/:guid' do
     let(:build) do
-      VCAP::CloudController::BuildModel.make(
+      CloudController::BuildModel.make(
         package: package,
         app: app_model,
         created_by_user_name: 'bob the builder',
@@ -243,9 +243,9 @@ RSpec.describe 'Builds' do
         created_by_user_email: 'bob@loblaw.com'
       )
     end
-    let(:package) { VCAP::CloudController::PackageModel.make(app_guid: app_model.guid) }
-    let(:droplet) { VCAP::CloudController::DropletModel.make(
-      state: VCAP::CloudController::DropletModel::STAGED_STATE,
+    let(:package) { CloudController::PackageModel.make(app_guid: app_model.guid) }
+    let(:droplet) { CloudController::DropletModel.make(
+      state: CloudController::DropletModel::STAGED_STATE,
       package_guid: package.guid,
       build: build,
     )
@@ -254,10 +254,10 @@ RSpec.describe 'Builds' do
       { lifecycle: { type: 'buildpack', data: { buildpacks: ['http://github.com/myorg/awesome-buildpack'],
                                                 stack: 'cflinuxfs2' } } }
     end
-    let(:staging_message) { VCAP::CloudController::BuildCreateMessage.new(body) }
+    let(:staging_message) { CloudController::BuildCreateMessage.new(body) }
 
     before do
-      VCAP::CloudController::BuildpackLifecycle.new(package, staging_message).create_lifecycle_data_model(build)
+      CloudController::BuildpackLifecycle.new(package, staging_message).create_lifecycle_data_model(build)
       build.update(state: droplet.state, error_description: droplet.error_description)
     end
 

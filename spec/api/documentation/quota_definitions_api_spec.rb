@@ -3,7 +3,7 @@ require 'rspec_api_documentation/dsl'
 
 RSpec.resource 'Organization Quota Definitions', type: [:api, :legacy_api] do
   let(:admin_auth_header) { admin_headers['HTTP_AUTHORIZATION'] }
-  let(:guid) { VCAP::CloudController::QuotaDefinition.make.guid }
+  let(:guid) { CloudController::QuotaDefinition.make.guid }
 
   authenticated_request
 
@@ -43,7 +43,7 @@ RSpec.resource 'Organization Quota Definitions', type: [:api, :legacy_api] do
       example_values: [-1, 10]
   end
 
-  standard_model_list(:quota_definition, VCAP::CloudController::QuotaDefinitionsController, title: 'Organization Quota Definitions')
+  standard_model_list(:quota_definition, CloudController::QuotaDefinitionsController, title: 'Organization Quota Definitions')
   standard_model_get(:quota_definition, title: 'Organization Quota Definition')
   standard_model_delete(:quota_definition, title: 'Organization Quota Definition')
 

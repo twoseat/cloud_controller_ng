@@ -1,4 +1,4 @@
-module VCAP::CloudController
+module CloudController
   class QuotaDefinitionsController < RestController::ModelController
     define_attributes do
       attribute :name,                       String

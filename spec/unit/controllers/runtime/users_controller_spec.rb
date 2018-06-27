@@ -1,20 +1,20 @@
 require 'spec_helper'
 
-module VCAP::CloudController
-  RSpec.describe VCAP::CloudController::UsersController do
+module CloudController
+  RSpec.describe CloudController::UsersController do
     describe 'Query Parameters' do
-      it { expect(VCAP::CloudController::UsersController).to be_queryable_by(:space_guid) }
-      it { expect(VCAP::CloudController::UsersController).to be_queryable_by(:organization_guid) }
-      it { expect(VCAP::CloudController::UsersController).to be_queryable_by(:managed_organization_guid) }
-      it { expect(VCAP::CloudController::UsersController).to be_queryable_by(:billing_managed_organization_guid) }
-      it { expect(VCAP::CloudController::UsersController).to be_queryable_by(:audited_organization_guid) }
-      it { expect(VCAP::CloudController::UsersController).to be_queryable_by(:managed_space_guid) }
-      it { expect(VCAP::CloudController::UsersController).to be_queryable_by(:audited_space_guid) }
+      it { expect(CloudController::UsersController).to be_queryable_by(:space_guid) }
+      it { expect(CloudController::UsersController).to be_queryable_by(:organization_guid) }
+      it { expect(CloudController::UsersController).to be_queryable_by(:managed_organization_guid) }
+      it { expect(CloudController::UsersController).to be_queryable_by(:billing_managed_organization_guid) }
+      it { expect(CloudController::UsersController).to be_queryable_by(:audited_organization_guid) }
+      it { expect(CloudController::UsersController).to be_queryable_by(:managed_space_guid) }
+      it { expect(CloudController::UsersController).to be_queryable_by(:audited_space_guid) }
     end
 
     describe 'Attributes' do
       it do
-        expect(VCAP::CloudController::UsersController).to have_creatable_attributes({
+        expect(CloudController::UsersController).to have_creatable_attributes({
           guid: { type: 'string', required: true },
           admin: { type: 'bool', default: false },
           space_guids: { type: '[string]' },
@@ -29,7 +29,7 @@ module VCAP::CloudController
       end
 
       it do
-        expect(VCAP::CloudController::UsersController).to have_updatable_attributes({
+        expect(CloudController::UsersController).to have_updatable_attributes({
           admin: { type: 'bool' },
           space_guids: { type: '[string]' },
           organization_guids: { type: '[string]' },
@@ -45,7 +45,7 @@ module VCAP::CloudController
 
     describe 'Associations' do
       it do
-        expect(VCAP::CloudController::UsersController).to have_nested_routes(
+        expect(CloudController::UsersController).to have_nested_routes(
           {
             spaces:                        [:get, :put, :delete],
             organizations:                 [:get, :put, :delete],

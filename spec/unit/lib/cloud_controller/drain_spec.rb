@@ -1,7 +1,7 @@
 require 'spec_helper'
 require 'cloud_controller/drain'
 
-module VCAP::CloudController
+module CloudController
   RSpec.describe Drain do
     let(:log_dir) { Dir.mktmpdir }
 

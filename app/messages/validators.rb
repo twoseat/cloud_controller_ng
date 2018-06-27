@@ -2,7 +2,7 @@ require 'active_model'
 require 'utils/uri_utils'
 require 'models/helpers/health_check_types'
 
-module VCAP::CloudController::Validators
+module CloudController::Validators
   module StandaloneValidator
     def validate_each(*args)
       new(attributes: [nil]).validate_each(*args)
@@ -86,7 +86,7 @@ module VCAP::CloudController::Validators
 
   class HealthCheckValidator < ActiveModel::Validator
     def validate(record)
-      if record.health_check_type != VCAP::CloudController::HealthCheckTypes::HTTP
+      if record.health_check_type != CloudController::HealthCheckTypes::HTTP
         record.errors.add(:health_check_type, 'must be "http" to set a health check HTTP endpoint')
       end
     end
@@ -95,8 +95,8 @@ module VCAP::CloudController::Validators
   class LifecycleValidator < ActiveModel::Validator
     def validate(record)
       data_message = {
-        VCAP::CloudController::Lifecycles::BUILDPACK => VCAP::CloudController::BuildpackLifecycleDataMessage,
-        VCAP::CloudController::Lifecycles::DOCKER => VCAP::CloudController::DockerLifecycleDataMessage,
+        CloudController::Lifecycles::BUILDPACK => CloudController::BuildpackLifecycleDataMessage,
+        CloudController::Lifecycles::DOCKER => CloudController::DockerLifecycleDataMessage,
       }
 
       lifecycle_data_message_class = data_message[record.lifecycle_type]
@@ -157,7 +157,7 @@ module VCAP::CloudController::Validators
     end
 
     def validate_guid(record, attribute, relationship)
-      VCAP::CloudController::BaseMessage::GuidValidator.
+      CloudController::BaseMessage::GuidValidator.
         validate_each(record, "#{attribute} Guid", relationship.values.first.values.first)
     end
 
@@ -196,7 +196,7 @@ module VCAP::CloudController::Validators
     def validate_guids(record, attribute, value)
       guids = value.map(&:values).flatten
       guids.each_with_index do |guid, idx|
-        VCAP::CloudController::BaseMessage::GuidValidator.
+        CloudController::BaseMessage::GuidValidator.
           validate_each(record, "#{attribute} Guid #{idx}", guid)
       end
     end

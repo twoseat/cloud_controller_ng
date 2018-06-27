@@ -1,7 +1,7 @@
 require 'spec_helper'
 require 'actions/services/service_instance_read'
 
-module VCAP::CloudController
+module CloudController
   RSpec.describe ServiceInstanceRead do
     let(:service) { Service.make }
     let(:service_plan) { ServicePlan.make(service: service) }

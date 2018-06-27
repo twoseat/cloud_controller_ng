@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-module VCAP::CloudController
+module CloudController
   RSpec.describe DomainAccess, type: :access do
     subject(:access) { DomainAccess.new(Security::AccessContext.new) }
     let(:token) { { 'scope' => ['cloud_controller.read', 'cloud_controller.write'] } }
@@ -67,7 +67,7 @@ module VCAP::CloudController
 
       context 'user in a different organization (defensive)' do
         before do
-          different_organization = VCAP::CloudController::Organization.make
+          different_organization = CloudController::Organization.make
           different_organization.add_user(user)
         end
 
@@ -76,7 +76,7 @@ module VCAP::CloudController
 
       context 'manager in a different organization (defensive)' do
         before do
-          different_organization = VCAP::CloudController::Organization.make
+          different_organization = CloudController::Organization.make
           different_organization.add_manager(user)
         end
 

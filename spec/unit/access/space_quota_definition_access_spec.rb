@@ -1,13 +1,13 @@
 require 'spec_helper'
 
-module VCAP::CloudController
+module CloudController
   RSpec.describe SpaceQuotaDefinitionAccess, type: :access do
     subject(:access) { SpaceQuotaDefinitionAccess.new(Security::AccessContext.new) }
-    let(:user) { VCAP::CloudController::User.make }
+    let(:user) { CloudController::User.make }
     let(:org) { Organization.make }
     let(:scopes) { nil }
     let(:space) { Space.make(organization: org) }
-    let(:object) { VCAP::CloudController::SpaceQuotaDefinition.make(organization: org) }
+    let(:object) { CloudController::SpaceQuotaDefinition.make(organization: org) }
 
     before { set_current_user(user, scopes: scopes) }
 
@@ -106,7 +106,7 @@ module VCAP::CloudController
 
     context 'user in a different organization (defensive)' do
       before do
-        different_organization = VCAP::CloudController::Organization.make
+        different_organization = CloudController::Organization.make
         different_organization.add_user(user)
       end
 
@@ -115,7 +115,7 @@ module VCAP::CloudController
 
     context 'manager in a different organization (defensive)' do
       before do
-        different_organization = VCAP::CloudController::Organization.make
+        different_organization = CloudController::Organization.make
         different_organization.add_manager(user)
       end
 

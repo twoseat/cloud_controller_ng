@@ -1,7 +1,7 @@
 require 'spec_helper'
 require 'cloud_controller/metrics/statsd_updater'
 
-module VCAP::CloudController::Metrics
+module CloudController::Metrics
   RSpec.describe StatsdUpdater do
     let(:updater) { StatsdUpdater.new(statsd_client) }
     let(:statsd_client) { Statsd.new('localhost', 9999) }

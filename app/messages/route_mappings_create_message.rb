@@ -1,7 +1,7 @@
 require 'messages/base_message'
 require 'models/helpers/process_types'
 
-module VCAP::CloudController
+module CloudController
   class RouteMappingsCreateMessage < BaseMessage
     register_allowed_keys [:relationships]
 

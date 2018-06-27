@@ -1,7 +1,7 @@
 require 'spec_helper'
 require 'fetchers/process_delete_fetcher'
 
-module VCAP::CloudController
+module CloudController
   RSpec.describe ProcessDeleteFetcher do
     describe '#fetch' do
       let(:space) { Space.make }

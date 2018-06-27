@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-module VCAP::CloudController
+module CloudController
   module Jobs
     RSpec.describe AuditEventJob, job_context: :worker do
       let(:event_repository) { double(:event_repository) }

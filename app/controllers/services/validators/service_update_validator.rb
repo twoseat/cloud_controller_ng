@@ -1,4 +1,4 @@
-module VCAP::CloudController
+module CloudController
   module ServiceUpdateValidator
     class << self
       def validate!(service_instance, space:, service_plan:, service:, update_attrs:)

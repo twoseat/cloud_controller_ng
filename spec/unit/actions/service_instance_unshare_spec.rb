@@ -1,7 +1,7 @@
 require 'spec_helper'
 require 'actions/service_instance_unshare'
 
-module VCAP::CloudController
+module CloudController
   RSpec.describe ServiceInstanceUnshare do
     let(:service_instance_unshare) { ServiceInstanceUnshare.new }
     let(:service_instance) { ManagedServiceInstance.make }
@@ -58,7 +58,7 @@ module VCAP::CloudController
             err = StandardError.new('oops')
             allow(delete_binding_action).to receive(:delete).with([service_binding]).and_return([err])
 
-            expect { service_instance_unshare.unshare(service_instance, target_space, user_audit_info) }.to raise_error(VCAP::CloudController::ServiceInstanceUnshare::Error)
+            expect { service_instance_unshare.unshare(service_instance, target_space, user_audit_info) }.to raise_error(CloudController::ServiceInstanceUnshare::Error)
             expect(service_instance.shared_spaces).to_not be_empty
           end
         end

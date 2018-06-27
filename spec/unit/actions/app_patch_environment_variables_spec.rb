@@ -1,7 +1,7 @@
 require 'spec_helper'
 require 'actions/app_patch_environment_variables'
 
-module VCAP::CloudController
+module CloudController
   RSpec.describe AppPatchEnvironmentVariables do
     subject(:app_update) { AppPatchEnvironmentVariables.new(user_audit_info) }
 

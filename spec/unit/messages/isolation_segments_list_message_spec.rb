@@ -1,7 +1,7 @@
 require 'spec_helper'
 require 'messages/isolation_segments_list_message'
 
-module VCAP::CloudController
+module CloudController
   RSpec.describe IsolationSegmentsListMessage do
     describe '.from_params' do
       let(:params) do

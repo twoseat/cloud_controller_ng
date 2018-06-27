@@ -1,4 +1,4 @@
-module VCAP::CloudController
+module CloudController
   class IsolationSegmentListFetcher
     def initialize(message:)
       @message = message

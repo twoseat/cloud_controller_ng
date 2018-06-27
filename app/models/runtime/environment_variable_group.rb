@@ -1,4 +1,4 @@
-module VCAP::CloudController
+module CloudController
   class EnvironmentVariableGroup < Sequel::Model(:env_groups)
     import_attributes :environment_json
     export_attributes :name, :environment_json
@@ -15,7 +15,7 @@ module VCAP::CloudController
 
     def validate
       return unless environment_json
-      VCAP::CloudController::Validators::EnvironmentVariablesValidator.
+      CloudController::Validators::EnvironmentVariablesValidator.
         validate_each(self, :environment_json, environment_json)
     end
 

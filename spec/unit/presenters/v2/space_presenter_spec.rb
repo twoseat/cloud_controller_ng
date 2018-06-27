@@ -10,19 +10,19 @@ module CloudController::Presenters::V2
     let(:orphans) { 'orphans' }
     let(:relations_presenter) { instance_double(RelationsPresenter, to_hash: relations_hash) }
     let(:relations_hash) { { 'relationship_key' => 'relationship_value' } }
-    let(:assigner) { VCAP::CloudController::IsolationSegmentAssign.new }
+    let(:assigner) { CloudController::IsolationSegmentAssign.new }
 
     describe '#entity_hash' do
       before do
         allow(RelationsPresenter).to receive(:new).and_return(relations_presenter)
       end
 
-      let(:organization) { VCAP::CloudController::Organization.make }
-      let(:space_quota_definition) { VCAP::CloudController::SpaceQuotaDefinition.make(organization: organization) }
+      let(:organization) { CloudController::Organization.make }
+      let(:space_quota_definition) { CloudController::SpaceQuotaDefinition.make(organization: organization) }
 
       context 'when a space is associated to an isolation segment' do
-        let(:isolation_segment_model) { VCAP::CloudController::IsolationSegmentModel.make }
-        let(:space) { VCAP::CloudController::Space.make(
+        let(:isolation_segment_model) { CloudController::IsolationSegmentModel.make }
+        let(:space) { CloudController::Space.make(
           name: 'no_unicorns_no_rainbows',
           organization: organization,
           space_quota_definition: space_quota_definition,
@@ -54,7 +54,7 @@ module CloudController::Presenters::V2
       end
 
       context 'when a space is not associated to an isolation segment' do
-        let(:space) { VCAP::CloudController::Space.make(
+        let(:space) { CloudController::Space.make(
           name: 'no_unicorns_no_rainbows',
           organization: organization,
           allow_ssh: true

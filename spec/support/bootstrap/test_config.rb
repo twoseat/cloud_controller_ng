@@ -33,15 +33,15 @@ module TestConfig
 
     def load(**overrides)
       config_hash = defaults.merge(overrides)
-      config = VCAP::CloudController::Config.new(config_hash, context: context)
-      VCAP::CloudController::Config.instance_variable_set(:@instance, config)
+      config = CloudController::Config.new(config_hash, context: context)
+      CloudController::Config.instance_variable_set(:@instance, config)
       configure_components(config)
       config
     end
 
     def defaults
       config_file = File.join(Paths::CONFIG, 'cloud_controller.yml')
-      config_hash = VCAP::CloudController::Config.load_from_file(config_file, context: context).config_hash
+      config_hash = CloudController::Config.load_from_file(config_file, context: context).config_hash
 
       fog_connection = {
         blobstore_timeout: 5,
@@ -93,7 +93,7 @@ module TestConfig
       config.configure_components
 
       stacks_file = File.join(Paths::FIXTURES, 'config/stacks.yml')
-      VCAP::CloudController::Stack.configure(stacks_file)
+      CloudController::Stack.configure(stacks_file)
     end
   end
 end

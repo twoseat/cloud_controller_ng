@@ -2,7 +2,7 @@ require 'spec_helper'
 require 'messages/deployments_list_message'
 require 'fetchers/deployment_list_fetcher'
 
-module VCAP::CloudController
+module CloudController
   RSpec.describe DeploymentListFetcher do
     let(:space1) { Space.make }
     let(:space2) { Space.make }

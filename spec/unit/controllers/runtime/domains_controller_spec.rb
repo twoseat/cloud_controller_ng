@@ -1,15 +1,15 @@
 require 'spec_helper'
 
-module VCAP::CloudController
-  RSpec.describe VCAP::CloudController::DomainsController do
+module CloudController
+  RSpec.describe CloudController::DomainsController do
     describe 'Query Parameters' do
-      it { expect(VCAP::CloudController::DomainsController).to be_queryable_by(:name) }
-      it { expect(VCAP::CloudController::DomainsController).to be_queryable_by(:owning_organization_guid) }
+      it { expect(CloudController::DomainsController).to be_queryable_by(:name) }
+      it { expect(CloudController::DomainsController).to be_queryable_by(:owning_organization_guid) }
     end
 
     describe 'Attributes' do
       it do
-        expect(VCAP::CloudController::DomainsController).to have_creatable_attributes({
+        expect(CloudController::DomainsController).to have_creatable_attributes({
           name:                     { type: 'string', required: true },
           wildcard:                 { type: 'bool', default: true },
           owning_organization_guid: { type: 'string' },
@@ -18,7 +18,7 @@ module VCAP::CloudController
       end
 
       it do
-        expect(VCAP::CloudController::DomainsController).to have_updatable_attributes({
+        expect(CloudController::DomainsController).to have_updatable_attributes({
           name:                     { type: 'string' },
           wildcard:                 { type: 'bool' },
           owning_organization_guid: { type: 'string' },
@@ -29,7 +29,7 @@ module VCAP::CloudController
 
     describe 'Associations' do
       it do
-        expect(VCAP::CloudController::DomainsController).to have_nested_routes({ spaces: [:get, :put, :delete] })
+        expect(CloudController::DomainsController).to have_nested_routes({ spaces: [:get, :put, :delete] })
       end
     end
 
@@ -206,7 +206,7 @@ module VCAP::CloudController
 
     describe 'GET /v2/domains' do
       let(:user) { User.make }
-      let(:space) { VCAP::CloudController::Space.make }
+      let(:space) { CloudController::Space.make }
       let(:organization) { space.organization }
       let!(:private_domain) { PrivateDomain.make(owning_organization: organization) }
 

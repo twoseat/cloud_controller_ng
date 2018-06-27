@@ -1,7 +1,7 @@
-module VCAP::CloudController
+module CloudController
   module Jobs
     module V3
-      class DropletBitsCopier < VCAP::CloudController::Jobs::CCJob
+      class DropletBitsCopier < CloudController::Jobs::CCJob
         def initialize(src_droplet_guid, dest_droplet_guid)
           @src_droplet_guid  = src_droplet_guid
           @dest_droplet_guid = dest_droplet_guid

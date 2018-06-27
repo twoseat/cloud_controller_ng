@@ -2,7 +2,7 @@ require 'spec_helper'
 require 'isolation_segment_assign'
 require 'isolation_segment_unassign'
 
-module VCAP::CloudController
+module CloudController
   RSpec.describe IsolationSegmentUnassign do
     let(:assigner) { IsolationSegmentAssign.new }
     let(:isolation_segment_model) { IsolationSegmentModel.make }

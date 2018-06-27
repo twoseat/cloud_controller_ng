@@ -1,7 +1,7 @@
 require 'spec_helper'
 
-module VCAP::CloudController
-  RSpec.describe VCAP::CloudController::OrganizationSummariesController do
+module CloudController
+  RSpec.describe CloudController::OrganizationSummariesController do
     num_spaces = 2
     num_services = 2
     num_prod_apps = 3
@@ -110,11 +110,11 @@ module VCAP::CloudController
         let(:num_visible_spaces) { 4 }
 
         let(:member) do
-          VCAP::CloudController::User.make(admin: false)
+          CloudController::User.make(admin: false)
         end
 
         let(:non_member) do
-          VCAP::CloudController::User.make(admin: false)
+          CloudController::User.make(admin: false)
         end
 
         context 'when the user is a member of the space' do

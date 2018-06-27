@@ -8,15 +8,15 @@ Sequel.migration do
     end
 
     self[:env_groups].each do |row|
-      salt = VCAP::CloudController::Encryptor.generate_salt
-      encrypted = VCAP::CloudController::Encryptor.encrypt(row[:environment_json], salt)
+      salt = CloudController::Encryptor.generate_salt
+      encrypted = CloudController::Encryptor.encrypt(row[:environment_json], salt)
       self['UPDATE env_groups SET environment_json = ?, salt = ? WHERE id = ?', encrypted, salt, row[:id]].update
     end
   end
 
   down do
     self[:env_groups].each do |row|
-      decrypted = VCAP::CloudController::Encryptor.decrypt(row[:environment_json], row[:salt])
+      decrypted = CloudController::Encryptor.decrypt(row[:environment_json], row[:salt])
       self['UPDATE env_groups SET environment_json = ? WHERE id = ?', decrypted, row[:id]].update
     end
 

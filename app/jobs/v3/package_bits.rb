@@ -1,6 +1,6 @@
 require 'cloud_controller/packager/package_upload_handler'
 
-module VCAP::CloudController
+module CloudController
   module Jobs
     module V3
       class PackageBits

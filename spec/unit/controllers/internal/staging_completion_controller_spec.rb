@@ -2,7 +2,7 @@ require 'spec_helper'
 require 'membrane'
 require 'cloud_controller/diego/failure_reason_sanitizer'
 
-module VCAP::CloudController
+module CloudController
   RSpec.describe StagingCompletionController do
     let(:buildpack_name) { 'the-pleasant-buildpack' }
     let(:buildpack_other_name) { 'valley' }
@@ -30,7 +30,7 @@ module VCAP::CloudController
       }
     end
     let(:statsd_updater) do
-      instance_double(VCAP::CloudController::Metrics::StatsdUpdater,
+      instance_double(CloudController::Metrics::StatsdUpdater,
         report_staging_success_metrics: nil,
         report_staging_failure_metrics:    nil,
       )
@@ -39,7 +39,7 @@ module VCAP::CloudController
     let(:one_hour_in_nanoseconds) { (1.hour.to_i * 1e9).to_i }
 
     before do
-      allow(VCAP::CloudController::Metrics::StatsdUpdater).to receive(:new).and_return(statsd_updater)
+      allow(CloudController::Metrics::StatsdUpdater).to receive(:new).and_return(statsd_updater)
     end
 
     context 'staging a package through /droplet_completed (legacy for rolling deploy)' do

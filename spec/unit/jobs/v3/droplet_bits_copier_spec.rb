@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-module VCAP::CloudController
+module CloudController
   module Jobs::V3
     RSpec.describe DropletBitsCopier do
       subject(:job) { DropletBitsCopier.new(source_droplet.guid, destination_droplet.guid) }
@@ -70,7 +70,7 @@ module VCAP::CloudController
 
             destination_droplet.reload
             expect(destination_droplet.error).to eq('failed to copy - ba boom!')
-            expect(destination_droplet.state).to eq(VCAP::CloudController::DropletModel::FAILED_STATE)
+            expect(destination_droplet.state).to eq(CloudController::DropletModel::FAILED_STATE)
           end
         end
 
@@ -84,7 +84,7 @@ module VCAP::CloudController
 
             destination_droplet.reload
             expect(destination_droplet.error).to eq('failed to copy - source droplet does not exist')
-            expect(destination_droplet.state).to eq(VCAP::CloudController::DropletModel::FAILED_STATE)
+            expect(destination_droplet.state).to eq(CloudController::DropletModel::FAILED_STATE)
           end
         end
 

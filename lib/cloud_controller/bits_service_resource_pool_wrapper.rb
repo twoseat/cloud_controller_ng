@@ -1,4 +1,4 @@
-module VCAP::CloudController
+module CloudController
   class BitsServiceResourcePoolWrapper
     attr_reader :body
 

@@ -1,7 +1,7 @@
 require 'spec_helper'
 
-module VCAP::CloudController
-  RSpec.describe VCAP::CloudController::ServiceUpdateValidator, :services do
+module CloudController
+  RSpec.describe CloudController::ServiceUpdateValidator, :services do
     describe '#validate_service_instance' do
       let(:service_broker_url) { "http://example.com/v2/service_instances/#{service_instance.guid}" }
       let(:service_broker) { ServiceBroker.make(broker_url: 'http://example.com', auth_username: 'auth_username', auth_password: 'auth_password') }

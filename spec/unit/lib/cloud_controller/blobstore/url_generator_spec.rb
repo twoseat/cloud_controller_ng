@@ -37,7 +37,7 @@ module CloudController
 
       context 'downloads' do
         describe 'admin buildpacks' do
-          let(:buildpack) { VCAP::CloudController::Buildpack.make }
+          let(:buildpack) { CloudController::Buildpack.make }
 
           it 'delegates to local_url_generator when local' do
             allow(admin_buildpack_blobstore).to receive(:local?).and_return(true)

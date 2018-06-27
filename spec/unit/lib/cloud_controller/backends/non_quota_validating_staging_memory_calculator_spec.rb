@@ -1,7 +1,7 @@
 require 'spec_helper'
 require 'cloud_controller/backends/non_quota_validating_staging_memory_calculator'
 
-module VCAP::CloudController
+module CloudController
   RSpec.describe NonQuotaValidatingStagingMemoryCalculator do
     let(:calculator) { NonQuotaValidatingStagingMemoryCalculator.new }
 

@@ -1,4 +1,4 @@
-module VCAP::CloudController
+module CloudController
   module Repositories
     class BuildEventRepository
       def self.record_build_create(build, user_audit_info, v3_app_name, space_guid, org_guid)

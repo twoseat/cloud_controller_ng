@@ -1,4 +1,4 @@
-module VCAP::CloudController
+module CloudController
   class SystemAuditUser
     class << self
       def guid

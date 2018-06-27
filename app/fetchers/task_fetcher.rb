@@ -1,4 +1,4 @@
-module VCAP::CloudController
+module CloudController
   class TaskFetcher
     def fetch_for_app(task_guid:, app_guid:)
       app = AppModel.where(guid: app_guid).eager(

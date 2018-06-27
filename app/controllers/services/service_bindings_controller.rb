@@ -3,7 +3,7 @@ require 'controllers/services/lifecycle/service_instance_binding_manager'
 require 'models/helpers/process_types'
 require 'actions/services/service_binding_read'
 
-module VCAP::CloudController
+module CloudController
   class ServiceBindingsController < RestController::ModelController
     define_attributes do
       to_one :app, association_controller: :AppsController, association_name: :v2_app

@@ -1,7 +1,7 @@
 require 'actions/services/synchronous_orphan_mitigate'
 require 'jobs/services/service_instance_state_fetch'
 
-module VCAP::CloudController
+module CloudController
   class ServiceInstanceCreate
     def initialize(services_event_repository, logger)
       @services_event_repository = services_event_repository
@@ -40,7 +40,7 @@ module VCAP::CloudController
     end
 
     def setup_async_job(request_attrs, service_instance)
-      job = VCAP::CloudController::Jobs::Services::ServiceInstanceStateFetch.new(
+      job = CloudController::Jobs::Services::ServiceInstanceStateFetch.new(
         'service-instance-state-fetch',
         service_instance.guid,
         @services_event_repository.user_audit_info,

@@ -2,7 +2,7 @@ require 'spec_helper'
 
 RSpec.describe 'Service Broker API integration' do
   describe 'v2.6' do
-    include VCAP::CloudController::BrokerApiHelper
+    include CloudController::BrokerApiHelper
 
     describe 'Send service_id with each request' do
       let(:catalog) { default_catalog plan_updateable: true }
@@ -11,7 +11,7 @@ RSpec.describe 'Service Broker API integration' do
       before do
         setup_cc
         setup_broker(catalog)
-        @broker = VCAP::CloudController::ServiceBroker.find guid: @broker_guid
+        @broker = CloudController::ServiceBroker.find guid: @broker_guid
       end
 
       it 'sends service_id to broker for provision' do
@@ -38,7 +38,7 @@ RSpec.describe 'Service Broker API integration' do
         end
 
         it 'sends service_id to broker for service instance deprovision' do
-          service_instance = VCAP::CloudController::ManagedServiceInstance.find(guid: @service_instance_guid)
+          service_instance = CloudController::ManagedServiceInstance.find(guid: @service_instance_guid)
 
           deprovision_service
           expect(
@@ -47,7 +47,7 @@ RSpec.describe 'Service Broker API integration' do
         end
 
         it 'sends service_id to broker for service instance bind' do
-          service_instance = VCAP::CloudController::ManagedServiceInstance.find(guid: @service_instance_guid)
+          service_instance = CloudController::ManagedServiceInstance.find(guid: @service_instance_guid)
           create_app
           bind_service
 
@@ -58,7 +58,7 @@ RSpec.describe 'Service Broker API integration' do
         end
 
         it 'sends service_id to broker for service instance key creation' do
-          service_instance = VCAP::CloudController::ManagedServiceInstance.find(guid: @service_instance_guid)
+          service_instance = CloudController::ManagedServiceInstance.find(guid: @service_instance_guid)
           create_service_key
 
           expected_body = hash_including({ 'service_id' => service_id })
@@ -68,7 +68,7 @@ RSpec.describe 'Service Broker API integration' do
         end
 
         it 'sends service_id to broker for service instance unbind' do
-          service_instance = VCAP::CloudController::ManagedServiceInstance.find(guid: @service_instance_guid)
+          service_instance = CloudController::ManagedServiceInstance.find(guid: @service_instance_guid)
           create_app
           bind_service
           service_binding = service_instance.service_bindings.first
@@ -80,7 +80,7 @@ RSpec.describe 'Service Broker API integration' do
         end
 
         it 'sends service_id to broker for service instance key deletion' do
-          service_instance = VCAP::CloudController::ManagedServiceInstance.find(guid: @service_instance_guid)
+          service_instance = CloudController::ManagedServiceInstance.find(guid: @service_instance_guid)
           create_service_key
           service_key = service_instance.service_keys.first
 
@@ -98,13 +98,13 @@ RSpec.describe 'Service Broker API integration' do
       before do
         setup_cc
         setup_broker(catalog)
-        @broker = VCAP::CloudController::ServiceBroker.find guid: @broker_guid
+        @broker = CloudController::ServiceBroker.find guid: @broker_guid
         provision_service
       end
 
       it 'does not require app_guid to be sent with provision' do
-        service_instance = VCAP::CloudController::ManagedServiceInstance.find(guid: @service_instance_guid)
-        expect(VCAP::CloudController::ProcessModel.find(guid: @app_guid)).to be_nil
+        service_instance = CloudController::ManagedServiceInstance.find(guid: @service_instance_guid)
+        expect(CloudController::ProcessModel.find(guid: @app_guid)).to be_nil
         create_service_key
 
         expect(

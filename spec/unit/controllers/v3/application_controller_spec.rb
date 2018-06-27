@@ -30,7 +30,7 @@ RSpec.describe ApplicationController, type: :controller do
     end
 
     def secret_access
-      render status: 200, json: can_read_secrets_in_space?(VCAP::CloudController::Space.find(guid: params[:space_guid]))
+      render status: 200, json: can_read_secrets_in_space?(CloudController::Space.find(guid: params[:space_guid]))
     end
 
     def write_globally_access
@@ -42,7 +42,7 @@ RSpec.describe ApplicationController, type: :controller do
     end
 
     def isolation_segment_read_access
-      render status: 200, json: can_read_from_isolation_segment?(VCAP::CloudController::IsolationSegmentModel.find(guid: params[:iso_seg]))
+      render status: 200, json: can_read_from_isolation_segment?(CloudController::IsolationSegmentModel.find(guid: params[:iso_seg]))
     end
 
     def write_access
@@ -73,7 +73,7 @@ RSpec.describe ApplicationController, type: :controller do
     end
   end
 
-  let(:perm_client) { instance_double(VCAP::CloudController::Perm::Client) }
+  let(:perm_client) { instance_double(CloudController::Perm::Client) }
 
   before do
     Scientist::Observation::RESCUES.replace []
@@ -82,12 +82,12 @@ RSpec.describe ApplicationController, type: :controller do
     perm_config[:enabled] = true
     TestConfig.override(perm: perm_config)
 
-    allow(VCAP::CloudController::Perm::Client).to receive(:new).and_return(perm_client)
+    allow(CloudController::Perm::Client).to receive(:new).and_return(perm_client)
   end
 
   describe '#check_read_permissions' do
     before do
-      set_current_user(VCAP::CloudController::User.new(guid: 'some-guid'), scopes: [])
+      set_current_user(CloudController::User.new(guid: 'some-guid'), scopes: [])
     end
 
     it 'is required on index' do
@@ -106,7 +106,7 @@ RSpec.describe ApplicationController, type: :controller do
 
     context 'cloud_controller.read' do
       before do
-        set_current_user(VCAP::CloudController::User.new(guid: 'some-guid'), scopes: ['cloud_controller.read'])
+        set_current_user(CloudController::User.new(guid: 'some-guid'), scopes: ['cloud_controller.read'])
       end
 
       it 'grants reading access' do
@@ -122,7 +122,7 @@ RSpec.describe ApplicationController, type: :controller do
 
     context 'cloud_controller.admin_read_only' do
       before do
-        set_current_user(VCAP::CloudController::User.new(guid: 'some-guid'), scopes: ['cloud_controller.admin_read_only'])
+        set_current_user(CloudController::User.new(guid: 'some-guid'), scopes: ['cloud_controller.admin_read_only'])
       end
 
       it 'grants reading access' do
@@ -164,7 +164,7 @@ RSpec.describe ApplicationController, type: :controller do
 
     context 'post' do
       before do
-        set_current_user(VCAP::CloudController::User.new(guid: 'some-guid'), scopes: ['cloud_controller.write'])
+        set_current_user(CloudController::User.new(guid: 'some-guid'), scopes: ['cloud_controller.write'])
       end
 
       it 'is not required on other actions' do
@@ -177,7 +177,7 @@ RSpec.describe ApplicationController, type: :controller do
 
   describe 'when a user does not have cloud_controller.write scope' do
     before do
-      set_current_user(VCAP::CloudController::User.new(guid: 'some-guid'), scopes: ['cloud_controller.read'])
+      set_current_user(CloudController::User.new(guid: 'some-guid'), scopes: ['cloud_controller.read'])
     end
 
     it 'is not required on index' do
@@ -226,7 +226,7 @@ RSpec.describe ApplicationController, type: :controller do
 
     context 'when the token is invalid' do
       before do
-        VCAP::CloudController::SecurityContext.set(nil, :invalid_token, nil)
+        CloudController::SecurityContext.set(nil, :invalid_token, nil)
       end
 
       it 'raises InvalidAuthToken' do
@@ -239,7 +239,7 @@ RSpec.describe ApplicationController, type: :controller do
     context 'when there is a token but no matching user' do
       before do
         user = nil
-        VCAP::CloudController::SecurityContext.set(user, 'valid_token', nil)
+        CloudController::SecurityContext.set(user, 'valid_token', nil)
       end
 
       it 'raises InvalidAuthToken' do
@@ -251,7 +251,7 @@ RSpec.describe ApplicationController, type: :controller do
   end
 
   describe '#handle_blobstore_error' do
-    let!(:user) { set_current_user(VCAP::CloudController::User.make) }
+    let!(:user) { set_current_user(CloudController::User.make) }
 
     it 'rescues from ApiError and renders an error presenter' do
       routes.draw { get 'blobstore_error' => 'anonymous#blobstore_error' }
@@ -262,7 +262,7 @@ RSpec.describe ApplicationController, type: :controller do
   end
 
   describe '#handle_api_error' do
-    let!(:user) { set_current_user(VCAP::CloudController::User.make) }
+    let!(:user) { set_current_user(CloudController::User.make) }
 
     it 'rescues from ApiError and renders an error presenter' do
       routes.draw { get 'api_explode' => 'anonymous#api_explode' }
@@ -273,7 +273,7 @@ RSpec.describe ApplicationController, type: :controller do
   end
 
   describe '#handle_compound_error' do
-    let!(:user) { set_current_user(VCAP::CloudController::User.make) }
+    let!(:user) { set_current_user(CloudController::User.make) }
 
     it 'rescues from CompoundErrors and renders an error presenter' do
       routes.draw { get 'compound_error' => 'anonymous#compound_error' }
@@ -284,7 +284,7 @@ RSpec.describe ApplicationController, type: :controller do
   end
 
   describe '#handle_not_found' do
-    let!(:user) { set_current_user(VCAP::CloudController::User.make) }
+    let!(:user) { set_current_user(CloudController::User.make) }
 
     it 'rescues from NotFound error and renders an error presenter' do
       routes.draw { get 'not_found' => 'anonymous#not_found' }

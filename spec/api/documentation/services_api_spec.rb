@@ -3,8 +3,8 @@ require 'rspec_api_documentation/dsl'
 
 RSpec.resource 'Services', type: [:api, :legacy_api] do
   let(:admin_auth_header) { admin_headers['HTTP_AUTHORIZATION'] }
-  let(:service_broker) { VCAP::CloudController::ServiceBroker.make }
-  let!(:service) { VCAP::CloudController::Service.make(service_broker: service_broker) }
+  let(:service_broker) { CloudController::ServiceBroker.make }
+  let!(:service) { CloudController::Service.make(service_broker: service_broker) }
   let(:guid) { service.guid }
 
   authenticated_request
@@ -45,7 +45,7 @@ RSpec.resource 'Services', type: [:api, :legacy_api] do
     field :url, 'The url of the service provider (used only by v1 service gateways)', required: true, deprecated: true, example_values: ['http://myql.provider.com']
     field :service_broker_guid, 'The guid of the v2 service broker associated with the service', required: false, deprecated: false
     field :plan_updateable, 'A boolean describing that an instance of this service can be updated to a different plan', default: false
-    standard_model_list(:services, VCAP::CloudController::ServicesController, exclude_parameters: ['provider'])
+    standard_model_list(:services, CloudController::ServicesController, exclude_parameters: ['provider'])
     standard_model_get(:services)
   end
 
@@ -58,7 +58,7 @@ RSpec.resource 'Services', type: [:api, :legacy_api] do
           Deleting with async not set to true will return a 204 status code and an empty response body.
       EOD
 
-      allow_any_instance_of(VCAP::CloudController::RestController::BaseController).to receive(:async?).and_return(true)
+      allow_any_instance_of(CloudController::RestController::BaseController).to receive(:async?).and_return(true)
       client.delete "/v2/services/#{guid}", {}, headers
       expect(status).to eq 202
     end
@@ -69,11 +69,11 @@ RSpec.resource 'Services', type: [:api, :legacy_api] do
 
     describe 'Service Plans' do
       before do
-        VCAP::CloudController::ServicePlan.make(service: service)
+        CloudController::ServicePlan.make(service: service)
       end
 
-      expected_attributes = VCAP::CloudController::ServicePlan.new.export_attrs - [:create_instance_schema] - [:update_instance_schema] - [:create_binding_schema] + [:schemas]
-      standard_model_list :service_plan, VCAP::CloudController::ServicePlansController, { outer_model: :service, export_attributes: expected_attributes }
+      expected_attributes = CloudController::ServicePlan.new.export_attrs - [:create_instance_schema] - [:update_instance_schema] - [:create_binding_schema] + [:schemas]
+      standard_model_list :service_plan, CloudController::ServicePlansController, { outer_model: :service, export_attributes: expected_attributes }
     end
   end
 end

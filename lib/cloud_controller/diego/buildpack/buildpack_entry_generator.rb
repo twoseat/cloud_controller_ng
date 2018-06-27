@@ -1,4 +1,4 @@
-module VCAP::CloudController
+module CloudController
   module Diego
     module Buildpack
       class BuildpackEntryGenerator
@@ -27,7 +27,7 @@ module VCAP::CloudController
         end
 
         def default_admin_buildpacks(stack_name)
-          VCAP::CloudController::Buildpack.list_admin_buildpacks(stack_name).
+          CloudController::Buildpack.list_admin_buildpacks(stack_name).
             select(&:enabled).
             collect { |buildpack| admin_buildpack_entry(buildpack) }
         end

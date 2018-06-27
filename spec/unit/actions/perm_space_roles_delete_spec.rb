@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-module VCAP::CloudController
+module CloudController
   RSpec.describe PermSpaceRolesDelete do
     let(:org_delete_action) { spy('org_delete_action') }
     let(:perm_client) { spy(Perm::Client) }

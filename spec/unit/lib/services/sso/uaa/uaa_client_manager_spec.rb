@@ -11,7 +11,7 @@ module VCAP::Services::SSO::UAA
     end
 
     describe '#modify_transaction' do
-      let(:uaa_uri) { VCAP::CloudController::Config.config.get(:uaa, :internal_url) }
+      let(:uaa_uri) { CloudController::Config.config.get(:uaa, :internal_url) }
       let(:tx_url) { uaa_uri + '/oauth/clients/tx/modify' }
       let(:auth_header) { 'bearer ACCESSTOKENSTUFF' }
       let(:token_info) { double('info', auth_header: auth_header) }
@@ -115,7 +115,7 @@ module VCAP::Services::SSO::UAA
 
           expect {
             client_manager.modify_transaction(changeset)
-          }.to raise_error(VCAP::CloudController::UaaResourceNotFound)
+          }.to raise_error(CloudController::UaaResourceNotFound)
         end
       end
 
@@ -134,7 +134,7 @@ module VCAP::Services::SSO::UAA
 
           expect {
             client_manager.modify_transaction(changeset)
-          }.to raise_error(VCAP::CloudController::UaaUnavailable)
+          }.to raise_error(CloudController::UaaUnavailable)
         end
       end
 
@@ -152,7 +152,7 @@ module VCAP::Services::SSO::UAA
 
           expect {
             client_manager.modify_transaction(changeset)
-          }.to raise_error(VCAP::CloudController::UaaResourceAlreadyExists)
+          }.to raise_error(CloudController::UaaResourceAlreadyExists)
         end
       end
 
@@ -170,7 +170,7 @@ module VCAP::Services::SSO::UAA
 
           expect {
             client_manager.modify_transaction(changeset)
-          }.to raise_error(VCAP::CloudController::UaaResourceInvalid)
+          }.to raise_error(CloudController::UaaResourceInvalid)
         end
       end
 
@@ -188,7 +188,7 @@ module VCAP::Services::SSO::UAA
 
           expect {
             client_manager.modify_transaction(changeset)
-          }.to raise_error(VCAP::CloudController::UaaUnexpectedResponse)
+          }.to raise_error(CloudController::UaaUnexpectedResponse)
         end
       end
 
@@ -206,7 +206,7 @@ module VCAP::Services::SSO::UAA
 
           expect {
             client_manager.modify_transaction(changeset)
-          }.to raise_error(VCAP::CloudController::UaaUnavailable)
+          }.to raise_error(CloudController::UaaUnavailable)
         end
       end
 
@@ -284,8 +284,8 @@ module VCAP::Services::SSO::UAA
         let(:client_manager) { UaaClientManager.new }
 
         before do
-          allow(VCAP::CloudController::Config.config.config_hash).to receive(:[]).with(anything).and_call_original
-          allow(VCAP::CloudController::Config.config.config_hash).to receive(:[]).with(:uaa_client_scope).and_return(configured_scope)
+          allow(CloudController::Config.config.config_hash).to receive(:[]).with(anything).and_call_original
+          allow(CloudController::Config.config.config_hash).to receive(:[]).with(:uaa_client_scope).and_return(configured_scope)
 
           client_manager.modify_transaction(changeset)
         end

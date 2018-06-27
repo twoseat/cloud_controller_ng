@@ -20,7 +20,7 @@ RSpec::Matchers.define :have_associated do |association, options={}|
     if options[:associated_instance]
       options[:associated_instance].call(instance)
     else
-      associated_class = options[:class] || "VCAP::CloudController::#{association.to_s.classify}".constantize
+      associated_class = options[:class] || "CloudController::#{association.to_s.classify}".constantize
       associated_class.make
     end
   end

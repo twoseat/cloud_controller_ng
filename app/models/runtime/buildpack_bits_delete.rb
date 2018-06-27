@@ -1,4 +1,4 @@
-module VCAP::CloudController
+module CloudController
   class BuildpackBitsDelete
     def self.delete_when_safe(blobstore_key, staging_timeout)
       return unless blobstore_key

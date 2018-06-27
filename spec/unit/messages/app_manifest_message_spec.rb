@@ -1,7 +1,7 @@
 require 'spec_helper'
 require 'messages/app_manifest_message'
 
-module VCAP::CloudController
+module CloudController
   RSpec.describe AppManifestMessage do
     describe 'validations' do
       context 'when unexpected keys are requested' do
@@ -1296,8 +1296,8 @@ module VCAP::CloudController
     end
 
     describe '#app_update_message' do
-      let(:buildpack) { VCAP::CloudController::Buildpack.make }
-      let(:stack) { VCAP::CloudController::Stack.make }
+      let(:buildpack) { CloudController::Buildpack.make }
+      let(:stack) { CloudController::Stack.make }
       let(:parsed_yaml) { { 'buildpack' => buildpack.name, 'stack' => stack.name } }
 
       it 'returns an AppUpdateMessage containing mapped attributes' do

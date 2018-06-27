@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-module VCAP::CloudController
+module CloudController
   RSpec.describe ServicePlansController, :services do
     shared_examples 'enumerate and read plan only' do |perm_name|
       include_examples 'permission enumeration', perm_name,
@@ -139,7 +139,7 @@ module VCAP::CloudController
 
       it 'is visible to users from organizations with access to the plan' do
         organization = developer.organizations.first
-        VCAP::CloudController::ServicePlanVisibility.create(
+        CloudController::ServicePlanVisibility.create(
           organization: organization,
           service_plan: private_plan,
         )

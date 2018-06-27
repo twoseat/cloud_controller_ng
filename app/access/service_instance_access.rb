@@ -1,4 +1,4 @@
-module VCAP::CloudController
+module CloudController
   class ServiceInstanceAccess < BaseAccess
     def read?(object)
       return @ok_read if instance_variable_defined?(:@ok_read)
@@ -126,7 +126,7 @@ module VCAP::CloudController
     private
 
     def has_read_permissions_scope?
-      VCAP::CloudController::SecurityContext.scopes.include?('cloud_controller_service_permissions.read')
+      CloudController::SecurityContext.scopes.include?('cloud_controller_service_permissions.read')
     end
   end
 

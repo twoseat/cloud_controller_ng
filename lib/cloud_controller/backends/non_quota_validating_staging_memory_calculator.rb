@@ -1,4 +1,4 @@
-module VCAP::CloudController
+module CloudController
   class NonQuotaValidatingStagingMemoryCalculator
     def get_limit(requested_limit, _space, _org)
       [minimum_limit, requested_limit].compact.max

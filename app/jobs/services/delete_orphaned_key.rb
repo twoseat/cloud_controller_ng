@@ -1,7 +1,7 @@
-module VCAP::CloudController
+module CloudController
   module Jobs
     module Services
-      class DeleteOrphanedKey < VCAP::CloudController::Jobs::CCJob
+      class DeleteOrphanedKey < CloudController::Jobs::CCJob
         attr_accessor :name, :client_attrs, :key_guid, :service_instance_guid
 
         def initialize(name, client_attrs, key_guid, service_instance_guid)
@@ -16,9 +16,9 @@ module VCAP::CloudController
           logger.info("There was an error during service key creation. Attempting to delete potentially created key. Instance guid: #{service_instance_guid}, Key guid #{key_guid}")
 
           client = VCAP::Services::ServiceBrokers::V2::Client.new(client_attrs)
-          service_instance = VCAP::CloudController::ServiceInstance.first(guid: service_instance_guid)
+          service_instance = CloudController::ServiceInstance.first(guid: service_instance_guid)
 
-          service_key = VCAP::CloudController::ServiceKey.new(guid: key_guid, service_instance: service_instance)
+          service_key = CloudController::ServiceKey.new(guid: key_guid, service_instance: service_instance)
           client.unbind(service_key)
         end
 

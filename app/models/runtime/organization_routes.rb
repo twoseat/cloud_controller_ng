@@ -10,7 +10,7 @@ class OrganizationRoutes
   private
 
   def dataset
-    VCAP::CloudController::Route.dataset.join(:spaces, id: :space_id).
+    CloudController::Route.dataset.join(:spaces, id: :space_id).
       where(spaces__organization_id: @organization.id)
   end
 end

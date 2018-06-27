@@ -1,7 +1,7 @@
 require 'spec_helper'
 require 'actions/task_delete'
 
-module VCAP::CloudController
+module CloudController
   RSpec.describe TaskDelete do
     describe '#delete' do
       subject(:task_delete) { described_class.new(user_audit_info) }
@@ -9,8 +9,8 @@ module VCAP::CloudController
       let!(:task1) { TaskModel.make(state: TaskModel::SUCCEEDED_STATE) }
       let!(:task2) { TaskModel.make(state: TaskModel::SUCCEEDED_STATE) }
       let(:task_dataset) { TaskModel.all }
-      let(:user_audit_info) { instance_double(VCAP::CloudController::UserAuditInfo).as_null_object }
-      let(:bbs_task_client) { instance_double(VCAP::CloudController::Diego::BbsTaskClient, cancel_task: nil) }
+      let(:user_audit_info) { instance_double(CloudController::UserAuditInfo).as_null_object }
+      let(:bbs_task_client) { instance_double(CloudController::Diego::BbsTaskClient, cancel_task: nil) }
 
       it 'deletes the tasks' do
         expect {

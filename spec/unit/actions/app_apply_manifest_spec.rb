@@ -1,7 +1,7 @@
 require 'spec_helper'
 require 'actions/app_apply_manifest'
 
-module VCAP::CloudController
+module CloudController
   RSpec.describe AppApplyManifest do
     subject(:app_apply_manifest) { AppApplyManifest.new(user_audit_info) }
     let(:user_audit_info) { instance_double(UserAuditInfo) }
@@ -138,7 +138,7 @@ module VCAP::CloudController
       end
 
       describe 'updating buildpack' do
-        let(:buildpack) { VCAP::CloudController::Buildpack.make }
+        let(:buildpack) { CloudController::Buildpack.make }
         let(:message) { AppManifestMessage.create_from_yml({ name: 'blah', buildpack: buildpack.name }) }
         let(:app_update_message) { message.app_update_message }
         let(:app) { AppModel.make }

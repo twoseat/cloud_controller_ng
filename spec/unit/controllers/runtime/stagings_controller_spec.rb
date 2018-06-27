@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-module VCAP::CloudController
+module CloudController
   RSpec.shared_examples 'droplet staging error handling' do
     context 'when a content-md5 is specified' do
       it 'returns a 400 if the value does not match the md5 of the body' do
@@ -62,7 +62,7 @@ module VCAP::CloudController
       expect(last_response.status).to eq 200
 
       job = Delayed::Job.last
-      expect(job).to be_a_fully_wrapped_job_of VCAP::CloudController::Jobs::V3::DropletUpload
+      expect(job).to be_a_fully_wrapped_job_of CloudController::Jobs::V3::DropletUpload
       inner_job = job.payload_object.handler.handler
       expect(inner_job.droplet_guid).to eq(droplet.guid)
     end
@@ -105,7 +105,7 @@ module VCAP::CloudController
       expect(last_response.status).to eq 200
 
       job = Delayed::Job.last
-      expect(job).to be_a_fully_wrapped_job_of VCAP::CloudController::Jobs::V3::DropletUpload
+      expect(job).to be_a_fully_wrapped_job_of CloudController::Jobs::V3::DropletUpload
       inner_job = job.payload_object.handler.handler
       expect(inner_job.droplet_guid).to eq(droplet.guid)
     end
@@ -300,7 +300,7 @@ module VCAP::CloudController
           expect(last_response.status).to eq(200), "Response Body: #{last_response.body}"
 
           job         = Delayed::Job.last
-          config      = VCAP::CloudController::Config.config.config_hash
+          config      = CloudController::Config.config.config_hash
           user        = config[:staging][:auth][:user]
           password    = config[:staging][:auth][:password]
           polling_url = "http://#{user}:#{CGI.escape(password)}@#{config[:internal_service_hostname]}:#{config[:external_port]}/staging/jobs/#{job.guid}"
@@ -362,7 +362,7 @@ module VCAP::CloudController
           post url, upload_req
 
           job         = Delayed::Job.last
-          config      = VCAP::CloudController::Config.config.config_hash
+          config      = CloudController::Config.config.config_hash
           polling_url = "https://#{config[:internal_service_hostname]}:#{config[:tls_port]}/internal/v4/staging_jobs/#{job.guid}"
 
           expect(decoded_response.fetch('metadata').fetch('url')).to eql(polling_url)

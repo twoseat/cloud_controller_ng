@@ -1,15 +1,15 @@
 require 'rails_helper'
 
 RSpec.describe ServiceInstancesV3Controller, type: :controller do
-  let(:user) { set_current_user(VCAP::CloudController::User.make) }
-  let(:space) { VCAP::CloudController::Space.make(guid: 'space-1-guid') }
-  let!(:service_instance) { VCAP::CloudController::ManagedServiceInstance.make(space: space, name: 'service-instance-1') }
+  let(:user) { set_current_user(CloudController::User.make) }
+  let(:space) { CloudController::Space.make(guid: 'space-1-guid') }
+  let!(:service_instance) { CloudController::ManagedServiceInstance.make(space: space, name: 'service-instance-1') }
 
   describe '#index' do
     context 'when there are multiple service instances' do
-      let!(:service_instance2) { VCAP::CloudController::ManagedServiceInstance.make(name: 'service-instance-2', space: VCAP::CloudController::Space.make(guid: 'space-2-guid')) }
-      let!(:service_instance3) { VCAP::CloudController::ManagedServiceInstance.make(name: 'service-instance-3', space: VCAP::CloudController::Space.make(guid: 'space-3-guid')) }
-      let!(:user_provided_service_instance) { VCAP::CloudController::UserProvidedServiceInstance.make }
+      let!(:service_instance2) { CloudController::ManagedServiceInstance.make(name: 'service-instance-2', space: CloudController::Space.make(guid: 'space-2-guid')) }
+      let!(:service_instance3) { CloudController::ManagedServiceInstance.make(name: 'service-instance-3', space: CloudController::Space.make(guid: 'space-3-guid')) }
+      let!(:user_provided_service_instance) { CloudController::UserProvidedServiceInstance.make }
 
       context 'as an admin' do
         before do
@@ -93,7 +93,7 @@ RSpec.describe ServiceInstancesV3Controller, type: :controller do
     end
 
     describe 'permissions by role for shared services' do
-      let(:target_space) { VCAP::CloudController::Space.make }
+      let(:target_space) { CloudController::Space.make }
       before do
         service_instance.add_shared_space(target_space)
       end
@@ -134,7 +134,7 @@ RSpec.describe ServiceInstancesV3Controller, type: :controller do
   end
 
   describe '#relationships_shared_spaces' do
-    let(:target_space) { VCAP::CloudController::Space.make(guid: 'target-space-guid') }
+    let(:target_space) { CloudController::Space.make(guid: 'target-space-guid') }
 
     before do
       service_instance.add_shared_space(target_space)
@@ -191,9 +191,9 @@ RSpec.describe ServiceInstancesV3Controller, type: :controller do
   end
 
   describe '#share_service_instance' do
-    let(:service_instance) { VCAP::CloudController::ManagedServiceInstance.make }
-    let(:target_space) { VCAP::CloudController::Space.make }
-    let(:target_space2) { VCAP::CloudController::Space.make }
+    let(:service_instance) { CloudController::ManagedServiceInstance.make }
+    let(:target_space) { CloudController::Space.make }
+    let(:target_space2) { CloudController::Space.make }
     let(:service_instance_sharing_enabled) { true }
     let(:source_space) { service_instance.space }
 
@@ -207,22 +207,22 @@ RSpec.describe ServiceInstancesV3Controller, type: :controller do
 
     before do
       set_current_user_as_admin
-      VCAP::CloudController::FeatureFlag.make(name: 'service_instance_sharing', enabled: service_instance_sharing_enabled, error_message: nil)
+      CloudController::FeatureFlag.make(name: 'service_instance_sharing', enabled: service_instance_sharing_enabled, error_message: nil)
     end
 
     it 'calls the service instance share action' do
-      action = instance_double(VCAP::CloudController::ServiceInstanceShare)
-      allow(VCAP::CloudController::ServiceInstanceShare).to receive(:new).and_return(action)
+      action = instance_double(CloudController::ServiceInstanceShare)
+      allow(CloudController::ServiceInstanceShare).to receive(:new).and_return(action)
 
-      expect(action).to receive(:create).with(service_instance, [target_space], an_instance_of(VCAP::CloudController::UserAuditInfo))
+      expect(action).to receive(:create).with(service_instance, [target_space], an_instance_of(CloudController::UserAuditInfo))
 
       post :share_service_instance, service_instance_guid: service_instance.guid, body: req_body
     end
 
     it 'shares the service instance to multiple target spaces' do
-      action = instance_double(VCAP::CloudController::ServiceInstanceShare)
-      allow(VCAP::CloudController::ServiceInstanceShare).to receive(:new).and_return(action)
-      expect(action).to receive(:create).with(service_instance, a_collection_containing_exactly(target_space, target_space2), an_instance_of(VCAP::CloudController::UserAuditInfo))
+      action = instance_double(CloudController::ServiceInstanceShare)
+      allow(CloudController::ServiceInstanceShare).to receive(:new).and_return(action)
+      expect(action).to receive(:create).with(service_instance, a_collection_containing_exactly(target_space, target_space2), an_instance_of(CloudController::UserAuditInfo))
 
       req_body[:data] << { guid: target_space2.guid }
 
@@ -232,8 +232,8 @@ RSpec.describe ServiceInstancesV3Controller, type: :controller do
 
     context 'when the service instance share action errors' do
       before do
-        action = instance_double(VCAP::CloudController::ServiceInstanceShare)
-        allow(VCAP::CloudController::ServiceInstanceShare).to receive(:new).and_return(action)
+        action = instance_double(CloudController::ServiceInstanceShare)
+        allow(CloudController::ServiceInstanceShare).to receive(:new).and_return(action)
 
         expect(action).to receive(:create).and_raise('boom')
       end
@@ -266,7 +266,7 @@ RSpec.describe ServiceInstancesV3Controller, type: :controller do
     end
 
     context 'when the service instance is user provided' do
-      let(:service_instance) { VCAP::CloudController::UserProvidedServiceInstance.make }
+      let(:service_instance) { CloudController::UserProvidedServiceInstance.make }
 
       it 'returns a 422' do
         post :share_service_instance, service_instance_guid: service_instance.guid, body: req_body
@@ -276,12 +276,12 @@ RSpec.describe ServiceInstancesV3Controller, type: :controller do
     end
 
     context 'when the service instance plan is from a private space scoped broker' do
-      let(:target_org) { VCAP::CloudController::Organization.make(name: 'target-org') }
-      let(:target_space) { VCAP::CloudController::Space.make(name: 'target-space', organization: target_org) }
-      let(:broker) { VCAP::CloudController::ServiceBroker.make(space: space) }
-      let(:service) { VCAP::CloudController::Service.make(service_broker: broker, label: 'space-scoped-service') }
-      let(:service_plan) { VCAP::CloudController::ServicePlan.make(service: service, name: 'my-plan') }
-      let(:service_instance) { VCAP::CloudController::ManagedServiceInstance.make(service_plan: service_plan) }
+      let(:target_org) { CloudController::Organization.make(name: 'target-org') }
+      let(:target_space) { CloudController::Space.make(name: 'target-space', organization: target_org) }
+      let(:broker) { CloudController::ServiceBroker.make(space: space) }
+      let(:service) { CloudController::Service.make(service_broker: broker, label: 'space-scoped-service') }
+      let(:service_plan) { CloudController::ServicePlan.make(service: service, name: 'my-plan') }
+      let(:service_instance) { CloudController::ManagedServiceInstance.make(service_plan: service_plan) }
 
       it 'returns a 422' do
         post :share_service_instance, service_instance_guid: service_instance.guid, body: req_body
@@ -291,9 +291,9 @@ RSpec.describe ServiceInstancesV3Controller, type: :controller do
     end
 
     context 'when the service instance is a route service' do
-      let(:service) { VCAP::CloudController::Service.make(:routing) }
-      let(:service_plan) { VCAP::CloudController::ServicePlan.make(service: service) }
-      let(:service_instance) { VCAP::CloudController::ManagedServiceInstance.make(service_plan: service_plan) }
+      let(:service) { CloudController::Service.make(:routing) }
+      let(:service_plan) { CloudController::ServicePlan.make(service: service) }
+      let(:service_instance) { CloudController::ManagedServiceInstance.make(service_plan: service_plan) }
 
       it 'returns a 422' do
         post :share_service_instance, service_instance_guid: service_instance.guid, body: req_body
@@ -304,7 +304,7 @@ RSpec.describe ServiceInstancesV3Controller, type: :controller do
 
     context 'when the target space has a service instance with the same name' do
       before do
-        target_space.add_service_instance(VCAP::CloudController::ManagedServiceInstance.make(name: service_instance.name))
+        target_space.add_service_instance(CloudController::ManagedServiceInstance.make(name: service_instance.name))
       end
 
       it 'returns a 422' do
@@ -315,9 +315,9 @@ RSpec.describe ServiceInstancesV3Controller, type: :controller do
     end
 
     context 'when the service is not shareable' do
-      let(:service) { VCAP::CloudController::Service.make(extra: { shareable: false }.to_json) }
-      let(:service_plan) { VCAP::CloudController::ServicePlan.make(service: service) }
-      let(:service_instance) { VCAP::CloudController::ManagedServiceInstance.make(service_plan: service_plan) }
+      let(:service) { CloudController::Service.make(extra: { shareable: false }.to_json) }
+      let(:service_plan) { CloudController::ServicePlan.make(service: service) }
+      let(:service_instance) { CloudController::ManagedServiceInstance.make(service_plan: service_plan) }
 
       it 'returns a 422' do
         post :share_service_instance, service_instance_guid: service_instance.guid, body: req_body
@@ -453,7 +453,7 @@ RSpec.describe ServiceInstancesV3Controller, type: :controller do
         service_instance.add_shared_space(target_space)
         set_current_user_as_role(role: 'space_developer', org: target_space.organization, space: target_space, user: user)
 
-        outer_space = VCAP::CloudController::Space.make
+        outer_space = CloudController::Space.make
         req_body[:data] = [{ guid: outer_space.guid }]
       end
 
@@ -539,8 +539,8 @@ RSpec.describe ServiceInstancesV3Controller, type: :controller do
   end
 
   describe '#unshare_service_instance' do
-    let(:service_instance) { VCAP::CloudController::ManagedServiceInstance.make }
-    let(:target_space) { VCAP::CloudController::Space.make }
+    let(:service_instance) { CloudController::ManagedServiceInstance.make }
+    let(:target_space) { CloudController::Space.make }
     let(:source_space) { service_instance.space }
 
     before do
@@ -574,8 +574,8 @@ RSpec.describe ServiceInstancesV3Controller, type: :controller do
     end
 
     context 'an application in the target space is bound to the service instance' do
-      let(:test_app) { VCAP::CloudController::AppModel.make(space: target_space, name: 'manatea') }
-      let!(:service_binding) { VCAP::CloudController::ServiceBinding.make(service_instance: service_instance, app: test_app, credentials: { 'amelia' => 'apples' }) }
+      let(:test_app) { CloudController::AppModel.make(space: target_space, name: 'manatea') }
+      let!(:service_binding) { CloudController::ServiceBinding.make(service_instance: service_instance, app: test_app, credentials: { 'amelia' => 'apples' }) }
 
       context 'and the service broker successfully unbinds' do
         before do
@@ -643,7 +643,7 @@ RSpec.describe ServiceInstancesV3Controller, type: :controller do
     end
 
     context 'when trying to unshare a service instance that has not been shared' do
-      let(:target_space2) { VCAP::CloudController::Space.make }
+      let(:target_space2) { CloudController::Space.make }
 
       it 'returns 422' do
         delete :unshare_service_instance, service_instance_guid: service_instance.guid, space_guid: target_space2.guid
@@ -655,7 +655,7 @@ RSpec.describe ServiceInstancesV3Controller, type: :controller do
     end
 
     context 'when there are multiple shares' do
-      let(:target_space2) { VCAP::CloudController::Space.make }
+      let(:target_space2) { CloudController::Space.make }
 
       before do
         service_instance.add_shared_space(target_space2)

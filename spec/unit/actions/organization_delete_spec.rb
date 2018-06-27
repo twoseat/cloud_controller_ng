@@ -2,7 +2,7 @@ require 'spec_helper'
 require 'actions/organization_delete'
 require 'actions/space_delete'
 
-module VCAP::CloudController
+module CloudController
   RSpec.describe OrganizationDelete do
     let(:services_event_repository) { Repositories::ServiceEventRepository.new(user_audit_info) }
     let(:user_audit_info) { UserAuditInfo.new(user_guid: user.guid, user_email: user_email) }

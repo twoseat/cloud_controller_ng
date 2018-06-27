@@ -1,7 +1,7 @@
 require 'spec_helper'
 require 'fetchers/assign_current_droplet_fetcher'
 
-module VCAP::CloudController
+module CloudController
   RSpec.describe AssignCurrentDropletFetcher do
     describe '#fetch' do
       let(:app) { AppModel.make }

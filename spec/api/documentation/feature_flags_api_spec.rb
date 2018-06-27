@@ -14,7 +14,7 @@ RSpec.resource 'Feature Flags', type: [:api, :legacy_api] do
 
   get '/v2/config/feature_flags' do
     example 'Get all feature flags' do
-      VCAP::CloudController::FeatureFlag.create(name: 'private_domain_creation', enabled: false, error_message: 'foobar')
+      CloudController::FeatureFlag.create(name: 'private_domain_creation', enabled: false, error_message: 'foobar')
 
       client.get '/v2/config/feature_flags', {}, headers
 

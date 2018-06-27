@@ -4,7 +4,7 @@ module CloudController
       class UserPresenter < DefaultPresenter
         extend PresenterProvider
 
-        present_for_class 'VCAP::CloudController::User'
+        present_for_class 'CloudController::User'
 
         def entity_hash(controller, user, opts, depth, parents, orphans=nil)
           super(controller, user, opts, depth, parents, orphans).merge(user_fields(user))
@@ -27,7 +27,7 @@ module CloudController
           when Integer
             value != 0
           else
-            raise VCAP::CloudController::Errors::ApiError.new_from_details('DatabaseError')
+            raise CloudController::Errors::ApiError.new_from_details('DatabaseError')
           end
         end
       end

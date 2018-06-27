@@ -1,4 +1,4 @@
-module VCAP::CloudController
+module CloudController
   module ProcessObserver
     class << self
       extend Forwardable

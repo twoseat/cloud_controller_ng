@@ -1,6 +1,6 @@
 require_relative '../../vcap/vars_builder'
 
-module VCAP::CloudController
+module CloudController
   class StagingEnvironmentBuilder
     def build(app, space, lifecycle, memory_limit, staging_disk_in_mb, vars_from_message=nil)
       app_env = app.environment_variables || {}

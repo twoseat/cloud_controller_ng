@@ -1,7 +1,7 @@
 require 'spec_helper'
 require 'cloud_controller/clock/scheduler'
 
-module VCAP::CloudController
+module CloudController
   RSpec.describe Scheduler, job_context: :clock do
     describe '#start' do
       subject(:schedule) { Scheduler.new(TestConfig.config_instance) }

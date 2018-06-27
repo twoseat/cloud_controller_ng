@@ -6,8 +6,8 @@ Sequel.migration do
     end
 
     self[:buildpack_lifecycle_data].each do |row|
-      salt = VCAP::CloudController::Encryptor.generate_salt
-      encrypted = VCAP::CloudController::Encryptor.encrypt(row[:buildpack], salt)
+      salt = CloudController::Encryptor.generate_salt
+      encrypted = CloudController::Encryptor.encrypt(row[:buildpack], salt)
       self['UPDATE buildpack_lifecycle_data SET encrypted_buildpack = ?, salt = ? WHERE id = ?', encrypted, salt, row[:id]].update
     end
 
@@ -21,8 +21,8 @@ Sequel.migration do
     end
 
     self[:apps].each do |row|
-      salt = VCAP::CloudController::Encryptor.generate_salt
-      encrypted = VCAP::CloudController::Encryptor.encrypt(row[:buildpack], salt)
+      salt = CloudController::Encryptor.generate_salt
+      encrypted = CloudController::Encryptor.encrypt(row[:buildpack], salt)
       self['UPDATE apps SET encrypted_buildpack = ?, buildpack_salt = ? WHERE id = ?', encrypted, salt, row[:id]].update
     end
 
@@ -37,7 +37,7 @@ Sequel.migration do
     end
 
     self[:buildpack_lifecycle_data].each do |row|
-      decrypted = VCAP::CloudController::Encryptor.decrypt(row[:encrypted_buildpack], row[:salt])
+      decrypted = CloudController::Encryptor.decrypt(row[:encrypted_buildpack], row[:salt])
       self['UPDATE buildpack_lifecycle_data SET buildpack = ? WHERE id = ?', decrypted, row[:id]].update
     end
 
@@ -51,7 +51,7 @@ Sequel.migration do
     end
 
     self[:apps].each do |row|
-      decrypted = VCAP::CloudController::Encryptor.decrypt(row[:encrypted_buildpack], row[:buildpack_salt])
+      decrypted = CloudController::Encryptor.decrypt(row[:encrypted_buildpack], row[:buildpack_salt])
       self['UPDATE apps SET buildpack = ? WHERE id = ?', decrypted, row[:id]].update
     end
 

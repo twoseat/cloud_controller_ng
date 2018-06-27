@@ -7,7 +7,7 @@ module VCAP::Services
     module V2
       class OrphanMitigator
         def cleanup_failed_provision(client_attrs, service_instance)
-          orphan_deprovision_job = VCAP::CloudController::Jobs::Services::DeleteOrphanedInstance.new(
+          orphan_deprovision_job = CloudController::Jobs::Services::DeleteOrphanedInstance.new(
             'service-instance-deprovision',
             client_attrs,
             service_instance.guid,
@@ -15,23 +15,23 @@ module VCAP::Services
           )
 
           opts = { queue: 'cc-generic', run_at: Delayed::Job.db_time_now }
-          VCAP::CloudController::Jobs::Enqueuer.new(orphan_deprovision_job, opts).enqueue
+          CloudController::Jobs::Enqueuer.new(orphan_deprovision_job, opts).enqueue
         end
 
         def cleanup_failed_bind(client_attrs, service_binding)
-          binding_info = VCAP::CloudController::Jobs::Services::OrphanedBindingInfo.new(service_binding)
-          unbind_job = VCAP::CloudController::Jobs::Services::DeleteOrphanedBinding.new(
+          binding_info = CloudController::Jobs::Services::OrphanedBindingInfo.new(service_binding)
+          unbind_job = CloudController::Jobs::Services::DeleteOrphanedBinding.new(
             'service-instance-unbind',
             client_attrs,
             binding_info
           )
 
           opts = { queue: 'cc-generic', run_at: Delayed::Job.db_time_now }
-          VCAP::CloudController::Jobs::Enqueuer.new(unbind_job, opts).enqueue
+          CloudController::Jobs::Enqueuer.new(unbind_job, opts).enqueue
         end
 
         def cleanup_failed_key(client_attrs, service_key)
-          key_delete_job = VCAP::CloudController::Jobs::Services::DeleteOrphanedKey.new(
+          key_delete_job = CloudController::Jobs::Services::DeleteOrphanedKey.new(
             'service-key-delete',
             client_attrs,
             service_key.guid,
@@ -39,7 +39,7 @@ module VCAP::Services
           )
 
           opts = { queue: 'cc-generic', run_at: Delayed::Job.db_time_now }
-          VCAP::CloudController::Jobs::Enqueuer.new(key_delete_job, opts).enqueue
+          CloudController::Jobs::Enqueuer.new(key_delete_job, opts).enqueue
         end
       end
     end

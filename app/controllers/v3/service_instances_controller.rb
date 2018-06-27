@@ -34,7 +34,7 @@ class ServiceInstancesV3Controller < ApplicationController
     resource_not_found!(:service_instance) unless service_instance && can_read_service_instance?(service_instance)
     unauthorized! unless can_write_space?(service_instance.space)
 
-    message = VCAP::CloudController::ToManyRelationshipMessage.new(params[:body])
+    message = CloudController::ToManyRelationshipMessage.new(params[:body])
     unprocessable!(message.errors.full_messages) unless message.valid?
 
     spaces = Space.where(guid: message.guids)
@@ -45,7 +45,7 @@ class ServiceInstancesV3Controller < ApplicationController
 
     render status: :ok, json: Presenters::V3::ToManyRelationshipPresenter.new(
       "service_instances/#{service_instance.guid}", service_instance.shared_spaces, 'shared_spaces', build_related: false)
-  rescue VCAP::CloudController::ServiceInstanceShare::Error => e
+  rescue CloudController::ServiceInstanceShare::Error => e
     unprocessable!(e.message)
   end
 
@@ -66,7 +66,7 @@ class ServiceInstancesV3Controller < ApplicationController
     unshare.unshare(service_instance, target_space, user_audit_info)
 
     head :no_content
-  rescue VCAP::CloudController::ServiceInstanceUnshare::Error => e
+  rescue CloudController::ServiceInstanceUnshare::Error => e
     raise CloudController::Errors::ApiError.new_from_details('ServiceInstanceUnshareFailed', e.message)
   end
 

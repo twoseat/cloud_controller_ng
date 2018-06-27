@@ -4,7 +4,7 @@ module CloudController
       class PrivateDomainPresenter < BasePresenter
         extend PresenterProvider
 
-        present_for_class 'VCAP::CloudController::PrivateDomain'
+        present_for_class 'CloudController::PrivateDomain'
 
         def entity_hash(controller, domain, opts, depth, parents, orphans=nil)
           entity = {

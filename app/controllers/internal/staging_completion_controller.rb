@@ -3,7 +3,7 @@ require 'controllers/base/base_controller'
 require 'cloud_controller/internal_api'
 require 'cloud_controller/diego/failure_reason_sanitizer'
 
-module VCAP::CloudController
+module CloudController
   class StagingCompletionController < RestController::BaseController
     def self.dependencies
       [:stagers]
@@ -104,7 +104,7 @@ module VCAP::CloudController
     end
 
     def statsd_updater
-      @statsd_updater ||= VCAP::CloudController::Metrics::StatsdUpdater.new
+      @statsd_updater ||= CloudController::Metrics::StatsdUpdater.new
     end
 
     attr_reader :stagers

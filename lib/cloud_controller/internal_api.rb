@@ -1,4 +1,4 @@
-module VCAP::CloudController
+module CloudController
   module InternalApi
     def configure(config)
       @config = config

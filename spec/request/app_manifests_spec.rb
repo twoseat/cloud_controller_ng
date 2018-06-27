@@ -1,17 +1,17 @@
 require 'spec_helper'
 
 RSpec.describe 'App Manifests' do
-  let(:user) { VCAP::CloudController::User.make }
+  let(:user) { CloudController::User.make }
   let(:user_header) { headers_for(user, email: Sham.email, user_name: 'some-username') }
-  let(:space) { VCAP::CloudController::Space.make }
-  let(:shared_domain) { VCAP::CloudController::SharedDomain.make }
-  let(:route) { VCAP::CloudController::Route.make(domain: shared_domain, space: space, host: 'a_host') }
+  let(:space) { CloudController::Space.make }
+  let(:shared_domain) { CloudController::SharedDomain.make }
+  let(:route) { CloudController::Route.make(domain: shared_domain, space: space, host: 'a_host') }
   let(:second_route) {
-    VCAP::CloudController::Route.make(domain: shared_domain, space: space, path: '/path', host: 'b_host')
+    CloudController::Route.make(domain: shared_domain, space: space, path: '/path', host: 'b_host')
   }
-  let(:app_model) { VCAP::CloudController::AppModel.make(space: space) }
+  let(:app_model) { CloudController::AppModel.make(space: space) }
 
-  let!(:process) { VCAP::CloudController::ProcessModel.make(app: app_model) }
+  let!(:process) { CloudController::ProcessModel.make(app: app_model) }
 
   before do
     space.organization.add_user(user)
@@ -19,8 +19,8 @@ RSpec.describe 'App Manifests' do
   end
 
   describe 'POST /v3/apps/:guid/actions/apply_manifest' do
-    let(:buildpack) { VCAP::CloudController::Buildpack.make }
-    let(:service_instance) { VCAP::CloudController::ManagedServiceInstance.make(space: space) }
+    let(:buildpack) { CloudController::Buildpack.make }
+    let(:service_instance) { CloudController::ManagedServiceInstance.make(space: space) }
     let(:yml_manifest) do
       {
         'applications' => [
@@ -62,11 +62,11 @@ RSpec.describe 'App Manifests' do
       post "/v3/apps/#{app_model.guid}/actions/apply_manifest", yml_manifest, yml_headers(user_header)
 
       expect(last_response.status).to eq(202)
-      job_guid = VCAP::CloudController::PollableJobModel.last.guid
+      job_guid = CloudController::PollableJobModel.last.guid
       expect(last_response.headers['Location']).to match(%r(/v3/jobs/#{job_guid}))
 
       Delayed::Worker.new.work_off
-      expect(VCAP::CloudController::PollableJobModel.find(guid: job_guid)).to be_complete
+      expect(CloudController::PollableJobModel.find(guid: job_guid)).to be_complete
 
       web_process.reload
       expect(web_process.instances).to eq(4)
@@ -129,9 +129,9 @@ RSpec.describe 'App Manifests' do
         expect {
           post "/v3/apps/#{app_model.guid}/actions/apply_manifest", yml_manifest, yml_headers(user_header)
           Delayed::Worker.new.work_off
-        }.to change { VCAP::CloudController::Event.count }.by 10
+        }.to change { CloudController::Event.count }.by 10
 
-        manifest_triggered_events = VCAP::CloudController::Event.find_all { |event| event.metadata['manifest_triggered'] }
+        manifest_triggered_events = CloudController::Event.find_all { |event| event.metadata['manifest_triggered'] }
         expect(manifest_triggered_events.map(&:type)).to match_array([
           'audit.app.process.update',
           'audit.app.process.create',
@@ -144,7 +144,7 @@ RSpec.describe 'App Manifests' do
           'audit.service_binding.create',
         ])
 
-        other_events = VCAP::CloudController::Event.find_all { |event| !event.metadata['manifest_triggered'] }
+        other_events = CloudController::Event.find_all { |event| !event.metadata['manifest_triggered'] }
         expect(other_events.map(&:type)).to eq(['audit.app.apply_manifest',])
       end
 
@@ -160,23 +160,23 @@ RSpec.describe 'App Manifests' do
         end
 
         before do
-          VCAP::CloudController::RouteMappingModel.make(app: app_model, route: route)
+          CloudController::RouteMappingModel.make(app: app_model, route: route)
         end
 
         it 'creates audit.app.unmap-route audit events including metadata.manifest_triggered' do
           expect {
             post "/v3/apps/#{app_model.guid}/actions/apply_manifest", yml_manifest, yml_headers(user_header)
             Delayed::Worker.new.work_off
-          }.to change { VCAP::CloudController::Event.count }.by 4
+          }.to change { CloudController::Event.count }.by 4
 
-          manifest_triggered_events = VCAP::CloudController::Event.find_all { |event| event.metadata['manifest_triggered'] }
+          manifest_triggered_events = CloudController::Event.find_all { |event| event.metadata['manifest_triggered'] }
           expect(manifest_triggered_events.map(&:type)).to match_array([
             'audit.app.update',
             'audit.app.update',
             'audit.app.unmap-route',
           ])
 
-          other_events = VCAP::CloudController::Event.find_all { |event| !event.metadata['manifest_triggered'] }
+          other_events = CloudController::Event.find_all { |event| !event.metadata['manifest_triggered'] }
           expect(other_events.map(&:type)).to eq(['audit.app.apply_manifest',])
         end
       end
@@ -193,7 +193,7 @@ RSpec.describe 'App Manifests' do
         }.to_yaml
       end
       let!(:route_mapping) do
-        VCAP::CloudController::RouteMappingModel.make(
+        CloudController::RouteMappingModel.make(
           app: app_model,
           route: route,
           process_type: process.type
@@ -206,11 +206,11 @@ RSpec.describe 'App Manifests' do
         post "/v3/apps/#{app_model.guid}/actions/apply_manifest", yml_manifest, yml_headers(user_header)
 
         expect(last_response.status).to eq(202)
-        job_guid = VCAP::CloudController::PollableJobModel.last.guid
+        job_guid = CloudController::PollableJobModel.last.guid
         expect(last_response.headers['Location']).to match(%r(/v3/jobs/#{job_guid}))
 
         Delayed::Worker.new.work_off
-        expect(VCAP::CloudController::PollableJobModel.find(guid: job_guid)).to be_complete
+        expect(CloudController::PollableJobModel.find(guid: job_guid)).to be_complete
 
         app_model.reload
         expect(app_model.routes).to be_empty
@@ -255,7 +255,7 @@ RSpec.describe 'App Manifests' do
       end
 
       context 'when all the process types already exist' do
-        let!(:process2) { VCAP::CloudController::ProcessModel.make(app: app_model, type: 'worker') }
+        let!(:process2) { CloudController::ProcessModel.make(app: app_model, type: 'worker') }
 
         it 'applies the manifest' do
           web_process = app_model.web_process
@@ -264,11 +264,11 @@ RSpec.describe 'App Manifests' do
           post "/v3/apps/#{app_model.guid}/actions/apply_manifest", yml_manifest, yml_headers(user_header)
 
           expect(last_response.status).to eq(202)
-          job_guid = VCAP::CloudController::PollableJobModel.last.guid
+          job_guid = CloudController::PollableJobModel.last.guid
           expect(last_response.headers['Location']).to match(%r(/v3/jobs/#{job_guid}))
 
           Delayed::Worker.new.work_off
-          background_job = VCAP::CloudController::PollableJobModel.find(guid: job_guid)
+          background_job = CloudController::PollableJobModel.find(guid: job_guid)
           expect(background_job).to be_complete, "Failed due to: #{background_job.cf_api_error}"
 
           web_process.reload
@@ -298,11 +298,11 @@ RSpec.describe 'App Manifests' do
           post "/v3/apps/#{app_model.guid}/actions/apply_manifest", yml_manifest, yml_headers(user_header)
 
           expect(last_response.status).to eq(202)
-          job_guid = VCAP::CloudController::PollableJobModel.last.guid
+          job_guid = CloudController::PollableJobModel.last.guid
           expect(last_response.headers['Location']).to match(%r(/v3/jobs/#{job_guid}))
 
           Delayed::Worker.new.work_off
-          background_job = VCAP::CloudController::PollableJobModel.find(guid: job_guid)
+          background_job = CloudController::PollableJobModel.find(guid: job_guid)
           expect(background_job).to be_complete, "Failed due to: #{background_job.cf_api_error}"
 
           web_process.reload
@@ -314,7 +314,7 @@ RSpec.describe 'App Manifests' do
           expect(web_process.health_check_http_endpoint).to eq('/test')
           expect(web_process.health_check_timeout).to eq(10)
 
-          process2 = VCAP::CloudController::ProcessModel.find(app_guid: app_model.guid, type: 'worker')
+          process2 = CloudController::ProcessModel.find(app_guid: app_model.guid, type: 'worker')
           expect(process2.instances).to eq(2)
           expect(process2.memory).to eq(512)
           expect(process2.disk_quota).to eq(1024)
@@ -326,8 +326,8 @@ RSpec.describe 'App Manifests' do
     end
 
     describe 'multiple buildpacks' do
-      let(:buildpack) { VCAP::CloudController::Buildpack.make }
-      let(:buildpack2) { VCAP::CloudController::Buildpack.make }
+      let(:buildpack) { CloudController::Buildpack.make }
+      let(:buildpack2) { CloudController::Buildpack.make }
       let(:yml_manifest) do
         {
           'applications' => [
@@ -343,11 +343,11 @@ RSpec.describe 'App Manifests' do
         post "/v3/apps/#{app_model.guid}/actions/apply_manifest", yml_manifest, yml_headers(user_header)
 
         expect(last_response.status).to eq(202)
-        job_guid = VCAP::CloudController::PollableJobModel.last.guid
+        job_guid = CloudController::PollableJobModel.last.guid
         expect(last_response.headers['Location']).to match(%r(/v3/jobs/#{job_guid}))
 
         Delayed::Worker.new.work_off
-        background_job = VCAP::CloudController::PollableJobModel.find(guid: job_guid)
+        background_job = CloudController::PollableJobModel.find(guid: job_guid)
         expect(background_job).to be_complete, "Failed due to: #{background_job.cf_api_error}"
 
         app_model.reload
@@ -358,18 +358,18 @@ RSpec.describe 'App Manifests' do
   end
 
   describe 'GET /v3/apps/:guid/manifest' do
-    let(:app_model) { VCAP::CloudController::AppModel.make(space: space, environment_variables: { 'one' => 'tomato', 'two' => 'potato' }) }
+    let(:app_model) { CloudController::AppModel.make(space: space, environment_variables: { 'one' => 'tomato', 'two' => 'potato' }) }
 
-    let!(:service_binding) { VCAP::CloudController::ServiceBinding.make(app: app_model, service_instance: service_instance) }
-    let!(:service_binding2) { VCAP::CloudController::ServiceBinding.make(app: app_model, service_instance: service_instance2) }
-    let!(:service_instance) { VCAP::CloudController::ManagedServiceInstance.make(space: space) }
-    let!(:service_instance2) { VCAP::CloudController::ManagedServiceInstance.make(space: space) }
+    let!(:service_binding) { CloudController::ServiceBinding.make(app: app_model, service_instance: service_instance) }
+    let!(:service_binding2) { CloudController::ServiceBinding.make(app: app_model, service_instance: service_instance2) }
+    let!(:service_instance) { CloudController::ManagedServiceInstance.make(space: space) }
+    let!(:service_instance2) { CloudController::ManagedServiceInstance.make(space: space) }
 
-    let!(:route_mapping) { VCAP::CloudController::RouteMappingModel.make(app: app_model, route: route) }
-    let!(:route_mapping2) { VCAP::CloudController::RouteMappingModel.make(app: app_model, route: second_route) }
+    let!(:route_mapping) { CloudController::RouteMappingModel.make(app: app_model, route: route) }
+    let!(:route_mapping2) { CloudController::RouteMappingModel.make(app: app_model, route: second_route) }
 
     let!(:worker_process) do
-      VCAP::CloudController::ProcessModelFactory.make(
+      CloudController::ProcessModelFactory.make(
         app: app_model,
         type: 'worker',
         command: 'Do a thing',
@@ -380,8 +380,8 @@ RSpec.describe 'App Manifests' do
     end
 
     context 'for a buildpack' do
-      let!(:buildpack) { VCAP::CloudController::Buildpack.make }
-      let!(:buildpack2) { VCAP::CloudController::Buildpack.make }
+      let!(:buildpack) { CloudController::Buildpack.make }
+      let!(:buildpack2) { CloudController::Buildpack.make }
 
       let(:expected_yml_manifest) do
         {
@@ -440,18 +440,18 @@ RSpec.describe 'App Manifests' do
 
     context 'for a docker app' do
       let(:docker_package) do
-        VCAP::CloudController::PackageModel.make(
+        CloudController::PackageModel.make(
           :docker,
           app: app_model,
           docker_username: 'xXxMyL1ttlePwnyxXx')
       end
 
       let(:droplet) do
-        VCAP::CloudController::DropletModel.make app: app_model, package: docker_package
+        CloudController::DropletModel.make app: app_model, package: docker_package
       end
 
       let(:app_model) do
-        VCAP::CloudController::AppModel.make(:docker, space: space, environment_variables: { 'one' => 'tomato', 'two' => 'potato' })
+        CloudController::AppModel.make(:docker, space: space, environment_variables: { 'one' => 'tomato', 'two' => 'potato' })
       end
 
       before do

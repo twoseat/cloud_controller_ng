@@ -1,13 +1,13 @@
 require 'spec_helper'
 
-module VCAP::CloudController
+module CloudController
   RSpec.describe EventAccess, type: :access do
     subject(:access) { EventAccess.new(Security::AccessContext.new) }
 
-    let(:user) { VCAP::CloudController::User.make }
-    let(:org) { VCAP::CloudController::Organization.make }
-    let(:space) { VCAP::CloudController::Space.make(organization: org) }
-    let!(:object) { VCAP::CloudController::Event.make(space: space) }
+    let(:user) { CloudController::User.make }
+    let(:org) { CloudController::Organization.make }
+    let(:space) { CloudController::Space.make(organization: org) }
+    let!(:object) { CloudController::Event.make(space: space) }
     let(:scopes) { nil }
 
     before { set_current_user(user, scopes: scopes) }
@@ -59,7 +59,7 @@ module VCAP::CloudController
 
     context 'user in a different organization (defensive)' do
       before do
-        different_organization = VCAP::CloudController::Organization.make
+        different_organization = CloudController::Organization.make
         different_organization.add_user(user)
       end
 
@@ -68,7 +68,7 @@ module VCAP::CloudController
 
     context 'manager in a different organization (defensive)' do
       before do
-        different_organization = VCAP::CloudController::Organization.make
+        different_organization = CloudController::Organization.make
         different_organization.add_manager(user)
       end
 
@@ -147,7 +147,7 @@ module VCAP::CloudController
 
       context 'user in a different organization (defensive)' do
         before do
-          different_organization = VCAP::CloudController::Organization.make
+          different_organization = CloudController::Organization.make
           different_organization.add_user(user)
           space.destroy
         end
@@ -157,7 +157,7 @@ module VCAP::CloudController
 
       context 'manager in a different organization (defensive)' do
         before do
-          different_organization = VCAP::CloudController::Organization.make
+          different_organization = CloudController::Organization.make
           different_organization.add_manager(user)
           space.destroy
         end

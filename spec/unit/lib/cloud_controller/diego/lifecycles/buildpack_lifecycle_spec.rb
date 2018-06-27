@@ -1,7 +1,7 @@
 require 'spec_helper'
 require_relative 'lifecycle_shared'
 
-module VCAP::CloudController
+module CloudController
   RSpec.describe BuildpackLifecycle do
     let(:app) { AppModel.create(name: 'some-app', space: Space.make) }
     let!(:package) { PackageModel.make(type: PackageModel::BITS_TYPE, app: app) }
@@ -29,9 +29,9 @@ module VCAP::CloudController
 
           expect {
             buildpack_lifecycle.create_lifecycle_data_model(build)
-          }.to change(VCAP::CloudController::BuildpackLifecycleDataModel, :count).by(1)
+          }.to change(CloudController::BuildpackLifecycleDataModel, :count).by(1)
 
-          data_model = VCAP::CloudController::BuildpackLifecycleDataModel.last
+          data_model = CloudController::BuildpackLifecycleDataModel.last
 
           expect(data_model.buildpacks).to eq(['cool-buildpack', 'rad-buildpack'])
           expect(data_model.build).to eq(build)
@@ -54,9 +54,9 @@ module VCAP::CloudController
 
             expect {
               buildpack_lifecycle.create_lifecycle_data_model(build)
-            }.to change(VCAP::CloudController::BuildpackLifecycleDataModel, :count).by(1)
+            }.to change(CloudController::BuildpackLifecycleDataModel, :count).by(1)
 
-            data_model = VCAP::CloudController::BuildpackLifecycleDataModel.last
+            data_model = CloudController::BuildpackLifecycleDataModel.last
 
             expect(data_model.buildpacks).to eq(['cool-buildpack', 'rad-buildpack'])
             expect(data_model.build).to eq(build)
@@ -69,9 +69,9 @@ module VCAP::CloudController
 
             expect {
               buildpack_lifecycle.create_lifecycle_data_model(build)
-            }.to change(VCAP::CloudController::BuildpackLifecycleDataModel, :count).by(1)
+            }.to change(CloudController::BuildpackLifecycleDataModel, :count).by(1)
 
-            data_model = VCAP::CloudController::BuildpackLifecycleDataModel.last
+            data_model = CloudController::BuildpackLifecycleDataModel.last
 
             expect(data_model.buildpacks).to be_empty
             expect(data_model.build).to eq(build)

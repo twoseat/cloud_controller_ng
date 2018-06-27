@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-module VCAP::CloudController
+module CloudController
   module Jobs::V2
     RSpec.describe UploadDropletFromUser, job_context: :api do
       let(:app) { AppModel.make }

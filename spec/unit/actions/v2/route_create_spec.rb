@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-module VCAP::CloudController
+module CloudController
   module V2
     RSpec.describe RouteCreate do
       let(:access_validator) { instance_double(RoutesController) }

@@ -2,14 +2,14 @@ require 'rails_helper'
 require 'isolation_segment_assign'
 
 RSpec.describe IsolationSegmentsController, type: :controller do
-  let(:user) { set_current_user(VCAP::CloudController::User.make) }
-  let(:isolation_segment_model) { VCAP::CloudController::IsolationSegmentModel.make }
-  let(:org1) { VCAP::CloudController::Organization.make }
-  let(:org2) { VCAP::CloudController::Organization.make }
-  let(:org3) { VCAP::CloudController::Organization.make }
-  let(:space) { VCAP::CloudController::Space.make(organization: org1) }
+  let(:user) { set_current_user(CloudController::User.make) }
+  let(:isolation_segment_model) { CloudController::IsolationSegmentModel.make }
+  let(:org1) { CloudController::Organization.make }
+  let(:org2) { CloudController::Organization.make }
+  let(:org3) { CloudController::Organization.make }
+  let(:space) { CloudController::Space.make(organization: org1) }
 
-  let(:assigner) { VCAP::CloudController::IsolationSegmentAssign.new }
+  let(:assigner) { CloudController::IsolationSegmentAssign.new }
 
   describe '#relationships_orgs' do
     context 'when the segment has not been assigned to any orgs' do
@@ -87,9 +87,9 @@ RSpec.describe IsolationSegmentsController, type: :controller do
   end
 
   describe '#relationships_spaces' do
-    let(:space1) { VCAP::CloudController::Space.make(organization: org1) }
-    let(:space2) { VCAP::CloudController::Space.make(organization: org2) }
-    let(:space3) { VCAP::CloudController::Space.make(organization: org1) }
+    let(:space1) { CloudController::Space.make(organization: org1) }
+    let(:space2) { CloudController::Space.make(organization: org2) }
+    let(:space3) { CloudController::Space.make(organization: org1) }
 
     context 'when the segment has not been associated with spaces' do
       context 'when the user has read access for isolation segment' do
@@ -160,9 +160,9 @@ RSpec.describe IsolationSegmentsController, type: :controller do
   end
 
   describe '#assign_allowed_organizations' do
-    let(:isolation_segment_model) { VCAP::CloudController::IsolationSegmentModel.make }
-    let(:org1) { VCAP::CloudController::Organization.make }
-    let(:org2) { VCAP::CloudController::Organization.make }
+    let(:isolation_segment_model) { CloudController::IsolationSegmentModel.make }
+    let(:org1) { CloudController::Organization.make }
+    let(:org2) { CloudController::Organization.make }
 
     let(:req_body) do
       {
@@ -272,9 +272,9 @@ RSpec.describe IsolationSegmentsController, type: :controller do
   end
 
   describe '#unassign_allowed_organization' do
-    let(:isolation_segment_model) { VCAP::CloudController::IsolationSegmentModel.make }
-    let(:org) { VCAP::CloudController::Organization.make }
-    let(:org_2) { VCAP::CloudController::Organization.make }
+    let(:isolation_segment_model) { CloudController::IsolationSegmentModel.make }
+    let(:org) { CloudController::Organization.make }
+    let(:org_2) { CloudController::Organization.make }
 
     context 'when the user is an admin' do
       before do
@@ -350,7 +350,7 @@ RSpec.describe IsolationSegmentsController, type: :controller do
 
         expect(response.status).to eq 201
 
-        isolation_segment_model = VCAP::CloudController::IsolationSegmentModel.last
+        isolation_segment_model = CloudController::IsolationSegmentModel.last
         expect(isolation_segment_model.name).to eq 'some-name'
       end
 
@@ -368,7 +368,7 @@ RSpec.describe IsolationSegmentsController, type: :controller do
 
       context 'when the requested name is a duplicate' do
         it 'returns a 422' do
-          VCAP::CloudController::IsolationSegmentModel.make(name: 'some-name')
+          CloudController::IsolationSegmentModel.make(name: 'some-name')
           post :create, body: req_body
 
           expect(response.status).to eq 422
@@ -389,7 +389,7 @@ RSpec.describe IsolationSegmentsController, type: :controller do
   end
 
   describe '#show' do
-    let!(:isolation_segment) { VCAP::CloudController::IsolationSegmentModel.make(name: 'some-name') }
+    let!(:isolation_segment) { CloudController::IsolationSegmentModel.make(name: 'some-name') }
 
     context 'when the user has global read access' do
       before do
@@ -458,7 +458,7 @@ RSpec.describe IsolationSegmentsController, type: :controller do
       end
 
       context 'and the user is not registered to any space or org associated with the isolation segment' do
-        let(:other_space) { VCAP::CloudController::Space.make }
+        let(:other_space) { CloudController::Space.make }
 
         before do
           allow_user_read_access_for(user, spaces: [other_space])
@@ -475,7 +475,7 @@ RSpec.describe IsolationSegmentsController, type: :controller do
   end
 
   describe '#index' do
-    let(:space) { VCAP::CloudController::Space.make }
+    let(:space) { CloudController::Space.make }
 
     before do
       allow_user_read_access_for(user, spaces: [space])
@@ -529,8 +529,8 @@ RSpec.describe IsolationSegmentsController, type: :controller do
       end
 
       context 'when valid' do
-        let!(:isolation_segment_a) { VCAP::CloudController::IsolationSegmentModel.make(name: 'a-segment') }
-        let!(:isolation_segment_b) { VCAP::CloudController::IsolationSegmentModel.make(name: 'b-segment') }
+        let!(:isolation_segment_a) { CloudController::IsolationSegmentModel.make(name: 'a-segment') }
+        let!(:isolation_segment_b) { CloudController::IsolationSegmentModel.make(name: 'b-segment') }
 
         it 'returns a 200 and a list of the existing isolation segments' do
           get :index, order_by: 'name'
@@ -544,11 +544,11 @@ RSpec.describe IsolationSegmentsController, type: :controller do
     end
 
     context 'when the user is not an admin' do
-      let!(:isolation_segment1) { VCAP::CloudController::IsolationSegmentModel.make }
-      let!(:isolation_segment2) { VCAP::CloudController::IsolationSegmentModel.make }
-      let!(:isolation_segment3) { VCAP::CloudController::IsolationSegmentModel.make }
-      let(:org1) { VCAP::CloudController::Organization.make }
-      let(:org2) { VCAP::CloudController::Organization.make }
+      let!(:isolation_segment1) { CloudController::IsolationSegmentModel.make }
+      let!(:isolation_segment2) { CloudController::IsolationSegmentModel.make }
+      let!(:isolation_segment3) { CloudController::IsolationSegmentModel.make }
+      let(:org1) { CloudController::Organization.make }
+      let(:org2) { CloudController::Organization.make }
 
       context 'and the user is registered to one or more orgs' do
         before do
@@ -581,8 +581,8 @@ RSpec.describe IsolationSegmentsController, type: :controller do
       end
 
       context 'when isolation segments have been created' do
-        let!(:isolation_segment1) { VCAP::CloudController::IsolationSegmentModel.make(name: 'segment1') }
-        let!(:isolation_segment2) { VCAP::CloudController::IsolationSegmentModel.make(name: 'segment2') }
+        let!(:isolation_segment1) { CloudController::IsolationSegmentModel.make(name: 'segment1') }
+        let!(:isolation_segment2) { CloudController::IsolationSegmentModel.make(name: 'segment2') }
 
         it 'returns a 200 and a list of the existing isolation segments' do
           get :index
@@ -590,7 +590,7 @@ RSpec.describe IsolationSegmentsController, type: :controller do
           response_guids = parsed_body['resources'].map { |r| r['guid'] }
           expect(response.status).to eq(200)
           expect(response_guids.length).to eq(3)
-          expect(response_guids).to include(VCAP::CloudController::IsolationSegmentModel::SHARED_ISOLATION_SEGMENT_GUID, isolation_segment1.guid, isolation_segment2.guid)
+          expect(response_guids).to include(CloudController::IsolationSegmentModel::SHARED_ISOLATION_SEGMENT_GUID, isolation_segment1.guid, isolation_segment2.guid)
         end
       end
 
@@ -601,14 +601,14 @@ RSpec.describe IsolationSegmentsController, type: :controller do
           response_guids = parsed_body['resources'].map { |r| r['guid'] }
           expect(response.status).to eq(200)
           expect(response_guids.length).to eq(1)
-          expect(response_guids).to include(VCAP::CloudController::IsolationSegmentModel::SHARED_ISOLATION_SEGMENT_GUID)
+          expect(response_guids).to include(CloudController::IsolationSegmentModel::SHARED_ISOLATION_SEGMENT_GUID)
         end
       end
     end
   end
 
   describe '#update' do
-    let(:isolation_segment_model) { VCAP::CloudController::IsolationSegmentModel.make(name: 'orig-name') }
+    let(:isolation_segment_model) { CloudController::IsolationSegmentModel.make(name: 'orig-name') }
     let(:new_name) { 'new-name' }
     let(:req_body) { { name: new_name } }
 
@@ -628,7 +628,7 @@ RSpec.describe IsolationSegmentsController, type: :controller do
         end
 
         context 'with a non-unique name' do
-          let(:another_segment) { VCAP::CloudController::IsolationSegmentModel.make(name: 'i_am_unique') }
+          let(:another_segment) { CloudController::IsolationSegmentModel.make(name: 'i_am_unique') }
           let(:req_body) { { name: another_segment.name } }
 
           it 'returns a 422' do
@@ -639,7 +639,7 @@ RSpec.describe IsolationSegmentsController, type: :controller do
         end
 
         context 'with an empty name' do
-          let(:another_segment) { VCAP::CloudController::IsolationSegmentModel.make(name: 'name') }
+          let(:another_segment) { CloudController::IsolationSegmentModel.make(name: 'name') }
           let(:req_body) { { name: '' } }
 
           it 'returns a 422' do
@@ -681,8 +681,8 @@ RSpec.describe IsolationSegmentsController, type: :controller do
   end
 
   describe '#destroy' do
-    let(:isolation_segment_model1) { VCAP::CloudController::IsolationSegmentModel.make }
-    let(:isolation_segment_model2) { VCAP::CloudController::IsolationSegmentModel.make }
+    let(:isolation_segment_model1) { CloudController::IsolationSegmentModel.make }
+    let(:isolation_segment_model2) { CloudController::IsolationSegmentModel.make }
 
     context 'when the user is admin' do
       before do
@@ -700,8 +700,8 @@ RSpec.describe IsolationSegmentsController, type: :controller do
 
         context 'when the isolation segment is associated to an organization' do
           before do
-            allow_any_instance_of(VCAP::CloudController::IsolationSegmentDelete).to receive(:delete).
-              and_raise(VCAP::CloudController::IsolationSegmentDelete::AssociationNotEmptyError.new(
+            allow_any_instance_of(CloudController::IsolationSegmentDelete).to receive(:delete).
+              and_raise(CloudController::IsolationSegmentDelete::AssociationNotEmptyError.new(
                           'Revoke the Organization entitlements for your Isolation Segment.'))
           end
 
@@ -738,7 +738,7 @@ RSpec.describe IsolationSegmentsController, type: :controller do
 
   describe 'default shared isolation segment' do
     let(:shared_segment) do
-      VCAP::CloudController::IsolationSegmentModel.first(guid: VCAP::CloudController::IsolationSegmentModel::SHARED_ISOLATION_SEGMENT_GUID)
+      CloudController::IsolationSegmentModel.first(guid: CloudController::IsolationSegmentModel::SHARED_ISOLATION_SEGMENT_GUID)
     end
 
     let!(:original_name) { shared_segment.name }
@@ -757,7 +757,7 @@ RSpec.describe IsolationSegmentsController, type: :controller do
       delete :destroy, guid: shared_segment.guid
 
       expect(response.status).to eq 422
-      expect(VCAP::CloudController::IsolationSegmentModel.first(guid: shared_segment.guid).exists?).to be true
+      expect(CloudController::IsolationSegmentModel.first(guid: shared_segment.guid).exists?).to be true
     end
 
     it 'cannot be updated via API' do

@@ -1,6 +1,6 @@
 require 'presenters/v3/base_presenter'
 
-module VCAP::CloudController
+module CloudController
   module Presenters
     module V3
       class TaskPresenter < BasePresenter
@@ -28,7 +28,7 @@ module VCAP::CloudController
         end
 
         def build_links
-          url_builder = VCAP::CloudController::Presenters::ApiUrlBuilder.new
+          url_builder = CloudController::Presenters::ApiUrlBuilder.new
 
           {
             self:    { href: url_builder.build_url(path: "/v3/tasks/#{task.guid}") },

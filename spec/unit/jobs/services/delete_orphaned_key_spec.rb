@@ -1,19 +1,19 @@
 require 'spec_helper'
 
-module VCAP::CloudController
+module CloudController
   module Jobs::Services
     RSpec.describe DeleteOrphanedKey, job_context: :worker do
       let(:client) { instance_double('VCAP::Services::ServiceBrokers::V2::Client') }
       let(:service_instance_guid) { 'fake-instance-guid' }
       let(:key_guid) { 'fake-key-guid' }
 
-      let(:service_key) { instance_double('VCAP::CloudController::ServiceKey') }
+      let(:service_key) { instance_double('CloudController::ServiceKey') }
       before do
-        allow(VCAP::CloudController::ServiceKey).to receive(:new).and_return(service_key)
+        allow(CloudController::ServiceKey).to receive(:new).and_return(service_key)
       end
 
       let(:name) { 'fake-name' }
-      subject(:job) { VCAP::CloudController::Jobs::Services::DeleteOrphanedKey.new(name, {}, key_guid, service_instance_guid) }
+      subject(:job) { CloudController::Jobs::Services::DeleteOrphanedKey.new(name, {}, key_guid, service_instance_guid) }
 
       describe '#perform' do
         before do

@@ -1,6 +1,6 @@
 require 'presenters/api/job_presenter'
 
-module VCAP::CloudController
+module CloudController
   class JobsController < RestController::ModelController
     path_base 'jobs'
 

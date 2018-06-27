@@ -1,7 +1,7 @@
 require 'spec_helper'
 
-module VCAP::CloudController
-  RSpec.describe VCAP::CloudController::StatsController do
+module CloudController
+  RSpec.describe CloudController::StatsController do
     let(:user) { make_user_for_space(process.space) }
     let(:developer) { make_developer_for_space(process.space) }
     let(:auditor) { make_auditor_for_space(process.space) }

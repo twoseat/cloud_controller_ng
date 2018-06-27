@@ -1,7 +1,7 @@
-module VCAP::CloudController
+module CloudController
   module Jobs
     module Runtime
-      class BuildpackCacheCleanup < VCAP::CloudController::Jobs::CCJob
+      class BuildpackCacheCleanup < CloudController::Jobs::CCJob
         def perform
           logger = Steno.logger('cc.background')
           logger.info('Attempting cleanup of buildpack_cache blobstore')

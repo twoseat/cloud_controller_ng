@@ -1,7 +1,7 @@
 require 'spec_helper'
 require 'cloud_controller/diego/reporters/instances_stats_reporter'
 
-module VCAP::CloudController
+module CloudController
   module Diego
     RSpec.describe InstancesStatsReporter do
       subject(:instances_reporter) { InstancesStatsReporter.new(bbs_instances_client, traffic_controller_client) }
@@ -95,7 +95,7 @@ module VCAP::CloudController
           allow(bbs_instances_client).to receive(:lrp_instances).and_return(bbs_actual_lrps_response)
           allow(bbs_instances_client).to receive(:desired_lrp_instance).and_return(bbs_desired_lrp_response)
           allow(traffic_controller_client).to receive(:container_metrics).with(auth_token: 'my-token', app_guid: process.guid).and_return(traffic_controller_response)
-          allow(VCAP::CloudController::SecurityContext).to receive(:auth_token).and_return('my-token')
+          allow(CloudController::SecurityContext).to receive(:auth_token).and_return('my-token')
         end
 
         it 'returns a map of stats & states per index in the correct units' do

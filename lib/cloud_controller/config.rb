@@ -13,7 +13,7 @@ require 'cloud_controller/config_schemas/worker_schema'
 require 'cloud_controller/config_schemas/deployment_updater_schema'
 require 'cloud_controller/config_schemas/rotatate_database_key_schema'
 
-module VCAP::CloudController
+module CloudController
   class Config
     class InvalidConfigPath < StandardError
     end
@@ -31,7 +31,7 @@ module VCAP::CloudController
       end
 
       def schema_class_for_context(context)
-        const_get("VCAP::CloudController::ConfigSchemas::#{context.to_s.camelize}Schema")
+        const_get("CloudController::ConfigSchemas::#{context.to_s.camelize}Schema")
       end
 
       private

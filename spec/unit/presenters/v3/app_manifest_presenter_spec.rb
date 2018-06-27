@@ -1,10 +1,10 @@
 require 'spec_helper'
 require 'presenters/v3/app_manifest_presenter'
 
-module VCAP::CloudController::Presenters::V3
+module CloudController::Presenters::V3
   RSpec.describe AppManifestPresenter do
     let(:environment_variables) { { 'one' => 'potato', 'two' => 'tomato' } }
-    let(:app) { VCAP::CloudController::AppModel.make(
+    let(:app) { CloudController::AppModel.make(
       environment_variables: environment_variables
     )
     }
@@ -26,7 +26,7 @@ module VCAP::CloudController::Presenters::V3
 
         context 'for docker apps' do
           let(:app) {
-            VCAP::CloudController::AppModel.make(
+            CloudController::AppModel.make(
               :docker,
             environment_variables: environment_variables
           )
@@ -52,28 +52,28 @@ module VCAP::CloudController::Presenters::V3
 
       context 'when the app has other associated resources' do
         let(:service_instance) do
-          VCAP::CloudController::ManagedServiceInstance.make(
+          CloudController::ManagedServiceInstance.make(
             space: space,
             name: 'service-instance-a'
           )
         end
         let(:service_instance2) do
-          VCAP::CloudController::ManagedServiceInstance.make(
+          CloudController::ManagedServiceInstance.make(
             space: space,
             name: 'service-instance-z'
           )
         end
-        let(:service_binding) { VCAP::CloudController::ServiceBinding.make(app: app, service_instance: service_instance) }
-        let(:service_binding2) { VCAP::CloudController::ServiceBinding.make(app: app, service_instance: service_instance2) }
+        let(:service_binding) { CloudController::ServiceBinding.make(app: app, service_instance: service_instance) }
+        let(:service_binding2) { CloudController::ServiceBinding.make(app: app, service_instance: service_instance2) }
         let(:service_bindings) { [service_binding2, service_binding] }
 
-        let(:route) { VCAP::CloudController::Route.make host: 'aaa' }
-        let(:route2) { VCAP::CloudController::Route.make host: 'zzz' }
+        let(:route) { CloudController::Route.make host: 'aaa' }
+        let(:route2) { CloudController::Route.make host: 'zzz' }
 
         let(:routes) { [route2, route] }
 
         let!(:process1) do
-          VCAP::CloudController::ProcessModelFactory.make(
+          CloudController::ProcessModelFactory.make(
             app: app,
             health_check_type: 'http',
             health_check_http_endpoint: '/foobar',
@@ -83,7 +83,7 @@ module VCAP::CloudController::Presenters::V3
           )
         end
         let!(:process2) do
-          VCAP::CloudController::ProcessModel.make(
+          CloudController::ProcessModel.make(
             app: app,
             type: 'zzzzz',
           )
@@ -125,7 +125,7 @@ module VCAP::CloudController::Presenters::V3
 
         context 'when a process is missing attributes' do
           let!(:process1) do
-            VCAP::CloudController::ProcessModel.make(
+            CloudController::ProcessModel.make(
               app: app,
               health_check_timeout: nil,
               health_check_http_endpoint: nil,
@@ -157,7 +157,7 @@ module VCAP::CloudController::Presenters::V3
 
         context 'when the app is a buildpack app' do
           before do
-            VCAP::CloudController::Buildpack.make(name: 'limabean')
+            CloudController::Buildpack.make(name: 'limabean')
             app.lifecycle_data.update(
               buildpacks: ['limabean', 'git://user:pass@github.com/repo'],
               stack: 'the-happiest-stack',
@@ -173,12 +173,12 @@ module VCAP::CloudController::Presenters::V3
         end
 
         context 'when the app is a docker app' do
-          let(:app) { VCAP::CloudController::AppModel.make :docker }
+          let(:app) { CloudController::AppModel.make :docker }
 
           context 'when the app has a current droplet' do
             let(:docker_username) { 'xXxMyL1ttlePwnyxXx' }
             let!(:process1) do
-              VCAP::CloudController::ProcessModelFactory.make(
+              CloudController::ProcessModelFactory.make(
                 app: app,
                 health_check_type: 'http',
                 health_check_http_endpoint: '/foobar',
@@ -225,7 +225,7 @@ module VCAP::CloudController::Presenters::V3
             end
 
             let!(:package) do
-              VCAP::CloudController::PackageModel.make(
+              CloudController::PackageModel.make(
                 :docker,
                 docker_image: 'my-image:tag',
                 docker_username: 'xXxMyL1ttlePwnyxXx',

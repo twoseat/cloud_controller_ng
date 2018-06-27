@@ -1,4 +1,4 @@
-module VCAP::CloudController
+module CloudController
   class User < Sequel::Model
     class InvalidOrganizationRelation < CloudController::Errors::InvalidRelation; end
     attr_accessor :username, :organization_roles, :space_roles
@@ -8,39 +8,39 @@ module VCAP::CloudController
     many_to_many :organizations,
       before_remove: :validate_organization_roles
 
-    many_to_one :default_space, key: :default_space_id, class: 'VCAP::CloudController::Space'
+    many_to_one :default_space, key: :default_space_id, class: 'CloudController::Space'
 
     many_to_many :managed_organizations,
-      class: 'VCAP::CloudController::Organization',
+      class: 'CloudController::Organization',
       join_table: 'organizations_managers',
       right_key: :organization_id, reciprocal: :managers,
       before_add: :validate_organization
 
     many_to_many :billing_managed_organizations,
-      class: 'VCAP::CloudController::Organization',
+      class: 'CloudController::Organization',
       join_table: 'organizations_billing_managers',
       right_key: :organization_id,
       reciprocal: :billing_managers,
       before_add: :validate_organization
 
     many_to_many :audited_organizations,
-      class: 'VCAP::CloudController::Organization',
+      class: 'CloudController::Organization',
       join_table: 'organizations_auditors',
       right_key: :organization_id, reciprocal: :auditors,
       before_add: :validate_organization
 
     many_to_many :spaces,
-      class: 'VCAP::CloudController::Space',
+      class: 'CloudController::Space',
       join_table: 'spaces_developers',
       right_key: :space_id, reciprocal: :developers
 
     many_to_many :managed_spaces,
-      class: 'VCAP::CloudController::Space',
+      class: 'CloudController::Space',
       join_table: 'spaces_managers',
       right_key: :space_id, reciprocal: :managers
 
     many_to_many :audited_spaces,
-      class: 'VCAP::CloudController::Space',
+      class: 'CloudController::Space',
       join_table: 'spaces_auditors',
       right_key: :space_id, reciprocal: :auditors
 

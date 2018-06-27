@@ -1,7 +1,7 @@
 require 'spec_helper'
 require 'messages/app_feature_update_message'
 
-module VCAP::CloudController
+module CloudController
   RSpec.describe AppFeatureUpdateMessage do
     let(:body) do
       {

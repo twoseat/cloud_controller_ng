@@ -1,6 +1,6 @@
 require 'cloud_controller/diego/lifecycles/lifecycles'
 
-module VCAP::CloudController
+module CloudController
   class DockerLifecycleDataModel
     LIFECYCLE_TYPE = Lifecycles::DOCKER
 

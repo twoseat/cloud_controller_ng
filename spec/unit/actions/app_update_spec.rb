@@ -1,7 +1,7 @@
 require 'spec_helper'
 require 'actions/app_update'
 
-module VCAP::CloudController
+module CloudController
   RSpec.describe AppUpdate do
     subject(:app_update) { AppUpdate.new(user_audit_info) }
 

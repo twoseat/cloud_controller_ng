@@ -4,10 +4,10 @@ require 'rspec_api_documentation/dsl'
 RSpec.resource 'Service Usage Events', type: [:api, :legacy_api] do
   let(:admin_auth_header) { admin_headers['HTTP_AUTHORIZATION'] }
   authenticated_request
-  let(:guid) { VCAP::CloudController::ServiceUsageEvent.first.guid }
-  let!(:event1) { VCAP::CloudController::ServiceUsageEvent.make }
-  let!(:event2) { VCAP::CloudController::ServiceUsageEvent.make }
-  let!(:event3) { VCAP::CloudController::ServiceUsageEvent.make }
+  let(:guid) { CloudController::ServiceUsageEvent.first.guid }
+  let!(:event1) { CloudController::ServiceUsageEvent.make }
+  let!(:event2) { CloudController::ServiceUsageEvent.make }
+  let!(:event3) { CloudController::ServiceUsageEvent.make }
 
   standard_model_get :service_usage_event
 
@@ -26,7 +26,7 @@ RSpec.resource 'Service Usage Events', type: [:api, :legacy_api] do
     field :created_at, 'The timestamp of the event creation.', required: false, readonly: true
     field :service_label, 'The name of the service.', required: false, readonly: true
 
-    standard_list_parameters VCAP::CloudController::ServiceUsageEventsController
+    standard_list_parameters CloudController::ServiceUsageEventsController
 
     request_parameter :after_guid, 'Restrict results to Service Usage Events after the one with the given guid'
 

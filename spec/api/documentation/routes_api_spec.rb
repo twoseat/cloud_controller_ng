@@ -3,17 +3,17 @@ require 'rspec_api_documentation/dsl'
 
 RSpec.resource 'Routes', type: [:api, :legacy_api] do
   let(:admin_auth_header) { admin_headers['HTTP_AUTHORIZATION'] }
-  let(:space_quota) { VCAP::CloudController::SpaceQuotaDefinition.make }
-  let(:space) { VCAP::CloudController::Space.make(organization: space_quota.organization, space_quota_definition: space_quota) }
-  let(:domain) { VCAP::CloudController::SharedDomain.make(router_group_guid: 'tcp-group') }
+  let(:space_quota) { CloudController::SpaceQuotaDefinition.make }
+  let(:space) { CloudController::Space.make(organization: space_quota.organization, space_quota_definition: space_quota) }
+  let(:domain) { CloudController::SharedDomain.make(router_group_guid: 'tcp-group') }
   let(:route_path) { '/apps/v1/path' }
-  let(:service_instance) { VCAP::CloudController::ManagedServiceInstance.make(:routing, space: space) }
-  let(:route) { VCAP::CloudController::Route.make(domain: domain, space: space) }
+  let(:service_instance) { CloudController::ManagedServiceInstance.make(:routing, space: space) }
+  let(:route) { CloudController::Route.make(domain: domain, space: space) }
   let(:guid) { route.guid }
 
   let(:routing_api_client) { double('routing_api_client', enabled?: true) }
   let(:router_group) {
-    VCAP::CloudController::RoutingApi::RouterGroup.new({
+    CloudController::RoutingApi::RouterGroup.new({
                                                            'guid' => 'tcp-guid',
                                                            'type' => 'tcp',
                                                            'reservable_ports' => '1024-65535'
@@ -23,7 +23,7 @@ RSpec.resource 'Routes', type: [:api, :legacy_api] do
     allow(CloudController::DependencyLocator.instance).to receive(:routing_api_client).
       and_return(routing_api_client)
     allow(routing_api_client).to receive(:router_group).and_return(router_group)
-    allow_any_instance_of(VCAP::CloudController::RouteValidator).to receive(:validate)
+    allow_any_instance_of(CloudController::RouteValidator).to receive(:validate)
   end
 
   authenticated_request
@@ -49,16 +49,16 @@ RSpec.resource 'Routes', type: [:api, :legacy_api] do
 
     context 'with a route binding' do
       before do
-        route_binding = VCAP::CloudController::RouteBinding.make(service_instance: service_instance, route: route)
+        route_binding = CloudController::RouteBinding.make(service_instance: service_instance, route: route)
         stub_unbind(route_binding)
       end
 
-      standard_model_list :route, VCAP::CloudController::RoutesController
+      standard_model_list :route, CloudController::RoutesController
       standard_model_get :route, nested_associations: [:domain, :space, :service_instance]
       standard_model_delete :route, query_string: 'recursive=true'
 
       def after_standard_model_delete(guid)
-        event = VCAP::CloudController::Event.find(type: 'audit.route.delete-request', actee: guid)
+        event = CloudController::Event.find(type: 'audit.route.delete-request', actee: guid)
         audited_event event
       end
     end
@@ -85,7 +85,7 @@ EOF
         standard_entity_response parsed_response, :route
         expect(parsed_response['entity']['space_guid']).to eq(space.guid)
         route_guid = parsed_response['metadata']['guid']
-        audited_event VCAP::CloudController::Event.find(type: 'audit.route.create', actee: route_guid)
+        audited_event CloudController::Event.find(type: 'audit.route.create', actee: route_guid)
       end
     end
 
@@ -105,7 +105,7 @@ EOF
 
         standard_entity_response parsed_response, :route
         route_guid = parsed_response['metadata']['guid']
-        audited_event VCAP::CloudController::Event.find(type: 'audit.route.update', actee: route_guid)
+        audited_event CloudController::Event.find(type: 'audit.route.update', actee: route_guid)
       end
     end
   end
@@ -114,25 +114,25 @@ EOF
     include_context 'guid_field', required: true
 
     describe 'Apps' do
-      let!(:associated_process) { VCAP::CloudController::ProcessModelFactory.make(space: space) }
+      let!(:associated_process) { CloudController::ProcessModelFactory.make(space: space) }
       let(:associated_app_guid) { associated_process.guid }
-      let(:process) { VCAP::CloudController::ProcessModelFactory.make(space: space) }
+      let(:process) { CloudController::ProcessModelFactory.make(space: space) }
       let(:app_guid) { process.guid }
 
       before do
-        VCAP::CloudController::RouteMappingModel.make(app: process.app, process_type: process.type, route: route)
+        CloudController::RouteMappingModel.make(app: process.app, process_type: process.type, route: route)
       end
 
       parameter :app_guid, 'The guid of the app'
 
-      standard_model_list 'ProcessModel', VCAP::CloudController::AppsController, path: 'app', outer_model: :route
+      standard_model_list 'ProcessModel', CloudController::AppsController, path: 'app', outer_model: :route
       nested_model_associate :app, :route
       nested_model_remove :app, :route
     end
   end
 
   describe 'Reserved Routes' do
-    let(:route) { VCAP::CloudController::Route.make(domain: domain, port: 61000, host: '', space: space) }
+    let(:route) { CloudController::Route.make(domain: domain, port: 61000, host: '', space: space) }
     get '/v2/routes/reserved/domain/:domain_guid?host=:host&path=:path&port=:port' do
       request_parameter :host, 'The host portion of the route. Required for shared-domains.', required: false
       request_parameter :path, path_description, required: false, example_values: ['/apps/v1/path', '/apps/v2/path']

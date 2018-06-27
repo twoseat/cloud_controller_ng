@@ -1,4 +1,4 @@
-module VCAP::CloudController
+module CloudController
   class AppUsageEvent < Sequel::Model
     plugin :serialization
 

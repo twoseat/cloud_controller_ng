@@ -1,7 +1,7 @@
 require 'spec_helper'
 require 'cloud_controller/diego/docker/docker_uri_converter'
 
-module VCAP::CloudController
+module CloudController
   RSpec.describe DockerURIConverter do
     let(:converter) { DockerURIConverter.new }
 

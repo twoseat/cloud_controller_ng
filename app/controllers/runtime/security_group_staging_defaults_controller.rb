@@ -1,4 +1,4 @@
-module VCAP::CloudController
+module CloudController
   class SecurityGroupStagingDefaultsController < RestController::ModelController
     def self.model
       SecurityGroup

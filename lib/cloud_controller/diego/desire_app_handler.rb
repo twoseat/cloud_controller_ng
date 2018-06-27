@@ -1,4 +1,4 @@
-module VCAP::CloudController
+module CloudController
   module Diego
     class DesireAppHandler
       class << self

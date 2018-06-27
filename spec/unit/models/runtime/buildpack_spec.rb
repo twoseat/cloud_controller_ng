@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-module VCAP::CloudController
+module CloudController
   RSpec.describe Buildpack, type: :model do
     def ordered_buildpacks
       Buildpack.order(:position).map { |bp| [bp.name, bp.position] }
@@ -217,8 +217,8 @@ module VCAP::CloudController
     end
 
     describe '#destroy' do
-      let!(:buildpack1) { VCAP::CloudController::Buildpack.create({ name: 'first_buildpack', stack: Stack.make.name, key: 'xyz', position: 1 }) }
-      let!(:buildpack2) { VCAP::CloudController::Buildpack.create({ name: 'second_buildpack', stack: Stack.make.name, key: 'xyz', position: 2 }) }
+      let!(:buildpack1) { CloudController::Buildpack.create({ name: 'first_buildpack', stack: Stack.make.name, key: 'xyz', position: 1 }) }
+      let!(:buildpack2) { CloudController::Buildpack.create({ name: 'second_buildpack', stack: Stack.make.name, key: 'xyz', position: 2 }) }
 
       it 'removes the specified buildpack' do
         expect {

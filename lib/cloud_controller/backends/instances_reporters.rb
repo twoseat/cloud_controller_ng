@@ -1,7 +1,7 @@
 require 'cloud_controller/diego/reporters/instances_reporter'
 require 'cloud_controller/diego/reporters/instances_stats_reporter'
 
-module VCAP::CloudController
+module CloudController
   class InstancesReporters
     def number_of_starting_and_running_instances_for_process(app)
       diego_reporter.number_of_starting_and_running_instances_for_process(app)

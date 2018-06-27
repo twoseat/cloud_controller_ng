@@ -1,5 +1,5 @@
 module LinkHelpers
-  include VCAP::CloudController
+  include CloudController
 
   def link_prefix
     "#{scheme}://#{host}"

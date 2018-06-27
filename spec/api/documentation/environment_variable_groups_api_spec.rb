@@ -3,8 +3,8 @@ require 'rspec_api_documentation/dsl'
 
 RSpec.resource 'Environment Variable Groups', type: [:api, :legacy_api] do
   let(:admin_auth_header) { admin_headers['HTTP_AUTHORIZATION'] }
-  let(:staging_group) { VCAP::CloudController::EnvironmentVariableGroup.staging }
-  let(:running_group) { VCAP::CloudController::EnvironmentVariableGroup.running }
+  let(:staging_group) { CloudController::EnvironmentVariableGroup.staging }
+  let(:running_group) { CloudController::EnvironmentVariableGroup.running }
 
   authenticated_request
 

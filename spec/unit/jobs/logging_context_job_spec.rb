@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-module VCAP::CloudController
+module CloudController
   module Jobs
     RSpec.describe LoggingContextJob, job_context: :worker do
       subject(:logging_context_job) do

@@ -6,7 +6,7 @@ require 'fetchers/organization_user_roles_fetcher'
 require 'cloud_controller/roles'
 require 'controllers/runtime/mixins/uaa_origin_validator'
 
-module VCAP::CloudController
+module CloudController
   class OrganizationsController < RestController::ModelController
     include UaaOriginValidator
 
@@ -171,7 +171,7 @@ module VCAP::CloudController
       [HTTP::OK, MultiJson.dump({ memory_usage_in_mb: org.memory_used })]
     end
 
-    VCAP::CloudController::Roles::ORG_ROLE_NAMES.each do |role|
+    CloudController::Roles::ORG_ROLE_NAMES.each do |role|
       plural_role = role.to_s.pluralize
 
       put "/v2/organizations/:guid/#{plural_role}/:user_id", "add_#{role}_by_user_id".to_sym
@@ -202,7 +202,7 @@ module VCAP::CloudController
       end
     end
 
-    VCAP::CloudController::Roles::ORG_ROLE_NAMES.each do |role|
+    CloudController::Roles::ORG_ROLE_NAMES.each do |role|
       plural_role = role.to_s.pluralize
 
       delete "/v2/organizations/:guid/#{plural_role}/:user_id", "remove_#{role}_by_user_id".to_sym
@@ -271,7 +271,7 @@ module VCAP::CloudController
       org_roles_delete_action = PermOrgRolesDelete.new(@perm_client)
       delete_action = OrganizationDelete.new(org_roles_delete_action, space_delete_action)
 
-      deletion_job = VCAP::CloudController::Jobs::DeleteActionJob.new(Organization, guid, delete_action)
+      deletion_job = CloudController::Jobs::DeleteActionJob.new(Organization, guid, delete_action)
       response = enqueue_deletion_job(deletion_job)
 
       @organization_event_repository.record_organization_delete_request(org, UserAuditInfo.from_context(SecurityContext), request_attrs)
@@ -374,7 +374,7 @@ module VCAP::CloudController
     end
 
     def after_create(organization)
-      VCAP::CloudController::Roles::ORG_ROLE_NAMES.each do |role|
+      CloudController::Roles::ORG_ROLE_NAMES.each do |role|
         @perm_client.create_org_role(role: role, org_id: organization.guid)
       end
 
@@ -411,7 +411,7 @@ module VCAP::CloudController
     def get_current_role_guids(org)
       current_role_guids = {}
 
-      VCAP::CloudController::Roles::ORG_ROLE_NAMES.map(&:to_s).each do |role|
+      CloudController::Roles::ORG_ROLE_NAMES.map(&:to_s).each do |role|
         key = "#{role}_guids"
 
         if request_attrs[key]
@@ -428,7 +428,7 @@ module VCAP::CloudController
     def generate_role_events_on_update(organization, current_role_guids)
       user_audit_info = UserAuditInfo.from_context(SecurityContext)
 
-      VCAP::CloudController::Roles::ORG_ROLE_NAMES.map(&:to_s).each do |role|
+      CloudController::Roles::ORG_ROLE_NAMES.map(&:to_s).each do |role|
         key = "#{role}_guids"
 
         user_guids_removed = []

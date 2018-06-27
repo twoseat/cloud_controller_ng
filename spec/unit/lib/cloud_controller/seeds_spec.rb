@@ -1,8 +1,8 @@
 require 'spec_helper'
 require 'cloud_controller/seeds'
 
-module VCAP::CloudController
-  RSpec.describe VCAP::CloudController::Seeds do
+module CloudController
+  RSpec.describe CloudController::Seeds do
     let(:config) { TestConfig.config_instance.clone }
 
     describe '.create_seed_stacks' do
@@ -333,7 +333,7 @@ module VCAP::CloudController
         end
 
         context 'when a router group name is specified' do
-          let(:client) { instance_double(VCAP::CloudController::RoutingApi::Client, enabled?: true) }
+          let(:client) { instance_double(CloudController::RoutingApi::Client, enabled?: true) }
           let(:app_domains) { [{ 'name' => 'app.example.com', 'router_group_name' => 'default-tcp' }] }
 
           before do
@@ -351,7 +351,7 @@ module VCAP::CloudController
 
         context 'when a nonexistent router group name is specified' do
           let(:app_domains) { [{ 'name' => 'app.example.com', 'router_group_name' => 'not-there' }] }
-          let(:client) { instance_double(VCAP::CloudController::RoutingApi::Client, enabled?: true) }
+          let(:client) { instance_double(CloudController::RoutingApi::Client, enabled?: true) }
           before do
             locator = CloudController::DependencyLocator.instance
             allow(locator).to receive(:routing_api_client).and_return(client)

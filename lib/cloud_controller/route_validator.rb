@@ -1,4 +1,4 @@
-module VCAP::CloudController
+module CloudController
   class RouteValidator
     class ValidationError < StandardError; end
     class DomainInvalid < ValidationError; end

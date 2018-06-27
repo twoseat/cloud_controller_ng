@@ -1,6 +1,6 @@
 require 'utils/uri_utils'
 
-module VCAP::CloudController
+module CloudController
   class BuildpackInfo
     attr_accessor :buildpack, :buildpack_record, :buildpack_url
 

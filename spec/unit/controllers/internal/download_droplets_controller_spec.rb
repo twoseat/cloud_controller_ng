@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-module VCAP::CloudController
+module CloudController
   RSpec.describe DownloadDropletsController do
     describe 'GET /internal/v4/droplets/:guid/:droplet_hash/download' do
       let(:workspace) { Dir.mktmpdir }

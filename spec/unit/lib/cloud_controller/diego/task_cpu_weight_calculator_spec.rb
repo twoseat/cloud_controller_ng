@@ -1,13 +1,13 @@
 require 'spec_helper'
 require 'cloud_controller/diego/task_cpu_weight_calculator'
 
-module VCAP::CloudController
+module CloudController
   module Diego
     RSpec.describe TaskCpuWeightCalculator do
       describe '#calculate' do
         let(:calculator) { TaskCpuWeightCalculator.new(memory_in_mb: memory) }
-        let(:min_cpu_proxy) { VCAP::CloudController::Diego::MIN_CPU_PROXY }
-        let(:max_cpu_proxy) { VCAP::CloudController::Diego::MAX_CPU_PROXY }
+        let(:min_cpu_proxy) { CloudController::Diego::MIN_CPU_PROXY }
+        let(:max_cpu_proxy) { CloudController::Diego::MAX_CPU_PROXY }
 
         context 'when the memory limit is below the minimum value' do
           let(:memory) { min_cpu_proxy - 1 }

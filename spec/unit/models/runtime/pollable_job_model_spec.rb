@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-module VCAP::CloudController
+module CloudController
   RSpec.describe PollableJobModel do
     describe('.find_by_delayed_job') do
       let(:delayed_job) { Delayed::Backend::Sequel::Job.create }

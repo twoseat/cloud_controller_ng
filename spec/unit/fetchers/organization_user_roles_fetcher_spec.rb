@@ -1,7 +1,7 @@
 require 'spec_helper'
 require 'fetchers/organization_user_roles_fetcher'
 
-module VCAP::CloudController
+module CloudController
   RSpec.describe OrganizationUserRolesFetcher do
     describe '#fetch' do
       let(:org) { Organization.make }

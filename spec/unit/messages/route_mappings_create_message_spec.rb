@@ -1,7 +1,7 @@
 require 'spec_helper'
 require 'messages/route_mappings_create_message'
 
-module VCAP::CloudController
+module CloudController
   RSpec.describe RouteMappingsCreateMessage do
     let(:body) do
       {

@@ -1,4 +1,4 @@
-module VCAP::CloudController
+module CloudController
   class SecurityGroupsController < RestController::ModelController
     define_attributes do
       attribute :name, String

@@ -1,7 +1,7 @@
 require 'spec_helper'
 require 'fetchers/process_fetcher'
 
-module VCAP::CloudController
+module CloudController
   RSpec.describe ProcessFetcher do
     subject(:fetcher) { ProcessFetcher.new }
 

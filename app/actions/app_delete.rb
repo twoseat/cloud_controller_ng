@@ -9,7 +9,7 @@ require 'actions/process_delete'
 require 'actions/route_mapping_delete'
 require 'actions/staging_cancel'
 
-module VCAP::CloudController
+module CloudController
   class AppDelete
     class InvalidDelete < StandardError; end
 

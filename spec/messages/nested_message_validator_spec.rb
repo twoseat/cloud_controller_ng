@@ -1,7 +1,7 @@
 require 'spec_helper'
 require_relative '../../app/messages/nested_message_validator'
 
-module VCAP::CloudController
+module CloudController
   class IncompleteValidator < NestedMessageValidator
   end
 

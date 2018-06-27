@@ -10,7 +10,7 @@ module CloudController::Presenters::V2
     let(:orphans) { 'orphans' }
     let(:relations_presenter) { instance_double(RelationsPresenter, to_hash: relations_hash) }
     let(:relations_hash) { { 'relationship_key' => 'relationship_value' } }
-    let(:quota_definition) { VCAP::CloudController::QuotaDefinition.make }
+    let(:quota_definition) { CloudController::QuotaDefinition.make }
 
     describe '#entity_hash' do
       before do
@@ -18,7 +18,7 @@ module CloudController::Presenters::V2
       end
 
       let(:org) do
-        VCAP::CloudController::Organization.make(
+        CloudController::Organization.make(
           name: 'george',
           billing_enabled: true,
           quota_definition_guid: quota_definition.guid,
@@ -43,8 +43,8 @@ module CloudController::Presenters::V2
       end
 
       context 'with isolation segments assigned' do
-        let(:isolation_segment_model) { VCAP::CloudController::IsolationSegmentModel.make }
-        let(:assigner) { VCAP::CloudController::IsolationSegmentAssign.new }
+        let(:isolation_segment_model) { CloudController::IsolationSegmentModel.make }
+        let(:assigner) { CloudController::IsolationSegmentAssign.new }
 
         before do
           assigner.assign(isolation_segment_model, [org])

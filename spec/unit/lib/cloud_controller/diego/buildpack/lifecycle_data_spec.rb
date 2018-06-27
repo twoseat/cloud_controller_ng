@@ -1,7 +1,7 @@
 require 'spec_helper'
 require 'cloud_controller/diego/buildpack/lifecycle_data'
 
-module VCAP::CloudController
+module CloudController
   module Diego
     module Buildpack
       RSpec.describe LifecycleData do

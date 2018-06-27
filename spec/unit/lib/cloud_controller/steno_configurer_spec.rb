@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-module VCAP::CloudController
+module CloudController
   RSpec.describe StenoConfigurer do
     let(:config_hash) { { level: 'debug2' } }
     subject(:configurer) { StenoConfigurer.new(config_hash) }

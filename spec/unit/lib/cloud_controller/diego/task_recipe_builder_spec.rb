@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-module VCAP::CloudController
+module CloudController
   module Diego
     RSpec.describe TaskRecipeBuilder do
       subject(:task_recipe_builder) { TaskRecipeBuilder.new }
@@ -99,7 +99,7 @@ module VCAP::CloudController
           )
         end
         let(:lifecycle_protocol) do
-          instance_double(VCAP::CloudController::Diego::Buildpack::LifecycleProtocol,
+          instance_double(CloudController::Diego::Buildpack::LifecycleProtocol,
             staging_action_builder: lifecycle_action_builder
           )
         end
@@ -389,7 +389,7 @@ module VCAP::CloudController
         end
 
         before do
-          allow(VCAP::CloudController::IsolationSegmentSelector).to receive(:for_space).and_return(isolation_segment)
+          allow(CloudController::IsolationSegmentSelector).to receive(:for_space).and_return(isolation_segment)
 
           SecurityGroup.make(guid: 'guid1', rules: [{ 'protocol' => 'udp', 'ports' => '53', 'destination' => '0.0.0.0/0' }], running_default: true)
           app.space.add_security_group(
@@ -436,7 +436,7 @@ module VCAP::CloudController
           end
 
           let(:lifecycle_protocol) do
-            instance_double(VCAP::CloudController::Diego::Buildpack::LifecycleProtocol,
+            instance_double(CloudController::Diego::Buildpack::LifecycleProtocol,
               task_action_builder: task_action_builder
             )
           end
@@ -576,7 +576,7 @@ module VCAP::CloudController
           end
 
           let(:lifecycle_protocol) do
-            instance_double(VCAP::CloudController::Diego::Docker::LifecycleProtocol,
+            instance_double(CloudController::Diego::Docker::LifecycleProtocol,
               task_action_builder: task_action_builder
             )
           end

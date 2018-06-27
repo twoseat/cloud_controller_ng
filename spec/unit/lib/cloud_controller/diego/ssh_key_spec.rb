@@ -1,7 +1,7 @@
 require 'spec_helper'
 require 'cloud_controller/diego/ssh_key'
 
-module VCAP::CloudController
+module CloudController
   module Diego
     RSpec.describe SSHKey do
       describe '#authorized_key' do

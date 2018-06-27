@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-module VCAP::CloudController
+module CloudController
   RSpec.describe UsernamePopulator do
     let(:uaa_client) { double(UaaClient) }
     let(:username_populator) { UsernamePopulator.new(uaa_client) }

@@ -10,7 +10,7 @@ require 'cloud_controller/rack_app_builder'
 require 'cloud_controller/metrics/periodic_updater'
 require 'cloud_controller/metrics/request_metrics'
 
-module VCAP::CloudController
+module CloudController
   class Runner
     attr_reader :config_file, :insert_seed_data
 
@@ -74,7 +74,7 @@ module VCAP::CloudController
         begin
           start_cloud_controller
 
-          request_metrics = VCAP::CloudController::Metrics::RequestMetrics.new(statsd_client)
+          request_metrics = CloudController::Metrics::RequestMetrics.new(statsd_client)
           gather_periodic_metrics
 
           builder = RackAppBuilder.new
@@ -179,12 +179,12 @@ module VCAP::CloudController
     end
 
     def periodic_updater
-      @periodic_updater ||= VCAP::CloudController::Metrics::PeriodicUpdater.new(
+      @periodic_updater ||= CloudController::Metrics::PeriodicUpdater.new(
         Time.now.utc,
         @log_counter,
         Steno.logger('cc.api'),
         [
-          VCAP::CloudController::Metrics::StatsdUpdater.new(statsd_client)
+          CloudController::Metrics::StatsdUpdater.new(statsd_client)
         ])
     end
 
@@ -199,7 +199,7 @@ module VCAP::CloudController
     def collect_diagnostics
       @diagnostics_dir ||= @config.get(:directories, :diagnostics)
 
-      file = VCAP::CloudController::Diagnostics.new.collect(@diagnostics_dir)
+      file = CloudController::Diagnostics.new.collect(@diagnostics_dir)
       logger.warn("Diagnostics written to #{file}")
     rescue => e
       logger.warn("Failed to capture diagnostics: #{e}")

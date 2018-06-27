@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-module VCAP::CloudController
+module CloudController
   RSpec.describe DeploymentModel do
     let(:app) { AppModel.make(name: 'rolling-app') }
     let(:droplet) { DropletModel.make(app: app) }

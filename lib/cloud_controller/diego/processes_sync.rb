@@ -1,6 +1,6 @@
 require 'utils/workpool'
 
-module VCAP::CloudController
+module CloudController
   module Diego
     class ProcessesSync
       BATCH_SIZE = 500
@@ -10,7 +10,7 @@ module VCAP::CloudController
       class BBSFetchError < Error
       end
 
-      def initialize(config:, statsd_updater: VCAP::CloudController::Metrics::StatsdUpdater.new)
+      def initialize(config:, statsd_updater: CloudController::Metrics::StatsdUpdater.new)
         @config   = config
         @workpool = WorkPool.new(50)
         @statsd_updater = statsd_updater

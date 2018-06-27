@@ -1,4 +1,4 @@
-module VCAP::CloudController::RestController
+module CloudController::RestController
   class OrderApplicator
     def initialize(opts)
       @order_by = Array(opts[:order_by] || :id).map(&:to_sym) # symbols

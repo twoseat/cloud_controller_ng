@@ -1,4 +1,4 @@
-module VCAP::CloudController
+module CloudController
   module Jobs
     class LocalQueue < Struct.new(:config)
       def to_s

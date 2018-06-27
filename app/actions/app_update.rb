@@ -1,4 +1,4 @@
-module VCAP::CloudController
+module CloudController
   class AppUpdate
     class DropletNotFound < StandardError; end
     class InvalidApp < StandardError; end
@@ -57,7 +57,7 @@ module VCAP::CloudController
     end
 
     def custom_buildpacks_disabled?
-      VCAP::CloudController::Config.config.get(:disable_custom_buildpacks)
+      CloudController::Config.config.get(:disable_custom_buildpacks)
     end
 
     def validate_not_changing_lifecycle_type!(app, lifecycle)

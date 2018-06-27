@@ -2,14 +2,14 @@ require 'spec_helper'
 require 'presenters/v3/paginated_list_presenter'
 require 'presenters/helpers/censorship'
 
-module VCAP::CloudController::Presenters
+module CloudController::Presenters
   module V3
     RSpec.describe PaginatedListPresenter do
       subject(:presenter) { PaginatedListPresenter.new(presenter: MonkeyPresenter, paginated_result: paginated_result, path: path, message: message) }
       let(:set) { [Monkey.new('bobo'), Monkey.new('george')] }
       let(:message) { double('message', pagination_options: pagination_options, to_param_hash: {}) }
       let(:pagination_options) { double('pagination', per_page: 50, page: 1, order_by: 'monkeys', order_direction: 'asc') }
-      let(:paginated_result) { VCAP::CloudController::PaginatedResult.new(set, 2, pagination_options) }
+      let(:paginated_result) { CloudController::PaginatedResult.new(set, 2, pagination_options) }
 
       class Monkey
         attr_reader :name
@@ -117,8 +117,8 @@ module VCAP::CloudController::Presenters
         let(:total_results) { 2 }
         let(:total_pages) { 2 }
         let(:options) { { page: page, per_page: per_page } }
-        let(:pagination_options) { VCAP::CloudController::PaginationOptions.new(options) }
-        let(:paginated_result) { VCAP::CloudController::PaginatedResult.new(double(:results), total_results, pagination_options) }
+        let(:pagination_options) { CloudController::PaginationOptions.new(options) }
+        let(:paginated_result) { CloudController::PaginatedResult.new(double(:results), total_results, pagination_options) }
         let(:path) { '/v3/cloudfoundry/is-great' }
 
         it 'includes total_results' do
@@ -150,7 +150,7 @@ module VCAP::CloudController::Presenters
         end
 
         it 'sets first and last page to 1 if there is 1 page' do
-          single_page_paginated_result = VCAP::CloudController::PaginatedResult.new([], 0, pagination_options)
+          single_page_paginated_result = CloudController::PaginatedResult.new([], 0, pagination_options)
           result = PaginatedListPresenter.new(presenter: MonkeyPresenter, paginated_result: single_page_paginated_result, path: path).present_pagination_hash
 
           last_url  = result[:last][:href]

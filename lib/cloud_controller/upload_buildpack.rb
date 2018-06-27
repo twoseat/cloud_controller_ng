@@ -1,6 +1,6 @@
 require 'vcap/digester'
 
-module VCAP::CloudController
+module CloudController
   class UploadBuildpack
     attr_reader :buildpack_blobstore
     ONE_MEGABYTE = 1024 * 1024
@@ -46,7 +46,7 @@ module VCAP::CloudController
       end
 
       if !missing_bits && old_buildpack_key && new_bits?(buildpack, old_buildpack_key)
-        staging_timeout = VCAP::CloudController::Config.config.get(:staging, :timeout_in_seconds)
+        staging_timeout = CloudController::Config.config.get(:staging, :timeout_in_seconds)
         BuildpackBitsDelete.delete_when_safe(old_buildpack_key, staging_timeout)
       end
 

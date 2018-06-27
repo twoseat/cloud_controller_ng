@@ -1,4 +1,4 @@
-module VCAP::CloudController
+module CloudController
   module Jobs
     module V2
       class UploadDropletFromUser

@@ -1,7 +1,7 @@
 require 'spec_helper'
 
-module VCAP::CloudController
-  RSpec.describe VCAP::CloudController::BuildpackBitsController do
+module CloudController
+  RSpec.describe CloudController::BuildpackBitsController do
     let(:user) { make_user }
     let(:tmpdir) { Dir.mktmpdir }
     let(:filename) { 'file.zip' }
@@ -59,7 +59,7 @@ module VCAP::CloudController
     after { FileUtils.rm_rf(tmpdir) }
 
     context 'Buildpack binaries' do
-      let(:test_buildpack) { VCAP::CloudController::Buildpack.create_from_hash({ name: 'upload_binary_buildpack', stack: nil, position: 0 }) }
+      let(:test_buildpack) { CloudController::Buildpack.create_from_hash({ name: 'upload_binary_buildpack', stack: nil, position: 0 }) }
 
       before { CloudController::DependencyLocator.instance.register(:upload_handler, UploadHandler.new(TestConfig.config_instance)) }
 
@@ -202,12 +202,12 @@ module VCAP::CloudController
         end
 
         it 'does not allow uploading a buildpack which will update the stack that already has a buildpack with the same name' do
-          first_buildpack = VCAP::CloudController::Buildpack.create_from_hash({ name: 'nice_buildpack', stack: nil, position: 0 })
+          first_buildpack = CloudController::Buildpack.create_from_hash({ name: 'nice_buildpack', stack: nil, position: 0 })
           put "/v2/buildpacks/#{first_buildpack.guid}/bits", { buildpack: valid_zip_manifest }
 
           expect(Buildpack.find(name: 'nice_buildpack').stack).to eq('stack-from-manifest')
 
-          new_buildpack = VCAP::CloudController::Buildpack.create_from_hash({ name: first_buildpack.name, stack: nil, position: 0 })
+          new_buildpack = CloudController::Buildpack.create_from_hash({ name: first_buildpack.name, stack: nil, position: 0 })
           put "/v2/buildpacks/#{new_buildpack.guid}/bits", { buildpack: valid_zip_manifest }
 
           expect(last_response.status).to eq(422)
@@ -229,13 +229,13 @@ module VCAP::CloudController
         end
 
         it 'does not allow upload if the buildpack is locked' do
-          locked_buildpack = VCAP::CloudController::Buildpack.create_from_hash({ name: 'locked_buildpack', stack: 'stack', locked: true, position: 0 })
+          locked_buildpack = CloudController::Buildpack.create_from_hash({ name: 'locked_buildpack', stack: 'stack', locked: true, position: 0 })
           put "/v2/buildpacks/#{locked_buildpack.guid}/bits", { buildpack: valid_zip2 }
           expect(last_response.status).to eq(409)
         end
 
         it 'does allow upload if the buildpack has been unlocked' do
-          locked_buildpack = VCAP::CloudController::Buildpack.create_from_hash({ name: 'locked_buildpack', stack: 'stack', locked: true, position: 0 })
+          locked_buildpack = CloudController::Buildpack.create_from_hash({ name: 'locked_buildpack', stack: 'stack', locked: true, position: 0 })
           put "/v2/buildpacks/#{locked_buildpack.guid}", '{"locked": false}'
 
           put "/v2/buildpacks/#{locked_buildpack.guid}/bits", { buildpack: valid_zip2 }
@@ -251,7 +251,7 @@ module VCAP::CloudController
         end
 
         context 'when the same bits are uploaded twice' do
-          let(:test_buildpack2) { VCAP::CloudController::Buildpack.create_from_hash({ name: 'buildpack2', stack: 'stack', position: 0 }) }
+          let(:test_buildpack2) { CloudController::Buildpack.create_from_hash({ name: 'buildpack2', stack: 'stack', position: 0 }) }
           before do
             put "/v2/buildpacks/#{test_buildpack.guid}/bits", { buildpack: valid_zip2 }
             put "/v2/buildpacks/#{test_buildpack2.guid}/bits", { buildpack: valid_zip2 }
@@ -277,7 +277,7 @@ module VCAP::CloudController
 
         before do
           TestConfig.override(staging_config)
-          VCAP::CloudController::Buildpack.create_from_hash({ name: 'get_binary_buildpack', stack: nil, key: 'xyz', position: 0 })
+          CloudController::Buildpack.create_from_hash({ name: 'get_binary_buildpack', stack: nil, key: 'xyz', position: 0 })
         end
 
         it 'returns NOT AUTHENTICATED (401) users without correct basic auth' do

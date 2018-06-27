@@ -3,7 +3,7 @@ module RequestSpecHelper
 
   def app
     test_config     = TestConfig.config_instance
-    request_metrics = VCAP::CloudController::Metrics::RequestMetrics.new
-    VCAP::CloudController::RackAppBuilder.new.build test_config, request_metrics
+    request_metrics = CloudController::Metrics::RequestMetrics.new
+    CloudController::RackAppBuilder.new.build test_config, request_metrics
   end
 end

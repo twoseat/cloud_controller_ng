@@ -1,4 +1,4 @@
-module VCAP::CloudController
+module CloudController
   class CredhubCredentialPopulator
     attr_reader :credhub_client
 

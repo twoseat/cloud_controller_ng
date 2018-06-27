@@ -1,7 +1,7 @@
 require 'spec_helper'
 require 'actions/app_stop'
 
-module VCAP::CloudController
+module CloudController
   RSpec.describe AppStop do
     let(:user_guid) { 'diug' }
     let(:user_email) { 'guy@place.io' }

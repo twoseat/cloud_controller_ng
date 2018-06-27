@@ -1,7 +1,7 @@
 require 'spec_helper'
 require 'presenters/api/service_broker_presenter'
 
-module VCAP::CloudController
+module CloudController
   RSpec.describe ServiceBrokerPresenter do
     let(:broker) { ServiceBroker.make }
 

@@ -1,36 +1,36 @@
-class VCAP::CloudController::Permissions
+class CloudController::Permissions
   ROLES_FOR_ORG_READING ||= [
-    VCAP::CloudController::Membership::ORG_MANAGER,
-    VCAP::CloudController::Membership::ORG_AUDITOR,
-    VCAP::CloudController::Membership::ORG_MEMBER,
-    VCAP::CloudController::Membership::ORG_BILLING_MANAGER,
+    CloudController::Membership::ORG_MANAGER,
+    CloudController::Membership::ORG_AUDITOR,
+    CloudController::Membership::ORG_MEMBER,
+    CloudController::Membership::ORG_BILLING_MANAGER,
   ].freeze
 
   ROLES_FOR_ORG_WRITING = [
-    VCAP::CloudController::Membership::ORG_MANAGER,
+    CloudController::Membership::ORG_MANAGER,
   ].freeze
 
   ROLES_FOR_SPACE_READING ||= [
-    VCAP::CloudController::Membership::SPACE_DEVELOPER,
-    VCAP::CloudController::Membership::SPACE_MANAGER,
-    VCAP::CloudController::Membership::SPACE_AUDITOR,
-    VCAP::CloudController::Membership::ORG_MANAGER,
+    CloudController::Membership::SPACE_DEVELOPER,
+    CloudController::Membership::SPACE_MANAGER,
+    CloudController::Membership::SPACE_AUDITOR,
+    CloudController::Membership::ORG_MANAGER,
   ].freeze
 
   ROLES_FOR_SPACE_SECRETS_READING ||= [
-    VCAP::CloudController::Membership::SPACE_DEVELOPER,
+    CloudController::Membership::SPACE_DEVELOPER,
   ].freeze
 
   ROLES_FOR_SPACE_WRITING ||= [
-    VCAP::CloudController::Membership::SPACE_DEVELOPER,
+    CloudController::Membership::SPACE_DEVELOPER,
   ].freeze
 
   ROLES_FOR_SPACE_UPDATING ||= [
-    VCAP::CloudController::Membership::SPACE_MANAGER,
+    CloudController::Membership::SPACE_MANAGER,
   ].freeze
 
   ROLES_FOR_ROUTE_WRITING ||= [
-    VCAP::CloudController::Membership::SPACE_DEVELOPER,
+    CloudController::Membership::SPACE_DEVELOPER,
   ].freeze
 
   def initialize(user)
@@ -51,7 +51,7 @@ class VCAP::CloudController::Permissions
 
   def readable_org_guids
     if can_read_globally?
-      VCAP::CloudController::Organization.select(:guid).all.map(&:guid)
+      CloudController::Organization.select(:guid).all.map(&:guid)
     else
       membership.org_guids_for_roles(ROLES_FOR_ORG_READING)
     end
@@ -67,7 +67,7 @@ class VCAP::CloudController::Permissions
 
   def readable_space_guids
     if can_read_globally?
-      VCAP::CloudController::Space.select(:guid).all.map(&:guid)
+      CloudController::Space.select(:guid).all.map(&:guid)
     else
       membership.space_guids_for_roles(ROLES_FOR_SPACE_READING)
     end
@@ -97,13 +97,13 @@ class VCAP::CloudController::Permissions
   end
 
   def readable_route_guids
-    VCAP::CloudController::Route.user_visible(@user, can_read_globally?).map(&:guid)
+    CloudController::Route.user_visible(@user, can_read_globally?).map(&:guid)
   end
 
   def can_read_route?(space_guid, org_guid)
     return true if can_read_globally?
 
-    space = VCAP::CloudController::Space.where(guid: space_guid).first
+    space = CloudController::Space.where(guid: space_guid).first
     org = space.organization
 
     space.has_member?(@user) || @user.managed_organizations.include?(org) ||
@@ -111,20 +111,20 @@ class VCAP::CloudController::Permissions
   end
 
   def readable_app_guids
-    VCAP::CloudController::AppModel.user_visible(@user, can_read_globally?).map(&:guid)
+    CloudController::AppModel.user_visible(@user, can_read_globally?).map(&:guid)
   end
 
   def readable_route_mapping_guids
-    VCAP::CloudController::RouteMappingModel.user_visible(@user, can_read_globally?).map(&:guid)
+    CloudController::RouteMappingModel.user_visible(@user, can_read_globally?).map(&:guid)
   end
 
   private
 
   def membership
-    VCAP::CloudController::Membership.new(@user)
+    CloudController::Membership.new(@user)
   end
 
   def roles
-    VCAP::CloudController::SecurityContext.roles
+    CloudController::SecurityContext.roles
   end
 end

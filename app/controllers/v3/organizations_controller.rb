@@ -40,7 +40,7 @@ class OrganizationsV3Controller < ApplicationController
   def create
     unauthorized! unless can_write_globally? || user_org_creation_enabled?
 
-    message = VCAP::CloudController::OrganizationCreateMessage.new(params[:body])
+    message = CloudController::OrganizationCreateMessage.new(params[:body])
     unprocessable!(message.errors.full_messages) unless message.valid?
 
     org = OrganizationCreate.new(perm_client: perm_client).create(message)
@@ -89,7 +89,7 @@ class OrganizationsV3Controller < ApplicationController
   private
 
   def user_org_creation_enabled?
-    VCAP::CloudController::FeatureFlag.enabled?(:user_org_creation)
+    CloudController::FeatureFlag.enabled?(:user_org_creation)
   end
 
   def org_not_found!

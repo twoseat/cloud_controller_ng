@@ -2,7 +2,7 @@ require 'spec_helper'
 require 'cloud_controller/diego/lifecycles/app_docker_lifecycle'
 require_relative 'app_lifecycle_shared'
 
-module VCAP::CloudController
+module CloudController
   RSpec.describe AppDockerLifecycle do
     subject(:lifecycle) { AppDockerLifecycle.new }
 

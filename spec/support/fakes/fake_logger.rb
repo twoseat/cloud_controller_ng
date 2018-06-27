@@ -1,4 +1,4 @@
-module VCAP::CloudController
+module CloudController
   FakeLogger = Struct.new(:log_messages) do
     def info(message, _)
       log_messages << message

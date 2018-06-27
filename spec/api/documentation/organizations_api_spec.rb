@@ -3,8 +3,8 @@ require 'rspec_api_documentation/dsl'
 
 RSpec.resource 'Organizations', type: [:api, :legacy_api] do
   let(:admin_auth_header) { admin_headers['HTTP_AUTHORIZATION'] }
-  let(:organization) { VCAP::CloudController::Organization.make }
-  let(:quota_definition) { VCAP::CloudController::QuotaDefinition.make }
+  let(:organization) { CloudController::Organization.make }
+  let(:quota_definition) { CloudController::QuotaDefinition.make }
   let(:guid) { organization.guid }
 
   authenticated_request
@@ -22,7 +22,7 @@ RSpec.resource 'Organizations', type: [:api, :legacy_api] do
       field :default_isolation_segment_guid, 'The guid for the default isolation segment', experimental: true
     end
 
-    standard_model_list :organization, VCAP::CloudController::OrganizationsController do
+    standard_model_list :organization, CloudController::OrganizationsController do
       request_parameter :'order-by', 'Parameter to order results by', valid_values: ['name', 'id']
     end
     standard_model_get :organization, nested_associations: [:quota_definition]
@@ -56,8 +56,8 @@ RSpec.resource 'Organizations', type: [:api, :legacy_api] do
 
   describe 'Nested endpoints' do
     include_context 'guid_parameter'
-    let(:everything_user) { VCAP::CloudController::User.make }
-    let(:user_user) { VCAP::CloudController::User.make }
+    let(:everything_user) { CloudController::User.make }
+    let(:user_user) { CloudController::User.make }
     let(:username_map) do
       {
         everything_user.guid => 'everything@example.com',
@@ -74,7 +74,7 @@ RSpec.resource 'Organizations', type: [:api, :legacy_api] do
 
         organization.add_user(user_user)
 
-        allow_any_instance_of(VCAP::CloudController::UaaClient).to receive(:usernames_for_ids).and_return(username_map)
+        allow_any_instance_of(CloudController::UaaClient).to receive(:usernames_for_ids).and_return(username_map)
       end
 
       get '/v2/organizations/:guid/user_roles' do
@@ -93,30 +93,30 @@ RSpec.resource 'Organizations', type: [:api, :legacy_api] do
 
     describe 'Spaces' do
       before do
-        VCAP::CloudController::Space.make(organization: organization)
+        CloudController::Space.make(organization: organization)
       end
 
-      standard_model_list :space, VCAP::CloudController::SpacesController, outer_model: :organization
+      standard_model_list :space, CloudController::SpacesController, outer_model: :organization
     end
 
     describe 'Space Quota Definitions' do
       before do
-        VCAP::CloudController::SpaceQuotaDefinition.make(organization: organization)
+        CloudController::SpaceQuotaDefinition.make(organization: organization)
       end
 
-      standard_model_list :space_quota_definition, VCAP::CloudController::SpaceQuotaDefinitionsController, outer_model: :organization
+      standard_model_list :space_quota_definition, CloudController::SpaceQuotaDefinitionsController, outer_model: :organization
     end
 
     describe 'Domains' do
-      standard_model_list :shared_domain, VCAP::CloudController::DomainsController, outer_model: :organization, path: :domains
+      standard_model_list :shared_domain, CloudController::DomainsController, outer_model: :organization, path: :domains
     end
 
     describe 'Private Domains' do
       before do
-        VCAP::CloudController::PrivateDomain.make(owning_organization: organization)
+        CloudController::PrivateDomain.make(owning_organization: organization)
       end
 
-      standard_model_list :private_domain, VCAP::CloudController::PrivateDomainsController, outer_model: :organization
+      standard_model_list :private_domain, CloudController::PrivateDomainsController, outer_model: :organization
     end
 
     describe 'Shared Private Domains' do
@@ -126,9 +126,9 @@ RSpec.resource 'Organizations', type: [:api, :legacy_api] do
 
       parameter :private_domain_guid, 'The guid of the private domain'
 
-      let!(:associated_private_domain) { VCAP::CloudController::PrivateDomain.make }
+      let!(:associated_private_domain) { CloudController::PrivateDomain.make }
       let(:associated_private_domain_guid) { associated_private_domain.guid }
-      let(:private_domain) { VCAP::CloudController::PrivateDomain.make }
+      let(:private_domain) { CloudController::PrivateDomain.make }
       let(:private_domain_guid) { private_domain.guid }
 
       nested_model_associate :private_domain, :organization
@@ -138,17 +138,17 @@ RSpec.resource 'Organizations', type: [:api, :legacy_api] do
     describe 'Users' do
       before do
         organization.add_user(associated_user)
-        allow_any_instance_of(VCAP::CloudController::UaaClient).to receive(:usernames_for_ids).and_return({ associated_user.guid => 'user@example.com' })
+        allow_any_instance_of(CloudController::UaaClient).to receive(:usernames_for_ids).and_return({ associated_user.guid => 'user@example.com' })
       end
 
-      let!(:associated_user) { VCAP::CloudController::User.make }
+      let!(:associated_user) { CloudController::User.make }
 
       context 'by user guid' do
         let(:associated_user_guid) { associated_user.guid }
-        let(:user) { VCAP::CloudController::User.make }
+        let(:user) { CloudController::User.make }
         let(:user_guid) { user.guid }
 
-        standard_model_list :user, VCAP::CloudController::UsersController, outer_model: :organization
+        standard_model_list :user, CloudController::UsersController, outer_model: :organization
 
         context 'has user guid param' do
           parameter :user_guid, 'The guid of the user'
@@ -192,18 +192,18 @@ RSpec.resource 'Organizations', type: [:api, :legacy_api] do
     describe 'Managers' do
       before do
         organization.add_manager(associated_manager)
-        allow_any_instance_of(VCAP::CloudController::UaaClient).to receive(:usernames_for_ids).and_return({ associated_manager.guid => 'manager@example.com' })
+        allow_any_instance_of(CloudController::UaaClient).to receive(:usernames_for_ids).and_return({ associated_manager.guid => 'manager@example.com' })
         make_manager_for_org(organization)
       end
 
-      let!(:associated_manager) { VCAP::CloudController::User.make }
+      let!(:associated_manager) { CloudController::User.make }
       let(:associated_manager_guid) { associated_manager.guid }
 
       context 'by user guid' do
-        let(:manager) { VCAP::CloudController::User.make }
+        let(:manager) { CloudController::User.make }
         let(:manager_guid) { manager.guid }
 
-        standard_model_list :user, VCAP::CloudController::UsersController, outer_model: :organization, path: :managers
+        standard_model_list :user, CloudController::UsersController, outer_model: :organization, path: :managers
 
         context 'has user guid param' do
           parameter :manager_guid, 'The guid of the user to associate as a manager'
@@ -247,17 +247,17 @@ RSpec.resource 'Organizations', type: [:api, :legacy_api] do
     describe 'Billing Managers' do
       before do
         organization.add_billing_manager(associated_billing_manager)
-        allow_any_instance_of(VCAP::CloudController::UaaClient).to receive(:usernames_for_ids).and_return({ associated_billing_manager.guid => 'billing_manager@example.com' })
+        allow_any_instance_of(CloudController::UaaClient).to receive(:usernames_for_ids).and_return({ associated_billing_manager.guid => 'billing_manager@example.com' })
       end
 
-      let!(:associated_billing_manager) { VCAP::CloudController::User.make }
+      let!(:associated_billing_manager) { CloudController::User.make }
       let(:associated_billing_manager_guid) { associated_billing_manager.guid }
 
       context 'by user guid' do
-        let(:billing_manager) { VCAP::CloudController::User.make }
+        let(:billing_manager) { CloudController::User.make }
         let(:billing_manager_guid) { billing_manager.guid }
 
-        standard_model_list :user, VCAP::CloudController::UsersController, outer_model: :organization, path: :billing_managers
+        standard_model_list :user, CloudController::UsersController, outer_model: :organization, path: :billing_managers
 
         context 'has user guid param' do
           parameter :billing_manager_guid, 'The guid of the user'
@@ -301,17 +301,17 @@ RSpec.resource 'Organizations', type: [:api, :legacy_api] do
     describe 'Auditors' do
       before do
         organization.add_auditor(associated_auditor)
-        allow_any_instance_of(VCAP::CloudController::UaaClient).to receive(:usernames_for_ids).and_return({ associated_auditor.guid => 'auditor@example.com' })
+        allow_any_instance_of(CloudController::UaaClient).to receive(:usernames_for_ids).and_return({ associated_auditor.guid => 'auditor@example.com' })
       end
 
-      let!(:associated_auditor) { VCAP::CloudController::User.make }
+      let!(:associated_auditor) { CloudController::User.make }
       let(:associated_auditor_guid) { associated_auditor.guid }
 
       context 'by user guid' do
-        let(:auditor) { VCAP::CloudController::User.make }
+        let(:auditor) { CloudController::User.make }
         let(:auditor_guid) { auditor.guid }
 
-        standard_model_list :user, VCAP::CloudController::UsersController, outer_model: :organization, path: :auditors
+        standard_model_list :user, CloudController::UsersController, outer_model: :organization, path: :auditors
 
         context 'has user guid param' do
           parameter :auditor_guid, 'The guid of the user'
@@ -354,13 +354,13 @@ RSpec.resource 'Organizations', type: [:api, :legacy_api] do
 
     describe 'Services' do
       before do
-        some_service = VCAP::CloudController::Service.make(active: true)
-        VCAP::CloudController::ServicePlan.make(service: some_service, public: false)
-        space = VCAP::CloudController::Space.make(organization: organization)
-        VCAP::CloudController::ServicePlanVisibility.make(service_plan: some_service.service_plans.first, organization: space.organization)
+        some_service = CloudController::Service.make(active: true)
+        CloudController::ServicePlan.make(service: some_service, public: false)
+        space = CloudController::Space.make(organization: organization)
+        CloudController::ServicePlanVisibility.make(service_plan: some_service.service_plans.first, organization: space.organization)
       end
 
-      standard_model_list :service, VCAP::CloudController::ServicesController, outer_model: :organization, path: :service, exclude_parameters: ['provider']
+      standard_model_list :service, CloudController::ServicesController, outer_model: :organization, path: :service, exclude_parameters: ['provider']
     end
 
     describe 'Memory Usage (Experimental)' do
@@ -380,8 +380,8 @@ RSpec.resource 'Organizations', type: [:api, :legacy_api] do
           explanation "This endpoint returns a count of started app instances under an organization.
             Note that crashing apps are included in this count."
 
-          space = VCAP::CloudController::Space.make(organization: organization)
-          VCAP::CloudController::ProcessModelFactory.make(space: space, state: 'STARTED', instances: 3)
+          space = CloudController::Space.make(organization: organization)
+          CloudController::ProcessModelFactory.make(space: space, state: 'STARTED', instances: 3)
 
           client.get "/v2/organizations/#{guid}/instance_usage", {}, headers
           expect(status).to eq(200)
@@ -393,8 +393,8 @@ RSpec.resource 'Organizations', type: [:api, :legacy_api] do
 
     describe 'Isolation Segments (Experimental)' do
       delete '/v2/organizations/:guid/default_isolation_segment' do
-        let(:isolation_segment) { VCAP::CloudController::IsolationSegmentModel.make }
-        let(:assigner) { VCAP::CloudController::IsolationSegmentAssign.new }
+        let(:isolation_segment) { CloudController::IsolationSegmentModel.make }
+        let(:assigner) { CloudController::IsolationSegmentAssign.new }
 
         before do
           assigner.assign(isolation_segment, [organization])

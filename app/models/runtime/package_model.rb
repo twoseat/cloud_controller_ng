@@ -1,4 +1,4 @@
-module VCAP::CloudController
+module CloudController
   class PackageModel < Sequel::Model(:packages)
     PACKAGE_STATES = [
       PENDING_STATE = 'PROCESSING_UPLOAD'.freeze,
@@ -14,11 +14,11 @@ module VCAP::CloudController
       DOCKER_TYPE = 'docker'.freeze
     ].map(&:freeze).freeze
 
-    one_to_many :droplets, class: 'VCAP::CloudController::DropletModel', key: :package_guid, primary_key: :guid
-    many_to_one :app, class: 'VCAP::CloudController::AppModel', key: :app_guid, primary_key: :guid, without_guid_generation: true
+    one_to_many :droplets, class: 'CloudController::DropletModel', key: :package_guid, primary_key: :guid
+    many_to_one :app, class: 'CloudController::AppModel', key: :app_guid, primary_key: :guid, without_guid_generation: true
     one_through_one :space, join_table: AppModel.table_name, left_key: :guid, left_primary_key: :app_guid, right_primary_key: :guid, right_key: :space_guid
 
-    one_to_one :latest_droplet, class: 'VCAP::CloudController::DropletModel',
+    one_to_one :latest_droplet, class: 'CloudController::DropletModel',
                                 key: :package_guid, primary_key: :guid,
                                 order: [Sequel.desc(:created_at), Sequel.desc(:id)], limit: 1
 
@@ -70,7 +70,7 @@ module VCAP::CloudController
         self.lock!
         self.package_hash = checksums[:sha1]
         self.sha256_checksum = checksums[:sha256]
-        self.state = VCAP::CloudController::PackageModel::READY_STATE
+        self.state = CloudController::PackageModel::READY_STATE
         self.save
       end
     end
@@ -78,7 +78,7 @@ module VCAP::CloudController
     def fail_upload!(err_msg)
       db.transaction do
         self.lock!
-        self.state = VCAP::CloudController::PackageModel::FAILED_STATE
+        self.state = CloudController::PackageModel::FAILED_STATE
         self.error = err_msg
         self.save
       end

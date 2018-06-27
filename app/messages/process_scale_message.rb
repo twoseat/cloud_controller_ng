@@ -1,6 +1,6 @@
 require 'messages/base_message'
 
-module VCAP::CloudController
+module CloudController
   class ProcessScaleMessage < BaseMessage
     register_allowed_keys [:instances, :memory_in_mb, :disk_in_mb]
 

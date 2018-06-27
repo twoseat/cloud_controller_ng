@@ -1,7 +1,7 @@
 require 'addressable/uri'
 require 'cloud_controller/rest_controller/order_applicator'
 
-module VCAP::CloudController::RestController
+module CloudController::RestController
   class PaginatedCollectionRenderer
     attr_reader :collection_transformer
 
@@ -105,7 +105,7 @@ module VCAP::CloudController::RestController
     end
 
     def default_visibility_filter
-      access_context = VCAP::CloudController::Security::AccessContext.new
+      access_context = CloudController::Security::AccessContext.new
       proc { |ds| ds.filter(ds.model.user_visibility(access_context.user, access_context.admin_override)) }
     end
 

@@ -3,8 +3,8 @@ require 'spec_helper'
 RSpec.describe DeserializationRetry do
   context 'when a Delayed::Job fails to load because the class is missing' do
     it 'prevents DelayedJob from marking it as failed' do
-      handler = VCAP::CloudController::Jobs::Runtime::EventsCleanup.new(10_000)
-      VCAP::CloudController::Jobs::Enqueuer.new(handler).enqueue
+      handler = CloudController::Jobs::Runtime::EventsCleanup.new(10_000)
+      CloudController::Jobs::Enqueuer.new(handler).enqueue
 
       job = Delayed::Job.last
       job.update handler: job.handler.gsub('EventsCleanup', 'Dan')
@@ -22,8 +22,8 @@ RSpec.describe DeserializationRetry do
 
     context 'and we have been retrying for more than 24 hours' do
       it 'stops retrying the job' do
-        handler = VCAP::CloudController::Jobs::Runtime::EventsCleanup.new(10_000)
-        VCAP::CloudController::Jobs::Enqueuer.new(handler).enqueue
+        handler = CloudController::Jobs::Runtime::EventsCleanup.new(10_000)
+        CloudController::Jobs::Enqueuer.new(handler).enqueue
 
         job = Delayed::Job.last
         job.update handler: job.handler.gsub('EventsCleanup', 'Dan'), created_at: Delayed::Job.db_time_now - 24.hours - 1.second
@@ -37,8 +37,8 @@ RSpec.describe DeserializationRetry do
 
   context 'when a Delayed::Job fails to load because of another reason' do
     it 'allows the job to be marked as failed' do
-      handler = VCAP::CloudController::Jobs::Runtime::EventsCleanup.new(10_000)
-      VCAP::CloudController::Jobs::Enqueuer.new(handler).enqueue
+      handler = CloudController::Jobs::Runtime::EventsCleanup.new(10_000)
+      CloudController::Jobs::Enqueuer.new(handler).enqueue
 
       job = Delayed::Job.last
       job.update handler: 'Dan'
@@ -50,14 +50,14 @@ RSpec.describe DeserializationRetry do
 
   context 'when the Delayed::Job is well formed' do
     it 'executes the job' do
-      handler = VCAP::CloudController::Jobs::Runtime::EventsCleanup.new(10_000)
-      VCAP::CloudController::Jobs::Enqueuer.new(handler).enqueue
+      handler = CloudController::Jobs::Runtime::EventsCleanup.new(10_000)
+      CloudController::Jobs::Enqueuer.new(handler).enqueue
 
       execute_all_jobs(expected_successes: 1, expected_failures: 0)
     end
 
     context 'and the job blows up during execution' do
-      class BoomJob < VCAP::CloudController::Jobs::CCJob
+      class BoomJob < CloudController::Jobs::CCJob
         def perform
           raise 'BOOOM!'
         end
@@ -65,7 +65,7 @@ RSpec.describe DeserializationRetry do
 
       it 'does not retry' do
         handler = BoomJob.new
-        VCAP::CloudController::Jobs::Enqueuer.new(handler).enqueue
+        CloudController::Jobs::Enqueuer.new(handler).enqueue
 
         job = Delayed::Job.last
         old_run_at = job.run_at

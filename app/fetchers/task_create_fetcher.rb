@@ -1,4 +1,4 @@
-module VCAP::CloudController
+module CloudController
   class TaskCreateFetcher
     def fetch(app_guid:, droplet_guid: nil)
       app = AppModel.where(guid: app_guid).eager(

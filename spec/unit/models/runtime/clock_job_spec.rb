@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-module VCAP::CloudController
+module CloudController
   RSpec.describe ClockJob, type: :model do
     it 'must have a unique name' do
       ClockJob.create name: 'Greg'

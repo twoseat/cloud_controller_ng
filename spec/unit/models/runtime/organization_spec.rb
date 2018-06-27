@@ -2,7 +2,7 @@ require 'spec_helper'
 
 require 'isolation_segment_assign'
 
-module VCAP::CloudController
+module CloudController
   RSpec.describe Organization, type: :model do
     it { is_expected.to have_timestamp_columns }
 
@@ -251,7 +251,7 @@ module VCAP::CloudController
 
       describe 'default_isolation_segment' do
         let(:isolation_segment_model) { IsolationSegmentModel.make }
-        let(:assigner) { VCAP::CloudController::IsolationSegmentAssign.new }
+        let(:assigner) { CloudController::IsolationSegmentAssign.new }
 
         context 'assigning the default isolation segment' do
           context 'and the default is not in the allowed list' do
@@ -890,7 +890,7 @@ module VCAP::CloudController
           it 'uses what is provided' do
             expect {
               org.save
-            }.to raise_error(CloudController::Errors::ApiError, /Could not find VCAP::CloudController::QuotaDefinition with guid: #{quota_definition_guid}/)
+            }.to raise_error(CloudController::Errors::ApiError, /Could not find CloudController::QuotaDefinition with guid: #{quota_definition_guid}/)
           end
         end
       end

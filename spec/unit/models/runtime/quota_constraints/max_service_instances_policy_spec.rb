@@ -1,26 +1,26 @@
 require 'spec_helper'
 
 RSpec.describe MaxServiceInstancePolicy do
-  let(:org) { VCAP::CloudController::Organization.make quota_definition: quota }
-  let(:space) { VCAP::CloudController::Space.make organization: org }
+  let(:org) { CloudController::Organization.make quota_definition: quota }
+  let(:space) { CloudController::Space.make organization: org }
   let(:service_instance) do
-    service_plan = VCAP::CloudController::ServicePlan.make
-    VCAP::CloudController::ManagedServiceInstance.make_unsaved space: space, service_plan: service_plan
+    service_plan = CloudController::ServicePlan.make
+    CloudController::ManagedServiceInstance.make_unsaved space: space, service_plan: service_plan
   end
   let(:total_services) { 2 }
-  let(:quota) { VCAP::CloudController::QuotaDefinition.make total_services: total_services }
+  let(:quota) { CloudController::QuotaDefinition.make total_services: total_services }
   let(:existing_service_count) { 0 }
   let(:error_name) { :random_error_name }
 
   let(:policy) { MaxServiceInstancePolicy.new(service_instance, existing_service_count, quota, error_name) }
 
   def make_service_instance
-    VCAP::CloudController::ManagedServiceInstance.make space: space
+    CloudController::ManagedServiceInstance.make space: space
   end
 
   it 'counts only managed service instances' do
     total_services.times do
-      VCAP::CloudController::UserProvidedServiceInstance.make space: space
+      CloudController::UserProvidedServiceInstance.make space: space
     end
 
     expect(policy).to validate_without_error(service_instance)
@@ -60,7 +60,7 @@ RSpec.describe MaxServiceInstancePolicy do
 
     context 'and the request is to update an existing service' do
       let(:service_instance) do
-        VCAP::CloudController::ManagedServiceInstance.first
+        CloudController::ManagedServiceInstance.first
       end
 
       it 'allows updating the service' do

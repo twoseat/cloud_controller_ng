@@ -1,6 +1,6 @@
-module VCAP::CloudController
+module CloudController
   class ServiceBindingRead
-    include VCAP::CloudController::LockCheck
+    include CloudController::LockCheck
     class NotSupportedError < StandardError
     end
 

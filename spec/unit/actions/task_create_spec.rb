@@ -1,7 +1,7 @@
 require 'spec_helper'
 require 'actions/task_create'
 
-module VCAP::CloudController
+module CloudController
   RSpec.describe TaskCreate do
     subject(:task_create_action) { TaskCreate.new(config) }
     let(:config) { Config.new({ maximum_app_disk_in_mb: 4096 }) }
@@ -13,14 +13,14 @@ module VCAP::CloudController
       let(:command) { 'bundle exec rake panda' }
       let(:name) { 'my_task_name' }
       let(:message) { TaskCreateMessage.new name: name, command: command, disk_in_mb: 2048, memory_in_mb: 1024 }
-      let(:bbs_client) { instance_double(VCAP::CloudController::Diego::BbsTaskClient) }
+      let(:bbs_client) { instance_double(CloudController::Diego::BbsTaskClient) }
       let(:user_audit_info) { instance_double(UserAuditInfo).as_null_object }
 
       before do
         locator = CloudController::DependencyLocator.instance
         allow(locator).to receive(:bbs_task_client).and_return(bbs_client)
         allow(bbs_client).to receive(:desire_task).and_return(nil)
-        allow_any_instance_of(VCAP::CloudController::Diego::TaskRecipeBuilder).to receive(:build_app_task)
+        allow_any_instance_of(CloudController::Diego::TaskRecipeBuilder).to receive(:build_app_task)
 
         app.droplet = droplet
         app.save

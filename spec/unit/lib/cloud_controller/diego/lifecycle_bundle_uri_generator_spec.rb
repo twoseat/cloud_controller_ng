@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-module VCAP::CloudController
+module CloudController
   module Diego
     RSpec.describe LifecycleBundleUriGenerator do
       before do
@@ -13,7 +13,7 @@ module VCAP::CloudController
 
       it 'returns an error when passed nil' do
         expect { LifecycleBundleUriGenerator.uri(nil) }.to raise_error(
-          VCAP::CloudController::Diego::LifecycleBundleUriGenerator::InvalidStack,
+          CloudController::Diego::LifecycleBundleUriGenerator::InvalidStack,
           /no compiler defined for requested stack/
         )
       end
@@ -25,7 +25,7 @@ module VCAP::CloudController
       it 'raises an error for a non http or https url' do
         expect {
           LifecycleBundleUriGenerator.uri('ftp://bundle.example.com')
-        }.to raise_error(VCAP::CloudController::Diego::LifecycleBundleUriGenerator::InvalidCompiler, /invalid compiler URI/)
+        }.to raise_error(CloudController::Diego::LifecycleBundleUriGenerator::InvalidCompiler, /invalid compiler URI/)
       end
     end
   end

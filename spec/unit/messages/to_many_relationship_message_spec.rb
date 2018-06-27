@@ -1,7 +1,7 @@
 require 'spec_helper'
 require 'messages/to_many_relationship_message'
 
-module VCAP::CloudController
+module CloudController
   RSpec.describe ToManyRelationshipMessage do
     describe 'validations' do
       context 'when there are no guids in the data' do

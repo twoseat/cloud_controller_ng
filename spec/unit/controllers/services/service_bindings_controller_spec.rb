@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-module VCAP::CloudController
+module CloudController
   RSpec.describe ServiceBindingsController do
     describe 'Query Parameters' do
       it { expect(ServiceBindingsController).to be_queryable_by(:app_guid) }
@@ -1147,7 +1147,7 @@ module VCAP::CloudController
             }
             post '/v2/service_bindings', req.to_json
             expect(last_response.status).to eq(400)
-            expect(decoded_response['description']).to eq('VCAP::CloudController::ServiceBindingCreate::SpaceMismatch')
+            expect(decoded_response['description']).to eq('CloudController::ServiceBindingCreate::SpaceMismatch')
             expect(decoded_response['error_code']).to eq('CF-ServiceBindingAppServiceTaken')
           end
         end

@@ -1,6 +1,6 @@
 require 'vcap/request'
 
-module VCAP::CloudController
+module CloudController
   class ManagedServiceInstance < ServiceInstance
     IN_PROGRESS_STRING = 'in progress'.freeze
 

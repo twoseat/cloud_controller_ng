@@ -1,4 +1,4 @@
-module VCAP::CloudController
+module CloudController
   class QuotaDefinitionAccess < BaseAccess
     def create?(object, params=nil)
       admin_user?

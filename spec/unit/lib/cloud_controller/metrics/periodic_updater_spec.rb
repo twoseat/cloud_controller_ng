@@ -1,7 +1,7 @@
 require 'spec_helper'
 require 'cloud_controller/metrics/periodic_updater'
 
-module VCAP::CloudController::Metrics
+module CloudController::Metrics
   RSpec.describe PeriodicUpdater do
     let(:periodic_updater) { PeriodicUpdater.new(start_time, log_counter, logger, [updater1, updater2]) }
     let(:updater1) { double(:updater1) }
@@ -35,9 +35,9 @@ module VCAP::CloudController::Metrics
 
       describe 'number of tasks' do
         it 'should update the number of running tasks' do
-          VCAP::CloudController::TaskModel.make(state: VCAP::CloudController::TaskModel::RUNNING_STATE)
-          VCAP::CloudController::TaskModel::TASK_STATES.each do |state|
-            VCAP::CloudController::TaskModel.make(state: state)
+          CloudController::TaskModel.make(state: CloudController::TaskModel::RUNNING_STATE)
+          CloudController::TaskModel::TASK_STATES.each do |state|
+            CloudController::TaskModel.make(state: state)
           end
 
           periodic_updater.update_task_stats
@@ -48,9 +48,9 @@ module VCAP::CloudController::Metrics
       end
 
       it 'should update the total memory allocated to tasks' do
-        VCAP::CloudController::TaskModel.make(state: VCAP::CloudController::TaskModel::RUNNING_STATE, memory_in_mb: 512)
-        VCAP::CloudController::TaskModel::TASK_STATES.each do |state|
-          VCAP::CloudController::TaskModel.make(state: state, memory_in_mb: 1)
+        CloudController::TaskModel.make(state: CloudController::TaskModel::RUNNING_STATE, memory_in_mb: 512)
+        CloudController::TaskModel::TASK_STATES.each do |state|
+          CloudController::TaskModel.make(state: state, memory_in_mb: 1)
         end
 
         periodic_updater.update_task_stats
@@ -203,12 +203,12 @@ module VCAP::CloudController::Metrics
       end
 
       it 'should include the number of users' do
-        4.times { VCAP::CloudController::User.create(guid: SecureRandom.uuid) }
+        4.times { CloudController::User.create(guid: SecureRandom.uuid) }
 
         periodic_updater.record_user_count
 
-        expect(updater1).to have_received(:record_user_count).with(VCAP::CloudController::User.count)
-        expect(updater2).to have_received(:record_user_count).with(VCAP::CloudController::User.count)
+        expect(updater1).to have_received(:record_user_count).with(CloudController::User.count)
+        expect(updater2).to have_received(:record_user_count).with(CloudController::User.count)
       end
     end
 
@@ -219,9 +219,9 @@ module VCAP::CloudController::Metrics
       end
 
       it 'should include the length of the delayed job queue and the total' do
-        Delayed::Job.enqueue(VCAP::CloudController::Jobs::Runtime::EventsCleanup.new(1), queue: 'cc_local')
-        Delayed::Job.enqueue(VCAP::CloudController::Jobs::Runtime::EventsCleanup.new(1), queue: 'cc_local')
-        Delayed::Job.enqueue(VCAP::CloudController::Jobs::Runtime::EventsCleanup.new(1), queue: 'cc_generic')
+        Delayed::Job.enqueue(CloudController::Jobs::Runtime::EventsCleanup.new(1), queue: 'cc_local')
+        Delayed::Job.enqueue(CloudController::Jobs::Runtime::EventsCleanup.new(1), queue: 'cc_local')
+        Delayed::Job.enqueue(CloudController::Jobs::Runtime::EventsCleanup.new(1), queue: 'cc_generic')
 
         periodic_updater.update_job_queue_length
 
@@ -236,8 +236,8 @@ module VCAP::CloudController::Metrics
       end
 
       it 'should find jobs which have not been attempted yet' do
-        Delayed::Job.enqueue(VCAP::CloudController::Jobs::Runtime::EventsCleanup.new(1), queue: 'cc_local')
-        Delayed::Job.enqueue(VCAP::CloudController::Jobs::Runtime::EventsCleanup.new(1), queue: 'cc_generic')
+        Delayed::Job.enqueue(CloudController::Jobs::Runtime::EventsCleanup.new(1), queue: 'cc_local')
+        Delayed::Job.enqueue(CloudController::Jobs::Runtime::EventsCleanup.new(1), queue: 'cc_generic')
 
         periodic_updater.update_job_queue_length
 
@@ -252,7 +252,7 @@ module VCAP::CloudController::Metrics
       end
 
       it 'should ignore jobs that have already been attempted' do
-        job = VCAP::CloudController::Jobs::Runtime::EventsCleanup.new(1)
+        job = CloudController::Jobs::Runtime::EventsCleanup.new(1)
         Delayed::Job.enqueue(job, queue: 'cc_generic', attempts: 1)
 
         periodic_updater.update_job_queue_length
@@ -272,12 +272,12 @@ module VCAP::CloudController::Metrics
       end
 
       it 'includes the number of failed jobs in the delayed job queue with a total and sends it to all updaters' do
-        Delayed::Job.enqueue(VCAP::CloudController::Jobs::Runtime::EventsCleanup.new(5), queue: 'cc_local')
-        Delayed::Job.enqueue(VCAP::CloudController::Jobs::Runtime::EventsCleanup.new(5), queue: 'cc_local')
-        Delayed::Job.enqueue(VCAP::CloudController::Jobs::Runtime::EventsCleanup.new(5), queue: 'cc_generic')
+        Delayed::Job.enqueue(CloudController::Jobs::Runtime::EventsCleanup.new(5), queue: 'cc_local')
+        Delayed::Job.enqueue(CloudController::Jobs::Runtime::EventsCleanup.new(5), queue: 'cc_local')
+        Delayed::Job.enqueue(CloudController::Jobs::Runtime::EventsCleanup.new(5), queue: 'cc_generic')
         Delayed::Job.dataset.update(failed_at: Time.now.utc)
-        Delayed::Job.enqueue(VCAP::CloudController::Jobs::Runtime::EventsCleanup.new(5), queue: 'cc_local')
-        Delayed::Job.enqueue(VCAP::CloudController::Jobs::Runtime::EventsCleanup.new(5), queue: 'cc_generic')
+        Delayed::Job.enqueue(CloudController::Jobs::Runtime::EventsCleanup.new(5), queue: 'cc_local')
+        Delayed::Job.enqueue(CloudController::Jobs::Runtime::EventsCleanup.new(5), queue: 'cc_generic')
 
         periodic_updater.update_failed_job_count
 

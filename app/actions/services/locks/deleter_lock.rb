@@ -1,8 +1,8 @@
 require 'actions/services/locks/lock_check'
 
-module VCAP::CloudController
+module CloudController
   class DeleterLock
-    include VCAP::CloudController::LockCheck
+    include CloudController::LockCheck
 
     attr_reader :service_instance
 

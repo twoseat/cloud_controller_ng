@@ -7,7 +7,7 @@ module VCAP::Services::SSO::Commands
     end
 
     def db_command
-      VCAP::CloudController::ServiceDashboardClient.release_client(client_id)
+      CloudController::ServiceDashboardClient.release_client(client_id)
     end
   end
 end

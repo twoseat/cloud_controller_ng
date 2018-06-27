@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-module VCAP::CloudController
+module CloudController
   module Diego
     RSpec.describe AppRecipeBuilder do
       subject(:builder) do
@@ -198,7 +198,7 @@ module VCAP::CloudController
           RouteMappingModel.make(app: process.app, route: route_with_service, process_type: process.type, app_port: 1111)
 
           app_model.update(droplet: droplet)
-          allow(VCAP::CloudController::IsolationSegmentSelector).to receive(:for_space).and_return('placement-tag')
+          allow(CloudController::IsolationSegmentSelector).to receive(:for_space).and_return('placement-tag')
           process.current_droplet.execution_metadata = execution_metadata
         end
 
@@ -236,7 +236,7 @@ module VCAP::CloudController
           let(:env_vars) { [::Diego::Bbs::Models::EnvironmentVariable.new(name: 'foo', value: 'bar')] }
 
           let(:desired_lrp_builder) do
-            instance_double(VCAP::CloudController::Diego::Buildpack::DesiredLrpBuilder,
+            instance_double(CloudController::Diego::Buildpack::DesiredLrpBuilder,
               cached_dependencies:          expected_cached_dependencies,
               root_fs:                      'buildpack_root_fs',
               setup:                        expected_setup_action,
@@ -253,13 +253,13 @@ module VCAP::CloudController
           let(:ports) { '8080' }
 
           before do
-            VCAP::CloudController::BuildpackLifecycleDataModel.make(
+            CloudController::BuildpackLifecycleDataModel.make(
               app:        app_model,
               buildpacks: nil,
               stack:      'potato-stack',
             )
 
-            allow(VCAP::CloudController::Diego::Buildpack::DesiredLrpBuilder).to receive(:new).and_return(desired_lrp_builder)
+            allow(CloudController::Diego::Buildpack::DesiredLrpBuilder).to receive(:new).and_return(desired_lrp_builder)
           end
 
           it 'creates a desired lrp' do
@@ -898,7 +898,7 @@ module VCAP::CloudController
           end
 
           let(:desired_lrp_builder) do
-            instance_double(VCAP::CloudController::Diego::Docker::DesiredLrpBuilder,
+            instance_double(CloudController::Diego::Docker::DesiredLrpBuilder,
               cached_dependencies:          expected_cached_dependencies,
               root_fs:                      'docker_root_fs',
               setup:                        nil,
@@ -913,7 +913,7 @@ module VCAP::CloudController
           end
 
           before do
-            allow(VCAP::CloudController::Diego::Docker::DesiredLrpBuilder).to receive(:new).and_return(desired_lrp_builder)
+            allow(CloudController::Diego::Docker::DesiredLrpBuilder).to receive(:new).and_return(desired_lrp_builder)
           end
 
           it 'creates a desired lrp' do
@@ -1229,7 +1229,7 @@ module VCAP::CloudController
         let(:existing_ssh_route) { nil }
 
         before do
-          allow(VCAP::CloudController::IsolationSegmentSelector).to receive(:for_space).and_return('placement-tag')
+          allow(CloudController::IsolationSegmentSelector).to receive(:for_space).and_return('placement-tag')
         end
 
         it 'returns a DesiredLRPUpdate' do

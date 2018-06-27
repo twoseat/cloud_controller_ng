@@ -1,13 +1,13 @@
-class VCAP::CloudController::Permissions::Queryer
+class CloudController::Permissions::Queryer
   def self.build(perm_client, statsd_client, security_context, perm_enabled, query_raise_on_mismatch=false)
-    VCAP::CloudController::Science::Experiment.raise_on_mismatches = query_raise_on_mismatch
+    CloudController::Science::Experiment.raise_on_mismatches = query_raise_on_mismatch
 
     db_permissions =
-      VCAP::CloudController::Permissions.new(
+      CloudController::Permissions.new(
         security_context.current_user
       )
 
-    perm_permissions = VCAP::CloudController::Perm::Permissions.new(
+    perm_permissions = CloudController::Perm::Permissions.new(
       perm_client: perm_client,
       roles: security_context.roles,
       user_id: security_context.current_user_guid,
@@ -189,7 +189,7 @@ class VCAP::CloudController::Permissions::Queryer
   attr_reader :perm_permissions, :db_permissions, :statsd_client, :enabled, :current_user_guid
 
   def science(name)
-    experiment = VCAP::CloudController::Science::Experiment.new(
+    experiment = CloudController::Science::Experiment.new(
       statsd_client: statsd_client,
       name: name,
       enabled: enabled,

@@ -1,7 +1,7 @@
 require 'spec_helper'
 require 'cloud_controller/deployment_updater/updater'
 
-module VCAP::CloudController
+module CloudController
   RSpec.describe DeploymentUpdater::Updater do
     let(:web_process) { ProcessModel.make(instances: 2) }
     let(:webish_process) { ProcessModel.make(app: web_process.app, type: 'web-deployment-guid-1', instances: 5) }

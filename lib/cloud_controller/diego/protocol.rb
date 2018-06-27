@@ -7,7 +7,7 @@ require 'cloud_controller/diego/protocol/routing_info'
 require 'cloud_controller/diego/protocol/container_network_info'
 require 'cloud_controller/diego/lifecycle_protocol'
 
-module VCAP::CloudController
+module CloudController
   module Diego
     class Protocol
       def initialize
@@ -15,7 +15,7 @@ module VCAP::CloudController
       end
 
       def stage_package_request(config, staging_details)
-        env = VCAP::CloudController::Diego::NormalEnvHashToDiegoEnvArrayPhilosopher.muse(staging_details.environment_variables)
+        env = CloudController::Diego::NormalEnvHashToDiegoEnvArrayPhilosopher.muse(staging_details.environment_variables)
         logger.debug2("staging environment: #{env.map { |e| e['name'] }}")
 
         lifecycle_type = staging_details.lifecycle.type
@@ -68,7 +68,7 @@ module VCAP::CloudController
           'ports'                           => OpenProcessPorts.new(process).to_a,
           'network'                         => ContainerNetworkInfo.new(process.app).to_h,
           'volume_mounts'                   => AppVolumeMounts.new(process.app),
-          'isolation_segment'               => VCAP::CloudController::IsolationSegmentSelector.for_space(process.space),
+          'isolation_segment'               => CloudController::IsolationSegmentSelector.for_space(process.space),
         }.merge(LifecycleProtocol.protocol_for_type(process.app.lifecycle_type).desired_app_message(process))
 
         msg

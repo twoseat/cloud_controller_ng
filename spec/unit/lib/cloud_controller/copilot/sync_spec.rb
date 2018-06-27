@@ -2,14 +2,14 @@ require 'spec_helper'
 require 'cloud_controller/copilot/adapter'
 require 'cloud_controller/copilot/sync'
 
-module VCAP::CloudController
+module CloudController
   RSpec.describe Copilot::Sync do
     describe '#sync' do
       let(:route) { Route.make(domain: domain, host: 'some-host', path: '/some/path') }
       let(:domain) { SharedDomain.make(name: 'example.org') }
       let!(:route_mapping) { RouteMappingModel.make(route: route) }
-      let!(:web_process_model) { VCAP::CloudController::ProcessModel.make(type: 'web') }
-      let!(:worker_process_model) { VCAP::CloudController::ProcessModel.make(type: 'worker') }
+      let!(:web_process_model) { CloudController::ProcessModel.make(type: 'web') }
+      let!(:worker_process_model) { CloudController::ProcessModel.make(type: 'worker') }
 
       before do
         allow(Copilot::Adapter).to receive(:bulk_sync)

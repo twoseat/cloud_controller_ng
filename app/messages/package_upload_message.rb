@@ -1,6 +1,6 @@
 require 'messages/base_message'
 
-module VCAP::CloudController
+module CloudController
   class PackageUploadMessage < BaseMessage
     class MissingFilePathError < StandardError; end
 
@@ -14,7 +14,7 @@ module VCAP::CloudController
     def self.create_from_params(params)
       opts = params.dup.symbolize_keys
 
-      if opts.key?(VCAP::CloudController::Constants::NGINX_UPLOAD_MODULE_DUMMY.to_sym)
+      if opts.key?(CloudController::Constants::NGINX_UPLOAD_MODULE_DUMMY.to_sym)
         raise MissingFilePathError.new('File field missing path information')
       end
 
@@ -41,7 +41,7 @@ module VCAP::CloudController
     end
 
     def tmpdir
-      VCAP::CloudController::Config.config.get(:directories, :tmpdir)
+      CloudController::Config.config.get(:directories, :tmpdir)
     end
   end
 end

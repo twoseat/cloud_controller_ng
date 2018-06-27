@@ -2,7 +2,7 @@ require 'spec_helper'
 require 'messages/orgs_list_message'
 require 'fetchers/org_list_fetcher'
 
-module VCAP::CloudController
+module CloudController
   RSpec.describe OrgListFetcher do
     let!(:org1) { Organization.make(name: 'Marmot') }
     let!(:org2) { Organization.make(name: 'Rat') }

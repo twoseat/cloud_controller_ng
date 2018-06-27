@@ -1,4 +1,4 @@
-module VCAP::CloudController
+module CloudController
   class BuildpackBitsController < RestController::ModelController
     def self.dependencies
       [:buildpack_blobstore, :upload_handler]
@@ -8,8 +8,8 @@ module VCAP::CloudController
     model_class_name :Buildpack
     allow_unauthenticated_access only: :download
     authenticate_basic_auth("#{path}/*/download") do
-      [VCAP::CloudController::Config.config.get(:staging, :auth, :user),
-       CGI.escape(VCAP::CloudController::Config.config.get(:staging, :auth, :password))]
+      [CloudController::Config.config.get(:staging, :auth, :user),
+       CGI.escape(CloudController::Config.config.get(:staging, :auth, :password))]
     end
 
     put "#{path_guid}/bits", :upload

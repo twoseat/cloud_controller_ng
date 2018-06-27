@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-module VCAP::CloudController::Jobs
+module CloudController::Jobs
   RSpec.describe Enqueuer, job_context: :api do
     let(:config_override) do
       {
@@ -19,10 +19,10 @@ module VCAP::CloudController::Jobs
 
     shared_examples_for 'a job enqueueing method' do
       let(:job_timeout) { rand(20).hours }
-      let(:timeout_calculator) { instance_double(VCAP::CloudController::JobTimeoutCalculator) }
+      let(:timeout_calculator) { instance_double(CloudController::JobTimeoutCalculator) }
 
       before do
-        expect(VCAP::CloudController::JobTimeoutCalculator).to receive(:new).with(TestConfig.config_instance).and_return(timeout_calculator)
+        expect(CloudController::JobTimeoutCalculator).to receive(:new).with(TestConfig.config_instance).and_return(timeout_calculator)
         allow(timeout_calculator).to receive(:calculate).and_return(job_timeout)
       end
 
@@ -95,7 +95,7 @@ module VCAP::CloudController::Jobs
 
       it 'returns the PollableJobModel' do
         result = Enqueuer.new(wrapped_job, opts).enqueue_pollable
-        latest_job = VCAP::CloudController::PollableJobModel.last
+        latest_job = CloudController::PollableJobModel.last
         expect(result).to eq(latest_job)
       end
     end

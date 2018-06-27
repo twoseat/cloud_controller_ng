@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-module VCAP::CloudController
+module CloudController
   RSpec.describe FeatureFlag, type: :model do
     let(:valid_flags) do
       [:user_org_creation, :private_domain_creation, :app_bits_upload,
@@ -129,9 +129,9 @@ module VCAP::CloudController
 
       context 'when logged in as an admin' do
         before do
-          allow(VCAP::CloudController::SecurityContext).to receive(:admin?).and_return(true)
-          stub_const('VCAP::CloudController::FeatureFlag::DEFAULT_FLAGS', { normal: false, blahrgha: false })
-          stub_const('VCAP::CloudController::FeatureFlag::ADMIN_SKIPPABLE', [:blahrgha])
+          allow(CloudController::SecurityContext).to receive(:admin?).and_return(true)
+          stub_const('CloudController::FeatureFlag::DEFAULT_FLAGS', { normal: false, blahrgha: false })
+          stub_const('CloudController::FeatureFlag::ADMIN_SKIPPABLE', [:blahrgha])
         end
 
         context 'when flag is admin enabled' do
@@ -153,10 +153,10 @@ module VCAP::CloudController
 
       context 'when logged in as an admin read only' do
         before do
-          allow(VCAP::CloudController::SecurityContext).to receive(:admin_read_only?).and_return(true)
-          stub_const('VCAP::CloudController::FeatureFlag::DEFAULT_FLAGS', { normal: false, potato: false, tomato: false })
-          stub_const('VCAP::CloudController::FeatureFlag::ADMIN_READ_ONLY_SKIPPABLE', [:potato])
-          stub_const('VCAP::CloudController::FeatureFlag::ADMIN__SKIPPABLE', [:tomato])
+          allow(CloudController::SecurityContext).to receive(:admin_read_only?).and_return(true)
+          stub_const('CloudController::FeatureFlag::DEFAULT_FLAGS', { normal: false, potato: false, tomato: false })
+          stub_const('CloudController::FeatureFlag::ADMIN_READ_ONLY_SKIPPABLE', [:potato])
+          stub_const('CloudController::FeatureFlag::ADMIN__SKIPPABLE', [:tomato])
         end
 
         context 'when flag is admin read only enabled' do

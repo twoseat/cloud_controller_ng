@@ -1,4 +1,4 @@
-module VCAP::CloudController
+module CloudController
   module Repositories
     class OrganizationEventRepository
       def record_organization_create(organization, user_audit_info, request_attrs)

@@ -1,11 +1,11 @@
 require 'spec_helper'
 require 'presenters/v3/package_presenter'
 
-module VCAP::CloudController::Presenters::V3
+module CloudController::Presenters::V3
   RSpec.describe PackagePresenter do
     describe '#to_hash' do
       let(:result) { PackagePresenter.new(package).to_hash }
-      let(:package) { VCAP::CloudController::PackageModel.make(type: 'package_type', sha256_checksum: 'sha256') }
+      let(:package) { CloudController::PackageModel.make(type: 'package_type', sha256_checksum: 'sha256') }
 
       it 'presents the package as json' do
         links = {
@@ -24,7 +24,7 @@ module VCAP::CloudController::Presenters::V3
       end
 
       context 'when the package type is bits' do
-        let(:package) { VCAP::CloudController::PackageModel.make(type: 'bits') }
+        let(:package) { CloudController::PackageModel.make(type: 'bits') }
 
         it 'includes links to upload, download, and stage' do
           expect(result[:links][:upload][:href]).to eq("#{link_prefix}/v3/packages/#{package.guid}/upload")
@@ -36,7 +36,7 @@ module VCAP::CloudController::Presenters::V3
 
         context 'when bits-service is enabled' do
           before do
-            VCAP::CloudController::Config.config.set(:bits_service, { enabled: true })
+            CloudController::Config.config.set(:bits_service, { enabled: true })
           end
 
           let(:bits_service_double) { double('bits_service') }
@@ -62,7 +62,7 @@ module VCAP::CloudController::Presenters::V3
 
       context 'when the package type is docker' do
         let(:package) do
-          VCAP::CloudController::PackageModel.make(
+          CloudController::PackageModel.make(
             type: 'docker',
             docker_image: 'registry/image:latest',
             docker_username: 'jarjarbinks',
@@ -84,7 +84,7 @@ module VCAP::CloudController::Presenters::V3
 
         context 'when no docker credentials are present' do
           let(:package) do
-            VCAP::CloudController::PackageModel.make(
+            CloudController::PackageModel.make(
               type: 'docker',
               docker_image: 'registry/image:latest',
             )
@@ -100,7 +100,7 @@ module VCAP::CloudController::Presenters::V3
       end
 
       context 'when the package type is not bits' do
-        let(:package) { VCAP::CloudController::PackageModel.make(type: 'docker', docker_image: 'some-image') }
+        let(:package) { CloudController::PackageModel.make(type: 'docker', docker_image: 'some-image') }
 
         it 'does NOT include a link to upload' do
           expect(result[:links][:upload]).to be_nil

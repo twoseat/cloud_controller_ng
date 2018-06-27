@@ -1,7 +1,7 @@
 require 'spec_helper'
 require 'messages/process_update_message'
 
-module VCAP::CloudController
+module CloudController
   RSpec.describe ProcessUpdateMessage do
     describe '#requested?' do
       it 'returns true if the key was requested, false otherwise' do

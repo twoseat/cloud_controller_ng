@@ -1,7 +1,7 @@
 require 'messages/base_message'
 require 'models/helpers/health_check_types'
 
-module VCAP::CloudController
+module CloudController
   class ManifestProcessUpdateMessage < BaseMessage
     register_allowed_keys [:command, :health_check_type, :health_check_http_endpoint, :timeout, :type]
 

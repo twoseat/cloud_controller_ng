@@ -1,7 +1,7 @@
 require 'spec_helper'
 
 RSpec.describe HealthCheckPolicy do
-  let(:process) { VCAP::CloudController::ProcessModelFactory.make }
+  let(:process) { CloudController::ProcessModelFactory.make }
   let(:health_check_timeout) {}
   let(:health_check_invocation_timeout) {}
 

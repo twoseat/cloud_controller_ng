@@ -1,7 +1,7 @@
 require 'spec_helper'
 require 'isolation_segment_assign'
 
-module VCAP::CloudController
+module CloudController
   RSpec.describe IsolationSegmentAssign do
     let(:isolation_segment_model) { IsolationSegmentModel.make }
     let(:org) { Organization.make }
@@ -61,7 +61,7 @@ module VCAP::CloudController
     end
 
     context 'when assigning the shared isolation segment' do
-      let(:shared_segment) { IsolationSegmentModel.first(guid: VCAP::CloudController::IsolationSegmentModel::SHARED_ISOLATION_SEGMENT_GUID) }
+      let(:shared_segment) { IsolationSegmentModel.first(guid: CloudController::IsolationSegmentModel::SHARED_ISOLATION_SEGMENT_GUID) }
 
       context 'and the org does not already have a default isolation segment set' do
         it 'sets the shared segment as the organizational default' do

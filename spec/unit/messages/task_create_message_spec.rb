@@ -1,7 +1,7 @@
 require 'spec_helper'
 require 'messages/task_create_message'
 
-module VCAP::CloudController
+module CloudController
   RSpec.describe TaskCreateMessage do
     let(:body) do
       {

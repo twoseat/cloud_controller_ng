@@ -2,7 +2,7 @@ require 'sinatra'
 require 'controllers/base/base_controller'
 require 'cloud_controller/internal_api'
 
-module VCAP::CloudController
+module CloudController
   class AppCrashedController < RestController::BaseController
     # Endpoint does its own (non-standard) auth
     allow_unauthenticated_access

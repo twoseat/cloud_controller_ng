@@ -1,6 +1,6 @@
 require 'models/helpers/process_types'
 
-module VCAP::CloudController
+module CloudController
   class Organization < Sequel::Model
     ORG_NAME_REGEX = /\A[[:alnum:][:punct:][:print:]]+\Z/
     ACTIVE = 'active'.freeze
@@ -10,7 +10,7 @@ module VCAP::CloudController
     one_to_many :spaces
 
     many_to_one :default_isolation_segment_model,
-      class:       'VCAP::CloudController::IsolationSegmentModel',
+      class:       'CloudController::IsolationSegmentModel',
       primary_key: :guid,
       key:         :default_isolation_segment_guid
 
@@ -27,13 +27,13 @@ module VCAP::CloudController
       before_remove: proc { cannot_update! }
 
     one_to_many :service_instances,
-      dataset: -> { VCAP::CloudController::ServiceInstance.filter(space: spaces) }
+      dataset: -> { CloudController::ServiceInstance.filter(space: spaces) }
 
     one_to_many :managed_service_instances,
-      dataset: -> { VCAP::CloudController::ServiceInstance.filter(space: spaces, is_gateway_service: true) }
+      dataset: -> { CloudController::ServiceInstance.filter(space: spaces, is_gateway_service: true) }
 
     one_to_many :apps,
-      class:   'VCAP::CloudController::ProcessModel',
+      class:   'CloudController::ProcessModel',
       dataset: -> { ProcessModel.filter(space: spaces, type: ProcessTypes::WEB) }
 
     one_to_many :processes,
@@ -46,14 +46,14 @@ module VCAP::CloudController
       dataset: -> { TaskModel.filter(app: app_models) }
 
     one_to_many :app_events,
-      dataset: -> { VCAP::CloudController::AppEvent.filter(app: apps) }
+      dataset: -> { CloudController::AppEvent.filter(app: apps) }
 
     many_to_many(
       :private_domains,
-      class:         'VCAP::CloudController::PrivateDomain',
+      class:         'CloudController::PrivateDomain',
       right_key:     :private_domain_id,
       dataset:       proc { |r|
-        VCAP::CloudController::Domain.dataset.where(owning_organization_id: self.id).
+        CloudController::Domain.dataset.where(owning_organization_id: self.id).
           or(id: db[r.join_table_source].select(r.qualified_right_key).where(r.predicate_key => self.id))
       },
       before_add:    proc { |org, private_domain| org.cancel_action unless private_domain.addable_to_organization?(org) },
@@ -63,7 +63,7 @@ module VCAP::CloudController
 
     one_to_many(
       :owned_private_domains,
-      class:     'VCAP::CloudController::PrivateDomain',
+      class:     'CloudController::PrivateDomain',
       read_only: true,
       key:       :owning_organization_id,
     )
@@ -72,7 +72,7 @@ module VCAP::CloudController
     many_to_one :quota_definition
 
     one_to_many :domains,
-      dataset:      -> { VCAP::CloudController::Domain.shared_or_owned_by(id) },
+      dataset:      -> { CloudController::Domain.shared_or_owned_by(id) },
       remover:      ->(legacy_domain) { legacy_domain.destroy if legacy_domain.owning_organization_id == id },
       clearer:      -> { remove_all_private_domains },
       adder:        ->(legacy_domain) { legacy_domain.addable_to_organization!(self) },

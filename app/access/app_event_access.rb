@@ -1,4 +1,4 @@
-module VCAP::CloudController
+module CloudController
   class AppEventAccess < BaseAccess
     def create?(object, params=nil)
       admin_user?

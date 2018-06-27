@@ -1,12 +1,12 @@
 require 'spec_helper'
 require 'fetchers/log_access_fetcher'
 
-module VCAP::CloudController
+module CloudController
   RSpec.describe LogAccessController do
-    let(:app_model) { VCAP::CloudController::AppModel.make(enable_ssh: true) }
+    let(:app_model) { CloudController::AppModel.make(enable_ssh: true) }
     let(:space) { app_model.space }
     let(:org) { space.organization }
-    let(:user) { VCAP::CloudController::User.make }
+    let(:user) { CloudController::User.make }
     let(:logger) { instance_double(Steno::Logger) }
 
     let(:log_access_controller) do

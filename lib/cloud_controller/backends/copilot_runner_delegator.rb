@@ -1,4 +1,4 @@
-module VCAP::CloudController
+module CloudController
   class CopilotRunnerDelegator < Delegator
     def initialize(runner, process)
       @runner = runner

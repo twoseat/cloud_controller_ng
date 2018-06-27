@@ -1,13 +1,13 @@
 require 'presenters/api_url_builder'
 
-module VCAP::CloudController
+module CloudController
   class RootController < RestController::BaseController
     allow_unauthenticated_access
 
     get '/', :read
 
     def read
-      api_url_builder = VCAP::CloudController::Presenters::ApiUrlBuilder.new
+      api_url_builder = CloudController::Presenters::ApiUrlBuilder.new
 
       response = {
         links: {
@@ -18,14 +18,14 @@ module VCAP::CloudController
           cloud_controller_v2: {
             href: api_url_builder.build_url(path: '/v2'),
             meta: {
-              version: VCAP::CloudController::Constants::API_VERSION
+              version: CloudController::Constants::API_VERSION
             }
           },
 
           cloud_controller_v3: {
             href: api_url_builder.build_url(path: '/v3'),
             meta: {
-              version: VCAP::CloudController::Constants::API_VERSION_V3
+              version: CloudController::Constants::API_VERSION_V3
             }
           },
 
@@ -65,7 +65,7 @@ module VCAP::CloudController
     private
 
     def config
-      VCAP::CloudController::Config.config
+      CloudController::Config.config
     end
 
     def credhub_link

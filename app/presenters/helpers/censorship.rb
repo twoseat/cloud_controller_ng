@@ -1,4 +1,4 @@
-module VCAP::CloudController
+module CloudController
   module Presenters
     module Censorship
       PRIVATE_DATA_HIDDEN = '[PRIVATE DATA HIDDEN]'.freeze

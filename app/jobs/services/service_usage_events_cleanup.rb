@@ -1,9 +1,9 @@
 require 'repositories/service_usage_event_repository'
 
-module VCAP::CloudController
+module CloudController
   module Jobs
     module Services
-      class ServiceUsageEventsCleanup < VCAP::CloudController::Jobs::CCJob
+      class ServiceUsageEventsCleanup < CloudController::Jobs::CCJob
         attr_accessor :cutoff_age_in_days
 
         def initialize(cutoff_age_in_days)

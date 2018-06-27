@@ -4,14 +4,14 @@ require 'rspec_api_documentation/dsl'
 # rubocop:disable Metrics/LineLength
 RSpec.resource 'Apps', type: [:api, :legacy_api] do
   let(:admin_auth_header) { admin_headers['HTTP_AUTHORIZATION'] }
-  let(:space) { VCAP::CloudController::Space.make }
-  let(:process) { VCAP::CloudController::ProcessModelFactory.make space: space }
+  let(:space) { CloudController::Space.make }
+  let(:process) { CloudController::ProcessModelFactory.make space: space }
   let(:user) { make_developer_for_space(process.space) }
-  let(:shared_domain) { VCAP::CloudController::SharedDomain.make }
-  let(:route1) { VCAP::CloudController::Route.make(space: space) }
-  let(:service_instance) { VCAP::CloudController::ManagedServiceInstance.make(space: space) }
-  let(:service_binding) { VCAP::CloudController::ServiceBinding.make(app: process.app, service_instance: service_instance) }
-  let(:bbs_instances_client) { instance_double(VCAP::CloudController::Diego::BbsInstancesClient) }
+  let(:shared_domain) { CloudController::SharedDomain.make }
+  let(:route1) { CloudController::Route.make(space: space) }
+  let(:service_instance) { CloudController::ManagedServiceInstance.make(space: space) }
+  let(:service_binding) { CloudController::ServiceBinding.make(app: process.app, service_instance: service_instance) }
+  let(:bbs_instances_client) { instance_double(CloudController::Diego::BbsInstancesClient) }
 
   before do
     CloudController::DependencyLocator.instance.register(:bbs_instances_client, bbs_instances_client)
@@ -51,7 +51,7 @@ RSpec.resource 'Apps', type: [:api, :legacy_api] do
     field :services, 'List of services that are bound to the app'
 
     example 'Get App summary' do
-      VCAP::CloudController::RouteMappingModel.make(app: process.app, route: route1, process_type: process.type)
+      CloudController::RouteMappingModel.make(app: process.app, route: route1, process_type: process.type)
       service_binding.save
       client.get "/v2/apps/#{process.guid}/summary", {}, headers
 
@@ -70,20 +70,20 @@ end
 
 RSpec.resource 'Spaces', type: [:api, :legacy_api] do
   let(:admin_auth_header) { admin_headers['HTTP_AUTHORIZATION'] }
-  let(:space) { VCAP::CloudController::Space.make }
-  let(:process) { VCAP::CloudController::ProcessModelFactory.make(diego: false, space: space) }
+  let(:space) { CloudController::Space.make }
+  let(:process) { CloudController::ProcessModelFactory.make(diego: false, space: space) }
   let(:user) { make_developer_for_space(process.space) }
-  let(:shared_domain) { VCAP::CloudController::SharedDomain.make }
-  let(:route1) { VCAP::CloudController::Route.make(space: space) }
-  let(:service_instance) { VCAP::CloudController::ManagedServiceInstance.make(space: space) }
-  let(:service_binding) { VCAP::CloudController::ServiceBinding.make(app: process.app, service_instance: service_instance) }
+  let(:shared_domain) { CloudController::SharedDomain.make }
+  let(:route1) { CloudController::Route.make(space: space) }
+  let(:service_instance) { CloudController::ManagedServiceInstance.make(space: space) }
+  let(:service_binding) { CloudController::ServiceBinding.make(app: process.app, service_instance: service_instance) }
   let(:instances_reporters) { double(:instances_reporters) }
   let(:running_instances) { { process.guid => 1 } }
 
   before do
     allow(CloudController::DependencyLocator.instance).to receive(:instances_reporters).and_return(instances_reporters)
     allow(instances_reporters).to receive(:number_of_starting_and_running_instances_for_processes).and_return(running_instances)
-    service_instance.service_instance_operation = VCAP::CloudController::ServiceInstanceOperation.make(type: 'create', state: 'succeeded')
+    service_instance.service_instance_operation = CloudController::ServiceInstanceOperation.make(type: 'create', state: 'succeeded')
   end
 
   authenticated_request
@@ -95,7 +95,7 @@ RSpec.resource 'Spaces', type: [:api, :legacy_api] do
     field :services, 'List of services that are associated with the space'
 
     example 'Get Space summary' do
-      VCAP::CloudController::RouteMappingModel.make(app: process.app, route: route1, process_type: process.type)
+      CloudController::RouteMappingModel.make(app: process.app, route: route1, process_type: process.type)
       service_binding.save
       client.get "/v2/spaces/#{space.guid}/summary", {}, headers
 
@@ -111,8 +111,8 @@ end
 
 RSpec.resource 'Organizations', type: [:api, :legacy_api] do
   let(:admin_auth_header) { admin_headers['HTTP_AUTHORIZATION'] }
-  let(:organization) { VCAP::CloudController::Organization.make }
-  let!(:space) { VCAP::CloudController::Space.make(organization: organization) }
+  let(:organization) { CloudController::Organization.make }
+  let!(:space) { CloudController::Space.make(organization: organization) }
 
   authenticated_request
 
@@ -135,7 +135,7 @@ end
 
 RSpec.resource 'Users', type: [:api, :legacy_api] do
   let(:admin_auth_header) { admin_headers['HTTP_AUTHORIZATION'] }
-  let(:user) { VCAP::CloudController::User.make }
+  let(:user) { CloudController::User.make }
 
   authenticated_request
 
@@ -150,8 +150,8 @@ RSpec.resource 'Users', type: [:api, :legacy_api] do
     field :organizations, 'List of organizations that the user is a member of.'
 
     example 'Get User summary' do
-      organization = VCAP::CloudController::Organization.make
-      space        = VCAP::CloudController::Space.make(organization: organization)
+      organization = CloudController::Organization.make
+      space        = CloudController::Space.make(organization: organization)
       user.add_organization organization
       organization.add_manager user
       organization.add_billing_manager user

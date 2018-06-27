@@ -2,10 +2,10 @@ require 'securerandom'
 require 'cloud_controller/diego/staging_completion_handler'
 require 'actions/droplet_create'
 
-module VCAP::CloudController
+module CloudController
   module Diego
     module Docker
-      class StagingCompletionHandler < VCAP::CloudController::Diego::StagingCompletionHandler
+      class StagingCompletionHandler < CloudController::Diego::StagingCompletionHandler
         def logger_prefix
           'diego.staging.docker.'
         end
@@ -32,7 +32,7 @@ module VCAP::CloudController
         end
 
         def create_droplet_from_build(build)
-          VCAP::CloudController::DropletCreate.new.create_docker_droplet(build)
+          CloudController::DropletCreate.new.create_docker_droplet(build)
         end
 
         def save_staging_result(payload)

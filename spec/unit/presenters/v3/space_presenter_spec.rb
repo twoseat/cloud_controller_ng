@@ -1,9 +1,9 @@
 require 'spec_helper'
 require 'presenters/v3/space_presenter'
 
-module VCAP::CloudController::Presenters::V3
+module CloudController::Presenters::V3
   RSpec.describe SpacePresenter do
-    let(:space) { VCAP::CloudController::Space.make }
+    let(:space) { CloudController::Space.make }
 
     describe '#to_hash' do
       let(:result) { SpacePresenter.new(space).to_hash }

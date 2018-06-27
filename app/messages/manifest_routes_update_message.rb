@@ -1,7 +1,7 @@
 require 'messages/base_message'
 require 'cloud_controller/app_manifest/manifest_route'
 
-module VCAP::CloudController
+module CloudController
   class ManifestRoutesUpdateMessage < BaseMessage
     register_allowed_keys [:routes, :no_route, :random_route]
 

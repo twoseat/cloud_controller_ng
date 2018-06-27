@@ -5,10 +5,10 @@ Sequel.migration do
     end
 
     self[:service_auth_tokens].each do |service_auth_token|
-      generated_salt = VCAP::CloudController::Encryptor.generate_salt
+      generated_salt = CloudController::Encryptor.generate_salt
       self[:service_auth_tokens].filter(id: service_auth_token[:id]).update(
         salt: generated_salt,
-        token: VCAP::CloudController::Encryptor.encrypt(service_auth_token[:token], generated_salt)
+        token: CloudController::Encryptor.encrypt(service_auth_token[:token], generated_salt)
       )
     end
   end
@@ -16,7 +16,7 @@ Sequel.migration do
   down do
     self[:service_auth_tokens].each do |service_auth_token|
       self[:service_auth_tokens].filter(id: service_auth_token[:id]).update(
-        token: VCAP::CloudController::Encryptor.decrypt(service_auth_token[:token], service_auth_token[:salt])
+        token: CloudController::Encryptor.decrypt(service_auth_token[:token], service_auth_token[:salt])
       )
     end
 

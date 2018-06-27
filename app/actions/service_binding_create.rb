@@ -3,7 +3,7 @@ require 'actions/services/locks/lock_check'
 require 'repositories/service_binding_event_repository'
 require 'jobs/services/service_binding_state_fetch'
 
-module VCAP::CloudController
+module CloudController
   class ServiceBindingCreate
     class InvalidServiceBinding < StandardError; end
     class ServiceInstanceNotBindable < InvalidServiceBinding; end
@@ -14,7 +14,7 @@ module VCAP::CloudController
 
     PERMITTED_BINDING_ATTRIBUTES = [:credentials, :syslog_drain_url, :volume_mounts].freeze
 
-    include VCAP::CloudController::LockCheck
+    include CloudController::LockCheck
 
     def initialize(user_audit_info, manifest_triggered: false)
       @user_audit_info = user_audit_info

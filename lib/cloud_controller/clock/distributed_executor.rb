@@ -1,4 +1,4 @@
-module VCAP::CloudController
+module CloudController
   class DistributedExecutor
     def initialize
       @logger = Steno.logger('cc.clock')

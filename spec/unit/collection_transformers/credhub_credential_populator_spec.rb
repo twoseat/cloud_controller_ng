@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-module VCAP::CloudController
+module CloudController
   RSpec.describe CredhubCredentialPopulator do
     describe '#transform' do
       let(:space) { Space.make }
@@ -48,7 +48,7 @@ module VCAP::CloudController
         end
       end
 
-      context 'when a VCAP::CloudController::UaaUnavailable error occurs' do
+      context 'when a CloudController::UaaUnavailable error occurs' do
         before do
           allow(fake_credhub_client).to receive(:get_credential_by_name).and_raise(UaaUnavailable)
         end

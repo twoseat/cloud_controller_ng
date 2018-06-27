@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-module VCAP::CloudController
+module CloudController
   RSpec.describe OrganizationReservedRoutePorts do
     let(:organization) { Organization.make }
 

@@ -1,6 +1,6 @@
 require 'cloud_controller/encryptor'
 
-module VCAP::CloudController
+module CloudController
   shared_examples 'a model with an encrypted attribute' do
     before do
       allow(Encryptor).to receive(:db_encryption_key).and_return('correct-key')

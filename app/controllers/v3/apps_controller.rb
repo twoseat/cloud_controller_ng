@@ -79,7 +79,7 @@ class AppsV3Controller < ApplicationController
     space = Space.where(guid: message.space_guid).first
     unprocessable_space! unless space && can_read?(space.guid, space.organization_guid) && can_write?(space.guid)
 
-    if message.lifecycle_type == VCAP::CloudController::PackageModel::DOCKER_TYPE
+    if message.lifecycle_type == CloudController::PackageModel::DOCKER_TYPE
       FeatureFlag.raise_unless_enabled!(:diego_docker)
     end
 
@@ -121,11 +121,11 @@ class AppsV3Controller < ApplicationController
     unauthorized! unless can_write?(space.guid)
 
     delete_action = AppDelete.new(user_audit_info)
-    deletion_job  = VCAP::CloudController::Jobs::DeleteActionJob.new(AppModel, app.guid, delete_action)
+    deletion_job  = CloudController::Jobs::DeleteActionJob.new(AppModel, app.guid, delete_action)
 
     job = Jobs::Enqueuer.new(deletion_job, queue: 'cc-generic').enqueue_pollable
 
-    url_builder = VCAP::CloudController::Presenters::ApiUrlBuilder.new
+    url_builder = CloudController::Presenters::ApiUrlBuilder.new
     head HTTP::ACCEPTED, 'Location' => url_builder.build_url(path: "/v3/jobs/#{job.guid}")
   end
 
@@ -171,7 +171,7 @@ class AppsV3Controller < ApplicationController
     render status: :ok, json: Presenters::V3::AppPresenter.new(app)
   rescue AppRestart::Error => e
     unprocessable!(e.message)
-  rescue ::VCAP::CloudController::Diego::Runner::CannotCommunicateWithDiegoError => e
+  rescue ::CloudController::Diego::Runner::CannotCommunicateWithDiegoError => e
     logger.error(e.message)
     raise CloudController::Errors::ApiError.new_from_details('RunnerUnavailable', 'Unable to communicate with Diego')
   end

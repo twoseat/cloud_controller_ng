@@ -1,6 +1,6 @@
 require 'actions/services/locks/lock_check'
 
-module VCAP::CloudController
+module CloudController
   class ServiceInstanceBindingManager
     class ServiceInstanceNotFound < StandardError; end
     class ServiceInstanceNotBindable < StandardError; end
@@ -11,7 +11,7 @@ module VCAP::CloudController
     class RouteServiceRequiresDiego < StandardError; end
     class RouteAlreadyBoundToServiceInstance < StandardError; end
 
-    include VCAP::CloudController::LockCheck
+    include CloudController::LockCheck
 
     def initialize(access_validator, logger)
       @access_validator = access_validator

@@ -1,4 +1,4 @@
-module VCAP::CloudController
+module CloudController
   class BitsExpiration
     def initialize(config=Config.config)
       packages = config.get(:packages)

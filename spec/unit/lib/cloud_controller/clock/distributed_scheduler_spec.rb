@@ -1,7 +1,7 @@
 require 'spec_helper'
 require 'cloud_controller/clock/distributed_scheduler'
 
-module VCAP::CloudController
+module CloudController
   RSpec.describe DistributedScheduler do
     it 'runs a distributed executor job every interval' do
       allow(Clockwork).to receive(:every).and_yield(nil).and_yield(nil)

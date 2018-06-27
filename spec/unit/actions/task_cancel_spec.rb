@@ -1,7 +1,7 @@
 require 'spec_helper'
 require 'actions/task_cancel'
 
-module VCAP::CloudController
+module CloudController
   RSpec.describe TaskCancel do
     describe '#cancel' do
       subject(:task_cancel) { described_class.new(config) }
@@ -13,8 +13,8 @@ module VCAP::CloudController
 
       let(:app) { AppModel.make }
       let(:task) { TaskModel.make(name: 'ursulina', command: 'echo hi', app_guid: app.guid, state: TaskModel::RUNNING_STATE) }
-      let(:user_audit_info) { instance_double(VCAP::CloudController::UserAuditInfo).as_null_object }
-      let(:bbs_client) { instance_double(VCAP::CloudController::Diego::BbsTaskClient, cancel_task: nil) }
+      let(:user_audit_info) { instance_double(CloudController::UserAuditInfo).as_null_object }
+      let(:bbs_client) { instance_double(CloudController::Diego::BbsTaskClient, cancel_task: nil) }
 
       before do
         locator = CloudController::DependencyLocator.instance

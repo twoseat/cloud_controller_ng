@@ -1,4 +1,4 @@
-module VCAP::CloudController
+module CloudController
   class PermSpaceRolesDelete
     def initialize(client)
       @client = client
@@ -6,7 +6,7 @@ module VCAP::CloudController
 
     def delete(space)
       @client = client.rehydrate
-      VCAP::CloudController::Roles::SPACE_ROLE_NAMES.each do |role|
+      CloudController::Roles::SPACE_ROLE_NAMES.each do |role|
         begin
           client.delete_space_role(role: role, space_id: space.guid)
         rescue

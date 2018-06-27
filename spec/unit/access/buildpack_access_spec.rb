@@ -1,10 +1,10 @@
 require 'spec_helper'
 
-module VCAP::CloudController
+module CloudController
   RSpec.describe BuildpackAccess, type: :access do
     subject(:access) { BuildpackAccess.new(Security::AccessContext.new) }
-    let(:user) { VCAP::CloudController::User.make }
-    let(:object) { VCAP::CloudController::Buildpack.make }
+    let(:user) { CloudController::User.make }
+    let(:object) { CloudController::Buildpack.make }
 
     it_should_behave_like :admin_read_only_access
 

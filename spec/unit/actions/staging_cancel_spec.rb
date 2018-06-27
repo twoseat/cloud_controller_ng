@@ -1,7 +1,7 @@
 require 'spec_helper'
 require 'actions/staging_cancel'
 
-module VCAP::CloudController
+module CloudController
   RSpec.describe StagingCancel do
     subject(:cancel_action) { StagingCancel.new(stagers) }
     let(:stagers) { instance_double(Stagers) }

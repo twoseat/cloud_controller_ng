@@ -1,7 +1,7 @@
 require 'utils/workpool'
 require 'cloud_controller/diego/reporters/reporter_mixins'
 
-module VCAP::CloudController
+module CloudController
   module Diego
     class InstancesReporter
       include ReporterMixins
@@ -103,8 +103,8 @@ module VCAP::CloudController
 
       def running_or_starting?(lrp)
         translated_state = LrpStateTranslator.translate_lrp_state(lrp)
-        return true if VCAP::CloudController::Diego::LRP_RUNNING == translated_state
-        return true if VCAP::CloudController::Diego::LRP_STARTING == translated_state
+        return true if CloudController::Diego::LRP_RUNNING == translated_state
+        return true if CloudController::Diego::LRP_STARTING == translated_state
         false
       end
     end
@@ -113,15 +113,15 @@ module VCAP::CloudController
       def self.translate_lrp_state(lrp)
         case lrp.state
         when ::Diego::ActualLRPState::RUNNING
-          VCAP::CloudController::Diego::LRP_RUNNING
+          CloudController::Diego::LRP_RUNNING
         when ::Diego::ActualLRPState::CLAIMED
-          VCAP::CloudController::Diego::LRP_STARTING
+          CloudController::Diego::LRP_STARTING
         when ::Diego::ActualLRPState::UNCLAIMED
-          lrp.placement_error.present? ? VCAP::CloudController::Diego::LRP_DOWN : VCAP::CloudController::Diego::LRP_STARTING
+          lrp.placement_error.present? ? CloudController::Diego::LRP_DOWN : CloudController::Diego::LRP_STARTING
         when ::Diego::ActualLRPState::CRASHED
-          VCAP::CloudController::Diego::LRP_CRASHED
+          CloudController::Diego::LRP_CRASHED
         else
-          VCAP::CloudController::Diego::LRP_UNKNOWN
+          CloudController::Diego::LRP_UNKNOWN
         end
       end
     end

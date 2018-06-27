@@ -1,4 +1,4 @@
-module VCAP::CloudController
+module CloudController
   class AppSshEnabled
     def initialize(app)
       @app = app

@@ -1,10 +1,10 @@
 require 'spec_helper'
 
-module VCAP::CloudController
+module CloudController
   RSpec.describe FeatureFlagAccess, type: :access do
     subject(:access) { FeatureFlagAccess.new(Security::AccessContext.new) }
-    let(:user) { VCAP::CloudController::User.make }
-    let(:object) { VCAP::CloudController::FeatureFlag.make }
+    let(:user) { CloudController::User.make }
+    let(:object) { CloudController::FeatureFlag.make }
 
     it_behaves_like :admin_full_access
     it_behaves_like :admin_read_only_access
@@ -24,7 +24,7 @@ module VCAP::CloudController
     context 'a user that isnt logged in (defensive)' do
       it_behaves_like :no_access
 
-      it { is_expected.not_to allow_op_on_object :index, VCAP::CloudController::FeatureFlag }
+      it { is_expected.not_to allow_op_on_object :index, CloudController::FeatureFlag }
     end
   end
 end

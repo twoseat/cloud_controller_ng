@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-module VCAP::CloudController
+module CloudController
   RSpec.describe VCAP::RestAPI::NamedAttribute do
     describe '#name' do
       it 'should return the name provided' do

@@ -1,7 +1,7 @@
 require 'spec_helper'
 require 'cloud_controller/diego/protocol/app_volume_mounts'
 
-module VCAP::CloudController
+module CloudController
   module Diego
     class Protocol
       RSpec.describe AppVolumeMounts do

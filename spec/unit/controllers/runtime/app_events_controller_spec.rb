@@ -1,15 +1,15 @@
 require 'spec_helper'
 
-module VCAP::CloudController
-  RSpec.describe VCAP::CloudController::AppEventsController do
+module CloudController
+  RSpec.describe CloudController::AppEventsController do
     describe 'Query Parameters' do
-      it { expect(VCAP::CloudController::AppEventsController).to be_queryable_by(:timestamp) }
-      it { expect(VCAP::CloudController::AppEventsController).to be_queryable_by(:app_guid) }
+      it { expect(CloudController::AppEventsController).to be_queryable_by(:timestamp) }
+      it { expect(CloudController::AppEventsController).to be_queryable_by(:app_guid) }
     end
 
     describe 'Attributes' do
       it do
-        expect(VCAP::CloudController::AppEventsController).to have_creatable_attributes({
+        expect(CloudController::AppEventsController).to have_creatable_attributes({
           instance_guid: { type: 'string', required: true },
           instance_index: { type: 'integer', required: true },
           exit_status: { type: 'integer', required: true },
@@ -19,7 +19,7 @@ module VCAP::CloudController
       end
 
       it do
-        expect(VCAP::CloudController::AppEventsController).to have_updatable_attributes({
+        expect(CloudController::AppEventsController).to have_updatable_attributes({
           instance_guid: { type: 'string' },
           instance_index: { type: 'integer' },
           exit_status: { type: 'integer' },

@@ -6,7 +6,7 @@ Sequel.migration do
     self[:service_bindings].each do |service_binding|
       next if service_binding[:volume_mounts].nil?
 
-      mounts = JSON.parse(VCAP::CloudController::Encryptor.decrypt(service_binding[:volume_mounts], service_binding[:volume_mounts_salt]))
+      mounts = JSON.parse(CloudController::Encryptor.decrypt(service_binding[:volume_mounts], service_binding[:volume_mounts_salt]))
 
       next unless mounts.is_a?(Array) && !mounts.empty?
 
@@ -28,7 +28,7 @@ Sequel.migration do
       end
 
       self[:service_bindings].filter(id: service_binding[:id]).update(
-        volume_mounts: VCAP::CloudController::Encryptor.encrypt(JSON.dump(mounts), service_binding[:volume_mounts_salt])
+        volume_mounts: CloudController::Encryptor.encrypt(JSON.dump(mounts), service_binding[:volume_mounts_salt])
       )
     end
   end
@@ -37,7 +37,7 @@ Sequel.migration do
     self[:service_bindings].each do |service_binding|
       next if service_binding[:volume_mounts].empty?
 
-      mounts = JSON.parse(VCAP::CloudController::Encryptor.decrypt(service_binding[:volume_mounts], service_binding[:volume_mounts_salt]))
+      mounts = JSON.parse(CloudController::Encryptor.decrypt(service_binding[:volume_mounts], service_binding[:volume_mounts_salt]))
 
       mounts = mounts.map do |mount|
         if mount.key?('private')
@@ -56,7 +56,7 @@ Sequel.migration do
       end
 
       self[:service_bindings].filter(id: service_binding[:id]).update(
-        volume_mounts: VCAP::CloudController::Encryptor.encrypt(JSON.dump(mounts), service_binding[:volume_mounts_salt])
+        volume_mounts: CloudController::Encryptor.encrypt(JSON.dump(mounts), service_binding[:volume_mounts_salt])
       )
     end
   end

@@ -47,7 +47,7 @@ module CloudController
       end
 
       def validate_path(file_name)
-        checker = VCAP::CloudController::FilePathChecker
+        checker = CloudController::FilePathChecker
         invalid_path!(file_name) unless checker.safe_path? file_name, @root_path
         file_name
       end

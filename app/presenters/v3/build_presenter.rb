@@ -1,6 +1,6 @@
 require 'presenters/v3/base_presenter'
 
-module VCAP::CloudController
+module CloudController
   module Presenters
     module V3
       class BuildPresenter < BasePresenter
@@ -52,7 +52,7 @@ module VCAP::CloudController
         end
 
         def url_builder
-          @url_builder ||= VCAP::CloudController::Presenters::ApiUrlBuilder.new
+          @url_builder ||= CloudController::Presenters::ApiUrlBuilder.new
         end
       end
     end

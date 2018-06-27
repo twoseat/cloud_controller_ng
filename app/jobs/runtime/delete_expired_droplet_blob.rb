@@ -1,7 +1,7 @@
-module VCAP::CloudController
+module CloudController
   module Jobs
     module Runtime
-      class DeleteExpiredDropletBlob < VCAP::CloudController::Jobs::CCJob
+      class DeleteExpiredDropletBlob < CloudController::Jobs::CCJob
         attr_reader :droplet_guid
 
         def initialize(droplet_guid)

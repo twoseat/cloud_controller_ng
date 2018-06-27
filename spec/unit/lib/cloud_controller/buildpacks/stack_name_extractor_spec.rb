@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-module VCAP::CloudController::Buildpacks
+module CloudController::Buildpacks
   RSpec.describe StackNameExtractor do
     let(:tmpdir) { Dir.mktmpdir }
     let(:zip_path) { File.join(tmpdir, 'file.zip') }

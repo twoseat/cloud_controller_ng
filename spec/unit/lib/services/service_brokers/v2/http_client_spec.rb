@@ -145,7 +145,7 @@ module VCAP::Services::ServiceBrokers::V2
       context 'X-Broker-Api-Originating-Identity' do
         context 'when user guid is set' do
           before do
-            allow(VCAP::CloudController::SecurityContext).to receive(:current_user_guid).and_return('some-user-id')
+            allow(CloudController::SecurityContext).to receive(:current_user_guid).and_return('some-user-id')
           end
 
           it 'sets the X-Broker-API-Originating-Identity' do

@@ -1,10 +1,10 @@
 require 'spec_helper'
 
 RSpec.describe 'Spaces' do
-  let(:assigner) { VCAP::CloudController::IsolationSegmentAssign.new }
-  let(:isolation_segment) { VCAP::CloudController::IsolationSegmentModel.make }
-  let(:user) { VCAP::CloudController::User.make }
-  let(:org) { VCAP::CloudController::Organization.make }
+  let(:assigner) { CloudController::IsolationSegmentAssign.new }
+  let(:isolation_segment) { CloudController::IsolationSegmentModel.make }
+  let(:user) { CloudController::User.make }
+  let(:org) { CloudController::Organization.make }
 
   describe 'POST /v2/spaces' do
     let(:opts) do
@@ -27,7 +27,7 @@ RSpec.describe 'Spaces' do
           expect(last_response.status).to eq(201)
           parsed_response = MultiJson.load(last_response.body)
 
-          space = VCAP::CloudController::Space.last
+          space = CloudController::Space.last
 
           expect(parsed_response).to be_a_response_like({
             'metadata' => {
@@ -64,8 +64,8 @@ RSpec.describe 'Spaces' do
 
   describe 'GET /v2/spaces' do
     context 'when a isolation segment is associated to the space' do
-      let(:isolation_segment) { VCAP::CloudController::IsolationSegmentModel.make }
-      let(:space) { VCAP::CloudController::Space.make(organization: org) }
+      let(:isolation_segment) { CloudController::IsolationSegmentModel.make }
+      let(:space) { CloudController::Space.make(organization: org) }
 
       before do
         assigner.assign(isolation_segment, [org])
@@ -121,8 +121,8 @@ RSpec.describe 'Spaces' do
 
   describe 'GET /v2/spaces/:guid' do
     context 'when a isolation segment is associated to the space' do
-      let(:isolation_segment) { VCAP::CloudController::IsolationSegmentModel.make }
-      let(:space) { VCAP::CloudController::Space.make(organization: org) }
+      let(:isolation_segment) { CloudController::IsolationSegmentModel.make }
+      let(:space) { CloudController::Space.make(organization: org) }
 
       before do
         assigner.assign(isolation_segment, [org])
@@ -171,9 +171,9 @@ RSpec.describe 'Spaces' do
   end
 
   describe 'GET /v2/spaces/:guid/service_instances' do
-    let(:originating_space) { VCAP::CloudController::Space.make }
-    let(:shared_service_instance) { VCAP::CloudController::ManagedServiceInstance.make(space: originating_space) }
-    let(:space) { VCAP::CloudController::Space.make }
+    let(:originating_space) { CloudController::Space.make }
+    let(:shared_service_instance) { CloudController::ManagedServiceInstance.make(space: originating_space) }
+    let(:space) { CloudController::Space.make }
 
     before do
       originating_space.organization.add_user(user)
@@ -229,8 +229,8 @@ RSpec.describe 'Spaces' do
   end
 
   describe 'DELETE /v2/spaces/:guid/unmapped_routes' do
-    let(:space) { VCAP::CloudController::Space.make(organization: org) }
-    let(:process) { VCAP::CloudController::ProcessModelFactory.make(state: 'STARTED') }
+    let(:space) { CloudController::Space.make(organization: org) }
+    let(:process) { CloudController::ProcessModelFactory.make(state: 'STARTED') }
 
     before do
       space.organization.add_user(user)
@@ -238,14 +238,14 @@ RSpec.describe 'Spaces' do
     end
 
     it 'deletes orphaned routes, does not delete mapped or bound routes' do
-      unmapped_route = VCAP::CloudController::Route.make(space: space)
+      unmapped_route = CloudController::Route.make(space: space)
 
-      mapped_route = VCAP::CloudController::Route.make(space: space)
-      VCAP::CloudController::RouteMappingModel.make(app: process.app, route: mapped_route, app_port: 9090)
+      mapped_route = CloudController::Route.make(space: space)
+      CloudController::RouteMappingModel.make(app: process.app, route: mapped_route, app_port: 9090)
 
-      bound_route = VCAP::CloudController::Route.make(space: space)
-      service_instance = VCAP::CloudController::ManagedServiceInstance.make(:routing, space: space)
-      VCAP::CloudController::RouteBinding.make(service_instance: service_instance, route: bound_route)
+      bound_route = CloudController::Route.make(space: space)
+      service_instance = CloudController::ManagedServiceInstance.make(:routing, space: space)
+      CloudController::RouteBinding.make(service_instance: service_instance, route: bound_route)
 
       delete "/v2/spaces/#{space.guid}/unmapped_routes", {}, headers_for(user)
 

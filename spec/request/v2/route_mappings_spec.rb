@@ -1,8 +1,8 @@
 require 'spec_helper'
 
 RSpec.describe 'RouteMappings' do
-  let(:user) { VCAP::CloudController::User.make }
-  let(:space) { VCAP::CloudController::Space.make }
+  let(:user) { CloudController::User.make }
+  let(:space) { CloudController::Space.make }
 
   before do
     space.organization.add_user(user)
@@ -10,9 +10,9 @@ RSpec.describe 'RouteMappings' do
   end
 
   describe 'GET /v2/route_mappings/:guid' do
-    let(:process) { VCAP::CloudController::ProcessModelFactory.make(space: space) }
+    let(:process) { CloudController::ProcessModelFactory.make(space: space) }
     let(:route) { route_mapping.route }
-    let!(:route_mapping) { VCAP::CloudController::RouteMappingModel.make(app: process.app) }
+    let!(:route_mapping) { CloudController::RouteMappingModel.make(app: process.app) }
 
     it 'displays the route mapping' do
       get "/v2/route_mappings/#{route_mapping.guid}", nil, headers_for(user)
@@ -37,8 +37,8 @@ RSpec.describe 'RouteMappings' do
     end
 
     it 'does not display route mappings without a web process' do
-      non_web_process       = VCAP::CloudController::ProcessModelFactory.make(space: space, type: 'non-web')
-      non_displayed_mapping = VCAP::CloudController::RouteMappingModel.make(app: non_web_process.app, route: route, process_type: non_web_process.type)
+      non_web_process       = CloudController::ProcessModelFactory.make(space: space, type: 'non-web')
+      non_displayed_mapping = CloudController::RouteMappingModel.make(app: non_web_process.app, route: route, process_type: non_web_process.type)
 
       get "/v2/route_mappings/#{non_displayed_mapping.guid}", nil, headers_for(user)
       expect(last_response.status).to eq(404)
@@ -60,15 +60,15 @@ RSpec.describe 'RouteMappings' do
   end
 
   describe 'GET /v2/route_mappings' do
-    let(:process1) { VCAP::CloudController::ProcessModelFactory.make(space: space) }
+    let(:process1) { CloudController::ProcessModelFactory.make(space: space) }
     let(:route1) { route_mapping1.route }
-    let!(:route_mapping1) { VCAP::CloudController::RouteMappingModel.make(app: process1.app) }
+    let!(:route_mapping1) { CloudController::RouteMappingModel.make(app: process1.app) }
 
-    let(:process2) { VCAP::CloudController::ProcessModelFactory.make(space: space) }
+    let(:process2) { CloudController::ProcessModelFactory.make(space: space) }
     let(:route2) { route_mapping2.route }
-    let!(:route_mapping2) { VCAP::CloudController::RouteMappingModel.make(app: process2.app) }
+    let!(:route_mapping2) { CloudController::RouteMappingModel.make(app: process2.app) }
 
-    let!(:route_mapping3) { VCAP::CloudController::RouteMappingModel.make }
+    let!(:route_mapping3) { CloudController::RouteMappingModel.make }
 
     it 'lists all route mappings' do
       get '/v2/route_mappings', nil, headers_for(user)
@@ -118,8 +118,8 @@ RSpec.describe 'RouteMappings' do
     end
 
     it 'does not list mappings to non-web processes' do
-      non_web_process       = VCAP::CloudController::ProcessModelFactory.make(space: space, type: 'non-web')
-      non_web_route_mapping = VCAP::CloudController::RouteMappingModel.make(app: non_web_process.app, process_type: non_web_process.type)
+      non_web_process       = CloudController::ProcessModelFactory.make(space: space, type: 'non-web')
+      non_web_route_mapping = CloudController::RouteMappingModel.make(app: non_web_process.app, process_type: non_web_process.type)
 
       get '/v2/route_mappings', nil, headers_for(user)
       expect(last_response.status).to eq(200)
@@ -130,8 +130,8 @@ RSpec.describe 'RouteMappings' do
   end
 
   describe 'POST /v2/route_mappings' do
-    let(:process) { VCAP::CloudController::ProcessModelFactory.make(space: space, diego: true, ports: [9090]) }
-    let(:route) { VCAP::CloudController::Route.make(space: space) }
+    let(:process) { CloudController::ProcessModelFactory.make(space: space, diego: true, ports: [9090]) }
+    let(:route) { CloudController::Route.make(space: space) }
 
     it 'creates a route mapping' do
       request = MultiJson.dump(
@@ -145,7 +145,7 @@ RSpec.describe 'RouteMappings' do
       expect(last_response.status).to eq(201)
 
       parsed_response = MultiJson.load(last_response.body)
-      route_mapping   = VCAP::CloudController::RouteMappingModel.last
+      route_mapping   = CloudController::RouteMappingModel.last
 
       expect(parsed_response).to be_a_response_like({
         'metadata' => {
@@ -168,7 +168,7 @@ RSpec.describe 'RouteMappings' do
       expect(route_mapping.app_port).to eq(9090)
       expect(route_mapping.process_type).to eq('web')
 
-      event = VCAP::CloudController::Event.last
+      event = CloudController::Event.last
       expect(event.type).to eq('audit.app.map-route')
       expect(event.actee_type).to eq('app')
       expect(event.actee).to eq(process.guid)
@@ -177,9 +177,9 @@ RSpec.describe 'RouteMappings' do
   end
 
   describe 'DELETE /V2/route_mappings' do
-    let(:process) { VCAP::CloudController::ProcessModelFactory.make(space: space, diego: true, ports: [9090]) }
-    let(:route) { VCAP::CloudController::Route.make(space: space) }
-    let!(:route_mapping) { VCAP::CloudController::RouteMappingModel.make(app: process.app, process_type: process.type, route: route) }
+    let(:process) { CloudController::ProcessModelFactory.make(space: space, diego: true, ports: [9090]) }
+    let(:route) { CloudController::Route.make(space: space) }
+    let!(:route_mapping) { CloudController::RouteMappingModel.make(app: process.app, process_type: process.type, route: route) }
 
     it 'deletes a route mapping' do
       delete "/v2/route_mappings/#{route_mapping.guid}", nil, headers_for(user)
@@ -187,7 +187,7 @@ RSpec.describe 'RouteMappings' do
 
       expect(route_mapping.exists?).to be_falsey
 
-      event = VCAP::CloudController::Event.last
+      event = CloudController::Event.last
       expect(event.type).to eq('audit.app.unmap-route')
       expect(event.actee_type).to eq('app')
       expect(event.actee).to eq(process.guid)

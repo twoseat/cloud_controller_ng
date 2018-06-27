@@ -2,8 +2,8 @@ require 'spec_helper'
 
 RSpec.describe 'Service Broker API integration' do
   describe 'v2.8' do
-    include VCAP::CloudController::BrokerApiHelper
-    let(:route) { VCAP::CloudController::Route.make(space: @space) }
+    include CloudController::BrokerApiHelper
+    let(:route) { CloudController::Route.make(space: @space) }
     let(:catalog) { default_catalog(requires: ['route_forwarding']) }
     let(:service_broker_bind_request) { %r{.*/v2/service_instances/#{@service_instance_guid}/service_bindings/#{guid_pattern}} }
 
@@ -44,7 +44,7 @@ RSpec.describe 'Service Broker API integration' do
         it 'cc proxies the bind request' do
           put("/v2/service_instances/#{@service_instance_guid}/routes/#{route.guid}", {}.to_json, admin_headers)
 
-          route_binding = VCAP::CloudController::RouteBinding.last
+          route_binding = CloudController::RouteBinding.last
           expect(route_binding.route_service_url).to eq('https://neopets.com')
         end
       end

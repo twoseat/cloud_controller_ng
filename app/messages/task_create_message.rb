@@ -1,6 +1,6 @@
 require 'messages/base_message'
 
-module VCAP::CloudController
+module CloudController
   class TaskCreateMessage < BaseMessage
     register_allowed_keys [:name, :command, :disk_in_mb, :memory_in_mb, :droplet_guid]
 

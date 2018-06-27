@@ -2,7 +2,7 @@ require 'presenters/system_environment/system_env_presenter'
 require 'cloud_controller/diego/normal_env_hash_to_diego_env_array_philosopher'
 require_relative '../../vcap/vars_builder'
 
-module VCAP::CloudController
+module CloudController
   module Diego
     class Environment
       EXCLUDE = [:users].freeze

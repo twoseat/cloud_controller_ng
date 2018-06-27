@@ -1,7 +1,7 @@
 require 'spec_helper'
 require 'actions/v2/app_create'
 
-module VCAP::CloudController
+module CloudController
   RSpec.describe V2::AppCreate do
     let(:space) { Space.make }
     let(:access_validator) { double('access_validator', validate_access: true) }

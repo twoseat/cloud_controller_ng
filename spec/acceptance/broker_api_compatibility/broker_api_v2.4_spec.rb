@@ -2,7 +2,7 @@ require 'spec_helper'
 
 RSpec.describe 'Service Broker API integration' do
   describe 'v2.4' do
-    include VCAP::CloudController::BrokerApiHelper
+    include CloudController::BrokerApiHelper
 
     before { setup_cc }
 
@@ -49,11 +49,11 @@ RSpec.describe 'Service Broker API integration' do
       context 'when the service update should succeed' do
         it 'successfully updates the service plan' do
           provision_service
-          expect(VCAP::CloudController::ServiceInstance.find(guid: @service_instance_guid).service_plan_guid).to eq @plan_guid
+          expect(CloudController::ServiceInstance.find(guid: @service_instance_guid).service_plan_guid).to eq @plan_guid
 
           update_service_instance(200)
           expect(last_response.status).to eq 201
-          expect(VCAP::CloudController::ServiceInstance.find(guid: @service_instance_guid).service_plan_guid).to eq @large_plan_guid
+          expect(CloudController::ServiceInstance.find(guid: @service_instance_guid).service_plan_guid).to eq @large_plan_guid
         end
       end
 

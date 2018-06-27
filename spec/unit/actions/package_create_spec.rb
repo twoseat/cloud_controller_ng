@@ -1,7 +1,7 @@
 require 'spec_helper'
 require 'actions/package_create'
 
-module VCAP::CloudController
+module CloudController
   RSpec.describe PackageCreate do
     let(:app) { AppModel.make }
     let(:type) { 'docker' }

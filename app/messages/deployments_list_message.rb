@@ -1,6 +1,6 @@
 require 'messages/list_message'
 
-module VCAP::CloudController
+module CloudController
   class DeploymentsListMessage < ListMessage
     register_allowed_keys [
       :order_by,

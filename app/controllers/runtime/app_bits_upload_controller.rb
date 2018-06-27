@@ -1,7 +1,7 @@
 require 'presenters/api/job_presenter'
 require 'controllers/runtime/mixins/find_process_through_app'
 
-module VCAP::CloudController
+module CloudController
   class AppBitsUploadController < RestController::ModelController
     include FindProcessThroughApp
 
@@ -21,8 +21,8 @@ module VCAP::CloudController
     def check_authentication(op)
       auth                  = env['HTTP_AUTHORIZATION']
       grace_period          = config.get(:app_bits_upload_grace_period_in_seconds)
-      relaxed_token_decoder = VCAP::CloudController::UaaTokenDecoder.new(config.get(:uaa), grace_period)
-      VCAP::CloudController::Security::SecurityContextConfigurer.new(relaxed_token_decoder).configure(auth)
+      relaxed_token_decoder = CloudController::UaaTokenDecoder.new(config.get(:uaa), grace_period)
+      CloudController::Security::SecurityContextConfigurer.new(relaxed_token_decoder).configure(auth)
       super
     end
 

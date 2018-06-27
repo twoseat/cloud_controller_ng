@@ -1,13 +1,13 @@
 require 'clockwork'
 require 'cloud_controller/clock/job_timeout_calculator'
 
-module VCAP::CloudController
+module CloudController
   module Jobs
     class Enqueuer
       def initialize(job, opts={})
         @job = job
         @opts = opts
-        @timeout_calculator = JobTimeoutCalculator.new(VCAP::CloudController::Config.config)
+        @timeout_calculator = JobTimeoutCalculator.new(CloudController::Config.config)
         load_delayed_job_plugins
       end
 

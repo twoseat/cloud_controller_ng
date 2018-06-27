@@ -1,4 +1,4 @@
-module VCAP::CloudController
+module CloudController
   class UserProvidedServiceInstance < ServiceInstance
     export_attributes :name, :credentials, :space_guid, :type, :syslog_drain_url, :route_service_url, :tags
     import_attributes :name, :credentials, :space_guid, :syslog_drain_url, :route_service_url, :tags

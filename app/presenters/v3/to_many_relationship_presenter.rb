@@ -1,4 +1,4 @@
-module VCAP::CloudController
+module CloudController
   module Presenters
     module V3
       class ToManyRelationshipPresenter
@@ -19,7 +19,7 @@ module VCAP::CloudController
         private
 
         def url_builder
-          VCAP::CloudController::Presenters::ApiUrlBuilder.new
+          CloudController::Presenters::ApiUrlBuilder.new
         end
 
         def build_relations

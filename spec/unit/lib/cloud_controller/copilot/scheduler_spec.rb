@@ -1,7 +1,7 @@
 require 'spec_helper'
 require 'cloud_controller/copilot/scheduler'
 
-module VCAP::CloudController
+module CloudController
   RSpec.describe Copilot::Scheduler do
     before do
       TestConfig.context = :route_syncer

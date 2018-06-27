@@ -1,7 +1,7 @@
 require 'spec_helper'
 
-module VCAP::CloudController
-  RSpec.describe VCAP::CloudController::RoutesController do
+module CloudController
+  RSpec.describe CloudController::RoutesController do
     let(:routing_api_client) { double('routing_api_client', enabled?: true) }
     let(:tcp_group_1) { 'tcp-group-1' }
     let(:tcp_group_2) { 'tcp-group-2' }
@@ -30,16 +30,16 @@ module VCAP::CloudController
     end
 
     describe 'Query Parameters' do
-      it { expect(VCAP::CloudController::RoutesController).to be_queryable_by(:host) }
-      it { expect(VCAP::CloudController::RoutesController).to be_queryable_by(:domain_guid) }
-      it { expect(VCAP::CloudController::RoutesController).to be_queryable_by(:organization_guid) }
-      it { expect(VCAP::CloudController::RoutesController).to be_queryable_by(:path) }
-      it { expect(VCAP::CloudController::RoutesController).to be_queryable_by(:port) }
+      it { expect(CloudController::RoutesController).to be_queryable_by(:host) }
+      it { expect(CloudController::RoutesController).to be_queryable_by(:domain_guid) }
+      it { expect(CloudController::RoutesController).to be_queryable_by(:organization_guid) }
+      it { expect(CloudController::RoutesController).to be_queryable_by(:path) }
+      it { expect(CloudController::RoutesController).to be_queryable_by(:port) }
     end
 
     describe 'Attributes' do
       it do
-        expect(VCAP::CloudController::RoutesController).to have_creatable_attributes(
+        expect(CloudController::RoutesController).to have_creatable_attributes(
           host:        { type: 'string', default: '' },
           domain_guid: { type: 'string', required: true },
           space_guid:  { type: 'string', required: true },
@@ -48,7 +48,7 @@ module VCAP::CloudController
         )
       end
       it do
-        expect(VCAP::CloudController::RoutesController).to have_updatable_attributes(
+        expect(CloudController::RoutesController).to have_updatable_attributes(
           host:        { type: 'string' },
           domain_guid: { type: 'string' },
           space_guid:  { type: 'string' },
@@ -60,7 +60,7 @@ module VCAP::CloudController
 
     describe 'Associations' do
       it do
-        expect(VCAP::CloudController::RoutesController).to have_nested_routes({ apps: [:get], route_mappings: [:get] })
+        expect(CloudController::RoutesController).to have_nested_routes({ apps: [:get], route_mappings: [:get] })
       end
 
       context 'with Docker app' do
@@ -926,7 +926,7 @@ module VCAP::CloudController
       let(:queryer) { instance_double(Permissions::Queryer) }
 
       before do
-        allow(VCAP::CloudController::Permissions::Queryer).to receive(:build).and_return(queryer)
+        allow(CloudController::Permissions::Queryer).to receive(:build).and_return(queryer)
         allow(queryer).to receive(:can_read_globally?).and_return(false)
         set_current_user_as_admin
       end
@@ -1328,7 +1328,7 @@ module VCAP::CloudController
 
       before do
         set_current_user(developer)
-        allow(VCAP::CloudController::Permissions::Queryer).to receive(:build).and_return(queryer)
+        allow(CloudController::Permissions::Queryer).to receive(:build).and_return(queryer)
         allow(queryer).to receive(:can_read_globally?).and_return(false)
         allow(queryer).to receive(:can_read_route?).and_return(true)
       end

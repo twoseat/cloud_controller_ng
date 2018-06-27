@@ -2,7 +2,7 @@ require 'presenters/api/service_broker_presenter'
 require 'actions/services/service_broker_create'
 require 'actions/services/service_broker_update'
 
-module VCAP::CloudController
+module CloudController
   # This controller is an experiment breaking away from the old
   # cloudcontroller metaprogramming. We manually generate the JSON
   # expected by CFoundry and CF.

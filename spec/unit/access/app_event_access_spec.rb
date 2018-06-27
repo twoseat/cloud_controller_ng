@@ -1,15 +1,15 @@
 require 'spec_helper'
 
-module VCAP::CloudController
+module CloudController
   RSpec.describe AppEventAccess, type: :access do
     subject(:access) { AppEventAccess.new(Security::AccessContext.new) }
     let(:token) { { 'scope' => ['cloud_controller.read', 'cloud_controller.write'] } }
 
-    let(:user) { VCAP::CloudController::User.make }
-    let(:org) { VCAP::CloudController::Organization.make }
-    let(:space) { VCAP::CloudController::Space.make(organization: org) }
-    let(:process) { VCAP::CloudController::ProcessModelFactory.make(space: space) }
-    let(:object) { VCAP::CloudController::AppEvent.make(app: process) }
+    let(:user) { CloudController::User.make }
+    let(:org) { CloudController::Organization.make }
+    let(:space) { CloudController::Space.make(organization: org) }
+    let(:process) { CloudController::ProcessModelFactory.make(space: space) }
+    let(:object) { CloudController::AppEvent.make(app: process) }
 
     before do
       SecurityContext.set(user, token)
@@ -68,7 +68,7 @@ module VCAP::CloudController
 
     context 'user in a different organization (defensive)' do
       before do
-        different_organization = VCAP::CloudController::Organization.make
+        different_organization = CloudController::Organization.make
         different_organization.add_user(user)
       end
 
@@ -77,7 +77,7 @@ module VCAP::CloudController
 
     context 'manager in a different organization (defensive)' do
       before do
-        different_organization = VCAP::CloudController::Organization.make
+        different_organization = CloudController::Organization.make
         different_organization.add_manager(user)
       end
 

@@ -1,7 +1,7 @@
 require 'spec_helper'
 require 'actions/services/service_key_create'
 
-module VCAP::CloudController
+module CloudController
   RSpec.describe ServiceKeyCreate do
     subject(:service_key_create) { ServiceKeyCreate.new(logger) }
     let(:service_instance) { ManagedServiceInstance.make }

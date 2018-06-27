@@ -1,6 +1,6 @@
 require 'cloud_controller/domain_decorator'
 
-module VCAP::CloudController
+module CloudController
   class Domain < Sequel::Model
     class UnauthorizedAccessToPrivateDomain < RuntimeError; end
 
@@ -38,7 +38,7 @@ module VCAP::CloudController
     end
 
     one_to_many :spaces_sti_eager_load,
-                class: 'VCAP::CloudController::Space',
+                class: 'CloudController::Space',
                 dataset: -> { raise 'Must be used for eager loading' },
                 eager_loader: proc { |eo|
                   id_map = {}
@@ -58,13 +58,13 @@ module VCAP::CloudController
 
     many_to_one(
       :owning_organization,
-      class: 'VCAP::CloudController::Organization',
+      class: 'CloudController::Organization',
       before_set: :validate_change_owning_organization
     )
     one_to_many :routes
     many_to_many(
       :shared_organizations,
-      class: 'VCAP::CloudController::Organization',
+      class: 'CloudController::Organization',
       join_table: 'organizations_private_domains',
       left_key: :private_domain_id,
       right_key: :organization_id,

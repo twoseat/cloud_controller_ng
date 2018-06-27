@@ -1,7 +1,7 @@
 require 'spec_helper'
 
 RSpec.describe 'v3 service bindings' do
-  let(:app_model) { VCAP::CloudController::AppModel.make }
+  let(:app_model) { CloudController::AppModel.make }
   let(:space) { app_model.space }
   let(:user) { make_developer_for_space(space) }
   let(:user_headers) { headers_for(user, user_name: user_name) }
@@ -9,7 +9,7 @@ RSpec.describe 'v3 service bindings' do
 
   describe 'POST /v3/service_bindings' do
     context 'managed service instance' do
-      let(:service_instance) { VCAP::CloudController::ManagedServiceInstance.make(space: space, name: 'service-instance-name') }
+      let(:service_instance) { CloudController::ManagedServiceInstance.make(space: space, name: 'service-instance-name') }
 
       before do
         allow(VCAP::Services::ServiceBrokers::V2::Client).to receive(:new) do |*args, **kwargs, &block|
@@ -78,9 +78,9 @@ RSpec.describe 'v3 service bindings' do
 
         expect(last_response.status).to eq(201), last_response.body
         expect(parsed_response).to be_a_response_like(expected_response)
-        expect(VCAP::CloudController::ServiceBinding.find(guid: guid)).to be_present
+        expect(CloudController::ServiceBinding.find(guid: guid)).to be_present
 
-        event = VCAP::CloudController::Event.last
+        event = CloudController::Event.last
         expect(event.values).to match(
           hash_including({
                            type: 'audit.service_binding.create',
@@ -117,7 +117,7 @@ RSpec.describe 'v3 service bindings' do
 
     context 'user provided service instance' do
       let(:service_instance) do
-        VCAP::CloudController::UserProvidedServiceInstance.make(
+        CloudController::UserProvidedServiceInstance.make(
           space: space,
           credentials: { 'username': 'user_provided_username' },
           syslog_drain_url: 'syslog://drain.url.com',
@@ -175,16 +175,16 @@ RSpec.describe 'v3 service bindings' do
 
         expect(last_response.status).to eq(201)
         expect(parsed_response).to be_a_response_like(expected_response)
-        expect(VCAP::CloudController::ServiceBinding.find(guid: guid)).to be_present
+        expect(CloudController::ServiceBinding.find(guid: guid)).to be_present
       end
     end
   end
 
   describe 'DELETE /v3/service_bindings/:guid' do
-    let(:service_binding) { VCAP::CloudController::ServiceBinding.make(service_instance: service_instance) }
+    let(:service_binding) { CloudController::ServiceBinding.make(service_instance: service_instance) }
 
     context 'managed service instance' do
-      let(:service_instance) { VCAP::CloudController::ManagedServiceInstance.make(space: space) }
+      let(:service_instance) { CloudController::ManagedServiceInstance.make(space: space) }
 
       before do
         allow(VCAP::Services::ServiceBrokers::V2::Client).to receive(:new) do |*args, **kwargs, &block|
@@ -198,7 +198,7 @@ RSpec.describe 'v3 service bindings' do
         expect(last_response.status).to eq(204)
         expect(service_binding.exists?).to be_falsey
 
-        event = VCAP::CloudController::Event.last
+        event = CloudController::Event.last
         expect(event.type).to eq('audit.service_binding.delete')
         expect(event.actee).to eq(service_binding.guid)
         expect(event.actee_type).to eq('service_binding')
@@ -218,7 +218,7 @@ RSpec.describe 'v3 service bindings' do
     end
 
     context 'user provided service instance' do
-      let(:service_instance) { VCAP::CloudController::UserProvidedServiceInstance.make(space: space) }
+      let(:service_instance) { CloudController::UserProvidedServiceInstance.make(space: space) }
 
       it 'deletes the service binding and returns a 204' do
         delete "/v3/service_bindings/#{service_binding.guid}", nil, user_headers
@@ -226,7 +226,7 @@ RSpec.describe 'v3 service bindings' do
         expect(last_response.status).to eq(204)
         expect(service_binding.exists?).to be_falsey
 
-        event = VCAP::CloudController::Event.last
+        event = CloudController::Event.last
         expect(event.type).to eq('audit.service_binding.delete')
         expect(event.actee).to eq(service_binding.guid)
         expect(event.actee_type).to eq('service_binding')
@@ -247,9 +247,9 @@ RSpec.describe 'v3 service bindings' do
   end
 
   describe 'GET /v3/service_bindings/:guid' do
-    let(:service_instance) { VCAP::CloudController::ManagedServiceInstance.make(space: space, name: 'service-instance-name') }
+    let(:service_instance) { CloudController::ManagedServiceInstance.make(space: space, name: 'service-instance-name') }
     let(:service_binding) do
-      VCAP::CloudController::ServiceBinding.make(
+      CloudController::ServiceBinding.make(
         service_instance: service_instance,
         app: app_model,
         credentials: { 'username' => 'managed_username' },
@@ -297,7 +297,7 @@ RSpec.describe 'v3 service bindings' do
     end
 
     it 'redacts credentials for space auditors' do
-      auditor = VCAP::CloudController::User.make
+      auditor = CloudController::User.make
       space.organization.add_user(auditor)
       space.add_auditor(auditor)
 
@@ -311,11 +311,11 @@ RSpec.describe 'v3 service bindings' do
   end
 
   describe 'GET /v3/service_bindings' do
-    let(:service_instance1) { VCAP::CloudController::ManagedServiceInstance.make(space: space, name: 'service-instance-1') }
-    let(:service_instance2) { VCAP::CloudController::ManagedServiceInstance.make(space: space, name: 'service-instance-2') }
-    let(:service_instance3) { VCAP::CloudController::ManagedServiceInstance.make(space: space, name: 'service-instance-3') }
+    let(:service_instance1) { CloudController::ManagedServiceInstance.make(space: space, name: 'service-instance-1') }
+    let(:service_instance2) { CloudController::ManagedServiceInstance.make(space: space, name: 'service-instance-2') }
+    let(:service_instance3) { CloudController::ManagedServiceInstance.make(space: space, name: 'service-instance-3') }
     let!(:service_binding1) do
-      VCAP::CloudController::ServiceBinding.make(
+      CloudController::ServiceBinding.make(
         service_instance: service_instance1,
         app: app_model,
         credentials: { 'binding1' => 'shtuff' },
@@ -324,7 +324,7 @@ RSpec.describe 'v3 service bindings' do
       )
     end
     let!(:service_binding2) do
-      VCAP::CloudController::ServiceBinding.make(
+      CloudController::ServiceBinding.make(
         service_instance: service_instance2,
         app: app_model,
         credentials: { 'binding2' => 'things' },
@@ -333,7 +333,7 @@ RSpec.describe 'v3 service bindings' do
       )
     end
 
-    before { VCAP::CloudController::ServiceBinding.make(service_instance: service_instance3, app: app_model) }
+    before { CloudController::ServiceBinding.make(service_instance: service_instance3, app: app_model) }
 
     it 'returns a paginated list of service_bindings' do
       get '/v3/service_bindings?per_page=2', nil, user_headers
@@ -413,22 +413,22 @@ RSpec.describe 'v3 service bindings' do
 
     context 'faceted list' do
       context 'by app_guids' do
-        let(:app_model2) { VCAP::CloudController::AppModel.make(space: space) }
+        let(:app_model2) { CloudController::AppModel.make(space: space) }
         let!(:another_apps_service_binding) do
-          VCAP::CloudController::ServiceBinding.make(service_instance: service_instance1,
-                                                     app: app_model2,
-                                                     credentials: { 'utako' => 'secret' },
-                                                     syslog_drain_url: 'syslog://example.com',
-                                                     volume_mounts: [{ 'stuff' => 'thing', 'container_dir' => 'some-path' }],
+          CloudController::ServiceBinding.make(service_instance: service_instance1,
+                                               app: app_model2,
+                                               credentials: { 'utako' => 'secret' },
+                                               syslog_drain_url: 'syslog://example.com',
+                                               volume_mounts: [{ 'stuff' => 'thing', 'container_dir' => 'some-path' }],
           )
         end
-        let(:app_model3) { VCAP::CloudController::AppModel.make(space: space) }
+        let(:app_model3) { CloudController::AppModel.make(space: space) }
         let!(:another_apps_service_binding2) do
-          VCAP::CloudController::ServiceBinding.make(service_instance: service_instance1,
-                                                     app: app_model3,
-                                                     credentials: { 'amelia' => 'apples' },
-                                                     syslog_drain_url: 'www.neopets.com',
-                                                     volume_mounts: [{ 'stuff2' => 'thing2', 'container_dir' => 'some-path' }],
+          CloudController::ServiceBinding.make(service_instance: service_instance1,
+                                               app: app_model3,
+                                               credentials: { 'amelia' => 'apples' },
+                                               syslog_drain_url: 'www.neopets.com',
+                                               volume_mounts: [{ 'stuff2' => 'thing2', 'container_dir' => 'some-path' }],
           )
         end
 

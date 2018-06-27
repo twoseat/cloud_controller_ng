@@ -2,7 +2,7 @@ require 'repositories/process_event_repository'
 require 'models/helpers/process_types'
 require 'models/helpers/health_check_types'
 
-module VCAP::CloudController
+module CloudController
   class ProcessCreate
     def initialize(user_audit_info, manifest_triggered: false)
       @user_audit_info = user_audit_info

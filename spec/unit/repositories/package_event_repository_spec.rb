@@ -1,7 +1,7 @@
 require 'spec_helper'
 require 'repositories/package_event_repository'
 
-module VCAP::CloudController
+module CloudController
   module Repositories
     RSpec.describe PackageEventRepository do
       let(:app) { AppModel.make(name: 'potato') }

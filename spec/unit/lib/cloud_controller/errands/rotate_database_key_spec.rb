@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-module VCAP::CloudController
+module CloudController
   RSpec.describe RotateDatabaseKey do
     describe '#perform' do
       # Apps are an example of a single encrypted field
@@ -63,9 +63,9 @@ module VCAP::CloudController
         allow(Encryptor).to receive(:encrypt).and_call_original
         allow(Encryptor).to receive(:decrypt).and_call_original
         allow(Encryptor).to receive(:encrypted_classes).and_return([
-          'VCAP::CloudController::ServiceBinding',
-          'VCAP::CloudController::AppModel',
-          'VCAP::CloudController::ServiceInstance',
+          'CloudController::ServiceBinding',
+          'CloudController::AppModel',
+          'CloudController::ServiceInstance',
         ])
       end
 
@@ -168,12 +168,12 @@ module VCAP::CloudController
           RSpec.shared_examples 'a row operation' do |op|
             it op.to_s do
               allow(Encryptor).to receive(:encrypted_classes).and_return([
-                'VCAP::CloudController::AppModel',
+                'CloudController::AppModel',
               ])
 
-              allow_any_instance_of(VCAP::CloudController::AppModel).to receive(op) do |app|
+              allow_any_instance_of(CloudController::AppModel).to receive(op) do |app|
                 app.delete
-                allow_any_instance_of(VCAP::CloudController::AppModel).to receive(op).and_call_original
+                allow_any_instance_of(CloudController::AppModel).to receive(op).and_call_original
                 app.method(op).call
               end
 
@@ -193,7 +193,7 @@ module VCAP::CloudController
 
         it 'does not roll-back simultaneous changes to models', isolation: :truncation do
           allow(Encryptor).to receive(:encrypted_classes).and_return([
-            'VCAP::CloudController::TaskModel',
+            'CloudController::TaskModel',
           ])
 
           expect(TaskModel.count).to eq(1), 'Test mocking requires that there be only a single task present'

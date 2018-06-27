@@ -1,6 +1,6 @@
 require 'messages/base_message'
 
-module VCAP::CloudController
+module CloudController
   class ManifestProcessScaleMessage < BaseMessage
     register_allowed_keys [:instances, :memory, :disk_quota, :type]
     INVALID_MB_VALUE_ERROR = 'must be greater than 0MB'.freeze

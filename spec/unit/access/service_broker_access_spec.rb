@@ -1,13 +1,13 @@
 require 'spec_helper'
 
-module VCAP::CloudController
+module CloudController
   RSpec.describe ServiceBrokerAccess, type: :access do
     subject(:access) { ServiceBrokerAccess.new(Security::AccessContext.new) }
-    let(:user) { VCAP::CloudController::User.make }
-    let(:org) { VCAP::CloudController::Organization.make }
-    let(:space) { VCAP::CloudController::Space.make(organization: org) }
-    let(:object) { VCAP::CloudController::ServiceBroker.make }
-    let(:broker_with_space) { VCAP::CloudController::ServiceBroker.make space: space }
+    let(:user) { CloudController::User.make }
+    let(:org) { CloudController::Organization.make }
+    let(:space) { CloudController::Space.make(organization: org) }
+    let(:object) { CloudController::ServiceBroker.make }
+    let(:broker_with_space) { CloudController::ServiceBroker.make space: space }
 
     before { set_current_user(user) }
 
@@ -27,13 +27,13 @@ module VCAP::CloudController
     context 'organization manager (defensive)' do
       before { org.add_manager(user) }
       it_behaves_like :no_access
-      it { is_expected.to allow_op_on_object :index, VCAP::CloudController::ServiceBroker }
+      it { is_expected.to allow_op_on_object :index, CloudController::ServiceBroker }
     end
 
     context 'organization user (defensive)' do
       before { org.add_user(user) }
       it_behaves_like :no_access
-      it { is_expected.to allow_op_on_object :index, VCAP::CloudController::ServiceBroker }
+      it { is_expected.to allow_op_on_object :index, CloudController::ServiceBroker }
     end
 
     context 'space developer' do
@@ -58,7 +58,7 @@ module VCAP::CloudController
 
       it { is_expected.to allow_op_on_object :update, broker_with_space }
       it { is_expected.to allow_op_on_object :delete, broker_with_space }
-      it { is_expected.to allow_op_on_object :index, VCAP::CloudController::ServiceBroker }
+      it { is_expected.to allow_op_on_object :index, CloudController::ServiceBroker }
     end
 
     context 'space manager' do
@@ -69,7 +69,7 @@ module VCAP::CloudController
       it_behaves_like :no_access
       it { is_expected.to_not allow_op_on_object :update, broker_with_space }
       it { is_expected.to_not allow_op_on_object :delete, broker_with_space }
-      it { is_expected.to allow_op_on_object :index, VCAP::CloudController::ServiceBroker }
+      it { is_expected.to allow_op_on_object :index, CloudController::ServiceBroker }
     end
 
     context 'space auditor' do
@@ -80,38 +80,38 @@ module VCAP::CloudController
       it_behaves_like :no_access
       it { is_expected.to_not allow_op_on_object :update, broker_with_space }
       it { is_expected.to_not allow_op_on_object :delete, broker_with_space }
-      it { is_expected.to allow_op_on_object :index, VCAP::CloudController::ServiceBroker }
+      it { is_expected.to allow_op_on_object :index, CloudController::ServiceBroker }
     end
 
     context 'unassociated user' do
       it_behaves_like :no_access
-      it { is_expected.to allow_op_on_object :index, VCAP::CloudController::ServiceBroker }
+      it { is_expected.to allow_op_on_object :index, CloudController::ServiceBroker }
     end
 
     context 'user in a different organization (defensive)' do
       before do
-        different_organization = VCAP::CloudController::Organization.make
+        different_organization = CloudController::Organization.make
         different_organization.add_user(user)
       end
 
       it_behaves_like :no_access
-      it { is_expected.to allow_op_on_object :index, VCAP::CloudController::ServiceBroker }
+      it { is_expected.to allow_op_on_object :index, CloudController::ServiceBroker }
     end
 
     context 'manager in a different organization (defensive)' do
       before do
-        different_organization = VCAP::CloudController::Organization.make
+        different_organization = CloudController::Organization.make
         different_organization.add_manager(user)
       end
 
       it_behaves_like :no_access
-      it { is_expected.to allow_op_on_object :index, VCAP::CloudController::ServiceBroker }
+      it { is_expected.to allow_op_on_object :index, CloudController::ServiceBroker }
     end
 
     context 'a user that isnt logged in (defensive)' do
       let(:user) { nil }
       it_behaves_like :no_access
-      it { is_expected.to allow_op_on_object :index, VCAP::CloudController::ServiceBroker }
+      it { is_expected.to allow_op_on_object :index, CloudController::ServiceBroker }
     end
   end
 end

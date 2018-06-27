@@ -1,7 +1,7 @@
 require 'spec_helper'
 require 'actions/package_delete'
 
-module VCAP::CloudController
+module CloudController
   RSpec.describe PackageDelete do
     subject(:package_delete) { PackageDelete.new(user_audit_info) }
     let(:user_guid) { 'schmuid' }
@@ -27,7 +27,7 @@ module VCAP::CloudController
           }.by(1)
 
           job = Delayed::Job.last
-          expect(job.handler).to include('VCAP::CloudController::Jobs::Runtime::BlobstoreDelete')
+          expect(job.handler).to include('CloudController::Jobs::Runtime::BlobstoreDelete')
           expect(job.handler).to include("key: #{package.guid}")
           expect(job.handler).to include('package_blobstore')
           expect(job.queue).to eq('cc-generic')

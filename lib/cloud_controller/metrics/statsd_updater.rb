@@ -1,6 +1,6 @@
 require 'statsd'
 
-module VCAP::CloudController::Metrics
+module CloudController::Metrics
   class StatsdUpdater
     def initialize(statsd=Statsd.new)
       @statsd = statsd

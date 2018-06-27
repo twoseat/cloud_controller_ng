@@ -1,7 +1,7 @@
 require 'spec_helper'
 
 RSpec.describe DockerPolicy do
-  let(:process) { VCAP::CloudController::ProcessModelFactory.make(:docker, docker_image: 'some-image:latest') }
+  let(:process) { CloudController::ProcessModelFactory.make(:docker, docker_image: 'some-image:latest') }
 
   subject(:validator) { DockerPolicy.new(process) }
 
@@ -17,7 +17,7 @@ RSpec.describe DockerPolicy do
 
   context 'when Docker is disabled' do
     before do
-      VCAP::CloudController::FeatureFlag.create(name: 'diego_docker', enabled: false)
+      CloudController::FeatureFlag.create(name: 'diego_docker', enabled: false)
     end
 
     context 'when app is being started' do
@@ -43,7 +43,7 @@ RSpec.describe DockerPolicy do
 
   context 'when Docker is enabled' do
     before do
-      VCAP::CloudController::FeatureFlag.create(name: 'diego_docker', enabled: true)
+      CloudController::FeatureFlag.create(name: 'diego_docker', enabled: true)
     end
 
     it 'does not register an error' do

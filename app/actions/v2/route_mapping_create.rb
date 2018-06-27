@@ -1,4 +1,4 @@
-module VCAP::CloudController
+module CloudController
   module V2
     class RouteMappingCreate
       class InvalidRouteMapping < StandardError

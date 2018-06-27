@@ -2,10 +2,10 @@ require 'cloud_controller/dependency_locator'
 require 'cloud_controller/clock/clock'
 require 'repositories/orphaned_blob_event_repository'
 
-module VCAP::CloudController
+module CloudController
   module Jobs
     module Runtime
-      class OrphanedBlobsCleanup < VCAP::CloudController::Jobs::CCJob
+      class OrphanedBlobsCleanup < CloudController::Jobs::CCJob
         DIRTY_THRESHOLD            = 3
         NUMBER_OF_BLOBS_TO_DELETE  = 10000
         IGNORED_DIRECTORY_PREFIXES = [
@@ -155,9 +155,9 @@ module VCAP::CloudController
             directory_key          = directory_key_for_type(blobstore_type)
 
             logger.info("Enqueuing deletion of orphaned blob #{orphaned_blob.blob_key} inside directory_key #{directory_key}")
-            Jobs::Enqueuer.new(BlobstoreDelete.new(unpartitioned_blob_key, blobstore_type), queue: 'cc-generic', priority: VCAP::CloudController::Clock::LOW_PRIORITY).enqueue
+            Jobs::Enqueuer.new(BlobstoreDelete.new(unpartitioned_blob_key, blobstore_type), queue: 'cc-generic', priority: CloudController::Clock::LOW_PRIORITY).enqueue
 
-            VCAP::CloudController::Repositories::OrphanedBlobEventRepository.record_delete(directory_key, orphaned_blob.blob_key)
+            CloudController::Repositories::OrphanedBlobEventRepository.record_delete(directory_key, orphaned_blob.blob_key)
             orphaned_blob.delete
           end
         end

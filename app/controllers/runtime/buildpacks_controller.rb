@@ -1,4 +1,4 @@
-module VCAP::CloudController
+module CloudController
   class BuildpacksController < RestController::ModelController
     def self.dependencies
       [:buildpack_blobstore, :upload_handler]

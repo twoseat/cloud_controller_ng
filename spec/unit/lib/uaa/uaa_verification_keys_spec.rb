@@ -1,7 +1,7 @@
 require 'spec_helper'
 require 'cloud_controller/uaa/uaa_verification_keys'
 
-module VCAP::CloudController
+module CloudController
   RSpec.describe UaaVerificationKeys do
     subject { UaaVerificationKeys.new(uaa_info) }
 
@@ -77,7 +77,7 @@ module VCAP::CloudController
           end
 
           it 'tries to fetch three times' do
-            expect { subject.value }.to raise_error(VCAP::CloudController::UaaUnavailable)
+            expect { subject.value }.to raise_error(CloudController::UaaUnavailable)
             expect(uaa_info).to have_received(:validation_keys_hash).exactly(3).times
           end
         end
@@ -109,7 +109,7 @@ module VCAP::CloudController
           it 'returns an empty array' do
             expect {
               subject.value
-            }.to raise_error(VCAP::CloudController::UaaUnavailable)
+            }.to raise_error(CloudController::UaaUnavailable)
             expect(uaa_info).to have_received(:validation_keys_hash).exactly(3).times
           end
         end

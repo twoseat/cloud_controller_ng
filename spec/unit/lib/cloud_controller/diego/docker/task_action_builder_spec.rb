@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-module VCAP::CloudController
+module CloudController
   module Diego
     module Docker
       RSpec.describe TaskActionBuilder do
@@ -33,7 +33,7 @@ module VCAP::CloudController
         end
 
         before do
-          allow(VCAP::CloudController::Diego::TaskEnvironmentVariableCollector).to receive(:for_task).and_return(generated_environment)
+          allow(CloudController::Diego::TaskEnvironmentVariableCollector).to receive(:for_task).and_return(generated_environment)
           TestConfig.override(credhub_api: nil)
         end
 
@@ -58,7 +58,7 @@ module VCAP::CloudController
         describe '#task_environment_variables' do
           it 'returns task environment variables' do
             expect(task_action_builder.task_environment_variables).to match_array(generated_environment)
-            expect(VCAP::CloudController::Diego::TaskEnvironmentVariableCollector).to have_received(:for_task).with(task)
+            expect(CloudController::Diego::TaskEnvironmentVariableCollector).to have_received(:for_task).with(task)
           end
         end
 
@@ -95,7 +95,7 @@ module VCAP::CloudController
             it 'returns an error' do
               expect {
                 task_action_builder.cached_dependencies
-              }.to raise_error VCAP::CloudController::Diego::LifecycleBundleUriGenerator::InvalidStack
+              }.to raise_error CloudController::Diego::LifecycleBundleUriGenerator::InvalidStack
             end
           end
         end

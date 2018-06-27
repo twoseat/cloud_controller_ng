@@ -1,4 +1,4 @@
-module VCAP::CloudController
+module CloudController
   class SpaceCreate
     class Error < ::StandardError
     end
@@ -8,8 +8,8 @@ module VCAP::CloudController
     end
 
     def create(org, message)
-      space = VCAP::CloudController::Space.create(name: message.name, organization: org)
-      VCAP::CloudController::Roles::SPACE_ROLE_NAMES.each do |role|
+      space = CloudController::Space.create(name: message.name, organization: org)
+      CloudController::Roles::SPACE_ROLE_NAMES.each do |role|
         perm_client.create_space_role(role: role, space_id: space.guid)
       end
       space

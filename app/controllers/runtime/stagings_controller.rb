@@ -4,7 +4,7 @@ require 'presenters/api/staging_job_presenter'
 require 'utils/hash_utils'
 require 'actions/droplet_create'
 
-module VCAP::CloudController
+module CloudController
   class StagingsController < RestController::BaseController
     def self.dependencies
       [:droplet_blobstore, :buildpack_cache_blobstore, :package_blobstore,
@@ -17,8 +17,8 @@ module VCAP::CloudController
     allow_unauthenticated_access
 
     authenticate_basic_auth('/staging/*') do
-      [VCAP::CloudController::Config.config.get(:staging, :auth, :user),
-       CGI.escape(VCAP::CloudController::Config.config.get(:staging, :auth, :password))]
+      [CloudController::Config.config.get(:staging, :auth, :user),
+       CGI.escape(CloudController::Config.config.get(:staging, :auth, :password))]
     end
 
     attr_reader :config, :blobstore, :buildpack_cache_blobstore, :package_blobstore

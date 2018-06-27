@@ -1,4 +1,4 @@
-module VCAP::CloudController
+module CloudController
   class DeploymentCreate
     class << self
       def create(app:, user_audit_info:)

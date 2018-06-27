@@ -1,7 +1,7 @@
 require 'spec_helper'
 require 'messages/space_update_isolation_segment_message'
 
-module VCAP::CloudController
+module CloudController
   RSpec.describe SpaceUpdateIsolationSegmentMessage do
     describe 'validations' do
       context 'when there is no guid in the data' do

@@ -1,7 +1,7 @@
 require 'spec_helper'
 require 'messages/app_update_message'
 
-module VCAP::CloudController
+module CloudController
   RSpec.describe AppUpdateMessage do
     describe 'validations' do
       context 'when unexpected keys are requested' do

@@ -2,13 +2,13 @@ require 'spec_helper'
 
 RSpec.describe 'Service Broker API integration' do
   describe 'v2.14' do
-    include VCAP::CloudController::BrokerApiHelper
+    include CloudController::BrokerApiHelper
     let(:catalog) { default_catalog }
 
     before do
       setup_cc
       setup_broker(catalog)
-      @broker = VCAP::CloudController::ServiceBroker.find guid: @broker_guid
+      @broker = CloudController::ServiceBroker.find guid: @broker_guid
     end
 
     describe 'fetching service binding configuration parameters' do
@@ -47,7 +47,7 @@ RSpec.describe 'Service Broker API integration' do
           end
 
           it 'sends the broker the X-Broker-Api-Originating-Identity header' do
-            user = VCAP::CloudController::User.make
+            user = CloudController::User.make
             base64_encoded_user_id = Base64.strict_encode64("{\"user_id\":\"#{user.guid}\"}")
 
             get("/v2/service_bindings/#{@binding_id}/parameters",
@@ -159,7 +159,7 @@ RSpec.describe 'Service Broker API integration' do
             stub_async_binding_last_operation(operation_data: operation_data)
             async_bind_service(status: 202, response_body: { operation: operation_data })
 
-            service_binding = VCAP::CloudController::ServiceBinding.find(guid: @binding_id)
+            service_binding = CloudController::ServiceBinding.find(guid: @binding_id)
             expect(a_request(:put, service_binding_url(service_binding, 'accepts_incomplete=true'))).to have_been_made
 
             Delayed::Worker.new.work_off
@@ -174,7 +174,7 @@ RSpec.describe 'Service Broker API integration' do
               stub_async_binding_last_operation
               async_bind_service(status: 202)
 
-              service_binding = VCAP::CloudController::ServiceBinding.find(guid: @binding_id)
+              service_binding = CloudController::ServiceBinding.find(guid: @binding_id)
               stub_request(:get, service_binding_url(service_binding)).to_return(status: 200, body: '{"credentials": {"foo": true}')
 
               Delayed::Worker.new.work_off
@@ -191,7 +191,7 @@ RSpec.describe 'Service Broker API integration' do
                 stub_async_binding_last_operation
                 async_bind_service(status: 202, response_body: { operation: 'some-operation' })
 
-                service_binding = VCAP::CloudController::ServiceBinding.find(guid: @binding_id)
+                service_binding = CloudController::ServiceBinding.find(guid: @binding_id)
                 stub_request(:get, service_binding_url(service_binding)).to_return(status: 200, body: 'invalid-response')
 
                 Delayed::Worker.new.work_off
@@ -206,7 +206,7 @@ RSpec.describe 'Service Broker API integration' do
                 stub_async_binding_last_operation
                 async_bind_service(status: 202, response_body: { operation: 'some-operation' })
 
-                service_binding = VCAP::CloudController::ServiceBinding.find(guid: @binding_id)
+                service_binding = CloudController::ServiceBinding.find(guid: @binding_id)
                 stub_request(:get, service_binding_url(service_binding)).to_return(status: 204, body: '{}')
 
                 Delayed::Worker.new.work_off
@@ -221,7 +221,7 @@ RSpec.describe 'Service Broker API integration' do
                 stub_async_binding_last_operation
                 async_bind_service(status: 202, response_body: { operation: 'some-operation' })
 
-                service_binding = VCAP::CloudController::ServiceBinding.find(guid: @binding_id)
+                service_binding = CloudController::ServiceBinding.find(guid: @binding_id)
                 stub_request(:get, service_binding_url(service_binding)).to_timeout
 
                 Delayed::Worker.new.work_off
@@ -242,14 +242,14 @@ RSpec.describe 'Service Broker API integration' do
             a_request(:put, %r{/v2/service_instances/#{@service_instance_guid}/service_bindings/[[:alnum:]-]+\?accepts_incomplete=true})
           ).to have_been_made
 
-          service_binding = VCAP::CloudController::ServiceBinding.find(guid: @binding_id)
+          service_binding = CloudController::ServiceBinding.find(guid: @binding_id)
           expect(service_binding).not_to be_nil
         end
       end
     end
 
     describe 'update service dashboard url' do
-      let(:service_instance) { VCAP::CloudController::ManagedServiceInstance.make(space_guid: @space_guid, service_plan_guid: @plan_guid) }
+      let(:service_instance) { CloudController::ManagedServiceInstance.make(space_guid: @space_guid, service_plan_guid: @plan_guid) }
       let(:catalog) { default_catalog(plan_updateable: true) }
 
       before do
@@ -264,7 +264,7 @@ RSpec.describe 'Service Broker API integration' do
           expect(
             a_request(:patch, update_url_for_broker(@broker, accepts_incomplete: true))).to have_been_made
 
-          service_instance = VCAP::CloudController::ManagedServiceInstance.find(guid: @service_instance_guid)
+          service_instance = CloudController::ManagedServiceInstance.find(guid: @service_instance_guid)
 
           Delayed::Worker.new.work_off
 
@@ -281,7 +281,7 @@ RSpec.describe 'Service Broker API integration' do
           expect(
             a_request(:patch, update_url_for_broker(@broker))).to have_been_made
 
-          service_instance = VCAP::CloudController::ManagedServiceInstance.find(guid: @service_instance_guid)
+          service_instance = CloudController::ManagedServiceInstance.find(guid: @service_instance_guid)
 
           expect(service_instance.reload.dashboard_url).to eq 'http://instance-dashboard.com'
         end

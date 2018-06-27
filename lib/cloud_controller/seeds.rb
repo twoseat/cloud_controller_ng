@@ -1,4 +1,4 @@
-module VCAP::CloudController
+module CloudController
   module Seeds
     class << self
       def write_seed_data(config)

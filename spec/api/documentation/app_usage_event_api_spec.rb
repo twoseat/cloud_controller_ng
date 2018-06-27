@@ -5,10 +5,10 @@ RSpec.resource 'App Usage Events', type: [:api, :legacy_api] do
   let(:admin_auth_header) { admin_headers['HTTP_AUTHORIZATION'] }
 
   authenticated_request
-  let(:guid) { VCAP::CloudController::AppUsageEvent.first.guid }
-  let!(:event1) { VCAP::CloudController::AppUsageEvent.make }
-  let!(:event2) { VCAP::CloudController::AppUsageEvent.make }
-  let!(:event3) { VCAP::CloudController::AppUsageEvent.make }
+  let(:guid) { CloudController::AppUsageEvent.first.guid }
+  let!(:event1) { CloudController::AppUsageEvent.make }
+  let!(:event2) { CloudController::AppUsageEvent.make }
+  let!(:event3) { CloudController::AppUsageEvent.make }
   describe 'Standard endpoints' do
     standard_model_get :app_usage_event
 
@@ -51,7 +51,7 @@ RSpec.resource 'App Usage Events', type: [:api, :legacy_api] do
       field :task_guid, 'The GUID of the task if one exists.', required: false, readonly: true, experimental: true
       field :task_name, 'The NAME of the task if one exists.', required: false, readonly: true, experimental: true
 
-      standard_list_parameters VCAP::CloudController::AppUsageEventsController
+      standard_list_parameters CloudController::AppUsageEventsController
 
       request_parameter :after_guid, 'Restrict results to App Usage Events after the one with the given guid'
 

@@ -2,7 +2,7 @@ require 'clockwork'
 require 'cloud_controller/clock/clock'
 require 'cloud_controller/clock/job_timeout_calculator'
 
-module VCAP::CloudController
+module CloudController
   class Scheduler
     CLEANUPS = [
       { name: 'app_usage_events', class: Jobs::Runtime::AppUsageEventsCleanup, time: '18:00', cutoff: true },

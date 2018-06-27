@@ -1,16 +1,16 @@
 require 'spec_helper'
 
-module VCAP::CloudController
+module CloudController
   RSpec.describe ServiceBindingAccess, type: :access do
     subject(:access) { ServiceBindingAccess.new(Security::AccessContext.new) }
     let(:scopes) { ['cloud_controller.read', 'cloud_controller.write'] }
 
-    let(:user) { VCAP::CloudController::User.make }
-    let(:service) { VCAP::CloudController::Service.make }
-    let(:org) { VCAP::CloudController::Organization.make }
-    let(:space) { VCAP::CloudController::Space.make(organization: org) }
-    let(:app) { VCAP::CloudController::AppModel.make(space: space) }
-    let(:service_instance) { VCAP::CloudController::ManagedServiceInstance.make }
+    let(:user) { CloudController::User.make }
+    let(:service) { CloudController::Service.make }
+    let(:org) { CloudController::Organization.make }
+    let(:space) { CloudController::Space.make(organization: org) }
+    let(:app) { CloudController::AppModel.make(space: space) }
+    let(:service_instance) { CloudController::ManagedServiceInstance.make }
 
     let(:object) do
       service_instance.add_shared_space(app.space)

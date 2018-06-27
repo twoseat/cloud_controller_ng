@@ -3,7 +3,7 @@ require 'rspec_api_documentation/dsl'
 
 RSpec.resource 'Space Quota Definitions', type: [:api, :legacy_api] do
   let(:admin_auth_header) { admin_headers['HTTP_AUTHORIZATION'] }
-  let(:space_quota_definition) { VCAP::CloudController::SpaceQuotaDefinition.make }
+  let(:space_quota_definition) { CloudController::SpaceQuotaDefinition.make }
   let!(:guid) { space_quota_definition.guid }
 
   authenticated_request
@@ -39,14 +39,14 @@ RSpec.resource 'Space Quota Definitions', type: [:api, :legacy_api] do
       example_values: [-1, 5, 10]
   end
 
-  standard_model_list :space_quota_definition, VCAP::CloudController::SpaceQuotaDefinitionsController
+  standard_model_list :space_quota_definition, CloudController::SpaceQuotaDefinitionsController
   standard_model_get :space_quota_definition, nested_associations: [:organization]
   standard_model_delete :space_quota_definition
 
   post '/v2/space_quota_definitions' do
     include_context 'updatable_fields', required: true
     example 'Creating a Space Quota Definition' do
-      organization_guid = VCAP::CloudController::Organization.make.guid
+      organization_guid = CloudController::Organization.make.guid
       client.post '/v2/space_quota_definitions', MultiJson.dump(
         required_fields.merge(organization_guid: organization_guid,
                               total_reserved_route_ports: 5,
@@ -77,18 +77,18 @@ RSpec.resource 'Space Quota Definitions', type: [:api, :legacy_api] do
     include_context 'guid_parameter'
 
     describe 'Spaces' do
-      let(:associated_space) { VCAP::CloudController::Space.make(organization_guid: space_quota_definition.organization_guid) }
+      let(:associated_space) { CloudController::Space.make(organization_guid: space_quota_definition.organization_guid) }
       let(:associated_space_guid) { associated_space.guid }
 
       before do
         space_quota_definition.add_space(associated_space)
       end
 
-      standard_model_list :space, VCAP::CloudController::SpacesController, outer_model: :space_quota_definition
+      standard_model_list :space, CloudController::SpacesController, outer_model: :space_quota_definition
       nested_model_remove :space, :space_quota_definition
 
       describe 'Associate Spaces' do
-        let!(:space) { VCAP::CloudController::Space.make(organization_guid: space_quota_definition.organization_guid) }
+        let!(:space) { CloudController::Space.make(organization_guid: space_quota_definition.organization_guid) }
         let(:space_guid) { space.guid }
         parameter :space_guid, 'The guid of the space'
 

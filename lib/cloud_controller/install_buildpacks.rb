@@ -1,4 +1,4 @@
-module VCAP::CloudController
+module CloudController
   class InstallBuildpacks
     attr_reader :config
 
@@ -36,7 +36,7 @@ module VCAP::CloudController
           next
         end
 
-        buildpack_install_jobs << VCAP::CloudController::Jobs::Runtime::BuildpackInstaller.new(buildpack_name, buildpack_file, buildpack)
+        buildpack_install_jobs << CloudController::Jobs::Runtime::BuildpackInstaller.new(buildpack_name, buildpack_file, buildpack)
       end
 
       run_canary(buildpack_install_jobs)
@@ -61,7 +61,7 @@ module VCAP::CloudController
 
     def enqueue_remaining_jobs(jobs)
       jobs.drop(1).each do |job|
-        VCAP::CloudController::Jobs::Enqueuer.new(job, queue: VCAP::CloudController::Jobs::LocalQueue.new(config)).enqueue
+        CloudController::Jobs::Enqueuer.new(job, queue: CloudController::Jobs::LocalQueue.new(config)).enqueue
       end
     end
   end

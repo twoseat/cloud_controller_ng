@@ -1,9 +1,9 @@
 require 'actions/services/synchronous_orphan_mitigate'
 require 'actions/services/locks/lock_check'
 
-module VCAP::CloudController
+module CloudController
   class ServiceKeyCreate
-    include VCAP::CloudController::LockCheck
+    include CloudController::LockCheck
 
     def initialize(logger)
       @logger = logger

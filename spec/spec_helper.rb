@@ -80,7 +80,7 @@ end
 
 each_run_block = proc do
   # Moving this line into the init-block means that changes in code files aren't detected.
-  VCAP::CloudController::SpecBootstrap.init
+  CloudController::SpecBootstrap.init
 
   Dir[File.expand_path('support/**/*.rb', File.dirname(__FILE__))].each { |file| require file }
 
@@ -132,7 +132,7 @@ each_run_block = proc do
     rspec_config.expose_current_running_example_as :example # Can be removed when we upgrade to rspec 3
 
     rspec_config.before :suite do
-      VCAP::CloudController::SpecBootstrap.seed
+      CloudController::SpecBootstrap.seed
     end
 
     rspec_config.before :each do
@@ -144,8 +144,8 @@ each_run_block = proc do
       TestConfig.context = example.metadata[:job_context] || :api
       TestConfig.reset
 
-      VCAP::CloudController::SecurityContext.clear
-      allow_any_instance_of(VCAP::CloudController::UaaTokenDecoder).to receive(:uaa_issuer).and_return(UAAIssuer::ISSUER)
+      CloudController::SecurityContext.clear
+      allow_any_instance_of(CloudController::UaaTokenDecoder).to receive(:uaa_issuer).and_return(UAAIssuer::ISSUER)
     end
 
     rspec_config.around :each do |example|
@@ -175,7 +175,7 @@ each_run_block = proc do
     rspec_config.after(:each, type: :legacy_api) { add_deprecation_warning }
 
     RspecApiDocumentation.configure do |c|
-      c.app = VCAP::CloudController::RackAppBuilder.new.build(TestConfig.config_instance, VCAP::CloudController::Metrics::RequestMetrics.new)
+      c.app = CloudController::RackAppBuilder.new.build(TestConfig.config_instance, CloudController::Metrics::RequestMetrics.new)
       c.format = [:html, :json]
       c.api_name = 'Cloud Foundry API'
       c.template_path = 'spec/api/documentation/templates'

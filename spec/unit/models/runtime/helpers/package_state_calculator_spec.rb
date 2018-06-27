@@ -1,7 +1,7 @@
 require 'spec_helper'
 require 'models/runtime/helpers/package_state_calculator'
 
-module VCAP::CloudController
+module CloudController
   RSpec.describe 'PackageStateCalculator' do
     describe '#calculate' do
       let(:parent_app) { AppModel.make }

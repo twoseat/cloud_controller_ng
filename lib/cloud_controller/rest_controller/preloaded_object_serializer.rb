@@ -1,6 +1,6 @@
 require 'presenters/v2/presenter_provider'
 
-module VCAP::CloudController::RestController
+module CloudController::RestController
   class PreloadedObjectSerializer
     # Render an object as a hash, using export and security properties
     # set by its controller.

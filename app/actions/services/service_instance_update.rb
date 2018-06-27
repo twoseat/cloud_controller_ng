@@ -1,6 +1,6 @@
 require 'actions/services/locks/updater_lock'
 
-module VCAP::CloudController
+module CloudController
   class ServiceInstanceUpdate
     KEYS_TO_UPDATE_CC_ONLY = %w(tags name space_guid).freeze
     KEYS_TO_UPDATE_CC = KEYS_TO_UPDATE_CC_ONLY + ['service_plan_guid']
@@ -116,7 +116,7 @@ module VCAP::CloudController
     end
 
     def build_fetch_job(service_instance, request_attrs)
-      VCAP::CloudController::Jobs::Services::ServiceInstanceStateFetch.new(
+      CloudController::Jobs::Services::ServiceInstanceStateFetch.new(
         'service-instance-state-fetch',
         service_instance.guid,
         @services_event_repository.user_audit_info,

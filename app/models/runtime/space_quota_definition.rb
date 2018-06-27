@@ -1,4 +1,4 @@
-module VCAP::CloudController
+module CloudController
   class SpaceQuotaDefinition < Sequel::Model
     UNLIMITED = -1
     RESERVED_PORT_ERROR = Sequel.lit('Total reserved ports must be -1, 0, or a ' \

@@ -2,10 +2,10 @@ require 'spec_helper'
 
 RSpec.describe 'Staging Security Groups' do
   describe 'PUT /v2/spaces/:guid/staging_security_groups/:security_group_guid' do
-    let(:org) { VCAP::CloudController::Organization.make }
-    let(:space) { VCAP::CloudController::Space.make(organization: org) }
-    let(:security_group) { VCAP::CloudController::SecurityGroup.make }
-    let(:user) { VCAP::CloudController::User.make }
+    let(:org) { CloudController::Organization.make }
+    let(:space) { CloudController::Space.make(organization: org) }
+    let(:security_group) { CloudController::SecurityGroup.make }
+    let(:user) { CloudController::User.make }
 
     before do
       space.organization.add_user(user)
@@ -26,10 +26,10 @@ RSpec.describe 'Staging Security Groups' do
   end
 
   describe 'DELETE /v2/spaces/:guid/staging_security_groups/:security_group_guid' do
-    let(:org) { VCAP::CloudController::Organization.make }
-    let(:space) { VCAP::CloudController::Space.make(organization: org) }
-    let(:security_group) { VCAP::CloudController::SecurityGroup.make }
-    let(:user) { VCAP::CloudController::User.make }
+    let(:org) { CloudController::Organization.make }
+    let(:space) { CloudController::Space.make(organization: org) }
+    let(:security_group) { CloudController::SecurityGroup.make }
+    let(:user) { CloudController::User.make }
 
     before do
       space.organization.add_user(user)
@@ -51,10 +51,10 @@ RSpec.describe 'Staging Security Groups' do
   end
 
   describe 'PUT /v2/security_groups/:guid/staging_spaces/:space_guid' do
-    let(:org) { VCAP::CloudController::Organization.make }
-    let(:space) { VCAP::CloudController::Space.make(organization: org) }
+    let(:org) { CloudController::Organization.make }
+    let(:space) { CloudController::Space.make(organization: org) }
     let(:security_group) do
-      VCAP::CloudController::SecurityGroup.make(
+      CloudController::SecurityGroup.make(
         name:  'my-group-name',
         rules: [
           {
@@ -65,7 +65,7 @@ RSpec.describe 'Staging Security Groups' do
         ]
       )
     end
-    let(:user) { VCAP::CloudController::User.make }
+    let(:user) { CloudController::User.make }
 
     before do
       space.organization.add_user(user)
@@ -106,10 +106,10 @@ RSpec.describe 'Staging Security Groups' do
   end
 
   describe 'GET /v2/security_groups/:guid/staging_spaces/:space_guid' do
-    let(:org) { VCAP::CloudController::Organization.make }
-    let(:space) { VCAP::CloudController::Space.make(organization: org) }
-    let(:security_group) { VCAP::CloudController::SecurityGroup.make }
-    let(:user) { VCAP::CloudController::User.make }
+    let(:org) { CloudController::Organization.make }
+    let(:space) { CloudController::Space.make(organization: org) }
+    let(:security_group) { CloudController::SecurityGroup.make }
+    let(:user) { CloudController::User.make }
 
     before do
       space.organization.add_user(user)
@@ -130,10 +130,10 @@ RSpec.describe 'Staging Security Groups' do
   end
 
   describe 'DELETE /v2/security_groups/:guid/staging_spaces/:space_guid' do
-    let(:org) { VCAP::CloudController::Organization.make }
-    let(:space) { VCAP::CloudController::Space.make(organization: org) }
-    let(:security_group) { VCAP::CloudController::SecurityGroup.make }
-    let(:user) { VCAP::CloudController::User.make }
+    let(:org) { CloudController::Organization.make }
+    let(:space) { CloudController::Space.make(organization: org) }
+    let(:security_group) { CloudController::SecurityGroup.make }
+    let(:user) { CloudController::User.make }
 
     before do
       space.organization.add_user(user)

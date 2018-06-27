@@ -5,7 +5,7 @@ RSpec.describe 'max memory policies' do
   let(:error_name) { :random_memory_error }
 
   describe AppMaxMemoryPolicy do
-    let(:process) { VCAP::CloudController::ProcessModelFactory.make(memory: 100, state: 'STARTED') }
+    let(:process) { CloudController::ProcessModelFactory.make(memory: 100, state: 'STARTED') }
 
     subject(:validator) { AppMaxMemoryPolicy.new(process, org_or_space, error_name) }
 
@@ -42,7 +42,7 @@ RSpec.describe 'max memory policies' do
   describe TaskMaxMemoryPolicy do
     subject(:validator) { TaskMaxMemoryPolicy.new(task, org_or_space, error_name) }
 
-    let(:task) { VCAP::CloudController::TaskModel.make memory_in_mb: 150, state: VCAP::CloudController::TaskModel::RUNNING_STATE }
+    let(:task) { CloudController::TaskModel.make memory_in_mb: 150, state: CloudController::TaskModel::RUNNING_STATE }
 
     context 'when not cancelling a task' do
       it 'registers error when quota is exceeded' do
@@ -64,21 +64,21 @@ RSpec.describe 'max memory policies' do
 
     context 'when cancelling a task' do
       it 'does not register error' do
-        task.state = VCAP::CloudController::TaskModel::CANCELING_STATE
+        task.state = CloudController::TaskModel::CANCELING_STATE
         expect(validator).to validate_without_error(task)
       end
     end
 
     context 'when the task is SUCCEEDED' do
       it 'does not register error' do
-        task.state = VCAP::CloudController::TaskModel::SUCCEEDED_STATE
+        task.state = CloudController::TaskModel::SUCCEEDED_STATE
         expect(validator).to validate_without_error(task)
       end
     end
 
     context 'when the task is FAILED' do
       it 'does not register error' do
-        task.state = VCAP::CloudController::TaskModel::FAILED_STATE
+        task.state = CloudController::TaskModel::FAILED_STATE
         expect(validator).to validate_without_error(task)
       end
     end

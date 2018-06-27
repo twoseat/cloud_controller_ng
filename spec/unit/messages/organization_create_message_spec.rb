@@ -1,7 +1,7 @@
 require 'spec_helper'
 require 'messages/organization_create_message'
 
-module VCAP::CloudController
+module CloudController
   RSpec.describe OrganizationCreateMessage do
     let(:body) do
       {

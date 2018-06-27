@@ -1,23 +1,23 @@
 require 'spec_helper'
 
-module VCAP::CloudController
-  RSpec.describe VCAP::CloudController::ServiceInstancesController, :services do
+module CloudController
+  RSpec.describe CloudController::ServiceInstancesController, :services do
     let(:service_broker_url_regex) { %r{http://example.com/v2/service_instances/(.*)} }
     let(:mock_orphan_mitigator) { double(:mock_orphan_mitigator, attempt_deprovision_instance: nil) }
     let(:logger) { double(:logger) }
 
     describe 'Query Parameters' do
-      it { expect(VCAP::CloudController::ServiceInstancesController).to be_queryable_by(:name) }
-      it { expect(VCAP::CloudController::ServiceInstancesController).to be_queryable_by(:space_guid) }
-      it { expect(VCAP::CloudController::ServiceInstancesController).to be_queryable_by(:service_plan_guid) }
-      it { expect(VCAP::CloudController::ServiceInstancesController).to be_queryable_by(:service_binding_guid) }
-      it { expect(VCAP::CloudController::ServiceInstancesController).to be_queryable_by(:gateway_name) }
-      it { expect(VCAP::CloudController::ServiceInstancesController).to be_queryable_by(:organization_guid) }
+      it { expect(CloudController::ServiceInstancesController).to be_queryable_by(:name) }
+      it { expect(CloudController::ServiceInstancesController).to be_queryable_by(:space_guid) }
+      it { expect(CloudController::ServiceInstancesController).to be_queryable_by(:service_plan_guid) }
+      it { expect(CloudController::ServiceInstancesController).to be_queryable_by(:service_binding_guid) }
+      it { expect(CloudController::ServiceInstancesController).to be_queryable_by(:gateway_name) }
+      it { expect(CloudController::ServiceInstancesController).to be_queryable_by(:organization_guid) }
     end
 
     describe 'Attributes' do
       it 'has creatable attributes' do
-        expect(VCAP::CloudController::ServiceInstancesController).to have_creatable_attributes({
+        expect(CloudController::ServiceInstancesController).to have_creatable_attributes({
           name: { type: 'string', required: true },
           space_guid: { type: 'string', required: true },
           service_plan_guid: { type: 'string', required: true },
@@ -28,7 +28,7 @@ module VCAP::CloudController
       end
 
       it 'has updatable attributes' do
-        expect(VCAP::CloudController::ServiceInstancesController).to have_updatable_attributes({
+        expect(CloudController::ServiceInstancesController).to have_updatable_attributes({
           name: { type: 'string' },
           space_guid: { type: 'string' },
           service_plan_guid: { type: 'string' },
@@ -260,7 +260,7 @@ module VCAP::CloudController
 
     describe 'Associations' do
       it do
-        expect(VCAP::CloudController::ServiceInstancesController).to have_nested_routes(
+        expect(CloudController::ServiceInstancesController).to have_nested_routes(
           service_bindings: [:get],
           service_keys: [:get, :put, :delete],
           routes: [:get, :put, :delete]
@@ -504,7 +504,7 @@ module VCAP::CloudController
             set_current_user(developer, email: 'developer@example.com')
             instance = create_managed_service_instance(accepts_incomplete: false)
 
-            event = VCAP::CloudController::Event.first(type: 'audit.service_instance.create')
+            event = CloudController::Event.first(type: 'audit.service_instance.create')
             expect(event.type).to eq('audit.service_instance.create')
             expect(event.actor_type).to eq('user')
             expect(event.actor).to eq(developer.guid)
@@ -554,7 +554,7 @@ module VCAP::CloudController
 
             it 'does not create an audit event' do
               create_managed_service_instance
-              event = VCAP::CloudController::Event.first(type: 'audit.service_instance.create')
+              event = CloudController::Event.first(type: 'audit.service_instance.create')
               expect(event).to be_nil
             end
           end
@@ -576,7 +576,7 @@ module VCAP::CloudController
           it 'does not create an audit event' do
             create_managed_service_instance
 
-            event = VCAP::CloudController::Event.first(type: 'audit.service_instance.create')
+            event = CloudController::Event.first(type: 'audit.service_instance.create')
             expect(event).to be_nil
           end
 
@@ -605,7 +605,7 @@ module VCAP::CloudController
             Timecop.freeze do
               create_managed_service_instance
               job = Delayed::Job.last
-              poll_interval = VCAP::CloudController::Config.config.get(:broker_client_default_async_poll_interval_seconds).seconds
+              poll_interval = CloudController::Config.config.get(:broker_client_default_async_poll_interval_seconds).seconds
               expect(job.run_at).to be < Time.now.utc + poll_interval
             end
           end
@@ -662,7 +662,7 @@ module VCAP::CloudController
 
               Delayed::Job.last.invoke_job
 
-              event = VCAP::CloudController::Event.first(type: 'audit.service_instance.create')
+              event = CloudController::Event.first(type: 'audit.service_instance.create')
               expect(event.type).to eq('audit.service_instance.create')
               expect(event.actor_type).to eq('user')
               expect(event.actor).to eq(developer.guid)
@@ -683,7 +683,7 @@ module VCAP::CloudController
 
           context 'and the worker never gets a success response during polling' do
             let!(:now) { Time.now }
-            let(:max_poll_duration) { VCAP::CloudController::Config.config.get(:broker_client_max_async_poll_duration_minutes) }
+            let(:max_poll_duration) { CloudController::Config.config.get(:broker_client_max_async_poll_duration_minutes) }
             let(:before_poll_timeout) { now + (max_poll_duration / 2).minutes }
             let(:after_poll_timeout) { now + max_poll_duration.minutes + 1.minutes }
 
@@ -733,7 +733,7 @@ module VCAP::CloudController
             set_current_user(developer, email: 'developer@example.com')
             instance = create_managed_service_instance(accepts_incomplete: 'false')
 
-            event = VCAP::CloudController::Event.first(type: 'audit.service_instance.create')
+            event = CloudController::Event.first(type: 'audit.service_instance.create')
             expect(event.type).to eq('audit.service_instance.create')
             expect(event.actor_type).to eq('user')
             expect(event.actor).to eq(developer.guid)
@@ -1527,7 +1527,7 @@ module VCAP::CloudController
         it 'creates a service audit event for updating the service instance' do
           put "/v2/service_instances/#{service_instance.guid}", body
 
-          event = VCAP::CloudController::Event.first(type: 'audit.service_instance.update')
+          event = CloudController::Event.first(type: 'audit.service_instance.update')
           expect(event.type).to eq('audit.service_instance.update')
           expect(event.actor_type).to eq('user')
           expect(event.actor).to eq(developer.guid)
@@ -2069,7 +2069,7 @@ module VCAP::CloudController
         it 'creates a service audit event for updating the service instance' do
           put "/v2/service_instances/#{service_instance.guid}?accepts_incomplete=true", body
 
-          event = VCAP::CloudController::Event.first(type: 'audit.service_instance.update')
+          event = CloudController::Event.first(type: 'audit.service_instance.update')
           expect(event.type).to eq('audit.service_instance.update')
           expect(event.actor_type).to eq('user')
           expect(event.actor).to eq(developer.guid)
@@ -2103,7 +2103,7 @@ module VCAP::CloudController
           it 'does not create an audit event' do
             put "/v2/service_instances/#{service_instance.guid}?accepts_incomplete=true", body
 
-            event = VCAP::CloudController::Event.first(type: 'audit.service_instance.update')
+            event = CloudController::Event.first(type: 'audit.service_instance.update')
             expect(event).to be_nil
           end
 
@@ -2137,7 +2137,7 @@ module VCAP::CloudController
               job = Delayed::Job.first
               expect(job).to be_a_fully_wrapped_job_of Jobs::Services::ServiceInstanceStateFetch
 
-              poll_interval = VCAP::CloudController::Config.config.get(:broker_client_default_async_poll_interval_seconds).seconds
+              poll_interval = CloudController::Config.config.get(:broker_client_default_async_poll_interval_seconds).seconds
               expect(job.run_at).to be < Time.now.utc + poll_interval
             end
           end
@@ -2211,7 +2211,7 @@ module VCAP::CloudController
                 execute_all_jobs(expected_successes: 1, expected_failures: 0)
               end
 
-              event = VCAP::CloudController::Event.first(type: 'audit.service_instance.update')
+              event = CloudController::Event.first(type: 'audit.service_instance.update')
               expect(event.type).to eq('audit.service_instance.update')
               expect(event.actor_type).to eq('user')
               expect(event.actor).to eq(developer.guid)
@@ -2501,7 +2501,7 @@ module VCAP::CloudController
 
           expect(last_response).to have_status_code 204
 
-          event = VCAP::CloudController::Event.first(type: 'audit.service_instance.delete')
+          event = CloudController::Event.first(type: 'audit.service_instance.delete')
           expect(event.type).to eq('audit.service_instance.delete')
           expect(event.actor_type).to eq('user')
           expect(event.actor).to eq(developer.guid)
@@ -2910,7 +2910,7 @@ module VCAP::CloudController
 
               expect(last_response).to have_status_code 204
 
-              event = VCAP::CloudController::Event.first(type: 'audit.service_instance.delete')
+              event = CloudController::Event.first(type: 'audit.service_instance.delete')
               expect(event.type).to eq('audit.service_instance.delete')
               expect(event.actor_type).to eq('user')
               expect(event.actor).to eq(developer.guid)
@@ -3010,12 +3010,12 @@ module VCAP::CloudController
             delete "/v2/service_instances/#{service_instance.guid}?async=true"
             expect(last_response).to have_status_code 202
 
-            event = VCAP::CloudController::Event.first(type: 'audit.service_instance.delete')
+            event = CloudController::Event.first(type: 'audit.service_instance.delete')
             expect(event).to be_nil
 
             execute_all_jobs(expected_successes: 1, expected_failures: 0)
 
-            event = VCAP::CloudController::Event.first(type: 'audit.service_instance.delete')
+            event = CloudController::Event.first(type: 'audit.service_instance.delete')
             expect(event.type).to eq('audit.service_instance.delete')
             expect(event.actor_type).to eq('user')
             expect(event.actor).to eq(developer.guid)
@@ -3194,7 +3194,7 @@ module VCAP::CloudController
         it 'creates a user_provided_service_instance audit event for deleting the service instance' do
           delete "/v2/service_instances/#{service_instance.guid}"
 
-          event = VCAP::CloudController::Event.first(type: 'audit.user_provided_service_instance.delete')
+          event = CloudController::Event.first(type: 'audit.user_provided_service_instance.delete')
           expect(event.type).to eq('audit.user_provided_service_instance.delete')
           expect(event.actor_type).to eq('user')
           expect(event.actor).to eq(developer.guid)
@@ -3341,7 +3341,7 @@ module VCAP::CloudController
       let(:space) { Space.make }
       let(:developer) { make_developer_for_space(space) }
       let(:service_instance) { ManagedServiceInstance.make(:routing, space: space) }
-      let(:route) { VCAP::CloudController::Route.make(space: space) }
+      let(:route) { CloudController::Route.make(space: space) }
       let(:opts) { {} }
       let(:service_binding_url_pattern) { %r{/v2/service_instances/#{service_instance.guid}/service_bindings/} }
 
@@ -3360,7 +3360,7 @@ module VCAP::CloudController
         put "/v2/service_instances/#{service_instance.guid}/routes/#{route.guid}"
         expect(last_response).to have_status_code(201)
 
-        event = VCAP::CloudController::Event.first(type: 'audit.service_instance.bind_route')
+        event = CloudController::Event.first(type: 'audit.service_instance.bind_route')
         expect(event).not_to be_nil
         expect(event.type).to eq('audit.service_instance.bind_route')
         expect(event.actor_type).to eq('user')
@@ -3517,7 +3517,7 @@ module VCAP::CloudController
           expect(JSON.parse(last_response.body)['description']).
             to eq('A route may only be bound to a single service instance')
 
-          event = VCAP::CloudController::Event.first(type: 'audit.service_instance.bind_route')
+          event = CloudController::Event.first(type: 'audit.service_instance.bind_route')
           expect(event).to be_nil
 
           get "/v2/service_instances/#{new_service_instance.guid}/routes"
@@ -3536,7 +3536,7 @@ module VCAP::CloudController
             expect(JSON.parse(last_response.body)['description']).
               to eq('The route and service instance are already bound.')
 
-            event = VCAP::CloudController::Event.first(type: 'audit.service_instance.bind_route')
+            event = CloudController::Event.first(type: 'audit.service_instance.bind_route')
             expect(event).to be_nil
 
             get "/v2/service_instances/#{service_instance.guid}/routes"
@@ -3748,7 +3748,7 @@ module VCAP::CloudController
           expect(last_response.status).to eq(204)
           expect(last_response.body).to be_empty
 
-          event = VCAP::CloudController::Event.first(type: 'audit.service_instance.unbind_route')
+          event = CloudController::Event.first(type: 'audit.service_instance.unbind_route')
           expect(event).not_to be_nil
           expect(event.type).to eq('audit.service_instance.unbind_route')
           expect(event.actor_type).to eq('user')
@@ -4881,8 +4881,8 @@ module VCAP::CloudController
       end
 
       it 'returns a generic ServiceInstanceInvalid error' do
-        expect(VCAP::CloudController::ServiceInstancesController.translate_validation_exception(e, attributes).name).to eq('ServiceInstanceInvalid')
-        expect(VCAP::CloudController::ServiceInstancesController.translate_validation_exception(e, attributes).message).to include(full_messages)
+        expect(CloudController::ServiceInstancesController.translate_validation_exception(e, attributes).name).to eq('ServiceInstanceInvalid')
+        expect(CloudController::ServiceInstancesController.translate_validation_exception(e, attributes).message).to include(full_messages)
       end
 
       context "when errors are included but aren't supported validation exceptions" do
@@ -4892,8 +4892,8 @@ module VCAP::CloudController
         let(:service_instance_tags_errors) { [:stuff] }
 
         it 'returns a generic ServiceInstanceInvalid error' do
-          expect(VCAP::CloudController::ServiceInstancesController.translate_validation_exception(e, attributes).name).to eq('ServiceInstanceInvalid')
-          expect(VCAP::CloudController::ServiceInstancesController.translate_validation_exception(e, attributes).message).to include(full_messages)
+          expect(CloudController::ServiceInstancesController.translate_validation_exception(e, attributes).name).to eq('ServiceInstanceInvalid')
+          expect(CloudController::ServiceInstancesController.translate_validation_exception(e, attributes).message).to include(full_messages)
         end
       end
 
@@ -4902,8 +4902,8 @@ module VCAP::CloudController
         let(:service_instance_name_errors) { [:unique] }
 
         it 'returns a ServiceInstanceNameTaken error' do
-          expect(VCAP::CloudController::ServiceInstancesController.translate_validation_exception(e, attributes).name).to eq('ServiceInstanceNameTaken')
-          expect(VCAP::CloudController::ServiceInstancesController.translate_validation_exception(e, attributes).message).to include(attributes['name'])
+          expect(CloudController::ServiceInstancesController.translate_validation_exception(e, attributes).name).to eq('ServiceInstanceNameTaken')
+          expect(CloudController::ServiceInstancesController.translate_validation_exception(e, attributes).message).to include(attributes['name'])
         end
       end
 
@@ -4911,7 +4911,7 @@ module VCAP::CloudController
         let(:quota_errors) { [:service_instance_space_quota_exceeded] }
 
         it 'returns a ServiceInstanceSpaceQuotaExceeded error' do
-          expect(VCAP::CloudController::ServiceInstancesController.translate_validation_exception(e, attributes).name).to eq('ServiceInstanceSpaceQuotaExceeded')
+          expect(CloudController::ServiceInstancesController.translate_validation_exception(e, attributes).name).to eq('ServiceInstanceSpaceQuotaExceeded')
         end
       end
 
@@ -4919,7 +4919,7 @@ module VCAP::CloudController
         let(:quota_errors) { [:service_instance_quota_exceeded] }
 
         it 'returns a ServiceInstanceSpaceQuotaExceeded error' do
-          expect(VCAP::CloudController::ServiceInstancesController.translate_validation_exception(e, attributes).name).to eq('ServiceInstanceQuotaExceeded')
+          expect(CloudController::ServiceInstancesController.translate_validation_exception(e, attributes).name).to eq('ServiceInstanceQuotaExceeded')
         end
       end
 
@@ -4927,7 +4927,7 @@ module VCAP::CloudController
         let(:service_plan_errors) { [:paid_services_not_allowed_by_space_quota] }
 
         it 'returns a ServiceInstanceServicePlanNotAllowedBySpaceQuota error' do
-          expect(VCAP::CloudController::ServiceInstancesController.translate_validation_exception(e, attributes).name).to eq('ServiceInstanceServicePlanNotAllowedBySpaceQuota')
+          expect(CloudController::ServiceInstancesController.translate_validation_exception(e, attributes).name).to eq('ServiceInstanceServicePlanNotAllowedBySpaceQuota')
         end
       end
 
@@ -4935,7 +4935,7 @@ module VCAP::CloudController
         let(:service_plan_errors) { [:paid_services_not_allowed_by_quota] }
 
         it 'returns a ServiceInstanceServicePlanNotAllowed error' do
-          expect(VCAP::CloudController::ServiceInstancesController.translate_validation_exception(e, attributes).name).to eq('ServiceInstanceServicePlanNotAllowed')
+          expect(CloudController::ServiceInstancesController.translate_validation_exception(e, attributes).name).to eq('ServiceInstanceServicePlanNotAllowed')
         end
       end
 
@@ -4943,7 +4943,7 @@ module VCAP::CloudController
         let(:service_instance_name_errors) { [:max_length] }
 
         it 'returns a ServiceInstanceNameTooLong error' do
-          expect(VCAP::CloudController::ServiceInstancesController.translate_validation_exception(e, attributes).name).to eq('ServiceInstanceNameTooLong')
+          expect(CloudController::ServiceInstancesController.translate_validation_exception(e, attributes).name).to eq('ServiceInstanceNameTooLong')
         end
       end
 
@@ -4951,7 +4951,7 @@ module VCAP::CloudController
         let(:service_instance_name_errors) { [:presence] }
 
         it 'returns a ServiceInstanceNameEmpty error' do
-          expect(VCAP::CloudController::ServiceInstancesController.translate_validation_exception(e, attributes).name).to eq('ServiceInstanceNameEmpty')
+          expect(CloudController::ServiceInstancesController.translate_validation_exception(e, attributes).name).to eq('ServiceInstanceNameEmpty')
         end
       end
 
@@ -4959,7 +4959,7 @@ module VCAP::CloudController
         let(:service_instance_tags_errors) { [:too_long] }
 
         it 'returns a ServiceInstanceTagsTooLong error' do
-          expect(VCAP::CloudController::ServiceInstancesController.translate_validation_exception(e, attributes).name).to eq('ServiceInstanceTagsTooLong')
+          expect(CloudController::ServiceInstancesController.translate_validation_exception(e, attributes).name).to eq('ServiceInstanceTagsTooLong')
         end
       end
     end

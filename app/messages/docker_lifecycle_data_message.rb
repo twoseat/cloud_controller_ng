@@ -1,4 +1,4 @@
-module VCAP::CloudController
+module CloudController
   class DockerLifecycleDataMessage < BaseMessage
     register_allowed_keys []
 

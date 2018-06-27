@@ -1,4 +1,4 @@
-module VCAP::CloudController
+module CloudController
   class BuildpackLifecycleFetcher
     class << self
       def fetch(buildpack_names, stack_name)

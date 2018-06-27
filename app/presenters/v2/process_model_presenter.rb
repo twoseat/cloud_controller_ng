@@ -6,7 +6,7 @@ module CloudController
       class ProcessModelPresenter < BasePresenter
         extend PresenterProvider
 
-        present_for_class 'VCAP::CloudController::ProcessModel'
+        present_for_class 'CloudController::ProcessModel'
 
         def entity_hash(controller, process, opts, depth, parents, orphans=nil)
           entity = {
@@ -37,12 +37,12 @@ module CloudController
             'docker_image'               => process.docker_image,
             'docker_credentials'         => {
               'username' => process.docker_username,
-              'password' => process.docker_username && VCAP::CloudController::Presenters::Censorship::REDACTED_CREDENTIAL,
+              'password' => process.docker_username && CloudController::Presenters::Censorship::REDACTED_CREDENTIAL,
             },
             'package_updated_at'         => process.package_updated_at,
             'detected_start_command'     => process.detected_start_command,
             'enable_ssh'                 => process.app.enable_ssh,
-            'ports'                      => VCAP::CloudController::Diego::Protocol::OpenProcessPorts.new(process).to_a,
+            'ports'                      => CloudController::Diego::Protocol::OpenProcessPorts.new(process).to_a,
           }
 
           entity.merge!(RelationsPresenter.new.to_hash(controller, process, opts, depth, parents, orphans))
@@ -68,22 +68,22 @@ module CloudController
         end
 
         def buildpack_name_or_url(buildpack)
-          if buildpack.class == VCAP::CloudController::CustomBuildpack
+          if buildpack.class == CloudController::CustomBuildpack
             CloudController::UrlSecretObfuscator.obfuscate(buildpack.url)
-          elsif buildpack.class == VCAP::CloudController::Buildpack
+          elsif buildpack.class == CloudController::Buildpack
             buildpack.name
           end
         end
 
         def can_read_env?(process)
-          VCAP::CloudController::Security::AccessContext.new.can?(:read_env, process)
+          CloudController::Security::AccessContext.new.can?(:read_env, process)
         end
 
         def redact(attr, has_permission=false)
           if has_permission
             attr
           else
-            { 'redacted_message' => VCAP::CloudController::Presenters::Censorship::PRIVATE_DATA_HIDDEN }
+            { 'redacted_message' => CloudController::Presenters::Censorship::PRIVATE_DATA_HIDDEN }
           end
         end
       end

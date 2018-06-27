@@ -1,6 +1,6 @@
 require 'actions/space_delete'
 
-module VCAP::CloudController
+module CloudController
   class OrganizationDelete
     def initialize(org_roles_deleter, space_deleter)
       @org_roles_deleter = org_roles_deleter

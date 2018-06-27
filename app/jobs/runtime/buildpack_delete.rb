@@ -1,7 +1,7 @@
-module VCAP::CloudController
+module CloudController
   module Jobs
     module Runtime
-      class BuildpackDelete < VCAP::CloudController::Jobs::CCJob
+      class BuildpackDelete < CloudController::Jobs::CCJob
         def initialize(guid:, timeout:)
           @guid = guid
           @timeout = timeout

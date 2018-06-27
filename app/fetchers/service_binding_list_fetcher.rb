@@ -1,4 +1,4 @@
-module VCAP::CloudController
+module CloudController
   class ServiceBindingListFetcher
     def initialize(message)
       @message = message

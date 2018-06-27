@@ -1,4 +1,4 @@
-module VCAP::CloudController::RoutingApi
+module CloudController::RoutingApi
   class RoutingApiDisabled < StandardError; end
 
   class DisabledClient

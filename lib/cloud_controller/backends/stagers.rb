@@ -6,7 +6,7 @@ require 'cloud_controller/diego/docker/lifecycle_protocol'
 require 'cloud_controller/diego/docker/staging_completion_handler'
 require 'cloud_controller/diego/egress_rules'
 
-module VCAP::CloudController
+module CloudController
   class Stagers
     def initialize(config)
       @config = config

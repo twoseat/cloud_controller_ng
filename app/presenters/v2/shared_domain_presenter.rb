@@ -4,7 +4,7 @@ module CloudController
       class SharedDomainPresenter < BasePresenter
         extend PresenterProvider
 
-        present_for_class 'VCAP::CloudController::SharedDomain'
+        present_for_class 'CloudController::SharedDomain'
 
         def entity_hash(controller, domain, opts, depth, parents, orphans=nil)
           entity = {

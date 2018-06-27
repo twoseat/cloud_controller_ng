@@ -1,4 +1,4 @@
-module VCAP::CloudController
+module CloudController
   class ProcessRouteHandler
     def initialize(process, runners=nil)
       @process = process

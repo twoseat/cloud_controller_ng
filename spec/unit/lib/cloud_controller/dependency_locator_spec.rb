@@ -17,7 +17,7 @@ RSpec.describe CloudController::DependencyLocator do
 
   describe '#droplet_blobstore' do
     let(:config) do
-      VCAP::CloudController::Config.new(
+      CloudController::Config.new(
         droplets: {
           fog_connection: 'fog_connection',
           droplet_directory_key: 'key',
@@ -33,7 +33,7 @@ RSpec.describe CloudController::DependencyLocator do
 
     context('when bits service is enabled') do
       let(:config) do
-        VCAP::CloudController::Config.new(
+        CloudController::Config.new(
           droplets: {
             fog_connection: 'fog_connection',
             droplet_directory_key: 'key',
@@ -52,7 +52,7 @@ RSpec.describe CloudController::DependencyLocator do
 
   describe '#buildpack_cache_blobstore' do
     let(:config) do
-      VCAP::CloudController::Config.new(
+      CloudController::Config.new(
         droplets: {
           fog_connection: 'fog_connection',
           droplet_directory_key: 'key',
@@ -71,7 +71,7 @@ RSpec.describe CloudController::DependencyLocator do
 
     context('when bits service is enabled') do
       let(:config) do
-        VCAP::CloudController::Config.new(
+        CloudController::Config.new(
           droplets: {
             fog_connection: 'fog_connection',
             droplet_directory_key: 'key',
@@ -90,7 +90,7 @@ RSpec.describe CloudController::DependencyLocator do
 
   describe '#package_blobstore' do
     let(:config) do
-      VCAP::CloudController::Config.new(
+      CloudController::Config.new(
         packages: {
           fog_connection: 'fog_connection',
           app_package_directory_key: 'key',
@@ -106,7 +106,7 @@ RSpec.describe CloudController::DependencyLocator do
 
     context('when bits service is enabled') do
       let(:config) do
-        VCAP::CloudController::Config.new(
+        CloudController::Config.new(
           packages: {
             app_package_directory_key: 'key'
           },
@@ -124,7 +124,7 @@ RSpec.describe CloudController::DependencyLocator do
 
   describe '#legacy_global_app_bits_cache' do
     let(:config) do
-      VCAP::CloudController::Config.new(
+      CloudController::Config.new(
         resource_pool: {
           fog_connection: 'fog_connection',
           resource_directory_key: 'key',
@@ -143,7 +143,7 @@ RSpec.describe CloudController::DependencyLocator do
 
   describe '#global_app_bits_cache' do
     let(:config) do
-      VCAP::CloudController::Config.new(
+      CloudController::Config.new(
         resource_pool: {
           fog_connection: 'fog_connection',
           resource_directory_key: 'key',
@@ -216,7 +216,7 @@ RSpec.describe CloudController::DependencyLocator do
     end
 
     it 'creates droplet_url_generator with the internal_service_hostname, ports, and diego flag' do
-      expect(VCAP::CloudController::Diego::Buildpack::DropletUrlGenerator).to receive(:new).with(
+      expect(CloudController::Diego::Buildpack::DropletUrlGenerator).to receive(:new).with(
         internal_service_hostname: 'internal.service.hostname',
         external_port: 8282,
         tls_port: 8283,
@@ -228,7 +228,7 @@ RSpec.describe CloudController::DependencyLocator do
   describe '#app_event_repository' do
     subject { locator.app_event_repository }
 
-    it { is_expected.to be_a(VCAP::CloudController::Repositories::AppEventRepository) }
+    it { is_expected.to be_a(CloudController::Repositories::AppEventRepository) }
 
     it 'memoizes the instance' do
       expect(locator.app_event_repository).to eq(locator.app_event_repository)
@@ -238,25 +238,25 @@ RSpec.describe CloudController::DependencyLocator do
   describe '#space_event_repository' do
     subject { locator.space_event_repository }
 
-    it { is_expected.to be_a(VCAP::CloudController::Repositories::SpaceEventRepository) }
+    it { is_expected.to be_a(CloudController::Repositories::SpaceEventRepository) }
   end
 
   describe '#user_event_repository' do
     subject { locator.user_event_repository }
 
-    it { is_expected.to be_a(VCAP::CloudController::Repositories::UserEventRepository) }
+    it { is_expected.to be_a(CloudController::Repositories::UserEventRepository) }
   end
 
   describe '#object_renderer' do
     it 'returns paginated collection renderer configured via config' do
-      eager_loader = instance_of(VCAP::CloudController::RestController::SecureEagerLoader)
-      serializer = instance_of(VCAP::CloudController::RestController::PreloadedObjectSerializer)
+      eager_loader = instance_of(CloudController::RestController::SecureEagerLoader)
+      serializer = instance_of(CloudController::RestController::PreloadedObjectSerializer)
       opts = { max_inline_relations_depth: 100_002, object_transformer: nil }
 
       TestConfig.override(renderer: opts)
 
       renderer = double('renderer')
-      expect(VCAP::CloudController::RestController::ObjectRenderer).
+      expect(CloudController::RestController::ObjectRenderer).
         to receive(:new).
         with(eager_loader, serializer, opts).
         and_return(renderer)
@@ -267,8 +267,8 @@ RSpec.describe CloudController::DependencyLocator do
 
   describe '#paginated_collection_renderer' do
     it 'returns paginated collection renderer configured via config' do
-      eager_loader = instance_of(VCAP::CloudController::RestController::SecureEagerLoader)
-      serializer = instance_of(VCAP::CloudController::RestController::PreloadedObjectSerializer)
+      eager_loader = instance_of(CloudController::RestController::SecureEagerLoader)
+      serializer = instance_of(CloudController::RestController::PreloadedObjectSerializer)
       opts = {
         max_results_per_page: 100_000,
         default_results_per_page: 100_001,
@@ -279,7 +279,7 @@ RSpec.describe CloudController::DependencyLocator do
       TestConfig.override(renderer: opts)
 
       renderer = double('renderer')
-      expect(VCAP::CloudController::RestController::PaginatedCollectionRenderer).
+      expect(CloudController::RestController::PaginatedCollectionRenderer).
         to receive(:new).
         with(eager_loader, serializer, opts).
         and_return(renderer)
@@ -290,8 +290,8 @@ RSpec.describe CloudController::DependencyLocator do
 
   describe '#large_paginated_collection_renderer' do
     it 'returns paginated collection renderer configured via config with a max of 10,000 results per page' do
-      eager_loader = instance_of(VCAP::CloudController::RestController::SecureEagerLoader)
-      serializer = instance_of(VCAP::CloudController::RestController::PreloadedObjectSerializer)
+      eager_loader = instance_of(CloudController::RestController::SecureEagerLoader)
+      serializer = instance_of(CloudController::RestController::PreloadedObjectSerializer)
       opts = {
         max_results_per_page: 10,
         default_results_per_page: 100_001,
@@ -302,7 +302,7 @@ RSpec.describe CloudController::DependencyLocator do
       TestConfig.override(renderer: opts)
 
       renderer = double('renderer')
-      expect(VCAP::CloudController::RestController::PaginatedCollectionRenderer).
+      expect(CloudController::RestController::PaginatedCollectionRenderer).
         to receive(:new).
         with(eager_loader, serializer, opts.merge(max_results_per_page: 10_000)).
         and_return(renderer)
@@ -314,7 +314,7 @@ RSpec.describe CloudController::DependencyLocator do
   describe '#username_populating_object_renderer' do
     it 'returns UsernamePopulator transformer' do
       renderer = locator.username_populating_object_renderer
-      expect(renderer.object_transformer).to be_a(VCAP::CloudController::UsernamePopulator)
+      expect(renderer.object_transformer).to be_a(CloudController::UsernamePopulator)
     end
 
     it 'uses the uaa_client for the populator' do
@@ -328,7 +328,7 @@ RSpec.describe CloudController::DependencyLocator do
   describe '#username_populating_collection_renderer' do
     it 'returns paginated collection renderer with a UsernamePopulator transformer' do
       renderer = locator.username_populating_collection_renderer
-      expect(renderer.collection_transformer).to be_a(VCAP::CloudController::UsernamePopulator)
+      expect(renderer.collection_transformer).to be_a(CloudController::UsernamePopulator)
     end
 
     it 'uses the uaa_client for the populator' do
@@ -342,7 +342,7 @@ RSpec.describe CloudController::DependencyLocator do
   describe '#router_group_type_populating_collection_renderer' do
     it 'returns paginated collection renderer with a RouterGroupTypePopulator transformer' do
       renderer = locator.router_group_type_populating_collection_renderer
-      expect(renderer.collection_transformer).to be_a(VCAP::CloudController::RouterGroupTypePopulator)
+      expect(renderer.collection_transformer).to be_a(CloudController::RouterGroupTypePopulator)
     end
 
     it 'uses the routing_api_client for the populator' do
@@ -381,13 +381,13 @@ RSpec.describe CloudController::DependencyLocator do
 
       it 'returns a disabled client' do
         expect(locator.routing_api_client).
-          to be_an_instance_of(VCAP::CloudController::RoutingApi::DisabledClient)
+          to be_an_instance_of(CloudController::RoutingApi::DisabledClient)
       end
     end
 
     it 'returns a routing_api_client' do
-      uaa_client = instance_double(VCAP::CloudController::UaaClient)
-      expect(VCAP::CloudController::UaaClient).to receive(:new).with(
+      uaa_client = instance_double(CloudController::UaaClient)
+      expect(CloudController::UaaClient).to receive(:new).with(
         uaa_target: config.get(:uaa, :internal_url),
         client_id: config.get(:routing_api, :routing_client_name),
         secret: config.get(:routing_api, :routing_client_secret),
@@ -396,7 +396,7 @@ RSpec.describe CloudController::DependencyLocator do
 
       client = locator.routing_api_client
 
-      expect(client).to be_an_instance_of(VCAP::CloudController::RoutingApi::Client)
+      expect(client).to be_an_instance_of(CloudController::RoutingApi::Client)
       expect(client.uaa_client).to eq uaa_client
       expect(client.routing_api_uri.to_s).to eq(config.get(:routing_api, :url))
       expect(client.skip_cert_verify).to eq(config.get(:skip_cert_verify))
@@ -406,8 +406,8 @@ RSpec.describe CloudController::DependencyLocator do
   describe '#credhub_client' do
     it 'returns a credhub_client' do
       token_info = instance_double(CF::UAA::TokenInfo, auth_header: 'bearer my-token')
-      uaa_client = instance_double(VCAP::CloudController::UaaClient, token_info: token_info)
-      expect(VCAP::CloudController::UaaClient).to receive(:new).with(
+      uaa_client = instance_double(CloudController::UaaClient, token_info: token_info)
+      expect(CloudController::UaaClient).to receive(:new).with(
         uaa_target: config.get(:uaa, :internal_url),
         client_id: config.get(:cc_service_key_client_name),
         secret: config.get(:cc_service_key_client_secret),
@@ -447,25 +447,25 @@ RSpec.describe CloudController::DependencyLocator do
 
   describe '#stagers' do
     it 'returns the stagers' do
-      expect(locator.stagers).to be_an_instance_of(VCAP::CloudController::Stagers)
+      expect(locator.stagers).to be_an_instance_of(CloudController::Stagers)
     end
   end
 
   describe '#runners' do
     it 'returns the runners' do
-      expect(locator.runners).to be_an_instance_of(VCAP::CloudController::Runners)
+      expect(locator.runners).to be_an_instance_of(CloudController::Runners)
     end
   end
 
   describe '#instances_reporters' do
     it 'returns the instances reporters' do
-      expect(locator.instances_reporters).to be_an_instance_of(VCAP::CloudController::InstancesReporters)
+      expect(locator.instances_reporters).to be_an_instance_of(CloudController::InstancesReporters)
     end
   end
 
   describe '#perm_client' do
     it 'returns the perm client' do
-      expect(locator.perm_client).to be_an_instance_of(VCAP::CloudController::Perm::Client)
+      expect(locator.perm_client).to be_an_instance_of(CloudController::Perm::Client)
     end
   end
 

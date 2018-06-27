@@ -1,4 +1,4 @@
-module VCAP::CloudController
+module CloudController
   class EnvironmentVariableGroupAccess < BaseAccess
     def read?(_)
       admin_user? || admin_read_only_user? || has_read_scope?

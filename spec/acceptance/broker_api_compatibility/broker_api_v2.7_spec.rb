@@ -2,7 +2,7 @@ require 'spec_helper'
 
 RSpec.describe 'Service Broker API integration' do
   describe 'v2.7' do
-    include VCAP::CloudController::BrokerApiHelper
+    include CloudController::BrokerApiHelper
 
     describe 'Perform async operations' do
       let(:catalog) { default_catalog(plan_updateable: true) }
@@ -10,11 +10,11 @@ RSpec.describe 'Service Broker API integration' do
       before do
         setup_cc
         setup_broker(catalog)
-        @broker = VCAP::CloudController::ServiceBroker.find guid: @broker_guid
+        @broker = CloudController::ServiceBroker.find guid: @broker_guid
       end
 
       context 'update' do
-        let(:service_instance) { VCAP::CloudController::ManagedServiceInstance.make(space_guid: @space_guid, service_plan_guid: @plan_guid) }
+        let(:service_instance) { CloudController::ManagedServiceInstance.make(space_guid: @space_guid, service_plan_guid: @plan_guid) }
 
         before do
           @service_instance_guid = service_instance.guid
@@ -27,7 +27,7 @@ RSpec.describe 'Service Broker API integration' do
           expect(
             a_request(:patch, update_url_for_broker(@broker, accepts_incomplete: true))).to have_been_made
 
-          service_instance = VCAP::CloudController::ManagedServiceInstance.find(guid: @service_instance_guid)
+          service_instance = CloudController::ManagedServiceInstance.find(guid: @service_instance_guid)
 
           Delayed::Worker.new.work_off
 
@@ -44,7 +44,7 @@ RSpec.describe 'Service Broker API integration' do
             a_request(:patch, update_url_for_broker(@broker, accepts_incomplete: true))
           ).to have_been_made
 
-          service_instance = VCAP::CloudController::ManagedServiceInstance.find(guid: @service_instance_guid)
+          service_instance = CloudController::ManagedServiceInstance.find(guid: @service_instance_guid)
           expect(service_instance.reload.last_operation.state).to eq 'succeeded'
           expect(service_instance.reload.last_operation.type).to eq 'update'
         end
@@ -59,7 +59,7 @@ RSpec.describe 'Service Broker API integration' do
 
           Delayed::Worker.new.work_off
 
-          service_instance = VCAP::CloudController::ManagedServiceInstance.find(guid: @service_instance_guid)
+          service_instance = CloudController::ManagedServiceInstance.find(guid: @service_instance_guid)
           expect(a_request(:get, %r{#{service_instance_url(service_instance)}/last_operation})).to have_been_made
 
           expect(service_instance.reload.last_operation.state).to eq 'failed'
@@ -68,7 +68,7 @@ RSpec.describe 'Service Broker API integration' do
       end
 
       context 'delete' do
-        let(:service_instance) { VCAP::CloudController::ManagedServiceInstance.make(space_guid: @space_guid, service_plan_guid: @plan_guid) }
+        let(:service_instance) { CloudController::ManagedServiceInstance.make(space_guid: @space_guid, service_plan_guid: @plan_guid) }
 
         before do
           @service_instance_guid = service_instance.guid
@@ -82,7 +82,7 @@ RSpec.describe 'Service Broker API integration' do
             a_request(:delete, deprovision_url(service_instance, accepts_incomplete: true))
           ).to have_been_made
 
-          service_instance = VCAP::CloudController::ManagedServiceInstance.find(guid: @service_instance_guid)
+          service_instance = CloudController::ManagedServiceInstance.find(guid: @service_instance_guid)
           Delayed::Worker.new.work_off
           expect(a_request(:get, %r{#{service_instance_url(service_instance)}/last_operation})).to have_been_made
 
@@ -90,7 +90,7 @@ RSpec.describe 'Service Broker API integration' do
         end
 
         it 'performs the synchronous flow if broker does not return async response code' do
-          service_instance = VCAP::CloudController::ManagedServiceInstance.find(guid: @service_instance_guid)
+          service_instance = CloudController::ManagedServiceInstance.find(guid: @service_instance_guid)
 
           async_delete_service(status: 200)
 
@@ -109,7 +109,7 @@ RSpec.describe 'Service Broker API integration' do
             a_request(:delete, deprovision_url(service_instance, accepts_incomplete: true))
           ).to have_been_made
 
-          service_instance = VCAP::CloudController::ManagedServiceInstance.find(guid: @service_instance_guid)
+          service_instance = CloudController::ManagedServiceInstance.find(guid: @service_instance_guid)
           Delayed::Worker.new.work_off
           expect(a_request(:get, %r{#{service_instance_url(service_instance)}/last_operation})).to have_been_made
 
@@ -127,7 +127,7 @@ RSpec.describe 'Service Broker API integration' do
             a_request(:put, provision_url_for_broker(@broker, accepts_incomplete: true))
           ).to have_been_made
 
-          service_instance = VCAP::CloudController::ManagedServiceInstance.find(guid: @service_instance_guid)
+          service_instance = CloudController::ManagedServiceInstance.find(guid: @service_instance_guid)
 
           Delayed::Worker.new.work_off
 
@@ -145,7 +145,7 @@ RSpec.describe 'Service Broker API integration' do
             a_request(:put, provision_url_for_broker(@broker, accepts_incomplete: true))
           ).to have_been_made
 
-          service_instance = VCAP::CloudController::ManagedServiceInstance.find(guid: @service_instance_guid)
+          service_instance = CloudController::ManagedServiceInstance.find(guid: @service_instance_guid)
           expect(service_instance.reload.last_operation.state).to eq 'succeeded'
           expect(service_instance.reload.last_operation.type).to eq 'create'
         end
@@ -160,7 +160,7 @@ RSpec.describe 'Service Broker API integration' do
 
           Delayed::Worker.new.work_off
 
-          service_instance = VCAP::CloudController::ManagedServiceInstance.find(guid: @service_instance_guid)
+          service_instance = CloudController::ManagedServiceInstance.find(guid: @service_instance_guid)
           expect(a_request(:get, %r{#{service_instance_url(service_instance)}/last_operation})).to have_been_made
 
           expect(service_instance.reload.last_operation.state).to eq 'failed'

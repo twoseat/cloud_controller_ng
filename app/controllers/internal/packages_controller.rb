@@ -1,7 +1,7 @@
 require 'actions/package_update'
 require 'messages/internal_package_update_message'
 
-module VCAP::CloudController
+module CloudController
   module Internal
     class PackagesController < RestController::BaseController
       allow_unauthenticated_access
@@ -9,10 +9,10 @@ module VCAP::CloudController
       patch '/internal/v4/packages/:guid', :update
       def update(guid)
         payload = MultiJson.load(body)
-        message = ::VCAP::CloudController::InternalPackageUpdateMessage.new(payload)
+        message = ::CloudController::InternalPackageUpdateMessage.new(payload)
         unprocessable!(message.errors.full_messages) unless message.valid?
 
-        package = ::VCAP::CloudController::PackageModel.find(guid: guid)
+        package = ::CloudController::PackageModel.find(guid: guid)
         package_not_found! unless package
 
         PackageUpdate.new.update(package, message)

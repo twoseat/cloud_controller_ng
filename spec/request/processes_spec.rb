@@ -1,9 +1,9 @@
 require 'spec_helper'
 
 RSpec.describe 'Processes' do
-  let(:space) { VCAP::CloudController::Space.make }
-  let(:app_model) { VCAP::CloudController::AppModel.make(space: space, name: 'my_app', droplet: droplet) }
-  let(:droplet) { VCAP::CloudController::DropletModel.make }
+  let(:space) { CloudController::Space.make }
+  let(:app_model) { CloudController::AppModel.make(space: space, name: 'my_app', droplet: droplet) }
+  let(:droplet) { CloudController::DropletModel.make }
   let(:developer) { make_developer_for_space(space) }
   let(:developer_headers) { headers_for(developer, user_name: user_name) }
   let(:user_name) { 'ProcHudson' }
@@ -15,7 +15,7 @@ RSpec.describe 'Processes' do
 
   describe 'GET /v3/processes' do
     let!(:web_process) {
-      VCAP::CloudController::ProcessModel.make(
+      CloudController::ProcessModel.make(
         :process,
         app:        app_model,
         type:       'web',
@@ -26,7 +26,7 @@ RSpec.describe 'Processes' do
       )
     }
     let!(:worker_process) {
-      VCAP::CloudController::ProcessModel.make(
+      CloudController::ProcessModel.make(
         :process,
         app:        app_model,
         type:       'worker',
@@ -37,7 +37,7 @@ RSpec.describe 'Processes' do
       )
     }
 
-    before { VCAP::CloudController::ProcessModel.make(:process, app: app_model) }
+    before { CloudController::ProcessModel.make(:process, app: app_model) }
 
     it 'returns a paginated list of processes' do
       get '/v3/processes?per_page=2', nil, developer_headers
@@ -134,10 +134,10 @@ RSpec.describe 'Processes' do
       end
 
       context 'by space_guids' do
-        let(:other_space) { VCAP::CloudController::Space.make(organization: space.organization) }
-        let(:other_app_model) { VCAP::CloudController::AppModel.make(space: other_space) }
+        let(:other_space) { CloudController::Space.make(organization: space.organization) }
+        let(:other_app_model) { CloudController::AppModel.make(space: other_space) }
         let!(:other_space_process) {
-          VCAP::CloudController::ProcessModel.make(
+          CloudController::ProcessModel.make(
             :process,
             app:        other_app_model,
             type:       'web',
@@ -175,10 +175,10 @@ RSpec.describe 'Processes' do
       end
 
       context 'by organization guids' do
-        let(:other_space) { VCAP::CloudController::Space.make }
+        let(:other_space) { CloudController::Space.make }
         let!(:other_org) { other_space.organization }
         let!(:other_space_process) {
-          VCAP::CloudController::ProcessModel.make(
+          CloudController::ProcessModel.make(
             :process,
             app:        other_app_model,
             type:       'web',
@@ -188,7 +188,7 @@ RSpec.describe 'Processes' do
             command:    'rackup',
           )
         }
-        let(:other_app_model) { VCAP::CloudController::AppModel.make(space: other_space) }
+        let(:other_app_model) { CloudController::AppModel.make(space: other_space) }
         let(:developer) { make_developer_for_space(other_space) }
 
         it 'returns only the matching processes' do
@@ -214,9 +214,9 @@ RSpec.describe 'Processes' do
       end
 
       context 'by app guids' do
-        let(:desired_app) { VCAP::CloudController::AppModel.make(space: space) }
+        let(:desired_app) { CloudController::AppModel.make(space: space) }
         let!(:desired_process) do
-          VCAP::CloudController::ProcessModel.make(:process,
+          CloudController::ProcessModel.make(:process,
             app:        desired_app,
             type:       'persnickety',
             instances:  3,
@@ -275,7 +275,7 @@ RSpec.describe 'Processes' do
 
   describe 'GET /v3/processes/:guid' do
     it 'retrieves the process' do
-      process = VCAP::CloudController::ProcessModel.make(
+      process = CloudController::ProcessModel.make(
         :process,
         app:        app_model,
         type:       'web',
@@ -319,9 +319,9 @@ RSpec.describe 'Processes' do
     end
 
     it 'redacts information for auditors' do
-      process = VCAP::CloudController::ProcessModel.make(:process, app: app_model, command: 'rackup')
+      process = CloudController::ProcessModel.make(:process, app: app_model, command: 'rackup')
 
-      auditor = VCAP::CloudController::User.make
+      auditor = CloudController::User.make
       space.organization.add_user(auditor)
       space.add_auditor(auditor)
 
@@ -335,7 +335,7 @@ RSpec.describe 'Processes' do
   end
 
   describe 'GET stats' do
-    let(:process) { VCAP::CloudController::ProcessModel.make(:process, type: 'worker', app: app_model) }
+    let(:process) { CloudController::ProcessModel.make(:process, type: 'worker', app: app_model) }
     let(:net_info_1) {
       {
         address: '1.2.3.4',
@@ -440,7 +440,7 @@ RSpec.describe 'Processes' do
 
   describe 'PATCH /v3/processes/:guid' do
     it 'updates the process' do
-      process = VCAP::CloudController::ProcessModel.make(
+      process = CloudController::ProcessModel.make(
         :process,
         app:                  app_model,
         type:                 'web',
@@ -500,7 +500,7 @@ RSpec.describe 'Processes' do
       expect(process.health_check_type).to eq('process')
       expect(process.health_check_timeout).to eq(20)
 
-      event = VCAP::CloudController::Event.last
+      event = CloudController::Event.last
       expect(event.values).to include({
         type:              'audit.app.process.update',
         actee:             app_model.guid,
@@ -530,7 +530,7 @@ RSpec.describe 'Processes' do
 
   describe 'POST /v3/processes/:guid/actions/scale' do
     it 'scales the process' do
-      process = VCAP::CloudController::ProcessModel.make(
+      process = CloudController::ProcessModel.make(
         :process,
         app:        app_model,
         type:       'web',
@@ -583,7 +583,7 @@ RSpec.describe 'Processes' do
       expect(process.memory).to eq(10)
       expect(process.disk_quota).to eq(20)
 
-      events = VCAP::CloudController::Event.where(actor: developer.guid).all
+      events = CloudController::Event.where(actor: developer.guid).all
 
       process_event = events.find { |e| e.type == 'audit.app.process.scale' }
       expect(process_event.values).to include({
@@ -611,16 +611,16 @@ RSpec.describe 'Processes' do
 
   describe 'DELETE /v3/processes/:guid/instances/:index' do
     before do
-      allow_any_instance_of(VCAP::CloudController::Diego::BbsAppsClient).to receive(:stop_index)
+      allow_any_instance_of(CloudController::Diego::BbsAppsClient).to receive(:stop_index)
     end
     it 'terminates a single instance of a process' do
-      process = VCAP::CloudController::ProcessModel.make(:process, type: 'web', app: app_model)
+      process = CloudController::ProcessModel.make(:process, type: 'web', app: app_model)
 
       delete "/v3/processes/#{process.guid}/instances/0", nil, developer_headers
 
       expect(last_response.status).to eq(204)
 
-      events        = VCAP::CloudController::Event.where(actor: developer.guid).all
+      events        = CloudController::Event.where(actor: developer.guid).all
       process_event = events.find { |e| e.type == 'audit.app.process.terminate_instance' }
       expect(process_event.values).to include({
         type:              'audit.app.process.terminate_instance',
@@ -643,7 +643,7 @@ RSpec.describe 'Processes' do
 
   describe 'GET /v3/apps/:guid/processes' do
     let!(:process1) {
-      VCAP::CloudController::ProcessModel.make(
+      CloudController::ProcessModel.make(
         :process,
         app:        app_model,
         type:       'web',
@@ -655,7 +655,7 @@ RSpec.describe 'Processes' do
     }
 
     let!(:process2) {
-      VCAP::CloudController::ProcessModel.make(
+      CloudController::ProcessModel.make(
         :process,
         app:        app_model,
         type:       'worker',
@@ -667,11 +667,11 @@ RSpec.describe 'Processes' do
     }
 
     let!(:process3) {
-      VCAP::CloudController::ProcessModel.make(:process, app: app_model)
+      CloudController::ProcessModel.make(:process, app: app_model)
     }
 
     let!(:deployment_process) {
-      VCAP::CloudController::ProcessModel.make(:process, app: app_model, type: 'web-deployment')
+      CloudController::ProcessModel.make(:process, app: app_model, type: 'web-deployment')
     }
 
     it 'returns a paginated list of processes for an app' do
@@ -795,7 +795,7 @@ RSpec.describe 'Processes' do
 
   describe 'GET /v3/apps/:guid/processes/:type' do
     it 'retrieves the process for an app with the requested type' do
-      process = VCAP::CloudController::ProcessModel.make(
+      process = CloudController::ProcessModel.make(
         :process,
         app:        app_model,
         type:       'web',
@@ -839,9 +839,9 @@ RSpec.describe 'Processes' do
     end
 
     it 'redacts information for auditors' do
-      VCAP::CloudController::ProcessModel.make(:process, app: app_model, type: 'web', command: 'rackup')
+      CloudController::ProcessModel.make(:process, app: app_model, type: 'web', command: 'rackup')
 
-      auditor = VCAP::CloudController::User.make
+      auditor = CloudController::User.make
       space.organization.add_user(auditor)
       space.add_auditor(auditor)
 
@@ -856,7 +856,7 @@ RSpec.describe 'Processes' do
 
   describe 'PATCH /v3/apps/:guid/processes/:type' do
     it 'updates the process' do
-      process = VCAP::CloudController::ProcessModel.make(
+      process = CloudController::ProcessModel.make(
         :process,
         app:                  app_model,
         type:                 'web',
@@ -919,7 +919,7 @@ RSpec.describe 'Processes' do
       expect(process.health_check_timeout).to eq(20)
       expect(process.health_check_http_endpoint).to eq('/healthcheck')
 
-      event = VCAP::CloudController::Event.last
+      event = CloudController::Event.last
       expect(event.values).to include({
         type:              'audit.app.process.update',
         actee:             app_model.guid,
@@ -950,7 +950,7 @@ RSpec.describe 'Processes' do
 
   describe 'POST /v3/apps/:guid/processes/:type/actions/scale' do
     it 'scales the process belonging to an app' do
-      process = VCAP::CloudController::ProcessModel.make(
+      process = CloudController::ProcessModel.make(
         :process,
         app:        app_model,
         type:       'web',
@@ -1003,7 +1003,7 @@ RSpec.describe 'Processes' do
       expect(process.memory).to eq(10)
       expect(process.disk_quota).to eq(20)
 
-      events = VCAP::CloudController::Event.where(actor: developer.guid).all
+      events = CloudController::Event.where(actor: developer.guid).all
 
       process_event = events.find { |e| e.type == 'audit.app.process.scale' }
       expect(process_event.values).to include({
@@ -1031,16 +1031,16 @@ RSpec.describe 'Processes' do
 
   describe 'DELETE /v3/apps/:guid/processes/:type/instances/:index' do
     before do
-      allow_any_instance_of(VCAP::CloudController::Diego::BbsAppsClient).to receive(:stop_index)
+      allow_any_instance_of(CloudController::Diego::BbsAppsClient).to receive(:stop_index)
     end
     it 'terminates a single instance of a process belonging to an app' do
-      process = VCAP::CloudController::ProcessModel.make(:process, type: 'web', app: app_model)
+      process = CloudController::ProcessModel.make(:process, type: 'web', app: app_model)
 
       delete "/v3/apps/#{app_model.guid}/processes/web/instances/0", nil, developer_headers
 
       expect(last_response.status).to eq(204)
 
-      events        = VCAP::CloudController::Event.where(actor: developer.guid).all
+      events        = CloudController::Event.where(actor: developer.guid).all
       process_event = events.find { |e| e.type == 'audit.app.process.terminate_instance' }
       expect(process_event.values).to include({
         type:              'audit.app.process.terminate_instance',

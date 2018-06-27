@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-module VCAP::CloudController
+module CloudController
   module Jobs::Runtime
     RSpec.describe PendingBuildCleanup, job_context: :worker do
       subject(:cleanup_job) { PendingBuildCleanup.new(staging_timeout) }

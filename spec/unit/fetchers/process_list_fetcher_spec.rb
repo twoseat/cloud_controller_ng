@@ -1,7 +1,7 @@
 require 'spec_helper'
 require 'fetchers/process_list_fetcher'
 
-module VCAP::CloudController
+module CloudController
   RSpec.describe ProcessListFetcher do
     let(:fetcher) { ProcessListFetcher.new(message) }
     let(:pagination_options) { PaginationOptions.new({}) }

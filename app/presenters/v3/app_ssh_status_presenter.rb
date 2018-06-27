@@ -1,6 +1,6 @@
 require 'presenters/v3/base_presenter'
 
-module VCAP::CloudController::Presenters::V3
+module CloudController::Presenters::V3
   class AppSshStatusPresenter
     def initialize(app, globally_enabled)
       @app = app
@@ -9,7 +9,7 @@ module VCAP::CloudController::Presenters::V3
 
     def to_hash
       {
-        enabled: VCAP::CloudController::AppSshEnabled.new(app).enabled?,
+        enabled: CloudController::AppSshEnabled.new(app).enabled?,
         reason: reason
       }
     end

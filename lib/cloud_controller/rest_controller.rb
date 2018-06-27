@@ -6,7 +6,7 @@ require 'cloud_controller/rest_controller/preloaded_object_serializer'
 require 'cloud_controller/rest_controller/object_renderer'
 require 'cloud_controller/rest_controller/paginated_collection_renderer'
 
-module VCAP::CloudController
+module CloudController
   def self.controller_from_model(model)
     controller_from_model_name(model.class.name)
   end
@@ -17,13 +17,13 @@ module VCAP::CloudController
 
   def self.controller_from_name(name)
     controller_from_name_mapping.fetch(name) do
-      VCAP::CloudController.const_get("#{name.to_s.pluralize.camelize}Controller")
+      CloudController.const_get("#{name.to_s.pluralize.camelize}Controller")
     end
   end
 
   def self.controller_from_relationship(relationship)
     return nil unless relationship.try(:association_controller).present?
-    VCAP::CloudController.const_get(relationship.association_controller)
+    CloudController.const_get(relationship.association_controller)
   end
 
   def self.controller_from_name_mapping

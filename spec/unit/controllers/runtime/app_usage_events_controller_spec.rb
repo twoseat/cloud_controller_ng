@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-module VCAP::CloudController
+module CloudController
   RSpec.describe AppUsageEventsController do
     before do
       @event1 = AppUsageEvent.make

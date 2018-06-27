@@ -1,6 +1,6 @@
 require 'netaddr'
 
-module VCAP::CloudController
+module CloudController
   class SecurityGroup < Sequel::Model
     SECURITY_GROUP_NAME_REGEX = /\A[[:alnum:][:punct:][:print:]]+\Z/
     MAX_RULES_CHAR_LENGTH = 2**24 - 1
@@ -14,7 +14,7 @@ module VCAP::CloudController
 
     many_to_many :spaces
     many_to_many :staging_spaces,
-      class: 'VCAP::CloudController::Space',
+      class: 'CloudController::Space',
       join_table: 'staging_security_groups_spaces',
       right_key: :staging_space_id,
       left_key: :staging_security_group_id

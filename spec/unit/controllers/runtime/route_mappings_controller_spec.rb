@@ -1,11 +1,11 @@
 require 'spec_helper'
 
-module VCAP::CloudController
-  RSpec.describe VCAP::CloudController::RouteMappingsController do
+module CloudController
+  RSpec.describe CloudController::RouteMappingsController do
     describe 'Route Mappings' do
       describe 'Query Parameters' do
-        it { expect(VCAP::CloudController::RouteMappingsController).to be_queryable_by(:app_guid) }
-        it { expect(VCAP::CloudController::RouteMappingsController).to be_queryable_by(:route_guid) }
+        it { expect(CloudController::RouteMappingsController).to be_queryable_by(:app_guid) }
+        it { expect(CloudController::RouteMappingsController).to be_queryable_by(:route_guid) }
       end
 
       describe 'Permissions' do

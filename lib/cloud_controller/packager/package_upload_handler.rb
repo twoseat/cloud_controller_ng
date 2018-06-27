@@ -10,7 +10,7 @@ module CloudController
       end
 
       def pack
-        package = VCAP::CloudController::PackageModel.find(guid: @package_guid)
+        package = CloudController::PackageModel.find(guid: @package_guid)
         return unless package
 
         begin
@@ -22,7 +22,7 @@ module CloudController
 
         package.succeed_upload!(checksums)
 
-        VCAP::CloudController::BitsExpiration.new.expire_packages!(package.app)
+        CloudController::BitsExpiration.new.expire_packages!(package.app)
       ensure
         FileUtils.rm_f(@uploaded_files_path) if @uploaded_files_path
       end

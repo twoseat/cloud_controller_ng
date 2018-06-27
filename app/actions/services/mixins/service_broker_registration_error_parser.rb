@@ -1,4 +1,4 @@
-module VCAP::CloudController
+module CloudController
   module ServiceBrokerRegistrationErrorParser
     def get_exception_from_errors(registration)
       errors = registration.errors

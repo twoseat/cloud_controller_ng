@@ -1,4 +1,4 @@
-module VCAP::CloudController
+module CloudController
   class ManagedServiceInstanceListFetcher
     def fetch(message:, readable_space_guids:)
       source_space_instance_dataset = ManagedServiceInstance.select_all(ServiceInstance.table_name).

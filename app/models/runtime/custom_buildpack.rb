@@ -1,6 +1,6 @@
 require 'utils/uri_utils'
 
-module VCAP::CloudController
+module CloudController
   class CustomBuildpack < Struct.new(:url)
     def to_s
       url

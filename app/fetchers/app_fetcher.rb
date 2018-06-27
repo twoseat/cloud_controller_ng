@@ -1,4 +1,4 @@
-module VCAP::CloudController
+module CloudController
   class AppFetcher
     def fetch(app_guid)
       app = AppModel.where(guid: app_guid).eager(:space, space: :organization).all.first

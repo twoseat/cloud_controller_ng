@@ -2,7 +2,7 @@ require 'cloud_controller/diego/protocol/open_process_ports'
 require 'presenters/v3/base_presenter'
 require 'models/helpers/health_check_types'
 
-module VCAP::CloudController
+module CloudController
   module Presenters
     module V3
       class ProcessPresenter < BasePresenter
@@ -33,7 +33,7 @@ module VCAP::CloudController
         end
 
         def build_links
-          url_builder = VCAP::CloudController::Presenters::ApiUrlBuilder.new
+          url_builder = CloudController::Presenters::ApiUrlBuilder.new
           {
             self:  { href: url_builder.build_url(path: "/v3/processes/#{process.guid}") },
             scale: { href: url_builder.build_url(path: "/v3/processes/#{process.guid}/actions/scale"), method: 'POST', },

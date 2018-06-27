@@ -17,7 +17,7 @@ require 'yajl/json_gem'
 Sequel.default_timezone = :utc
 ActiveSupport::JSON::Encoding.time_precision = 0
 
-module VCAP::CloudController; end
+module CloudController; end
 
 require 'cloud_controller/errors/api_error'
 require 'cloud_controller/errors/not_authenticated'

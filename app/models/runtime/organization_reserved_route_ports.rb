@@ -1,4 +1,4 @@
-module VCAP::CloudController
+module CloudController
   class OrganizationReservedRoutePorts
     def initialize(organization)
       @organization = organization
@@ -11,7 +11,7 @@ module VCAP::CloudController
     private
 
     def dataset
-      VCAP::CloudController::Route.dataset.
+      CloudController::Route.dataset.
         join(:spaces, id: :space_id).
         join(:domains, id: :routes__domain_id).
         where(spaces__organization_id: @organization.id).

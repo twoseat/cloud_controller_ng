@@ -2,7 +2,7 @@ require 'spec_helper'
 require 'messages/app_create_message'
 require 'cloud_controller/diego/lifecycles/app_buildpack_lifecycle'
 
-module VCAP::CloudController
+module CloudController
   RSpec.describe AppCreate do
     let(:user_audit_info) { UserAuditInfo.new(user_email: 'gooid', user_guid: 'amelia@cats.com') }
 

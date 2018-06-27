@@ -1,4 +1,4 @@
-module VCAP::CloudController
+module CloudController
   class Event < Sequel::Model
     class EventValidationError < StandardError; end
     plugin :serialization

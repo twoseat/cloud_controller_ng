@@ -1,4 +1,4 @@
-module VCAP::CloudController
+module CloudController
   class PackageListFetcher
     def fetch_all(message:)
       filter(message, joined_dataset)

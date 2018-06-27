@@ -1,4 +1,4 @@
-module VCAP::CloudController
+module CloudController
   module Lifecycles
     DOCKER = 'docker'.freeze
     BUILDPACK = 'buildpack'.freeze

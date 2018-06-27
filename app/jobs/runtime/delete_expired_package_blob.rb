@@ -1,7 +1,7 @@
-module VCAP::CloudController
+module CloudController
   module Jobs
     module Runtime
-      class DeleteExpiredPackageBlob < VCAP::CloudController::Jobs::CCJob
+      class DeleteExpiredPackageBlob < CloudController::Jobs::CCJob
         attr_reader :package_guid
 
         def initialize(package_guid)

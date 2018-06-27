@@ -1,4 +1,4 @@
-module VCAP::CloudController
+module CloudController
   class PortGenerator
     class << self
       def generate_port(domain_guid, possible_ports)

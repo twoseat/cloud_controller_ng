@@ -5,7 +5,7 @@ require 'cloud_controller/diego/staging_details'
 require 'cloud_controller/diego/lifecycles/lifecycle_provider'
 require 'repositories/app_usage_event_repository'
 
-module VCAP::CloudController
+module CloudController
   class BuildCreate
     class BuildError < StandardError
     end
@@ -83,7 +83,7 @@ module VCAP::CloudController
     end
 
     def custom_buildpacks_disabled?
-      VCAP::CloudController::Config.config.get(:disable_custom_buildpacks)
+      CloudController::Config.config.get(:disable_custom_buildpacks)
     end
 
     def get_staging_details(package, lifecycle)

@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-module VCAP::CloudController
+module CloudController
   RSpec.describe RouterGroupTypePopulator do
     describe 'transform' do
       let(:router_group_type_populator) { RouterGroupTypePopulator.new(RoutingApi::DisabledClient.new) }

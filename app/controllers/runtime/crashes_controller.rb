@@ -1,6 +1,6 @@
 require 'controllers/runtime/mixins/find_process_through_app'
 
-module VCAP::CloudController
+module CloudController
   class CrashesController < RestController::ModelController
     include FindProcessThroughApp
 

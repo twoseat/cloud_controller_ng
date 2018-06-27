@@ -1,4 +1,4 @@
-module VCAP::CloudController
+module CloudController
   class DropletDeleteFetcher
     def fetch(droplet_guid)
       droplet = DropletModel.where(guid: droplet_guid).eager(:space, space: :organization).all.first
