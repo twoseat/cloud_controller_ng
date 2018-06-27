@@ -93,15 +93,15 @@ module CloudController::Metrics
     end
 
     def update_vitals
-      rss_bytes, pcpu = VCAP::Stats.process_memory_bytes_and_cpu
+      rss_bytes, pcpu = Stats.process_memory_bytes_and_cpu
 
       vitals = {
         uptime:         Time.now.utc.to_i - @start_time.to_i,
         cpu:            pcpu.to_f,
         mem_bytes:      rss_bytes.to_i,
-        cpu_load_avg:   VCAP::Stats.cpu_load_average,
-        mem_used_bytes: VCAP::Stats.memory_used_bytes,
-        mem_free_bytes: VCAP::Stats.memory_free_bytes,
+        cpu_load_avg:   Stats.cpu_load_average,
+        mem_used_bytes: Stats.memory_used_bytes,
+        mem_free_bytes: Stats.memory_free_bytes,
         num_cores:      VCAP::HostSystem.new.num_cores,
       }
 

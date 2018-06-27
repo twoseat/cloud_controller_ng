@@ -351,10 +351,10 @@ module CloudController::Metrics
         allow(updater1).to receive(:update_vitals)
         allow(updater2).to receive(:update_vitals)
 
-        allow(VCAP::Stats).to receive(:process_memory_bytes_and_cpu).and_return([1.1, 2])
-        allow(VCAP::Stats).to receive(:cpu_load_average).and_return(0.5)
-        allow(VCAP::Stats).to receive(:memory_used_bytes).and_return(542)
-        allow(VCAP::Stats).to receive(:memory_free_bytes).and_return(927)
+        allow(Stats).to receive(:process_memory_bytes_and_cpu).and_return([1.1, 2])
+        allow(Stats).to receive(:cpu_load_average).and_return(0.5)
+        allow(Stats).to receive(:memory_used_bytes).and_return(542)
+        allow(Stats).to receive(:memory_free_bytes).and_return(927)
         allow_any_instance_of(VCAP::HostSystem).to receive(:num_cores).and_return(4)
       end
 
