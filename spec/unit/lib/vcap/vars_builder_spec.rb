@@ -32,7 +32,7 @@ module CloudController
               users: nil
             }
 
-            vars_builder = VCAP::VarsBuilder.new(process)
+            vars_builder = ::VarsBuilder.new(process)
             expect(vars_builder.to_hash).to eq(expected_hash)
           end
         end
@@ -58,7 +58,7 @@ module CloudController
               users: nil
             }
 
-            vars_builder = VCAP::VarsBuilder.new(v2_app)
+            vars_builder = ::VarsBuilder.new(v2_app)
             expect(vars_builder.to_hash).to eq(expected_hash)
           end
         end
@@ -87,7 +87,7 @@ module CloudController
                 users: nil
               }
 
-              vars_builder = VCAP::VarsBuilder.new(
+              vars_builder = ::VarsBuilder.new(
                 v3_app_model,
                 memory_limit: 1234,
                 staging_disk_in_mb: 5555,
@@ -113,7 +113,7 @@ module CloudController
                 users: nil
               }
 
-              vars_builder = VCAP::VarsBuilder.new(v3_app_model)
+              vars_builder = ::VarsBuilder.new(v3_app_model)
               expect(vars_builder.to_hash).to eq(expected_hash)
             end
           end
@@ -142,7 +142,7 @@ module CloudController
               users: nil
             }
 
-            vars_builder = VCAP::VarsBuilder.new(
+            vars_builder = ::VarsBuilder.new(
               v2_app,
               space: space
             )
@@ -171,7 +171,7 @@ module CloudController
               users: nil
             }
 
-            vars_builder = VCAP::VarsBuilder.new(v2_app)
+            vars_builder = ::VarsBuilder.new(v2_app)
             expect(vars_builder.to_hash).to eq(expected_hash)
           end
         end

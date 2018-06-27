@@ -7,7 +7,7 @@ module CloudController
       vars_from_message ||= {}
       staging_var_group = EnvironmentVariableGroup.staging.environment_json
 
-      vars_builder = VCAP::VarsBuilder.new(
+      vars_builder = VarsBuilder.new(
         app,
         memory_limit: memory_limit,
         staging_disk_in_mb: staging_disk_in_mb,

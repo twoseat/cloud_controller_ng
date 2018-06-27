@@ -17,7 +17,7 @@ module CloudController::Diego
     end
 
     it 'returns the correct environment hash for an application' do
-      vcap_app = VCAP::VarsBuilder.new(process).to_hash
+      vcap_app = VarsBuilder.new(process).to_hash
 
       Environment::EXCLUDE.each { |k| vcap_app.delete(k) }
       encoded_vcap_application_json = vcap_app.to_json

@@ -29,7 +29,7 @@ module CloudController
       attr_reader :process
 
       def vcap_application
-        VCAP::VarsBuilder.new(process).to_hash.reject do |k, _v|
+        VarsBuilder.new(process).to_hash.reject do |k, _v|
           EXCLUDE.include? k
         end
       end
