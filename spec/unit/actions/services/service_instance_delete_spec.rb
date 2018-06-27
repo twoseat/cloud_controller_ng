@@ -238,7 +238,7 @@ module CloudController
         it 'returns errors it has captured' do
           errors = service_instance_delete.delete(service_instance_dataset)
           expect(errors.count).to eq(1)
-          expect(errors[0]).to be_instance_of(VCAP::Services::ServiceBrokers::V2::Errors::ServiceBrokerBadResponse)
+          expect(errors[0]).to be_instance_of(Services::ServiceBrokers::V2::Errors::ServiceBrokerBadResponse)
         end
 
         it 'fails the last operation of the service instance' do
@@ -266,7 +266,7 @@ module CloudController
         it 'propagates service unbind errors' do
           errors = service_instance_delete.delete(service_instance_dataset)
           expect(errors.count).to eq(1)
-          expect(errors[0]).to be_instance_of(VCAP::Services::ServiceBrokers::V2::Errors::ServiceBrokerBadResponse)
+          expect(errors[0]).to be_instance_of(Services::ServiceBrokers::V2::Errors::ServiceBrokerBadResponse)
         end
 
         it 'does not attempt to delete that service instance' do
@@ -295,7 +295,7 @@ module CloudController
         it 'propagates service unbind errors' do
           errors = service_instance_delete.delete(service_instance_dataset)
           expect(errors.count).to eq(1)
-          expect(errors[0]).to be_instance_of(VCAP::Services::ServiceBrokers::V2::Errors::ServiceBrokerBadResponse)
+          expect(errors[0]).to be_instance_of(Services::ServiceBrokers::V2::Errors::ServiceBrokerBadResponse)
         end
 
         it 'does not attempt to delete that service instance' do

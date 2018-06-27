@@ -1,4 +1,4 @@
-module VCAP::Services::ServiceBrokers::V2
+module Services::ServiceBrokers::V2
   class CatalogPlan
     include CatalogValidationHelper
 
@@ -11,7 +11,7 @@ module VCAP::Services::ServiceBrokers::V2
       @metadata           = attrs['metadata']
       @name               = attrs['name']
       @description        = attrs['description']
-      @errors             = VCAP::Services::ValidationErrors.new
+      @errors             = Services::ValidationErrors.new
       @free               = attrs['free'].nil? ? true : attrs['free']
       @bindable           = attrs['bindable']
       build_schemas(attrs['schemas'])

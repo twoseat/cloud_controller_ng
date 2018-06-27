@@ -1,6 +1,6 @@
 require 'json-schema'
 
-module VCAP::Services::ServiceBrokers::V2
+module Services::ServiceBrokers::V2
   class Schema
     include ActiveModel::Validations
 

@@ -10,11 +10,11 @@ module CloudController
     describe '#single_delete_sync' do
       let(:service_binding) { ServiceBinding.make }
       let(:service_instance) { service_binding.service_instance }
-      let(:client) { instance_double(VCAP::Services::ServiceBrokers::V2::Client) }
+      let(:client) { instance_double(Services::ServiceBrokers::V2::Client) }
       let(:service_binding_url_pattern) { %r{/v2/service_instances/#{service_instance.guid}/service_bindings/} }
 
       before do
-        allow(VCAP::Services::ServiceClientProvider).to receive(:provide).and_return(client)
+        allow(Services::ServiceClientProvider).to receive(:provide).and_return(client)
         allow(client).to receive(:unbind)
         stub_request(:delete, service_binding_url_pattern)
       end
@@ -81,7 +81,7 @@ module CloudController
       let(:service_binding) { ServiceBinding.make }
 
       before do
-        allow_any_instance_of(VCAP::Services::ServiceBrokers::V2::Client).to receive(:unbind)
+        allow_any_instance_of(Services::ServiceBrokers::V2::Client).to receive(:unbind)
       end
 
       it 'returns a delete job for the service binding' do
@@ -99,7 +99,7 @@ module CloudController
       let(:service_binding2) { ServiceBinding.make }
 
       before do
-        allow_any_instance_of(VCAP::Services::ServiceBrokers::V2::Client).to receive(:unbind)
+        allow_any_instance_of(Services::ServiceBrokers::V2::Client).to receive(:unbind)
       end
 
       it 'deletes multiple bindings' do

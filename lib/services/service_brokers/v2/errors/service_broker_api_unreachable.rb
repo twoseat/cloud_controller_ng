@@ -1,6 +1,6 @@
 require 'net/http'
 
-module VCAP::Services
+module Services
   module ServiceBrokers
     module V2
       module Errors

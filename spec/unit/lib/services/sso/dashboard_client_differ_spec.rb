@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-module VCAP::Services::SSO
+module Services::SSO
   RSpec.describe DashboardClientDiffer do
     let(:differ) { DashboardClientDiffer.new(service_broker) }
     let(:service_broker) { double(:service_broker, id: 'service-broker-1') }

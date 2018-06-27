@@ -1,4 +1,4 @@
-module VCAP::Services end
+module Services end
 
 require 'services/validation_errors'
 require 'services/sso'

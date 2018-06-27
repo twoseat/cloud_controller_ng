@@ -1,4 +1,4 @@
-module VCAP::Services::ServiceBrokers
+module Services::ServiceBrokers
   class NullClient
     def unbind(_)
       {}

@@ -34,7 +34,7 @@ RSpec.describe 'Service Broker API integration' do
       end
 
       context 'when the broker returns a route service url' do
-        let(:service_broker_client) { instance_double(VCAP::Services::ServiceBrokers::V2::HttpClient) }
+        let(:service_broker_client) { instance_double(Services::ServiceBrokers::V2::HttpClient) }
 
         before do
           stub_request(:put, service_broker_bind_request).

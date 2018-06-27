@@ -11,7 +11,7 @@ module CloudController
 
       raise_if_binding_locked(service_binding)
 
-      client = VCAP::Services::ServiceClientProvider.provide(instance: service_binding.service_instance)
+      client = Services::ServiceClientProvider.provide(instance: service_binding.service_instance)
       response = client.fetch_service_binding(service_binding)
       response.fetch(:parameters, {})
     end

@@ -1,20 +1,20 @@
 require 'spec_helper'
 
-module VCAP::Services::ServiceBrokers
+module Services::ServiceBrokers
   RSpec.describe ServiceBrokerRemover do
     subject(:remover) { ServiceBrokerRemover.new(services_events_repository) }
     let(:services_events_repository) do
       CloudController::Repositories::ServiceEventRepository.new(CloudController::UserAuditInfo.new(user_guid: user.guid, user_email: email))
     end
     let(:broker) { CloudController::ServiceBroker.make }
-    let(:dashboard_client_manager) { instance_double(VCAP::Services::SSO::DashboardClientManager) }
+    let(:dashboard_client_manager) { instance_double(Services::SSO::DashboardClientManager) }
     let(:security_context) { class_double(CloudController::SecurityContext, current_user: user, current_user_email: email) }
     let(:user) { CloudController::User.make }
     let(:email) { 'email@example.com' }
 
     describe '#remove' do
       before do
-        allow(VCAP::Services::SSO::DashboardClientManager).to receive(:new).and_return(dashboard_client_manager)
+        allow(Services::SSO::DashboardClientManager).to receive(:new).and_return(dashboard_client_manager)
         allow(broker).to receive(:destroy)
         allow(dashboard_client_manager).to receive(:remove_clients_for_broker)
       end

@@ -1,4 +1,4 @@
-module VCAP::Services::ServiceBrokers::V2
+module Services::ServiceBrokers::V2
   module CatalogValidationHelper
     def validate_string!(name, input, opts={})
       if !input.is_a?(String) && !input.nil?

@@ -6,14 +6,12 @@ require 'vcap/services/api/const'
 require 'vcap/services/api/messages'
 require 'vcap/services/api/async_requests'
 
-module VCAP
-  module Services
-    module Api
-    end
+module Services
+  module Api
   end
 end
 
-module VCAP::Services::Api
+module Services::Api
   class ServiceGatewayClient
     # Public: Indicate gateway client encounter an unexpected error,
     # such as can't connect to gateway or can't decode response.

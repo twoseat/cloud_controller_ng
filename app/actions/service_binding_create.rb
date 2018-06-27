@@ -36,7 +36,7 @@ module CloudController
       )
       raise InvalidServiceBinding.new(binding.errors.full_messages.join(' ')) unless binding.valid?
 
-      client = VCAP::Services::ServiceClientProvider.provide(instance: service_instance)
+      client = Services::ServiceClientProvider.provide(instance: service_instance)
 
       binding_result = request_binding_from_broker(client, binding, message.parameters, accepts_incomplete)
 

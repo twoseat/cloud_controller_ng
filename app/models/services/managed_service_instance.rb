@@ -93,7 +93,7 @@ module CloudController
     end
 
     def requester
-      VCAP::Services::Api::SynchronousHttpRequest
+      Services::Api::SynchronousHttpRequest
     end
 
     def service

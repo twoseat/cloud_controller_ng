@@ -1,9 +1,9 @@
 require 'spec_helper'
 
-module VCAP::Services::ServiceBrokers
+module Services::ServiceBrokers
   RSpec.describe ValidationErrorsFormatter do
     describe '#format(validation_errors)' do
-      let(:errors) { VCAP::Services::ValidationErrors.new }
+      let(:errors) { Services::ValidationErrors.new }
       let(:service_broker) { instance_double(CloudController::ServiceBroker) }
       let(:service_1) { V2::CatalogService.new(service_broker, 'name' => 'service-1') }
       let(:service_2) { V2::CatalogService.new(service_broker, 'name' => 'service-2') }

@@ -319,7 +319,7 @@ RSpec.describe 'Service Instances' do
 
   describe 'DELETE /v3/service_instances/:guid/relationships/shared_spaces/:space-guid' do
     before do
-      allow(VCAP::Services::ServiceBrokers::V2::Client).to receive(:new) do |*args, **kwargs, &block|
+      allow(Services::ServiceBrokers::V2::Client).to receive(:new) do |*args, **kwargs, &block|
         FakeServiceBrokerV2Client.new(*args, **kwargs, &block)
       end
 

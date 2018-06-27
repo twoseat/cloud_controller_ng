@@ -1,4 +1,4 @@
-module VCAP::Services::SSO::Commands
+module Services::SSO::Commands
   class CreateClientCommand
     attr_reader :client_attrs
 

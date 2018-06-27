@@ -1,4 +1,4 @@
-module VCAP::Services::ServiceBrokers::V2
+module Services::ServiceBrokers::V2
   class Client
     CATALOG_PATH = '/v2/catalog'.freeze
     PLATFORM     = 'cloudfoundry'.freeze
@@ -7,10 +7,10 @@ module VCAP::Services::ServiceBrokers::V2
 
     def initialize(attrs)
       http_client_attrs = attrs.slice(:url, :auth_username, :auth_password)
-      @http_client      = VCAP::Services::ServiceBrokers::V2::HttpClient.new(http_client_attrs)
-      @response_parser  = VCAP::Services::ServiceBrokers::V2::ResponseParser.new(@http_client.url)
+      @http_client      = Services::ServiceBrokers::V2::HttpClient.new(http_client_attrs)
+      @response_parser  = Services::ServiceBrokers::V2::ResponseParser.new(@http_client.url)
       @attrs            = attrs
-      @orphan_mitigator = VCAP::Services::ServiceBrokers::V2::OrphanMitigator.new
+      @orphan_mitigator = Services::ServiceBrokers::V2::OrphanMitigator.new
       @config           = CloudController::Config.config
     end
 
@@ -188,7 +188,7 @@ module VCAP::Services::ServiceBrokers::V2
                           broker_provided_operation: async_response?(response) ? parsed_response['operation'] : nil
                         }.compact
       }
-    rescue VCAP::Services::ServiceBrokers::V2::Errors::ServiceBrokerConflict => e
+    rescue Services::ServiceBrokers::V2::Errors::ServiceBrokerConflict => e
       raise CloudController::Errors::ApiError.new_from_details('ServiceInstanceDeprovisionFailed', e.message)
     rescue => e
       raise e.exception("Service instance #{instance.name}: #{e.message}")

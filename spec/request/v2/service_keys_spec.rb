@@ -98,7 +98,7 @@ RSpec.describe 'ServiceKeys' do
     let!(:service_key) { CloudController::ServiceKey.make(service_instance: service_instance) }
 
     before do
-      allow(VCAP::Services::ServiceBrokers::V2::Client).to receive(:new) do |*args, **kwargs, &block|
+      allow(Services::ServiceBrokers::V2::Client).to receive(:new) do |*args, **kwargs, &block|
         fb = FakeServiceBrokerV2Client.new(*args, **kwargs, &block)
         fb.parameters = {
           parameters: {

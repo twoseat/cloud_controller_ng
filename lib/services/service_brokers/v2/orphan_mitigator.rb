@@ -2,7 +2,7 @@ require 'jobs/services/delete_orphaned_binding'
 require 'jobs/services/delete_orphaned_instance'
 require 'jobs/services/delete_orphaned_key'
 
-module VCAP::Services
+module Services
   module ServiceBrokers
     module V2
       class OrphanMitigator

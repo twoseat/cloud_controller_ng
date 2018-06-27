@@ -1,7 +1,7 @@
 require 'spec_helper'
 require 'securerandom'
 
-module VCAP::Services::ServiceBrokers::V2
+module Services::ServiceBrokers::V2
   RSpec.describe CatalogPlan do
     let(:plan) { CatalogPlan.new(catalog_service, plan_attrs) }
     let(:plan_attrs) do
@@ -15,7 +15,7 @@ module VCAP::Services::ServiceBrokers::V2
         'schemas'     => opts[:schemas] || {}
       }
     end
-    let(:catalog_service) { instance_double(VCAP::Services::ServiceBrokers::V2::CatalogService) }
+    let(:catalog_service) { instance_double(Services::ServiceBrokers::V2::CatalogService) }
     let(:opts) { {} }
 
     describe 'initializing' do

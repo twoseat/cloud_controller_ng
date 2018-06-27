@@ -1,11 +1,11 @@
-module VCAP::Services::ServiceBrokers::V2
+module Services::ServiceBrokers::V2
   class ParametersSchema
     include CatalogValidationHelper
 
     attr_reader :errors, :parameters
 
     def initialize(parent, path)
-      @errors = VCAP::Services::ValidationErrors.new
+      @errors = Services::ValidationErrors.new
       @parameters_data = parent['parameters']
       @path = path + ['parameters']
 

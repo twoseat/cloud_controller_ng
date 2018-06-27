@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-module VCAP::Services::ServiceBrokers::V2
+module Services::ServiceBrokers::V2
   RSpec.describe Catalog do
     let(:broker) { CloudController::ServiceBroker.make }
 

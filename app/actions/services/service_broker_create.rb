@@ -24,7 +24,7 @@ module CloudController
       broker = ServiceBroker.new(params)
       access_validator.validate_access(:create, broker, params)
 
-      registration = VCAP::Services::ServiceBrokers::ServiceBrokerRegistration.new(
+      registration = Services::ServiceBrokers::ServiceBrokerRegistration.new(
         broker,
         @service_manager,
         @services_event_repository,

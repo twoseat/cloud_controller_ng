@@ -100,7 +100,7 @@ module CloudController
 
     def client
       if purging
-        VCAP::Services::ServiceBrokers::NullClient.new
+        Services::ServiceBrokers::NullClient.new
       else
         service_broker.client
       end

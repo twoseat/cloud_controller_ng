@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-module VCAP::Services::SSO::Commands
+module Services::SSO::Commands
   RSpec.describe UpdateClientCommand do
     let(:client_attrs) do
       {

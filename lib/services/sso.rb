@@ -1,4 +1,4 @@
-module VCAP::Services::SSO end
+module Services::SSO end
 
 require 'services/sso/commands'
 require 'services/sso/uaa'

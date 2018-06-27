@@ -3,7 +3,7 @@ require 'spec_helper'
 module CloudController
   module Jobs::Services
     RSpec.describe DeleteOrphanedKey, job_context: :worker do
-      let(:client) { instance_double('VCAP::Services::ServiceBrokers::V2::Client') }
+      let(:client) { instance_double('Services::ServiceBrokers::V2::Client') }
       let(:service_instance_guid) { 'fake-instance-guid' }
       let(:key_guid) { 'fake-key-guid' }
 
@@ -18,7 +18,7 @@ module CloudController
       describe '#perform' do
         before do
           allow(client).to receive(:unbind).with(service_key)
-          allow(VCAP::Services::ServiceBrokers::V2::Client).to receive(:new).and_return(client)
+          allow(Services::ServiceBrokers::V2::Client).to receive(:new).and_return(client)
         end
 
         it 'deletes the key' do
@@ -52,7 +52,7 @@ module CloudController
 
         it 'retries 10 times, doubling its back_off time with each attempt' do
           allow(client).to receive(:unbind).and_raise(StandardError.new('I always fail'))
-          allow(VCAP::Services::ServiceBrokers::V2::Client).to receive(:new).and_return(client)
+          allow(Services::ServiceBrokers::V2::Client).to receive(:new).and_return(client)
 
           start = Delayed::Job.db_time_now
           opts = { queue: 'cc-generic', run_at: start }

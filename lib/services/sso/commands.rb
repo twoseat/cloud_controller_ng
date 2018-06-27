@@ -1,4 +1,4 @@
-module VCAP::Services::SSO::Commands end
+module Services::SSO::Commands end
 
 require 'services/sso/commands/create_client_command'
 require 'services/sso/commands/delete_client_command'

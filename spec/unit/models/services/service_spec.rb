@@ -443,7 +443,7 @@ module CloudController
       let(:service) { Service.make(service_broker: ServiceBroker.make) }
 
       it 'returns a broker client' do
-        fake_client = double(VCAP::Services::ServiceBrokers::V2::Client)
+        fake_client = double(Services::ServiceBrokers::V2::Client)
         allow(service.service_broker).to receive(:client).and_return(fake_client)
 
         client = service.client
@@ -454,7 +454,7 @@ module CloudController
         let(:service) { Service.make(purging: true) }
 
         it 'returns a null broker client' do
-          expect(service.client).to be_a(VCAP::Services::ServiceBrokers::NullClient)
+          expect(service.client).to be_a(Services::ServiceBrokers::NullClient)
         end
       end
     end

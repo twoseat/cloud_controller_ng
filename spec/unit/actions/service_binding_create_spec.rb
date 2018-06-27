@@ -14,7 +14,7 @@ module CloudController
       let(:service_plan) { ServicePlan.make(service: service) }
       let(:app) { AppModel.make }
       let(:service_instance) { ManagedServiceInstance.make(space: app.space, service_plan: service_plan) }
-      let(:client) { instance_double(VCAP::Services::ServiceBrokers::V2::Client, unbind: {}) }
+      let(:client) { instance_double(Services::ServiceBrokers::V2::Client, unbind: {}) }
       let(:accepts_incomplete) { false }
       let(:request) do
         {
@@ -38,7 +38,7 @@ module CloudController
       let(:binding_params) { {} }
 
       before do
-        allow(VCAP::Services::ServiceClientProvider).to receive(:provide).and_return(client)
+        allow(Services::ServiceClientProvider).to receive(:provide).and_return(client)
         allow(client).to receive(:bind).and_return({ async: false, binding: binding_params, operation: nil })
       end
 

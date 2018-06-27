@@ -17,7 +17,7 @@ module CloudController
 
         service_key = ServiceKey.new(key_attrs)
 
-        client = VCAP::Services::ServiceClientProvider.provide(instance: service_instance)
+        client = Services::ServiceClientProvider.provide(instance: service_instance)
         attributes_to_update = client.create_service_key(service_key, arbitrary_parameters: arbitrary_parameters)
 
         begin

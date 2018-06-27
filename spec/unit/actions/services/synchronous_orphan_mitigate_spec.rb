@@ -2,7 +2,7 @@ require 'spec_helper'
 
 RSpec.describe 'Synchronous orphan mitigation' do
   let(:logger) { double }
-  let(:client) { instance_double(VCAP::Services::ServiceBrokers::V2::Client) }
+  let(:client) { instance_double(Services::ServiceBrokers::V2::Client) }
   subject { CloudController::SynchronousOrphanMitigate.new(logger) }
 
   before do
@@ -18,7 +18,7 @@ RSpec.describe 'Synchronous orphan mitigation' do
       allow(service_instance).to receive(:guid).and_return(service_instance_guid)
       allow(client).to receive(:deprovision)
 
-      allow(VCAP::Services::ServiceClientProvider).to receive(:provide).
+      allow(Services::ServiceClientProvider).to receive(:provide).
         with(hash_including(instance: service_instance)).and_return(client)
     end
 
@@ -63,7 +63,7 @@ RSpec.describe 'Synchronous orphan mitigation' do
       allow(service_binding).to receive(:service_instance).and_return(service_instance)
       allow(client).to receive(:unbind)
 
-      allow(VCAP::Services::ServiceClientProvider).to receive(:provide).
+      allow(Services::ServiceClientProvider).to receive(:provide).
         with(hash_including(instance: service_binding.service_instance)).and_return(client)
     end
 
@@ -108,7 +108,7 @@ RSpec.describe 'Synchronous orphan mitigation' do
       allow(service_key).to receive(:service_instance).and_return(service_instance)
       allow(client).to receive(:unbind)
 
-      allow(VCAP::Services::ServiceClientProvider).to receive(:provide).
+      allow(Services::ServiceClientProvider).to receive(:provide).
         with(hash_including(instance: service_key.service_instance)).and_return(client)
     end
 

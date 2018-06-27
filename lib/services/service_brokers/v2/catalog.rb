@@ -1,4 +1,4 @@
-module VCAP::Services::ServiceBrokers::V2
+module Services::ServiceBrokers::V2
   class Catalog
     attr_reader :service_broker, :services, :plans, :errors
 
@@ -6,7 +6,7 @@ module VCAP::Services::ServiceBrokers::V2
       @service_broker = service_broker
       @services       = []
       @plans          = []
-      @errors         = VCAP::Services::ValidationErrors.new
+      @errors         = Services::ValidationErrors.new
 
       catalog_hash.fetch('services', []).each do |service_attrs|
         service = CatalogService.new(service_broker, service_attrs)

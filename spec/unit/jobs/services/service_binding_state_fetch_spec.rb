@@ -39,10 +39,10 @@ module CloudController
           let(:job) { CloudController::Jobs::Services::ServiceBindingStateFetch.new(service_binding.guid, user_info, request_attrs) }
           let(:state) { 'in progress' }
           let(:description) { '10%' }
-          let(:client) { instance_double(VCAP::Services::ServiceBrokers::V2::Client) }
+          let(:client) { instance_double(::Services::ServiceBrokers::V2::Client) }
 
           before do
-            allow(VCAP::Services::ServiceClientProvider).to receive(:provide).and_return(client)
+            allow(::Services::ServiceClientProvider).to receive(:provide).and_return(client)
             allow(client).to receive(:fetch_service_binding_last_operation).and_return(last_operation: { state: state, description: description })
           end
 
@@ -138,13 +138,13 @@ module CloudController
 
               context 'and the broker returns invalid credentials' do
                 let(:broker_response) {
-                  VCAP::Services::ServiceBrokers::V2::HttpResponse.new(
+                  ::Services::ServiceBrokers::V2::HttpResponse.new(
                     code: '200',
                     body: {}.to_json,
                   )
                 }
                 let(:binding_response) { { 'credentials': 'invalid' } }
-                let(:response_malformed_exception) { VCAP::Services::ServiceBrokers::V2::Errors::ServiceBrokerResponseMalformed.new(nil, nil, broker_response, nil) }
+                let(:response_malformed_exception) { ::Services::ServiceBrokers::V2::Errors::ServiceBrokerResponseMalformed.new(nil, nil, broker_response, nil) }
 
                 before do
                   allow(client).to receive(:fetch_service_binding).with(service_binding).and_raise(response_malformed_exception)
@@ -177,13 +177,13 @@ module CloudController
 
               context 'and the broker returns with invalid status code' do
                 let(:broker_response) {
-                  VCAP::Services::ServiceBrokers::V2::HttpResponse.new(
+                  ::Services::ServiceBrokers::V2::HttpResponse.new(
                     code: '204',
                     body: {}.to_json,
                   )
                 }
                 let(:binding_response) { { 'credentials': '{}' } }
-                let(:bad_response_exception) { VCAP::Services::ServiceBrokers::V2::Errors::ServiceBrokerBadResponse.new(nil, nil, broker_response) }
+                let(:bad_response_exception) { ::Services::ServiceBrokers::V2::Errors::ServiceBrokerBadResponse.new(nil, nil, broker_response) }
 
                 before do
                   allow(client).to receive(:fetch_service_binding).with(service_binding).and_raise(bad_response_exception)
@@ -216,13 +216,13 @@ module CloudController
 
               context 'and the broker response timeout' do
                 let(:broker_response) {
-                  VCAP::Services::ServiceBrokers::V2::HttpResponse.new(
+                  ::Services::ServiceBrokers::V2::HttpResponse.new(
                     code: '204',
                     body: {}.to_json,
                   )
                 }
                 let(:binding_response) { { 'credentials': '{}' } }
-                let(:timeout_exception) { VCAP::Services::ServiceBrokers::V2::Errors::ServiceBrokerApiTimeout.new(nil, nil, broker_response) }
+                let(:timeout_exception) { ::Services::ServiceBrokers::V2::Errors::ServiceBrokerApiTimeout.new(nil, nil, broker_response) }
 
                 before do
                   allow(client).to receive(:fetch_service_binding).with(service_binding).and_raise(timeout_exception)
@@ -352,7 +352,7 @@ module CloudController
 
           context 'when calling last operation responds with an error' do
             before do
-              response = VCAP::Services::ServiceBrokers::V2::HttpResponse.new(code: 412, body: {})
+              response = ::Services::ServiceBrokers::V2::HttpResponse.new(code: 412, body: {})
               err = HttpResponseError.new('oops', 'uri', 'GET', response)
               allow(client).to receive(:fetch_service_binding_last_operation).and_raise(err)
 
@@ -384,7 +384,7 @@ module CloudController
 
           context 'when calling last operation times out' do
             before do
-              err = VCAP::Services::ServiceBrokers::V2::Errors::ServiceBrokerApiTimeout.new('uri', 'GET', {})
+              err = ::Services::ServiceBrokers::V2::Errors::ServiceBrokerApiTimeout.new('uri', 'GET', {})
               allow(client).to receive(:fetch_service_binding_last_operation).and_raise(err)
               run_job(job)
             end

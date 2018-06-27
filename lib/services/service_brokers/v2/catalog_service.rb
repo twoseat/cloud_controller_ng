@@ -1,4 +1,4 @@
-module VCAP::Services::ServiceBrokers::V2
+module Services::ServiceBrokers::V2
   class CatalogService
     include CatalogValidationHelper
 
@@ -20,7 +20,7 @@ module VCAP::Services::ServiceBrokers::V2
       @plans_data         = attrs['plans']
       @dashboard_client   = attrs['dashboard_client']
       @plan_updateable    = attrs['plan_updateable'] || false
-      @errors             = VCAP::Services::ValidationErrors.new
+      @errors             = Services::ValidationErrors.new
       @plans              = []
       @bindings_retrievable = attrs.fetch('bindings_retrievable', false)
       @instances_retrievable = attrs.fetch('instances_retrievable', false)

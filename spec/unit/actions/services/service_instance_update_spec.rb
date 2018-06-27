@@ -109,7 +109,7 @@ module CloudController
 
             expect {
               service_instance_update.update_service_instance(service_instance, request_attrs)
-            }.to raise_error(VCAP::Services::ServiceBrokers::V2::Errors::ServiceBrokerBadResponse)
+            }.to raise_error(Services::ServiceBrokers::V2::Errors::ServiceBrokerBadResponse)
 
             service_instance.reload
             expect(service_instance.name).to eq(old_name)
@@ -316,7 +316,7 @@ module CloudController
         it 'fails to update the service instance' do
           expect {
             service_instance_update.update_service_instance(service_instance, request_attrs)
-          }.to raise_error(VCAP::Services::ServiceBrokers::V2::Errors::ServiceBrokerResponseMalformed,
+          }.to raise_error(Services::ServiceBrokers::V2::Errors::ServiceBrokerResponseMalformed,
                            %r{The property '#/dashboard_url' .* did not match the following type: string})
 
           service_instance.reload

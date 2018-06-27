@@ -14,7 +14,7 @@ module CloudController
 
       service_instance = ManagedServiceInstance.new(request_params)
 
-      client = VCAP::Services::ServiceClientProvider.provide({ instance: service_instance })
+      client = Services::ServiceClientProvider.provide({ instance: service_instance })
 
       broker_response = client.provision(
         service_instance,

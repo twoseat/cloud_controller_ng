@@ -1,4 +1,4 @@
-module VCAP::Services::SSO::Commands
+module Services::SSO::Commands
   class DeleteClientCommand
     attr_reader :client_id, :client_attrs
 

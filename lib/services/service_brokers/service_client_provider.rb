@@ -1,4 +1,4 @@
-module VCAP::Services
+module Services
   class ServiceClientProvider
     def self.provide(opts={})
       return provide_client_for_broker(opts[:broker]) if opts[:broker]
@@ -10,7 +10,7 @@ module VCAP::Services
 
       def provide_client_for_instance(service_instance)
         if service_instance.is_a? CloudController::UserProvidedServiceInstance
-          VCAP::Services::ServiceBrokers::UserProvided::Client.new
+          Services::ServiceBrokers::UserProvided::Client.new
         else
           provide_client_for_broker(service_instance.service_broker)
         end
@@ -22,7 +22,7 @@ module VCAP::Services
           auth_username: service_broker.auth_username,
           auth_password: service_broker.auth_password
         }
-        VCAP::Services::ServiceBrokers::V2::Client.new(client_attrs)
+        Services::ServiceBrokers::V2::Client.new(client_attrs)
       end
     end
   end

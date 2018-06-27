@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-module VCAP::Services::ServiceBrokers::V2
+module Services::ServiceBrokers::V2
   RSpec.describe 'schema validation' do
     describe 'ServiceInstanceSchema' do
       subject do
@@ -34,11 +34,11 @@ module VCAP::Services::ServiceBrokers::V2
 
         context 'when it not valid' do
           let(:instance) { { 'create' => {} } }
-          let(:validation_error) { VCAP::Services::ValidationErrors.new }
+          let(:validation_error) { Services::ValidationErrors.new }
           before do
             validation_error.add('some error')
-            allow_any_instance_of(VCAP::Services::ServiceBrokers::V2::ParametersSchema).to receive(:errors).and_return(validation_error)
-            allow_any_instance_of(VCAP::Services::ServiceBrokers::V2::ParametersSchema).to receive(:valid?).and_return(false)
+            allow_any_instance_of(Services::ServiceBrokers::V2::ParametersSchema).to receive(:errors).and_return(validation_error)
+            allow_any_instance_of(Services::ServiceBrokers::V2::ParametersSchema).to receive(:valid?).and_return(false)
           end
 
           its(:valid?) { should be false }
@@ -72,11 +72,11 @@ module VCAP::Services::ServiceBrokers::V2
 
         context 'when it not valid' do
           let(:instance) { { 'update' => {} } }
-          let(:validation_error) { VCAP::Services::ValidationErrors.new }
+          let(:validation_error) { Services::ValidationErrors.new }
           before do
             validation_error.add('some error')
-            allow_any_instance_of(VCAP::Services::ServiceBrokers::V2::ParametersSchema).to receive(:errors).and_return(validation_error)
-            allow_any_instance_of(VCAP::Services::ServiceBrokers::V2::ParametersSchema).to receive(:valid?).and_return(false)
+            allow_any_instance_of(Services::ServiceBrokers::V2::ParametersSchema).to receive(:errors).and_return(validation_error)
+            allow_any_instance_of(Services::ServiceBrokers::V2::ParametersSchema).to receive(:valid?).and_return(false)
           end
 
           its(:valid?) { should be false }

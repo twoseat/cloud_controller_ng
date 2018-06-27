@@ -13,7 +13,7 @@ RSpec.describe 'ServiceInstances' do
     let(:service_plan) { CloudController::ServicePlan.make }
 
     before do
-      allow(VCAP::Services::ServiceBrokers::V2::Client).to receive(:new) do |*args, **kwargs, &block|
+      allow(Services::ServiceBrokers::V2::Client).to receive(:new) do |*args, **kwargs, &block|
         FakeServiceBrokerV2Client.new(*args, **kwargs, &block)
       end
     end
@@ -78,7 +78,7 @@ RSpec.describe 'ServiceInstances' do
     let(:service_instance) { CloudController::ManagedServiceInstance.make(space: space, service_plan: old_service_plan) }
 
     before do
-      allow(VCAP::Services::ServiceBrokers::V2::Client).to receive(:new) do |*args, **kwargs, &block|
+      allow(Services::ServiceBrokers::V2::Client).to receive(:new) do |*args, **kwargs, &block|
         FakeServiceBrokerV2Client.new(*args, **kwargs, &block)
       end
     end
@@ -291,7 +291,7 @@ RSpec.describe 'ServiceInstances' do
       before do
         set_current_user_as_admin
 
-        allow(VCAP::Services::ServiceBrokers::V2::Client).to receive(:new) do |*args, **kwargs, &block|
+        allow(Services::ServiceBrokers::V2::Client).to receive(:new) do |*args, **kwargs, &block|
           fb = FakeServiceBrokerV2Client.new(*args, **kwargs, &block)
           fb.parameters = {
             parameters: {
@@ -331,7 +331,7 @@ RSpec.describe 'ServiceInstances' do
     let!(:route_binding) { CloudController::RouteBinding.make(route: route, service_instance: service_instance) }
 
     before do
-      allow(VCAP::Services::ServiceBrokers::V2::Client).to receive(:new) do |*args, **kwargs, &block|
+      allow(Services::ServiceBrokers::V2::Client).to receive(:new) do |*args, **kwargs, &block|
         fb = FakeServiceBrokerV2Client.new(*args, **kwargs, &block)
         fb.parameters = {
           parameters: {
@@ -465,7 +465,7 @@ RSpec.describe 'ServiceInstances' do
 
     context 'when the service instance has been shared' do
       before do
-        allow(VCAP::Services::ServiceBrokers::V2::Client).to receive(:new) do |*args, **kwargs, &block|
+        allow(Services::ServiceBrokers::V2::Client).to receive(:new) do |*args, **kwargs, &block|
           FakeServiceBrokerV2Client.new(*args, **kwargs, &block)
         end
 

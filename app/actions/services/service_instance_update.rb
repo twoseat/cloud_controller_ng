@@ -65,7 +65,7 @@ module CloudController
                        service_instance.service_plan
                      end
 
-      client = VCAP::Services::ServiceClientProvider.provide({ instance: service_instance })
+      client = Services::ServiceClientProvider.provide({ instance: service_instance })
 
       response, err = client.update(
         service_instance,

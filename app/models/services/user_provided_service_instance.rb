@@ -13,7 +13,7 @@ module CloudController
     end
 
     def client
-      VCAP::Services::ServiceBrokers::UserProvided::Client.new
+      Services::ServiceBrokers::UserProvided::Client.new
     end
 
     def save_with_new_operation(_, _); end

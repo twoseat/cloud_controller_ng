@@ -1,6 +1,6 @@
 require 'uaa'
 
-module VCAP::Services::SSO::UAA
+module Services::SSO::UAA
   class UaaClientManager
     ROUTER_404_KEY   = 'X-Cf-Routererror'.freeze
     ROUTER_404_VALUE = 'unknown_route'.freeze

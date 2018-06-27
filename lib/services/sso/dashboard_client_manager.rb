@@ -1,4 +1,4 @@
-module VCAP::Services::SSO
+module Services::SSO
   class DashboardClientManager
     attr_reader :errors, :warnings
 
@@ -10,10 +10,10 @@ module VCAP::Services::SSO
 
     def initialize(broker, services_event_repository)
       @broker   = broker
-      @errors   = VCAP::Services::ValidationErrors.new
+      @errors   = Services::ValidationErrors.new
       @warnings = []
 
-      @client_manager = VCAP::Services::SSO::UAA::UaaClientManager.new
+      @client_manager = Services::SSO::UAA::UaaClientManager.new
 
       @differ = DashboardClientDiffer.new(broker)
 

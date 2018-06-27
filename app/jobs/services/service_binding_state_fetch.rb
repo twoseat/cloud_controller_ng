@@ -15,13 +15,13 @@ module CloudController
           service_binding = ServiceBinding.first(guid: @service_binding_guid)
           return if service_binding.nil? # assume the binding has been purged
 
-          client = VCAP::Services::ServiceClientProvider.provide(instance: service_binding.service_instance)
+          client = ::Services::ServiceClientProvider.provide(instance: service_binding.service_instance)
 
           last_operation_result = client.fetch_service_binding_last_operation(service_binding)
           if last_operation_result[:last_operation][:state] == 'succeeded'
             begin
               binding_response = client.fetch_service_binding(service_binding)
-            rescue HttpResponseError, VCAP::Services::ServiceBrokers::V2::Errors::ServiceBrokerApiTimeout => e
+            rescue HttpResponseError, ::Services::ServiceBrokers::V2::Errors::ServiceBrokerApiTimeout => e
               set_binding_failed_state(service_binding, logger)
               logger.error("There was an error while fetching the service binding details: #{e}")
               return
@@ -36,7 +36,7 @@ module CloudController
 
           service_binding.last_operation.update(last_operation_result[:last_operation])
           retry_job unless service_binding.terminal_state?
-        rescue HttpResponseError, Sequel::Error, VCAP::Services::ServiceBrokers::V2::Errors::ServiceBrokerApiTimeout => e
+        rescue HttpResponseError, Sequel::Error, ::Services::ServiceBrokers::V2::Errors::ServiceBrokerApiTimeout => e
           logger.error("There was an error while fetching the service binding operation state: #{e}")
           retry_job
         end

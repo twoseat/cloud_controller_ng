@@ -6,7 +6,7 @@ RSpec.describe 'ServiceBrokers' do
     plan_name = 'myplan'
 
     before do
-      allow(VCAP::Services::ServiceBrokers::V2::Client).to receive(:new) do |*args, **kwargs, &block|
+      allow(Services::ServiceBrokers::V2::Client).to receive(:new) do |*args, **kwargs, &block|
         fb = FakeServiceBrokerV2Client.new(*args, **kwargs, &block)
         fb.service_name = service_name
         fb.plan_name = plan_name
@@ -53,7 +53,7 @@ RSpec.describe 'ServiceBrokers' do
       }
 
       before do
-        allow(VCAP::Services::ServiceBrokers::V2::Client).to receive(:new) do |*args, **kwargs, &block|
+        allow(Services::ServiceBrokers::V2::Client).to receive(:new) do |*args, **kwargs, &block|
           fb = FakeServiceBrokerV2Client.new(*args, **kwargs, &block)
           fb.plan_schemas = schemas
           fb

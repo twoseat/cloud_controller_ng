@@ -3,7 +3,7 @@ require 'spec_helper'
 module CloudController
   module Jobs::Services
     RSpec.describe DeleteOrphanedInstance, job_context: :worker do
-      let(:client) { instance_double('VCAP::Services::ServiceBrokers::V2::Client') }
+      let(:client) { instance_double('Services::ServiceBrokers::V2::Client') }
       let(:plan) { CloudController::ServicePlan.make }
       let(:service_instance) { CloudController::ManagedServiceInstance.new(service_plan: plan) }
 
@@ -16,7 +16,7 @@ module CloudController
 
       describe '#perform' do
         before do
-          allow(VCAP::Services::ServiceBrokers::V2::Client).to receive(:new).and_return(client)
+          allow(::Services::ServiceBrokers::V2::Client).to receive(:new).and_return(client)
         end
 
         it 'deprovisions the service instance with accepts_incomplete' do
@@ -51,7 +51,7 @@ module CloudController
 
         it 'retries 10 times, doubling its back_off time with each attempt' do
           allow(client).to receive(:deprovision).and_raise(StandardError.new('I always fail'))
-          allow(VCAP::Services::ServiceBrokers::V2::Client).to receive(:new).and_return(client)
+          allow(::Services::ServiceBrokers::V2::Client).to receive(:new).and_return(client)
 
           start = Delayed::Job.db_time_now
           opts = { queue: 'cc-generic', run_at: start }

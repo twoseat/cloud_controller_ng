@@ -29,10 +29,10 @@ module CloudController
       let!(:service_key_dataset) { ServiceKey.dataset }
       let(:user) { User.make }
       let(:user_email) { 'user@example.com' }
-      let(:client) { instance_double(VCAP::Services::ServiceBrokers::V2::Client) }
+      let(:client) { instance_double(Services::ServiceBrokers::V2::Client) }
 
       before do
-        allow(VCAP::Services::ServiceClientProvider).to receive(:provide).and_return(client)
+        allow(Services::ServiceClientProvider).to receive(:provide).and_return(client)
         allow(client).to receive(:unbind).and_return({})
       end
 

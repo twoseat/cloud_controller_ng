@@ -1,4 +1,4 @@
-module VCAP::Services::SSO::Commands
+module Services::SSO::Commands
   class UnclaimClientCommand
     attr_reader :client_id
 

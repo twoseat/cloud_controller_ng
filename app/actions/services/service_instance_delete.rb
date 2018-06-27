@@ -57,7 +57,7 @@ module CloudController
         lock = DeleterLock.new(service_instance)
         lock.lock!
 
-        client = VCAP::Services::ServiceClientProvider.provide({ instance: service_instance })
+        client = Services::ServiceClientProvider.provide({ instance: service_instance })
 
         attributes_to_update = client.deprovision(
           service_instance,

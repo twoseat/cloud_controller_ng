@@ -10,11 +10,11 @@ module CloudController
         let(:service_binding) { ServiceBinding.make(service_instance: managed_service_instance) }
 
         context 'when the broker has bindings_retrievable enabled ' do
-          let(:fake_broker_client) { instance_double(VCAP::Services::ServiceBrokers::V2::Client) }
+          let(:fake_broker_client) { instance_double(Services::ServiceBrokers::V2::Client) }
           let(:service) { Service.make(bindings_retrievable: true) }
 
           before do
-            allow(VCAP::Services::ServiceClientProvider).to receive(:provide).with(instance: service_binding.service_instance).and_return(fake_broker_client)
+            allow(Services::ServiceClientProvider).to receive(:provide).with(instance: service_binding.service_instance).and_return(fake_broker_client)
           end
 
           it 'should use the client to fetch the service binding parameters' do
@@ -54,7 +54,7 @@ module CloudController
           let(:service) { Service.make(bindings_retrievable: false) }
 
           it 'does not try to provide broker client' do
-            expect(VCAP::Services::ServiceClientProvider).to_not receive(:provide)
+            expect(Services::ServiceClientProvider).to_not receive(:provide)
 
             action = ServiceBindingRead.new
             begin
@@ -76,7 +76,7 @@ module CloudController
         let(:service_binding) { ServiceBinding.make(service_instance: user_provided_service_instance) }
 
         it 'does not try to provide broker client' do
-          expect(VCAP::Services::ServiceClientProvider).to_not receive(:provide)
+          expect(Services::ServiceClientProvider).to_not receive(:provide)
 
           action = ServiceBindingRead.new
           begin

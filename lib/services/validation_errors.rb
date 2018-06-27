@@ -1,4 +1,4 @@
-module VCAP::Services
+module Services
   class ValidationErrors
     attr_reader :messages, :nested_errors
 

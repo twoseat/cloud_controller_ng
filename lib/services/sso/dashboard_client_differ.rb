@@ -1,4 +1,4 @@
-module VCAP::Services::SSO
+module Services::SSO
   class DashboardClientDiffer
     def initialize(broker)
       @broker = broker

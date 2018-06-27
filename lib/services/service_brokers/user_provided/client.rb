@@ -1,4 +1,4 @@
-module VCAP::Services
+module Services
   class ServiceBrokers::UserProvided::Client
     def provision(_); end
 

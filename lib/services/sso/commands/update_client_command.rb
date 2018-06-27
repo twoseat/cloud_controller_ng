@@ -1,4 +1,4 @@
-module VCAP::Services::SSO::Commands
+module Services::SSO::Commands
   class UpdateClientCommand
     attr_reader :client_attrs
 

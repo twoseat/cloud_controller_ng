@@ -1104,7 +1104,7 @@ module CloudController
 
             expect {
               route.destroy
-            }.to raise_error VCAP::Services::ServiceBrokers::V2::Errors::ServiceBrokerBadResponse
+            }.to raise_error Services::ServiceBrokers::V2::Errors::ServiceBrokerBadResponse
             expect(RouteBinding.find(guid: route_binding_guid)).to eq route_binding
             expect(process.reload.routes[0]).to eq route
           end

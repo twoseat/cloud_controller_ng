@@ -33,7 +33,7 @@ module CloudController
     private
 
     def client(instance)
-      VCAP::Services::ServiceClientProvider.provide(instance: instance)
+      Services::ServiceClientProvider.provide(instance: instance)
     end
   end
 end

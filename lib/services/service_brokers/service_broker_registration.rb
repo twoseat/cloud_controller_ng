@@ -1,4 +1,4 @@
-module VCAP::Services::ServiceBrokers
+module Services::ServiceBrokers
   class ServiceBrokerRegistration
     attr_reader :broker, :warnings
 
@@ -86,12 +86,12 @@ module VCAP::Services::ServiceBrokers
     end
 
     def client_manager
-      @client_manager ||= VCAP::Services::SSO::DashboardClientManager.new(broker, @services_event_repository)
+      @client_manager ||= Services::SSO::DashboardClientManager.new(broker, @services_event_repository)
     end
 
     def catalog
-      client = VCAP::Services::ServiceClientProvider.provide(broker: broker)
-      @catalog ||= VCAP::Services::ServiceBrokers::V2::Catalog.new(broker, client.catalog)
+      client = Services::ServiceClientProvider.provide(broker: broker)
+      @catalog ||= Services::ServiceBrokers::V2::Catalog.new(broker, client.catalog)
     end
 
     def formatter

@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-module VCAP::Services
+module Services
   module ServiceBrokers::V2
     RSpec.describe OrphanMitigator do
       let(:client_attrs) { { uri: 'broker.com' } }

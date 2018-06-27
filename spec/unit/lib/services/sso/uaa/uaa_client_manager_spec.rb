@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-module VCAP::Services::SSO::UAA
+module Services::SSO::UAA
   RSpec.describe UaaClientManager do
     let(:dashboard_client_hash) do
       {
@@ -34,7 +34,7 @@ module VCAP::Services::SSO::UAA
         changeset = [
           double('create_command', uaa_command: { action: 'add' }, client_attrs: {}),
           double('update_command', uaa_command: { action: 'update' }, client_attrs: {}),
-          VCAP::Services::SSO::Commands::DeleteClientCommand.new('delete-this-client')
+          Services::SSO::Commands::DeleteClientCommand.new('delete-this-client')
         ]
 
         expected_json_body = [
@@ -108,7 +108,7 @@ module VCAP::Services::SSO::UAA
 
         it 'raises a UaaResourceNotFound error' do
           changeset = [
-            VCAP::Services::SSO::Commands::DeleteClientCommand.new('delete-this-client')
+            Services::SSO::Commands::DeleteClientCommand.new('delete-this-client')
           ]
 
           client_manager = UaaClientManager.new
@@ -127,7 +127,7 @@ module VCAP::Services::SSO::UAA
 
         it 'raises a UaaUnavailable error' do
           changeset = [
-            VCAP::Services::SSO::Commands::DeleteClientCommand.new('delete-this-client')
+            Services::SSO::Commands::DeleteClientCommand.new('delete-this-client')
           ]
 
           client_manager = UaaClientManager.new
@@ -145,7 +145,7 @@ module VCAP::Services::SSO::UAA
 
         it 'raises a UaaResourceAlreadyExists' do
           changeset = [
-            VCAP::Services::SSO::Commands::DeleteClientCommand.new('delete-this-client')
+            Services::SSO::Commands::DeleteClientCommand.new('delete-this-client')
           ]
 
           client_manager = UaaClientManager.new
@@ -163,7 +163,7 @@ module VCAP::Services::SSO::UAA
 
         it 'raises a UaaResourceInvalid error' do
           changeset = [
-            VCAP::Services::SSO::Commands::DeleteClientCommand.new('delete-this-client')
+            Services::SSO::Commands::DeleteClientCommand.new('delete-this-client')
           ]
 
           client_manager = UaaClientManager.new
@@ -181,7 +181,7 @@ module VCAP::Services::SSO::UAA
 
         it 'raises a UaaUnexpectedResponse' do
           changeset = [
-            VCAP::Services::SSO::Commands::DeleteClientCommand.new('delete-this-client')
+            Services::SSO::Commands::DeleteClientCommand.new('delete-this-client')
           ]
 
           client_manager = UaaClientManager.new
@@ -199,7 +199,7 @@ module VCAP::Services::SSO::UAA
 
         it 'raises a UaaUnavailable error' do
           changeset = [
-            VCAP::Services::SSO::Commands::DeleteClientCommand.new('delete-this-client')
+            Services::SSO::Commands::DeleteClientCommand.new('delete-this-client')
           ]
 
           client_manager = UaaClientManager.new

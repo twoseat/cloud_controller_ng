@@ -22,10 +22,10 @@ module CloudController
       let(:dashboard_url) { 'com' }
       let(:broker_response_body) { { credentials: {}, dashboard_url: dashboard_url } }
       let(:last_operation) { { type: 'create', description: '', broker_provided_operation: nil, state: 'succeeded' } }
-      let(:client) { instance_double(VCAP::Services::ServiceBrokers::V2::Client) }
+      let(:client) { instance_double(Services::ServiceBrokers::V2::Client) }
 
       before do
-        allow(VCAP::Services::ServiceClientProvider).to receive(:provide).and_return(client)
+        allow(Services::ServiceClientProvider).to receive(:provide).and_return(client)
         allow(client).to receive(:provision).and_return({ instance: broker_response_body, last_operation: last_operation })
       end
 

@@ -595,7 +595,7 @@ module CloudController
 
           warnings = last_response.headers['X-Cf-Warnings'].split(',').map { |w| CGI.unescape(w) }
           expect(warnings.length).to eq(1)
-          expect(warnings[0]).to eq(VCAP::Services::SSO::DashboardClientManager::REQUESTED_FEATURE_DISABLED_WARNING)
+          expect(warnings[0]).to eq(Services::SSO::DashboardClientManager::REQUESTED_FEATURE_DISABLED_WARNING)
         end
       end
     end

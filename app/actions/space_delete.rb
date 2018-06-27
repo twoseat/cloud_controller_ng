@@ -43,7 +43,7 @@ module CloudController
     private
 
     def service_broker_remover(services_event_repository)
-      VCAP::Services::ServiceBrokers::ServiceBrokerRemover.new(services_event_repository)
+      Services::ServiceBrokers::ServiceBrokerRemover.new(services_event_repository)
     end
 
     def accumulate_space_deletion_error(operation_errors, space_name)

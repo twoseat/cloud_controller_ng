@@ -1,6 +1,6 @@
 require 'httpclient'
 
-module VCAP::Services
+module Services
   module ServiceBrokers::V2
     module IdentityEncoder
       def self.encode(user_guid)

@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-module VCAP::Services::ServiceBrokers
+module Services::ServiceBrokers
   RSpec.describe NullClient do
     let(:client) { NullClient.new }
 

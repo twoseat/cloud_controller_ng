@@ -73,7 +73,7 @@ module CloudController
       return HTTP::NOT_FOUND unless broker
 
       validate_access(:delete, broker)
-      VCAP::Services::ServiceBrokers::ServiceBrokerRemover.new(@services_event_repository).remove(broker)
+      Services::ServiceBrokers::ServiceBrokerRemover.new(@services_event_repository).remove(broker)
 
       HTTP::NO_CONTENT
     rescue Sequel::ForeignKeyConstraintViolation

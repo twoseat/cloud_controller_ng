@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-module VCAP::Services::ServiceBrokers::V2
+module Services::ServiceBrokers::V2
   RSpec.describe Schema do
     let(:schema) { Schema.new(raw_schema) }
 

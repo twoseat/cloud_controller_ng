@@ -1,4 +1,4 @@
-module VCAP::Services::ServiceBrokers
+module Services::ServiceBrokers
   class ServiceBrokerRemover
     def initialize(services_event_repository)
       @services_event_repository = services_event_repository
@@ -7,7 +7,7 @@ module VCAP::Services::ServiceBrokers
     def remove(broker)
       cache = cache_services_and_plans(broker)
 
-      client_manager = VCAP::Services::SSO::DashboardClientManager.new(broker, @services_event_repository)
+      client_manager = Services::SSO::DashboardClientManager.new(broker, @services_event_repository)
       client_manager.remove_clients_for_broker
       broker.destroy
 

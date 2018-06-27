@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-module VCAP::Services::ServiceBrokers::V2
+module Services::ServiceBrokers::V2
   RSpec.describe Client do
     let(:service_broker) { CloudController::ServiceBroker.make }
 
@@ -22,7 +22,7 @@ module VCAP::Services::ServiceBrokers::V2
         with(url: service_broker.broker_url, auth_username: service_broker.auth_username, auth_password: service_broker.auth_password).
         and_return(http_client)
 
-      allow(VCAP::Services::ServiceBrokers::V2::OrphanMitigator).to receive(:new).
+      allow(Services::ServiceBrokers::V2::OrphanMitigator).to receive(:new).
         and_return(orphan_mitigator)
 
       allow(http_client).to receive(:url).and_return(service_broker.broker_url)
@@ -285,7 +285,7 @@ module VCAP::Services::ServiceBrokers::V2
 
           before do
             allow(response_parser).to receive(:parse_provision).and_raise(error)
-            allow(VCAP::Services::ServiceBrokers::V2::ResponseParser).to receive(:new).and_return(response_parser)
+            allow(Services::ServiceBrokers::V2::ResponseParser).to receive(:new).and_return(response_parser)
           end
 
           context 'Errors::ServiceBrokerApiTimeout error' do
@@ -896,7 +896,7 @@ module VCAP::Services::ServiceBrokers::V2
 
           before do
             allow(response_parser).to receive(:parse_bind).and_raise(error)
-            allow(VCAP::Services::ServiceBrokers::V2::ResponseParser).to receive(:new).and_return(response_parser)
+            allow(Services::ServiceBrokers::V2::ResponseParser).to receive(:new).and_return(response_parser)
           end
 
           context 'Errors::ServiceBrokerApiTimeout error' do
@@ -1189,7 +1189,7 @@ module VCAP::Services::ServiceBrokers::V2
 
           before do
             allow(response_parser).to receive(:parse_bind).and_raise(error)
-            allow(VCAP::Services::ServiceBrokers::V2::ResponseParser).to receive(:new).and_return(response_parser)
+            allow(Services::ServiceBrokers::V2::ResponseParser).to receive(:new).and_return(response_parser)
           end
 
           context 'Errors::ServiceBrokerApiTimeout error' do

@@ -6,20 +6,18 @@ require 'httpclient'
 
 require 'vcap/services/api/const'
 
-module VCAP
-  module Services
-    module Api
-    end
+module Services
+  module Api
   end
 end
 
-module VCAP::Services::Api
+module Services::Api
   class AsyncHttpRequest
     class << self
-      def new(url, token, verb, timeout, msg=VCAP::Services::Api::EMPTY_REQUEST)
+      def new(url, token, verb, timeout, msg=Services::Api::EMPTY_REQUEST)
         req = {
           head: {
-            VCAP::Services::Api::GATEWAY_TOKEN_HEADER => token,
+            Services::Api::GATEWAY_TOKEN_HEADER => token,
             'Content-Type' => 'application/json',
           },
           body: msg.encode,
@@ -31,7 +29,7 @@ module VCAP::Services::Api
         end
       end
 
-      def request(url, token, verb, timeout, msg=VCAP::Services::Api::EMPTY_REQUEST)
+      def request(url, token, verb, timeout, msg=Services::Api::EMPTY_REQUEST)
         req = new(url, token, verb, timeout, msg)
         f = Fiber.current
         req.callback { f.resume(req) }
@@ -46,9 +44,9 @@ module VCAP::Services::Api
   end
 
   module SynchronousHttpRequest
-    def self.request(url, token, verb, timeout, msg=VCAP::Services::Api::EMPTY_REQUEST)
+    def self.request(url, token, verb, timeout, msg=Services::Api::EMPTY_REQUEST)
       header = {
-        VCAP::Services::Api::GATEWAY_TOKEN_HEADER => token,
+        Services::Api::GATEWAY_TOKEN_HEADER => token,
         'Content-Type' => 'application/json',
       }
       body = msg.encode

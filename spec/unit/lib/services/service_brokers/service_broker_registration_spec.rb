@@ -1,12 +1,12 @@
 require 'spec_helper'
 
-module VCAP::Services::ServiceBrokers
+module Services::ServiceBrokers
   RSpec.describe ServiceBrokerRegistration do
     subject(:registration) { ServiceBrokerRegistration.new(broker, service_manager, services_event_repository, false, false) }
 
-    let(:client_manager) { instance_double(VCAP::Services::SSO::DashboardClientManager, synchronize_clients_with_catalog: true, warnings: []) }
-    let(:catalog) { instance_double(VCAP::Services::ServiceBrokers::V2::Catalog, valid?: true) }
-    let(:service_manager) { instance_double(VCAP::Services::ServiceBrokers::ServiceManager, sync_services_and_plans: true, has_warnings?: false) }
+    let(:client_manager) { instance_double(Services::SSO::DashboardClientManager, synchronize_clients_with_catalog: true, warnings: []) }
+    let(:catalog) { instance_double(Services::ServiceBrokers::V2::Catalog, valid?: true) }
+    let(:service_manager) { instance_double(Services::ServiceBrokers::ServiceManager, sync_services_and_plans: true, has_warnings?: false) }
     let(:services_event_repository) { instance_double(CloudController::Repositories::ServiceEventRepository) }
     let(:basic_auth) { ['cc', 'auth1234'] }
 
@@ -30,7 +30,7 @@ module VCAP::Services::ServiceBrokers
 
       before do
         stub_request(:get, 'http://broker.example.com/v2/catalog').with(basic_auth: basic_auth).to_return(body: '{}')
-        allow(VCAP::Services::SSO::DashboardClientManager).to receive(:new).and_return(client_manager)
+        allow(Services::SSO::DashboardClientManager).to receive(:new).and_return(client_manager)
         allow(V2::Catalog).to receive(:new).and_return(catalog)
         allow(catalog).to receive(:services).and_return([])
         allow(ServiceManager).to receive(:new).and_return(service_manager)
@@ -79,7 +79,7 @@ module VCAP::Services::ServiceBrokers
       it 'creates dashboard clients' do
         registration.create
 
-        expect(VCAP::Services::SSO::DashboardClientManager).to have_received(:new).with(
+        expect(Services::SSO::DashboardClientManager).to have_received(:new).with(
           broker,
           services_event_repository
         )
@@ -127,7 +127,7 @@ module VCAP::Services::ServiceBrokers
 
         context 'because the catalog has errors' do
           let(:errors) { double(:errors) }
-          let(:formatter) { instance_double(VCAP::Services::ServiceBrokers::ValidationErrorsFormatter, format: 'something bad happened') }
+          let(:formatter) { instance_double(Services::ServiceBrokers::ValidationErrorsFormatter, format: 'something bad happened') }
           before do
             allow(catalog).to receive(:valid?).and_return(false)
             allow(catalog).to receive(:errors).and_return(errors)
@@ -202,7 +202,7 @@ module VCAP::Services::ServiceBrokers
           end
 
           let(:error_text) { 'something bad happened' }
-          let(:validation_errors) { instance_double(VCAP::Services::ValidationErrors) }
+          let(:validation_errors) { instance_double(Services::ValidationErrors) }
 
           it 'raises a ServiceBrokerCatalogInvalid error' do
             expect { registration.create }.to raise_error(CloudController::Errors::ApiError, /#{error_text}/)
@@ -332,7 +332,7 @@ module VCAP::Services::ServiceBrokers
 
       before do
         stub_request(:get, "http://#{new_broker_host}/v2/catalog").with(basic_auth: basic_auth).to_return(status: status, body: body)
-        allow(VCAP::Services::SSO::DashboardClientManager).to receive(:new).and_return(client_manager)
+        allow(Services::SSO::DashboardClientManager).to receive(:new).and_return(client_manager)
         allow(V2::Catalog).to receive(:new).and_return(catalog)
         allow(catalog).to receive(:services).and_return([])
         allow(ServiceManager).to receive(:new).and_return(service_manager)
@@ -405,7 +405,7 @@ module VCAP::Services::ServiceBrokers
       it 'updates dashboard clients' do
         registration.update
 
-        expect(VCAP::Services::SSO::DashboardClientManager).to have_received(:new).with(
+        expect(Services::SSO::DashboardClientManager).to have_received(:new).with(
           broker,
           services_event_repository
         )
@@ -455,7 +455,7 @@ module VCAP::Services::ServiceBrokers
 
         context 'because the catalog has errors' do
           let(:errors) { double(:errors) }
-          let(:formatter) { instance_double(VCAP::Services::ServiceBrokers::ValidationErrorsFormatter, format: 'something bad happened') }
+          let(:formatter) { instance_double(Services::ServiceBrokers::ValidationErrorsFormatter, format: 'something bad happened') }
 
           before do
             allow(catalog).to receive(:valid?).and_return(false)
@@ -530,7 +530,7 @@ module VCAP::Services::ServiceBrokers
           end
 
           let(:error_text) { 'something bad happened' }
-          let(:validation_errors) { instance_double(VCAP::Services::ValidationErrors) }
+          let(:validation_errors) { instance_double(Services::ValidationErrors) }
 
           it 'raises a ServiceBrokerCatalogInvalid error' do
             expect { registration.update }.to raise_error(CloudController::Errors::ApiError, /#{error_text}/)

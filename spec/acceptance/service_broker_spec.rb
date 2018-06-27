@@ -288,7 +288,7 @@ RSpec.describe 'Service Broker' do
         }.to_json, admin_headers)
 
         warning = CGI.unescape(last_response.headers['X-Cf-Warnings'])
-        expect(warning).to eq(VCAP::Services::SSO::DashboardClientManager::REQUESTED_FEATURE_DISABLED_WARNING)
+        expect(warning).to eq(Services::SSO::DashboardClientManager::REQUESTED_FEATURE_DISABLED_WARNING)
       end
 
       it 'does not create any dashboard clients' do

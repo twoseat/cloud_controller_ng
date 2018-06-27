@@ -18,7 +18,7 @@ module CloudController
       ServiceBroker.db.transaction do
         old_broker = broker.clone
         broker.set(params)
-        registration = VCAP::Services::ServiceBrokers::ServiceBrokerRegistration.new(
+        registration = Services::ServiceBrokers::ServiceBrokerRegistration.new(
           broker,
           @service_manager,
           @services_event_repository,

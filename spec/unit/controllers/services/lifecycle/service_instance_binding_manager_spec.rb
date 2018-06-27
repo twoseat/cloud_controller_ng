@@ -89,7 +89,7 @@ module CloudController
         end
 
         it 'tells the broker client to bind the route and the service instance' do
-          expect_any_instance_of(VCAP::Services::ServiceBrokers::V2::Client).
+          expect_any_instance_of(Services::ServiceBrokers::V2::Client).
             to receive(:bind).with(anything, arbitrary_parameters).
             and_return({ async: false, binding: {} })
 
@@ -283,7 +283,7 @@ module CloudController
             it 'enqueues a DeleteOrphanedBinding job' do
               expect {
                 manager.create_route_service_instance_binding(route.guid, service_instance.guid, arbitrary_parameters, route_services_enabled)
-              }.to raise_error(VCAP::Services::ServiceBrokers::V2::Errors::ServiceBrokerInvalidSyslogDrainUrl)
+              }.to raise_error(Services::ServiceBrokers::V2::Errors::ServiceBrokerInvalidSyslogDrainUrl)
 
               expect(Delayed::Job.count).to eq 1
 
@@ -303,7 +303,7 @@ module CloudController
             it 'does not create a binding' do
               expect {
                 manager.create_route_service_instance_binding(route.guid, service_instance.guid, arbitrary_parameters, route_services_enabled)
-              }.to raise_error(VCAP::Services::ServiceBrokers::V2::Errors::ServiceBrokerBadResponse)
+              }.to raise_error(Services::ServiceBrokers::V2::Errors::ServiceBrokerBadResponse)
               expect(service_instance.reload.routes).to be_empty
               expect(route.reload.service_instance).to be_nil
             end
@@ -311,7 +311,7 @@ module CloudController
             it 'enqueues a DeleteOrphanedBinding job' do
               expect {
                 manager.create_route_service_instance_binding(route.guid, service_instance.guid, arbitrary_parameters, route_services_enabled)
-              }.to raise_error(VCAP::Services::ServiceBrokers::V2::Errors::ServiceBrokerBadResponse)
+              }.to raise_error(Services::ServiceBrokers::V2::Errors::ServiceBrokerBadResponse)
 
               expect(Delayed::Job.count).to eq 1
 
@@ -518,7 +518,7 @@ module CloudController
           it 'does not delete the binding' do
             expect {
               manager.delete_route_service_instance_binding(route.guid, service_instance.guid)
-            }.to raise_error VCAP::Services::ServiceBrokers::V2::Errors::ServiceBrokerBadResponse
+            }.to raise_error Services::ServiceBrokers::V2::Errors::ServiceBrokerBadResponse
 
             expect(route_binding.exists?).to be_truthy
             expect(logger).to have_received(:error).with /Failed to delete/

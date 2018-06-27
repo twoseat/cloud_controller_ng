@@ -1,4 +1,4 @@
-module VCAP::Services::ServiceBrokers
+module Services::ServiceBrokers
   class ValidationErrorsFormatter
     INDENT = '  '.freeze
 

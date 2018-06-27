@@ -1,4 +1,4 @@
-module VCAP::Services::ServiceBrokers
+module Services::ServiceBrokers
   class ServiceManager
     attr_reader :warnings
 

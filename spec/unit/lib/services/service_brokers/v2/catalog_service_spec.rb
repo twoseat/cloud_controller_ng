@@ -1,7 +1,7 @@
 require 'spec_helper'
 require 'securerandom'
 
-module VCAP::Services::ServiceBrokers::V2
+module Services::ServiceBrokers::V2
   RSpec.describe CatalogService do
     def build_valid_service_attrs(opts={})
       {

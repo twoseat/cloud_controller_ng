@@ -219,7 +219,7 @@ module CloudController
     end
 
     def service_manager
-      VCAP::Services::ServiceBrokers::ServiceManager.new(services_event_repository)
+      Services::ServiceBrokers::ServiceManager.new(services_event_repository)
     end
 
     def app_repository

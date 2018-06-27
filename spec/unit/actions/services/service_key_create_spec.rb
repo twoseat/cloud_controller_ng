@@ -6,7 +6,7 @@ module CloudController
     subject(:service_key_create) { ServiceKeyCreate.new(logger) }
     let(:service_instance) { ManagedServiceInstance.make }
     let(:service_binding_url_pattern) { %r{/v2/service_instances/#{service_instance.guid}/service_bindings/} }
-    let(:client) { instance_double(VCAP::Services::ServiceBrokers::V2::Client) }
+    let(:client) { instance_double(Services::ServiceBrokers::V2::Client) }
 
     describe 'creating a service key' do
       let(:logger) { double(Steno::Logger) }
@@ -18,7 +18,7 @@ module CloudController
       end
 
       before do
-        allow(VCAP::Services::ServiceClientProvider).to receive(:provide).
+        allow(Services::ServiceClientProvider).to receive(:provide).
           and_return(client)
         allow(client).to receive(:create_service_key).and_return({ credentials: { foo: 'bar' } })
 

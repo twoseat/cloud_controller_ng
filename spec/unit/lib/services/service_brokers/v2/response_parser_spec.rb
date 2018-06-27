@@ -1,11 +1,11 @@
 require 'spec_helper'
 
-module VCAP::Services
+module Services
   module ServiceBrokers
     module V2
       RSpec.describe 'ResponseParser' do
         describe 'UnvalidatedResponse' do
-          let(:fake_response) { VCAP::Services::ServiceBrokers::V2::HttpResponse.new(code: 200, body: {}) }
+          let(:fake_response) { Services::ServiceBrokers::V2::HttpResponse.new(code: 200, body: {}) }
 
           it 'should serialize the uri as a string' do
             unvalidated_response = ResponseParser::UnvalidatedResponse.new(:get, 'http://example.com', '/path', fake_response)
@@ -226,7 +226,7 @@ module VCAP::Services
             let!(:non_syslog_non_volume_mounts_service) { CloudController::Service.make(:v2, requires: []) }
             let!(:volume_mounts_service) { CloudController::Service.make(:v2, requires: ['volume_mount']) }
             let(:response_parser) { ResponseParser.new('service-broker.com') }
-            let(:fake_response) { instance_double(VCAP::Services::ServiceBrokers::V2::HttpResponse) }
+            let(:fake_response) { instance_double(Services::ServiceBrokers::V2::HttpResponse) }
             let(:body) { body }
             let(:logger) { instance_double(Steno::Logger, warn: nil) }
             let(:call_method) do

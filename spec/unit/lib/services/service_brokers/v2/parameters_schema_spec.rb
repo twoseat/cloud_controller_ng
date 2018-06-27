@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-module VCAP::Services::ServiceBrokers::V2
+module Services::ServiceBrokers::V2
   RSpec.describe ParametersSchema do
     let(:parameters_schema) { ParametersSchema.new(parameters, ['path']) }
 

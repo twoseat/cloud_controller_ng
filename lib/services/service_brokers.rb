@@ -1,4 +1,4 @@
-module VCAP::Services::ServiceBrokers end
+module Services::ServiceBrokers end
 
 require 'services/service_brokers/user_provided'
 require 'services/service_brokers/v2'

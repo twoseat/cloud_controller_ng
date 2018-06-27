@@ -316,7 +316,7 @@ RSpec.describe 'ServiceBindings' do
     let(:process) { CloudController::ProcessModelFactory.make(space: space) }
 
     before do
-      allow(VCAP::Services::ServiceBrokers::V2::Client).to receive(:new) do |*args, **kwargs, &block|
+      allow(Services::ServiceBrokers::V2::Client).to receive(:new) do |*args, **kwargs, &block|
         fb = FakeServiceBrokerV2Client.new(*args, **kwargs, &block)
         fb.credentials = { 'username' => 'managed_username' }
         fb.syslog_drain_url = 'syslog://mydrain.example.com'
@@ -397,7 +397,7 @@ RSpec.describe 'ServiceBindings' do
     let!(:service_binding) { CloudController::ServiceBinding.make(service_instance: service_instance) }
 
     before do
-      allow(VCAP::Services::ServiceBrokers::V2::Client).to receive(:new) do |*args, **kwargs, &block|
+      allow(Services::ServiceBrokers::V2::Client).to receive(:new) do |*args, **kwargs, &block|
         FakeServiceBrokerV2Client.new(*args, **kwargs, &block)
       end
     end
@@ -432,7 +432,7 @@ RSpec.describe 'ServiceBindings' do
     end
 
     before do
-      allow(VCAP::Services::ServiceBrokers::V2::Client).to receive(:new) do |*args, **kwargs, &block|
+      allow(Services::ServiceBrokers::V2::Client).to receive(:new) do |*args, **kwargs, &block|
         fb = FakeServiceBrokerV2Client.new(*args, **kwargs, &block)
         fb.parameters = {
           parameters: {

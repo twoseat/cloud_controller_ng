@@ -3,7 +3,7 @@ require 'models/runtime/event'
 require 'repositories/service_event_repository'
 require 'cloud_controller/security_context'
 
-module VCAP::Services::ServiceBrokers
+module Services::ServiceBrokers
   RSpec.describe ServiceManager do
     let(:broker) { CloudController::ServiceBroker.make }
 

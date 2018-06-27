@@ -10,10 +10,10 @@ module CloudController
     describe '#fetch_parameters' do
       context 'when the service supports fetching instance parameters' do
         let(:service) { Service.make(instances_retrievable: true) }
-        let(:fake_broker_client) { instance_double(VCAP::Services::ServiceBrokers::V2::Client) }
+        let(:fake_broker_client) { instance_double(Services::ServiceBrokers::V2::Client) }
 
         before do
-          allow(VCAP::Services::ServiceClientProvider).to receive(:provide).with(instance: service_instance).and_return(fake_broker_client)
+          allow(Services::ServiceClientProvider).to receive(:provide).with(instance: service_instance).and_return(fake_broker_client)
         end
 
         it 'calls the broker to fetch parameters' do
@@ -86,7 +86,7 @@ module CloudController
           let(:service_instance) { UserProvidedServiceInstance.make }
 
           it 'does not call the broker to fetch parameters' do
-            expect(VCAP::Services::ServiceClientProvider).to_not receive(:provide)
+            expect(Services::ServiceClientProvider).to_not receive(:provide)
 
             action = ServiceInstanceRead.new
             begin
@@ -106,7 +106,7 @@ module CloudController
           let(:service) { Service.make(instances_retrievable: false) }
 
           it 'does not call the broker to fetch parameters' do
-            expect(VCAP::Services::ServiceClientProvider).to_not receive(:provide)
+            expect(Services::ServiceClientProvider).to_not receive(:provide)
 
             action = ServiceInstanceRead.new
             begin

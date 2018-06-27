@@ -12,7 +12,7 @@ RSpec.describe 'v3 service bindings' do
       let(:service_instance) { CloudController::ManagedServiceInstance.make(space: space, name: 'service-instance-name') }
 
       before do
-        allow(VCAP::Services::ServiceBrokers::V2::Client).to receive(:new) do |*args, **kwargs, &block|
+        allow(Services::ServiceBrokers::V2::Client).to receive(:new) do |*args, **kwargs, &block|
           fb = FakeServiceBrokerV2Client.new(*args, **kwargs, &block)
           fb.credentials = { 'username' => 'managed_username' }
           fb.syslog_drain_url = 'syslog://mydrain.example.com'
@@ -187,7 +187,7 @@ RSpec.describe 'v3 service bindings' do
       let(:service_instance) { CloudController::ManagedServiceInstance.make(space: space) }
 
       before do
-        allow(VCAP::Services::ServiceBrokers::V2::Client).to receive(:new) do |*args, **kwargs, &block|
+        allow(Services::ServiceBrokers::V2::Client).to receive(:new) do |*args, **kwargs, &block|
           FakeServiceBrokerV2Client.new(*args, **kwargs, &block)
         end
       end

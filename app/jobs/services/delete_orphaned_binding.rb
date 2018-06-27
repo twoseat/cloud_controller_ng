@@ -35,7 +35,7 @@ module CloudController
           logger.info('There was an error during service binding creation. Attempting to delete potentially orphaned binding.' \
                           " Instance guid: #{binding_info.service_instance_guid}, Binding guid #{binding_info.guid}")
 
-          client = VCAP::Services::ServiceBrokers::V2::Client.new(client_attrs)
+          client = ::Services::ServiceBrokers::V2::Client.new(client_attrs)
           client.unbind(binding_info.to_binding)
         end
 

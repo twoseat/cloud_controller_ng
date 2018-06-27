@@ -15,7 +15,7 @@ module CloudController
     def delete_service_binding(service_binding)
       errors = []
       service_instance = service_binding.service_instance
-      client = VCAP::Services::ServiceClientProvider.provide(instance: service_instance)
+      client = Services::ServiceClientProvider.provide(instance: service_instance)
 
       begin
         raise_if_instance_locked(service_instance)

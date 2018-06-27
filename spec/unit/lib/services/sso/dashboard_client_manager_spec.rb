@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-module VCAP::Services::SSO
+module Services::SSO
   RSpec.describe DashboardClientManager do
     let(:client_manager) { double('client_manager') }
     let(:user) { CloudController::User.make }
@@ -32,21 +32,21 @@ module VCAP::Services::SSO
           }
         end
         let(:catalog_service) {
-          VCAP::Services::ServiceBrokers::V2::CatalogService.new(service_broker,
+          Services::ServiceBrokers::V2::CatalogService.new(service_broker,
                                  'id'               => 'f8ccf75f-4552-4143-97ea-24ccca5ad068',
                                  'dashboard_client' => dashboard_client_attrs_1,
                                  'name'             => 'service-1',
           )
         }
         let(:catalog_service_2) {
-          VCAP::Services::ServiceBrokers::V2::CatalogService.new(service_broker,
+          Services::ServiceBrokers::V2::CatalogService.new(service_broker,
                                  'id'               => '0489055c-97b8-4754-8221-c69375ddb33b',
                                  'dashboard_client' => dashboard_client_attrs_2,
                                  'name'             => 'service-2',
           )
         }
         let(:catalog_service_without_dashboard_client) {
-          VCAP::Services::ServiceBrokers::V2::CatalogService.new(service_broker,
+          Services::ServiceBrokers::V2::CatalogService.new(service_broker,
                                  'id'               => '4b6088af-cdc4-4ee2-8292-9fa93af32fc8',
                                  'name'             => 'service-3',
           )
@@ -55,7 +55,7 @@ module VCAP::Services::SSO
         let(:catalog) { double(:catalog, services: catalog_services) }
 
         before do
-          allow(VCAP::Services::SSO::UAA::UaaClientManager).to receive(:new).and_return(client_manager)
+          allow(Services::SSO::UAA::UaaClientManager).to receive(:new).and_return(client_manager)
           allow(client_manager).to receive(:get_clients).and_return([])
           allow(client_manager).to receive(:modify_transaction)
         end
@@ -409,7 +409,7 @@ module VCAP::Services::SSO
               manager.synchronize_clients_with_catalog(catalog)
 
               expect(manager.has_warnings?).to be true
-              expect(manager.warnings).to include(VCAP::Services::SSO::DashboardClientManager::REQUESTED_FEATURE_DISABLED_WARNING)
+              expect(manager.warnings).to include(Services::SSO::DashboardClientManager::REQUESTED_FEATURE_DISABLED_WARNING)
             end
           end
 
@@ -430,7 +430,7 @@ module VCAP::Services::SSO
         let(:client_to_delete_2) { 'client-to-delete-2' }
 
         before do
-          allow(VCAP::Services::SSO::UAA::UaaClientManager).to receive(:new).and_return(client_manager)
+          allow(Services::SSO::UAA::UaaClientManager).to receive(:new).and_return(client_manager)
           allow(client_manager).to receive(:modify_transaction)
 
           CloudController::ServiceDashboardClient.new(
