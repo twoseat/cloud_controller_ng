@@ -129,7 +129,7 @@ module CloudController
     end
 
     def create_pidfile
-      pid_file = VCAP::PidFile.new(@config.get(:pid_filename))
+      pid_file = PidFile.new(@config.get(:pid_filename))
       pid_file.unlink_at_exit
     rescue
       raise "ERROR: Can't create pid file #{@config.get(:pid_filename)}"

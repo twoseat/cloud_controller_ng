@@ -17,7 +17,7 @@ module CloudController
       allow(EM).to receive(:add_timer).and_yield
       allow(CloudController::Metrics::PeriodicUpdater).to receive(:new).and_return(periodic_updater)
       allow(periodic_updater).to receive(:setup_updates)
-      allow(VCAP::PidFile).to receive(:new) { double(:pidfile, unlink_at_exit: nil) }
+      allow(PidFile).to receive(:new) { double(:pidfile, unlink_at_exit: nil) }
       allow(CloudController::Diagnostics).to receive(:new).and_return(diagnostics)
       allow(diagnostics).to receive(:collect)
     end
@@ -30,7 +30,7 @@ module CloudController
 
     describe '#run!' do
       it 'creates a pidfile' do
-        expect(VCAP::PidFile).to receive(:new).with('/tmp/cloud_controller.pid')
+        expect(PidFile).to receive(:new).with('/tmp/cloud_controller.pid')
         subject.run!
       end
 
