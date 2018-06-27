@@ -2,7 +2,7 @@ require 'vcap/config'
 
 module CloudController
   module ConfigSchemas
-    class ApiSchema < VCAP::Config
+    class ApiSchema < Config
       # rubocop:disable Metrics/BlockLength
       define_schema do
         {

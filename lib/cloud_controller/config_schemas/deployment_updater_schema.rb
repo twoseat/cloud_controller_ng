@@ -2,7 +2,7 @@ require 'vcap/config'
 
 module CloudController
   module ConfigSchemas
-    class DeploymentUpdaterSchema < VCAP::Config
+    class DeploymentUpdaterSchema < Config
       define_schema do
         {
           logging: {

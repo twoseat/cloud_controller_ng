@@ -2,7 +2,7 @@ require 'vcap/config'
 
 module CloudController
   module ConfigSchemas
-    class RouteSyncerSchema < VCAP::Config
+    class RouteSyncerSchema < Config
       define_schema do
         {
           logging: {

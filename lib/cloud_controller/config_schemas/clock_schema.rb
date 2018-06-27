@@ -2,7 +2,7 @@ require 'vcap/config'
 
 module CloudController
   module ConfigSchemas
-    class ClockSchema < VCAP::Config
+    class ClockSchema < Config
       # rubocop:disable Metrics/BlockLength
       define_schema do
         {

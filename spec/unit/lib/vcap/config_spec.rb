@@ -1,10 +1,10 @@
 require 'spec_helper'
 require 'vcap/config'
 
-RSpec.describe VCAP::Config do
+RSpec.describe Config do
   describe '.define_schema' do
     it 'should build the corresponding membrane schema' do
-      class MyConfig < VCAP::Config
+      class MyConfig < Config
         define_schema do
           [Integer]
         end
@@ -18,7 +18,7 @@ RSpec.describe VCAP::Config do
 
   describe '.from_file' do
     let(:test_config) do
-      Class.new(VCAP::Config) do
+      Class.new(Config) do
         define_schema do
           { :name => String,
             :nums => [Integer],

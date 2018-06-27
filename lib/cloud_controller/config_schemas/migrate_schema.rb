@@ -2,7 +2,7 @@ require 'vcap/config'
 
 module CloudController
   module ConfigSchemas
-    class MigrateSchema < VCAP::Config
+    class MigrateSchema < Config
       define_schema do
         {
           db: {
