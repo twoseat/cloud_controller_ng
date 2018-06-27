@@ -1,5 +1,5 @@
 module CloudController
-  class RouteBindingMessage < VCAP::RestAPI::Message
+  class RouteBindingMessage < RestAPI::Message
     optional :parameters, Hash
   end
 end

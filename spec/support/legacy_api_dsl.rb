@@ -33,13 +33,13 @@ module LegacyApiDsl
   end
 
   def standard_paginated_response_format?(json)
-    validate_response VCAP::RestAPI::PaginatedResponse, json
+    validate_response RestAPI::PaginatedResponse, json
   end
 
   def standard_metadata_response_format?(json, model)
     ignored_attributes = []
     ignored_attributes = [:updated_at] unless model_has_updated_at?(model)
-    validate_response(VCAP::RestAPI::MetadataMessage, json, ignored_attributes: ignored_attributes)
+    validate_response(RestAPI::MetadataMessage, json, ignored_attributes: ignored_attributes)
   end
 
   def expected_attributes_for_model(model)

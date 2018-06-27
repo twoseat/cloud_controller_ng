@@ -2,7 +2,7 @@ module CloudController::RestController
   # DSL that is available inside define_attributes on a rest controller
   # class.
   module ControllerDSL
-    include VCAP::RestAPI
+    include RestAPI
 
     class ToRelationshipAttribute < NamedAttribute
       attr_reader :association_name, :link_only, :association_controller

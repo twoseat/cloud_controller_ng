@@ -1,7 +1,7 @@
 require 'spec_helper'
 require 'fetchers/queries/route_mapping_query'
 
-module VCAP::RestAPI
+module RestAPI
   RSpec.describe RouteMappingQuery do
     let(:queryable_attributes) { %w(app_guid) }
 

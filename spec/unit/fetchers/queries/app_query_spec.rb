@@ -1,7 +1,7 @@
 require 'spec_helper'
 require 'fetchers/queries/app_query'
 
-module VCAP::RestAPI
+module RestAPI
   RSpec.describe AppQuery do
     let(:queryable_attributes) { %w(organization_guid stack_guid name) }
 

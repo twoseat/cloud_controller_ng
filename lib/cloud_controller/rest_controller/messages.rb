@@ -19,7 +19,7 @@ module CloudController::RestController
         to_one  = @to_one_relationships ||= []
         to_many = @to_many_relationships ||= []
 
-        klass = Class.new VCAP::RestAPI::Message do
+        klass = Class.new RestAPI::Message do
           attrs.each do |name, attr|
             unless attr.exclude_in?(type)
               if type == :update

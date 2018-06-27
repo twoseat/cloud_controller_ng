@@ -1,4 +1,4 @@
-module VCAP::RestAPI
+module RestAPI
   class AppQuery < Query
     def filtered_dataset
       filter_args_from_query.inject(@ds) do |filter, cond|

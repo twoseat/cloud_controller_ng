@@ -71,7 +71,7 @@ RSpec.resource 'Service Brokers', type: [:api, :legacy_api] do
         client.post '/v2/service_brokers', fields_json, headers
 
         expect(status).to eq 201
-        validate_response VCAP::RestAPI::MetadataMessage, parsed_response['metadata']
+        validate_response RestAPI::MetadataMessage, parsed_response['metadata']
         expect(parsed_response['entity']['name']).to eq('service-broker-name')
         expect(parsed_response['entity']['broker_url']).to eq('https://broker.example.com')
         expect(parsed_response['entity']['auth_username']).to eq('admin')
@@ -107,7 +107,7 @@ RSpec.resource 'Service Brokers', type: [:api, :legacy_api] do
         client.put "/v2/service_brokers/#{guid}", fields_json(fields_to_update), headers
 
         expect(status).to eq 200
-        validate_response VCAP::RestAPI::MetadataMessage, parsed_response['metadata']
+        validate_response RestAPI::MetadataMessage, parsed_response['metadata']
         expect(parsed_response['entity']['broker_url']).to eq("https://#{broker_url}")
         expect(parsed_response['entity']['name']).to eq(service_broker.name)
         expect(parsed_response['entity']['auth_username']).to eq(auth_username)

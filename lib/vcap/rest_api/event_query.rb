@@ -1,4 +1,4 @@
-module VCAP::RestAPI
+module RestAPI
   #
   # Use this class to implement special-cases for querying against
   # the Event Controller

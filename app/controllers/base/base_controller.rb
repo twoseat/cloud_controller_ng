@@ -12,7 +12,7 @@ module CloudController::RestController
 
     include CloudController
     include CloudController::Errors
-    include VCAP::RestAPI
+    include RestAPI
     include Messages
     include Routes
     extend Forwardable

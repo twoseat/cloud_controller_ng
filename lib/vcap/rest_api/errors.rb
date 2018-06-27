@@ -1,8 +1,8 @@
 require 'vcap/rest_api/http_constants'
 
-module VCAP::RestAPI
+module RestAPI
   module Errors
-    HTTP = VCAP::RestAPI::HTTP
+    HTTP = RestAPI::HTTP
 
     class Error < StandardError
       attr_reader :response_code

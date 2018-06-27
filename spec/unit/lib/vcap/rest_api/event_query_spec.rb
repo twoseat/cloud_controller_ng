@@ -1,8 +1,8 @@
 require 'spec_helper'
 
-module VCAP::RestAPI
-  RSpec.describe VCAP::RestAPI::EventQuery do
-    include VCAP::RestAPI
+module RestAPI
+  RSpec.describe RestAPI::EventQuery do
+    include RestAPI
 
     class EventAuthor < Sequel::Model
       one_to_many :event_books

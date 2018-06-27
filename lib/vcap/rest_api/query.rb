@@ -1,6 +1,6 @@
 require 'time'
 
-module VCAP::RestAPI
+module RestAPI
   #
   # Query against a model using a query string received via http query
   # parameters.

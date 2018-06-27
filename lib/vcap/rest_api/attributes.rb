@@ -1,4 +1,4 @@
-module VCAP::RestAPI
+module RestAPI
   # A NamedAttribute defines an attribute used in a rest controller
   #
   # These are ultimately used to capture the attributes allowed to be
