@@ -26,7 +26,7 @@ module VCAP::Services::ServiceBrokers::V2
     end
 
     before do
-      allow(VCAP::Request).to receive(:current_id).and_return(request_id)
+      allow(Request).to receive(:current_id).and_return(request_id)
     end
 
     shared_examples 'a basic successful request' do
@@ -164,7 +164,7 @@ module VCAP::Services::ServiceBrokers::V2
           it 'does not set the X-Broker-Api-Originating-Identity' do
             make_request
             no_user_guid = ->(request) {
-              expect(request.headers).not_to have_key(VCAP::Request::HEADER_BROKER_API_ORIGINATING_IDENTITY)
+              expect(request.headers).not_to have_key(Request::HEADER_BROKER_API_ORIGINATING_IDENTITY)
               true
             }
 

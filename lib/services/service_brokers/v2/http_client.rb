@@ -134,7 +134,7 @@ module VCAP::Services
         opts[:header]['Content-Type'] = options[:content_type] if options[:content_type]
 
         user_guid = user_guid(options)
-        opts[:header][VCAP::Request::HEADER_BROKER_API_ORIGINATING_IDENTITY] = IdentityEncoder.encode(user_guid) if user_guid
+        opts[:header][Request::HEADER_BROKER_API_ORIGINATING_IDENTITY] = IdentityEncoder.encode(user_guid) if user_guid
 
         headers = default_headers.merge(opts[:header])
 
@@ -162,10 +162,10 @@ module VCAP::Services
 
       def default_headers
         {
-          VCAP::Request::HEADER_BROKER_API_VERSION => '2.13',
-          VCAP::Request::HEADER_NAME => VCAP::Request.current_id,
+          Request::HEADER_BROKER_API_VERSION => '2.13',
+          Request::HEADER_NAME => Request.current_id,
           'Accept' => 'application/json',
-          VCAP::Request::HEADER_API_INFO_LOCATION => "#{CloudController::Config.config.get(:external_domain)}/v2/info"
+          Request::HEADER_API_INFO_LOCATION => "#{CloudController::Config.config.get(:external_domain)}/v2/info"
         }
       end
 

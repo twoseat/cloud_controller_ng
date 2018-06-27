@@ -2,7 +2,7 @@ require 'spec_helper'
 require 'vcap/request'
 require 'securerandom'
 
-module VCAP
+module Request
   RSpec.describe Request do
     describe '::HEADER_NAME' do
       it 'constant is expected header name' do

@@ -30,7 +30,7 @@ module CloudController
       private
 
       def enqueue_job(job)
-        request_id = ::VCAP::Request.current_id
+        request_id = ::Request.current_id
         Delayed::Job.enqueue(
           LoggingContextJob.new(TimeoutJob.new(job, job_timeout), request_id),
           @opts

@@ -34,7 +34,7 @@ RSpec.describe 'Sinatra::VCAP', type: :v2_controller do
     end
 
     get '/request_id' do
-      VCAP::Request.current_id
+      Request.current_id
     end
 
     get '/current_request' do

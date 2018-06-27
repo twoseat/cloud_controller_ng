@@ -82,7 +82,7 @@ class ApplicationController < ActionController::Base
   end
 
   def request_id
-    ::VCAP::Request.current_id
+    ::Request.current_id
   end
 
   def logger

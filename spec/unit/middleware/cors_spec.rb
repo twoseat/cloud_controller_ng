@@ -154,7 +154,7 @@ module CloudFoundry
               it 'allows custom headers to be returned' do
                 _, headers, _ = middleware.call(request_headers)
                 expect(headers['Access-Control-Expose-Headers'].split(',')).
-                  to contain_exactly('x-cf-warnings', 'x-app-staging-log', 'range', 'location', ::VCAP::Request::HEADER_NAME.downcase)
+                  to contain_exactly('x-cf-warnings', 'x-app-staging-log', 'range', 'location', ::Request::HEADER_NAME.downcase)
               end
 
               it 'allows needed request headers to be included' do
@@ -288,7 +288,7 @@ module CloudFoundry
               _, headers, _ = middleware.call(request_headers)
 
               expect(headers['Access-Control-Expose-Headers'].split(',')).
-                to contain_exactly('x-cf-warnings', 'x-app-staging-log', 'range', 'location', ::VCAP::Request::HEADER_NAME.downcase)
+                to contain_exactly('x-cf-warnings', 'x-app-staging-log', 'range', 'location', ::Request::HEADER_NAME.downcase)
             end
 
             describe 'Vary header' do

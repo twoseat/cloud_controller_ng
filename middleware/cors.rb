@@ -17,7 +17,7 @@ module CloudFoundry
         cors_headers = {
           'Access-Control-Allow-Origin'      => env['HTTP_ORIGIN'],
           'Access-Control-Allow-Credentials' => 'true',
-          'Access-Control-Expose-Headers'    => "x-cf-warnings,x-app-staging-log,#{::VCAP::Request::HEADER_NAME.downcase},location,range"
+          'Access-Control-Expose-Headers'    => "x-cf-warnings,x-app-staging-log,#{::Request::HEADER_NAME.downcase},location,range"
         }
 
         preflight_headers = cors_headers.merge('Vary' => CORS_VARY_HEADER.join(','))

@@ -11,7 +11,7 @@ RSpec.describe 'making several resource_match requests when bits-service in enab
 
     ids = []
     expect(CloudController::DependencyLocator.instance).to receive(:bits_service_resource_pool).at_least(:once) {
-      ids << VCAP::Request.current_id
+      ids << Request.current_id
       return
     }
     3.times { put '/v2/resource_match', [{ "fn": 'some-file', "mode": '644', "sha1": 'irrelevant', "size": 1 }].to_json, user_header }

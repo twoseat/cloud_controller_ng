@@ -6,7 +6,7 @@ module CloudController
     let(:email) { Sham.email }
     let(:guid) { Sham.guid }
 
-    after { VCAP::Request.current_id = nil }
+    after { Request.current_id = nil }
 
     before do
       allow(CloudController::SecurityContext).to receive(:current_user_email) { email }

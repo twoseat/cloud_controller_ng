@@ -29,7 +29,7 @@ module CloudController
     def request_info(request)
       {
         start_time: Time.now.utc.to_f,
-        request_id: ::VCAP::Request.current_id,
+        request_id: ::Request.current_id,
         request_method: request.request_method,
         request_uri: request_uri(request)
       }

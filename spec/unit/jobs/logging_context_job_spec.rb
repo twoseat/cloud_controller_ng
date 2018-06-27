@@ -27,19 +27,19 @@ module CloudController
 
         it "sets the thread-local VCAP Request ID during execution of the wrapped job's perform method" do
           expect(handler).to receive(:perform) do
-            expect(::VCAP::Request.current_id).to eq request_id
+            expect(::Request.current_id).to eq request_id
           end
 
           logging_context_job.perform
         end
 
         it "restores the original VCAP Request ID after execution of the wrapped job's perform method" do
-          random_request_id          = SecureRandom.uuid
-          ::VCAP::Request.current_id = random_request_id
+          random_request_id = SecureRandom.uuid
+          ::Request.current_id = random_request_id
 
           logging_context_job.perform
 
-          expect(::VCAP::Request.current_id).to eq random_request_id
+          expect(::Request.current_id).to eq random_request_id
         end
 
         it "restores the original VCAP Request ID after exception within execution of the wrapped job's perform method" do
@@ -47,12 +47,12 @@ module CloudController
             raise 'runtime test exception'
           end
 
-          random_request_id          = SecureRandom.uuid
-          ::VCAP::Request.current_id = random_request_id
+          random_request_id = SecureRandom.uuid
+          ::Request.current_id = random_request_id
 
           expect { logging_context_job.perform }.to raise_error 'runtime test exception'
 
-          expect(::VCAP::Request.current_id).to eq random_request_id
+          expect(::Request.current_id).to eq random_request_id
         end
 
         context 'when a BlobstoreError occurs' do
@@ -99,19 +99,19 @@ module CloudController
 
         it 'sets the thread-local VCAP Request ID while logging method' do
           expect(background_logger).to receive(:info) do
-            expect(::VCAP::Request.current_id).to eq request_id
+            expect(::Request.current_id).to eq request_id
           end
 
           logging_context_job.error(job, 'exception')
         end
 
         it "restores the original VCAP Request ID after execution of the wrapped job's perform method" do
-          random_request_id          = SecureRandom.uuid
-          ::VCAP::Request.current_id = random_request_id
+          random_request_id = SecureRandom.uuid
+          ::Request.current_id = random_request_id
 
           logging_context_job.error(job, 'exception')
 
-          expect(::VCAP::Request.current_id).to eq random_request_id
+          expect(::Request.current_id).to eq random_request_id
         end
 
         it "restores the original VCAP Request ID after exception within execution of the wrapped job's perform method" do
@@ -119,12 +119,12 @@ module CloudController
             raise 'runtime test exception'
           end
 
-          random_request_id          = SecureRandom.uuid
-          ::VCAP::Request.current_id = random_request_id
+          random_request_id = SecureRandom.uuid
+          ::Request.current_id = random_request_id
 
           expect { logging_context_job.error(job, 'exception') }.to raise_error 'runtime test exception'
 
-          expect(::VCAP::Request.current_id).to eq random_request_id
+          expect(::Request.current_id).to eq random_request_id
         end
 
         context 'when the error is a client error' do

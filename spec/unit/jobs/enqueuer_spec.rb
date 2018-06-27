@@ -33,7 +33,7 @@ module CloudController::Jobs
           original_enqueue.call(logging_context_job, opts)
         end
 
-        ::VCAP::Request.current_id = request_id
+        ::Request.current_id = request_id
         Enqueuer.new(wrapped_job, opts).public_send(method_name)
       end
 

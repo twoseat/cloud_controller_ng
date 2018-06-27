@@ -13,7 +13,7 @@ module CloudFoundry
         attr_accessor :last_request_id, :last_env_input
 
         def call(env)
-          @last_request_id = ::VCAP::Request.current_id
+          @last_request_id = ::Request.current_id
           @last_env_input = env
           [200, {}, 'a body']
         end
@@ -28,7 +28,7 @@ module CloudFoundry
 
           it 'nils it out after the request has been processed' do
             middleware.call('HTTP_X_VCAP_REQUEST_ID' => 'specific-request-id')
-            expect(::VCAP::Request.current_id).to eq(nil)
+            expect(::Request.current_id).to eq(nil)
           end
         end
 

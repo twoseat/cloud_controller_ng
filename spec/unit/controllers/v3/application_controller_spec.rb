@@ -6,7 +6,7 @@ RSpec.describe ApplicationController, type: :controller do
 
   controller do
     def index
-      render 200, json: { request_id: VCAP::Request.current_id }
+      render 200, json: { request_id: Request.current_id }
     end
 
     def show

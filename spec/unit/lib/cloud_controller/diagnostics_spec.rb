@@ -23,7 +23,7 @@ module CloudController
 
     describe '.request_received' do
       before do
-        VCAP::Request.current_id = request_id
+        Request.current_id = request_id
         diagnostics.request_received(request)
       end
 
@@ -46,7 +46,7 @@ module CloudController
         end
       end
 
-      it 'populates the request ID from VCAP::Request' do
+      it 'populates the request ID from Request' do
         expect(current_request[:request_id]).to eq(request_id)
       end
 
