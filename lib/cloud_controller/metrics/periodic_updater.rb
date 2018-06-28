@@ -1,4 +1,5 @@
 require 'cloud_controller/metrics/statsd_updater'
+require 'clockwork'
 require 'vcap/stats'
 
 module VCAP::CloudController::Metrics
@@ -12,13 +13,13 @@ module VCAP::CloudController::Metrics
 
     def setup_updates
       update!
-      EM.add_periodic_timer(600) { catch_error { record_user_count } }
-      EM.add_periodic_timer(30)  { catch_error { update_job_queue_length } }
-      EM.add_periodic_timer(30)  { catch_error { update_thread_info } }
-      EM.add_periodic_timer(30)  { catch_error { update_failed_job_count } }
-      EM.add_periodic_timer(30)  { catch_error { update_vitals } }
-      EM.add_periodic_timer(30)  { catch_error { update_log_counts } }
-      EM.add_periodic_timer(30)  { catch_error { update_task_stats } }
+      Clockwork.every(600.seconds, 'record_user_count') { catch_error { record_user_count } }
+      Clockwork.every(30.seconds, 'update_job_queue_length')  { catch_error { update_job_queue_length } }
+      Clockwork.every(30.seconds, 'update_thread_info')  { catch_error { update_thread_info } }
+      Clockwork.every(30.seconds, 'update_failed_job_count')  { catch_error { update_failed_job_count } }
+      Clockwork.every(30.seconds, 'update_vitals')  { catch_error { update_vitals } }
+      Clockwork.every(30.seconds, 'update_log_counts')  { catch_error { update_log_counts } }
+      Clockwork.every(30.seconds, 'update_task_stats')  { catch_error { update_task_stats } }
     end
 
     def update!
@@ -109,19 +110,17 @@ module VCAP::CloudController::Metrics
     end
 
     def thread_info
-      threadqueue = EM.instance_variable_get(:@threadqueue) || []
-      resultqueue = EM.instance_variable_get(:@resultqueue) || []
       {
         thread_count:  Thread.list.size,
         event_machine: {
-          connection_count: EventMachine.connection_count,
+          connection_count: 0,
           threadqueue:      {
-            size:        threadqueue.size,
-            num_waiting: threadqueue.is_a?(Array) ? 0 : threadqueue.num_waiting,
+            size:        0,
+            num_waiting: 0,
           },
           resultqueue: {
-            size:        resultqueue.size,
-            num_waiting: resultqueue.is_a?(Array) ? 0 : resultqueue.num_waiting,
+            size:        0,
+            num_waiting: 0,
           },
         },
       }

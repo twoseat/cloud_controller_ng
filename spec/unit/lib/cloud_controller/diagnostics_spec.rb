@@ -17,10 +17,6 @@ module VCAP::CloudController
 
     subject(:diagnostics) { Diagnostics.new }
 
-    before do
-      allow(EventMachine).to receive(:connection_count).and_return(17)
-    end
-
     describe '.request_received' do
       before do
         VCAP::Request.current_id = request_id

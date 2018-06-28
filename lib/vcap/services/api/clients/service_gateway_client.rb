@@ -4,7 +4,6 @@ require 'uri'
 
 require 'vcap/services/api/const'
 require 'vcap/services/api/messages'
-require 'vcap/services/api/async_requests'
 
 module VCAP
   module Services

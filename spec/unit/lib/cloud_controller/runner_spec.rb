@@ -13,8 +13,6 @@ module VCAP::CloudController
     before do
       allow(Steno).to receive(:init)
       allow(CloudController::DependencyLocator.instance).to receive(:routing_api_client).and_return(routing_api_client)
-      allow(EM).to receive(:run).and_yield
-      allow(EM).to receive(:add_timer).and_yield
       allow(VCAP::CloudController::Metrics::PeriodicUpdater).to receive(:new).and_return(periodic_updater)
       allow(periodic_updater).to receive(:setup_updates)
       allow(VCAP::PidFile).to receive(:new) { double(:pidfile, unlink_at_exit: nil) }
@@ -24,7 +22,7 @@ module VCAP::CloudController
 
     subject do
       Runner.new(argv + ['-c', config_file.path]).tap do |r|
-        allow(r).to receive(:start_thin_server)
+        allow(r).to receive(:start_puma_server)
       end
     end
 
@@ -63,13 +61,14 @@ module VCAP::CloudController
       end
 
       it 'starts thin server on set up bind address' do
-        allow(subject).to receive(:start_thin_server).and_call_original
+        allow(subject).to receive(:start_puma_server).and_call_original
         expect_any_instance_of(VCAP::HostSystem).to receive(:local_ip).and_return('some_local_ip')
-        expect(Thin::Server).to receive(:new).with('some_local_ip', 8181, { signals: false }).and_return(double(:thin_server).as_null_object)
+        expect(Puma::Server).to receive(:new).with(instance_of(Rack::Builder)).and_return(instance_double(Puma::Server).as_null_object)
         subject.run!
+        expect(ENV['HTTP_HOST']).to eq('some_local_ip:8181')
       end
 
-      it 'sets up varz updates' do
+      it 'sets up metrics updates' do
         expect(periodic_updater).to receive(:setup_updates)
         subject.run!
       end
@@ -115,8 +114,7 @@ module VCAP::CloudController
 
     describe '#stop!' do
       it 'should stop thin and EM' do
-        expect(subject).to receive(:stop_thin_server)
-        expect(EM).to receive(:stop)
+        expect(subject).to receive(:stop_puma_server)
         subject.stop!
       end
     end
@@ -185,36 +183,31 @@ module VCAP::CloudController
       end
     end
 
-    describe '#start_thin_server' do
-      let(:app) { double(:app) }
-      let(:thin_server) { OpenStruct.new(start!: nil) }
+    describe '#start_puma_server' do
+      let(:app) { instance_double(Rack::Builder) }
+      let(:puma_server) { instance_double(Puma::Server) }
 
-      subject(:start_thin_server) do
+      subject(:start_puma_server) do
         runner = Runner.new(argv + ['-c', config_file.path])
-        runner.send(:start_thin_server, app)
+        runner.send(:start_puma_server, app)
       end
 
       before do
-        allow(Thin::Server).to receive(:new).and_return(thin_server)
-        allow(thin_server).to receive(:start!)
+        allow(Puma::Server).to receive(:new).and_return(puma_server)
+        allow(puma_server).to receive(:persistent_timeout=)
+        allow(puma_server).to receive(:run)
       end
 
       it 'gets the timeout from the config' do
-        start_thin_server
+        start_puma_server
 
-        expect(thin_server.timeout).to eq(600)
-      end
-
-      it "uses thin's experimental threaded mode intentionally" do
-        start_thin_server
-
-        expect(thin_server.threaded).to eq(true)
+        expect(puma_server).to have_received(:persistent_timeout=).with(600)
       end
 
       it 'starts the thin server' do
-        start_thin_server
+        start_puma_server
 
-        expect(thin_server).to have_received(:start!)
+        expect(puma_server).to have_received(:run)
       end
     end
 

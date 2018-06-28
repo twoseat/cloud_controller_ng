@@ -4,28 +4,11 @@ require 'cloud_controller/metrics/periodic_updater'
 module VCAP::CloudController::Metrics
   RSpec.describe PeriodicUpdater do
     let(:periodic_updater) { PeriodicUpdater.new(start_time, log_counter, logger, [updater1, updater2]) }
-    let(:updater1) { double(:updater1) }
-    let(:updater2) { double(:updater2) }
-    let(:threadqueue) { double(EventMachine::Queue, size: 20, num_waiting: 0) }
-    let(:resultqueue) { double(EventMachine::Queue, size: 0, num_waiting: 1) }
+    let(:updater1) { instance_double(StatsdUpdater) }
+    let(:updater2) { instance_double(StatsdUpdater) }
     let(:start_time) { Time.now.utc - 90 }
     let(:log_counter) { double(:log_counter, counts: {}) }
     let(:logger) { double(:logger) }
-
-    before do
-      allow(EventMachine).to receive(:connection_count).and_return(123)
-
-      allow(EventMachine).to receive(:instance_variable_get) do |instance_var|
-        case instance_var
-        when :@threadqueue then
-          threadqueue
-        when :@resultqueue then
-          resultqueue
-        else
-          raise "Unexpected call: #{instance_var}"
-        end
-      end
-    end
 
     describe 'task stats' do
       before do
@@ -85,8 +68,6 @@ module VCAP::CloudController::Metrics
         allow(updater2).to receive(:update_vitals)
         allow(updater2).to receive(:update_log_counts)
         allow(updater2).to receive(:update_task_stats)
-
-        allow(EventMachine).to receive(:add_periodic_timer)
       end
 
       it 'bumps the number of users and sets periodic timer' do
@@ -128,7 +109,7 @@ module VCAP::CloudController::Metrics
         before do
           @periodic_timers = []
 
-          allow(EventMachine).to receive(:add_periodic_timer) do |interval, &block|
+          allow(Clockwork).to receive(:every) do |interval, _, &block|
             @periodic_timers << {
               interval: interval,
               block:    block
@@ -304,15 +285,9 @@ module VCAP::CloudController::Metrics
         expected_thread_info = {
           thread_count:  Thread.list.size,
           event_machine: {
-            connection_count: 123,
-            threadqueue:      {
-              size:        20,
-              num_waiting: 0,
-            },
-            resultqueue: {
-              size:        0,
-              num_waiting: 1,
-            },
+            connection_count: 0,
+            threadqueue: {size: 0, num_waiting: 0},
+            resultqueue: {size: 0, num_waiting: 0},
           },
         }
 
@@ -328,15 +303,9 @@ module VCAP::CloudController::Metrics
           expected_thread_info = {
             thread_count:  Thread.list.size,
             event_machine: {
-              connection_count: 123,
-              threadqueue:      {
-                size:        0,
-                num_waiting: 0,
-              },
-              resultqueue: {
-                size:        0,
-                num_waiting: 0,
-              },
+              connection_count: 0,
+              threadqueue: {size: 0, num_waiting: 0},
+              resultqueue: {size: 0, num_waiting: 0},
             },
           }
 
