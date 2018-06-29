@@ -6,13 +6,13 @@ module VCAP::CloudController
     end
 
     class << self
-      def restart(app:, config:, user_audit_info:)
+      def restart(app:, config:, user_audit_info:, restart_webish_processes: true)
         need_to_stop_in_runtime = !app.stopped?
 
         app.db.transaction do
           app.lock!
           app.update(desired_state: ProcessModel::STARTED)
-          app.processes.each do |process|
+          processes_to_update(app, restart_webish_processes).each do |process|
             process.skip_process_observer_on_update = true
 
             # A side-effect of submitting LRP requests before the transaction commits is that
@@ -35,6 +35,20 @@ module VCAP::CloudController
       end
 
       private
+
+      def processes_to_update(app, restart_webish_processes)
+        if restart_webish_processes
+          return app.processes
+        end
+        processes = []
+        for process in app.processes
+          if 'web' != process.type
+            processes.push(process)
+          end
+
+        end
+        return processes
+      end
 
       def runners(config)
         Runners.new(config)

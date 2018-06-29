@@ -49,8 +49,10 @@ module VCAP::CloudController
         end
 
         context 'the last iteration of deployments in progress' do
-          let(:web_process) { ProcessModel.make(instances: 1) }
-          let(:webish_process) { ProcessModel.make(app: web_process.app, type: 'web-deployment-guid-1', instances: 5) }
+          let(:web_process) { ProcessModel.make(instances: 1, state: ProcessModel::STARTED) }
+          let(:webish_process) { ProcessModel.make(app: web_process.app, type: 'web-deployment-guid-1', instances: 5, state: ProcessModel::STARTED) }
+          let!(:worker_process) { ProcessModel.make(app: web_process.app, instances: 1, type: 'worker', state: ProcessModel::STARTED) }
+          let!(:other_process) { ProcessModel.make(app: web_process.app, instances: 1, type: 'other', state: ProcessModel::STARTED) }
 
           it 'scales the web process down by one' do
             expect {
@@ -66,6 +68,22 @@ module VCAP::CloudController
             }.not_to change {
               webish_process.reload.instances
             }
+          end
+
+          it 'stops the non-web processes' do
+            expect(webish_process.reload.state).to eq(ProcessModel::STARTED)
+            expect(worker_process.reload.state).to eq(ProcessModel::STARTED)
+            expect(other_process.reload.state).to eq(ProcessModel::STARTED)
+
+            deployer.update
+            expect(webish_process.reload.state).to eq(ProcessModel::STARTED)
+            expect(worker_process.reload.state).to eq(ProcessModel::STOPPED)
+            expect(other_process.reload.state).to eq(ProcessModel::STOPPED)
+          end
+
+          it 'starts the non-web processes' do
+            deployer.update
+
           end
         end
 

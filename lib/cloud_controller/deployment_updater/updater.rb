@@ -23,6 +23,7 @@ module VCAP::CloudController
 
         if web_process.instances == 1
           web_process.update(instances: web_process.instances - 1)
+          restart_nonweb_processes(deployment)
         else
           ProcessModel.db.transaction do
             web_process.update(instances: web_process.instances - 1)
@@ -31,6 +32,14 @@ module VCAP::CloudController
         end
 
         logger.info("ran-deployment-update-for-#{deployment.guid}")
+      end
+
+      def self.restart_nonweb_processes(deployment)
+        for process in deployment.app.processes
+          if !ProcessTypes.webish?(process.type)
+            process.update({state: ProcessModel::STOPPED})
+          end
+        end
       end
 
       def self.ready_to_scale?(deployment, logger)

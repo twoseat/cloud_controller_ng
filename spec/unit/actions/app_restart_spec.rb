@@ -22,21 +22,22 @@ module VCAP::CloudController
       let(:package) { PackageModel.make(app: app, state: PackageModel::READY_STATE) }
 
       let!(:droplet) { DropletModel.make(app: app) }
-      let!(:process1) { ProcessModel.make(:process, state: desired_state, app: app) }
-      let!(:process2) { ProcessModel.make(:process, state: desired_state, app: app) }
-      let(:runner1) { instance_double(VCAP::CloudController::Diego::Runner) }
-      let(:runner2) { instance_double(VCAP::CloudController::Diego::Runner) }
+      let!(:web_process) { ProcessModel.make(:process, state: desired_state, app: app, type: 'web') }
+
+      let!(:worker_process) { ProcessModel.make(:process, state: desired_state, app: app, type: 'worker') }
+      let(:web_process_runner) { instance_double(VCAP::CloudController::Diego::Runner) }
+      let(:worker_process_runner) { instance_double(VCAP::CloudController::Diego::Runner) }
 
       before do
         app.update(droplet: droplet)
 
-        allow(runner1).to receive(:stop)
-        allow(runner1).to receive(:start)
-        allow(runner2).to receive(:stop)
-        allow(runner2).to receive(:start)
+        allow(web_process_runner).to receive(:stop)
+        allow(web_process_runner).to receive(:start)
+        allow(worker_process_runner).to receive(:stop)
+        allow(worker_process_runner).to receive(:start)
 
         allow(VCAP::CloudController::Diego::Runner).to receive(:new) do |process, _|
-          process.guid == process1.guid ? runner1 : runner2
+          process.guid == web_process.guid ? web_process_runner : worker_process_runner
         end
 
         VCAP::CloudController::FeatureFlag.make(name: 'diego_docker', enabled: true)
@@ -63,20 +64,22 @@ module VCAP::CloudController
 
         it 'keeps process states to STARTED' do
           AppRestart.restart(app: app, config: config, user_audit_info: user_audit_info)
-          expect(process1.reload.state).to eq('STARTED')
-          expect(process2.reload.state).to eq('STARTED')
+          expect(web_process.reload.state).to eq('STARTED')
+          expect(worker_process.reload.state).to eq('STARTED')
         end
 
         it 'stops running processes in the runtime' do
-          expect(runner1).to receive(:stop).once
-          expect(runner2).to receive(:stop).once
+          expect(web_process_runner).to receive(:stop)
+
+          expect(web_process_runner).to receive(:stop).once
+          expect(worker_process_runner).to receive(:stop).once
 
           AppRestart.restart(app: app, config: config, user_audit_info: user_audit_info)
         end
 
         it 'starts running processes in the runtime' do
-          expect(runner1).to receive(:start).once
-          expect(runner2).to receive(:start).once
+          expect(web_process_runner).to receive(:start).once
+          expect(worker_process_runner).to receive(:start).once
 
           AppRestart.restart(app: app, config: config, user_audit_info: user_audit_info)
         end
@@ -93,10 +96,51 @@ module VCAP::CloudController
           }.to change { AppUsageEvent.where(state: 'STARTED').count }.by(2)
         end
 
+        context 'restart_webish_processess is false' do
+          it 'keeps the app state as STARTED' do
+            AppRestart.restart(app: app, config: config, user_audit_info: user_audit_info, restart_webish_processes: false)
+            expect(app.reload.desired_state).to eq('STARTED')
+          end
+
+          it 'keeps process states to STARTED' do
+            AppRestart.restart(app: app, config: config, user_audit_info: user_audit_info, restart_webish_processes: false)
+            expect(web_process.reload.state).to eq('STARTED')
+            expect(worker_process.reload.state).to eq('STARTED')
+          end
+
+          it 'stops only the non-web running processes in the runtime' do #???
+            expect(web_process_runner).not_to receive(:stop) ## The only difference we've tested so far, type web
+            # expect(webish_process_runner).not_to receive(:stop) ## The only difference we've tested so far, type web
+
+            expect(worker_process_runner).to receive(:stop).once
+
+            AppRestart.restart(app: app, config: config, user_audit_info: user_audit_info, restart_webish_processes: false)
+          end
+
+          it 'starts running processes in the runtime' do
+            expect(web_process_runner).to receive(:start).once
+            expect(worker_process_runner).to receive(:start).once
+
+            AppRestart.restart(app: app, config: config, user_audit_info: user_audit_info, restart_webish_processes: false)
+          end
+
+          it 'generates a STOP usage event' do
+            expect {
+              AppRestart.restart(app: app, config: config, user_audit_info: user_audit_info, restart_webish_processes: false)
+            }.to change { AppUsageEvent.where(state: 'STOPPED').count }.by(2)
+          end
+
+          it 'generates a START usage event' do
+            expect {
+              AppRestart.restart(app: app, config: config, user_audit_info: user_audit_info, restart_webish_processes: false)
+            }.to change { AppUsageEvent.where(state: 'STARTED').count }.by(2)
+          end
+        end
+
         context 'when submitting the stop request to the backend fails' do
           before do
-            allow(runner1).to receive(:stop).and_raise(Diego::Runner::CannotCommunicateWithDiegoError.new('some-stop-error'))
-            allow(runner2).to receive(:stop).and_raise(Diego::Runner::CannotCommunicateWithDiegoError.new('some-stop-error'))
+            allow(web_process_runner).to receive(:stop).and_raise(Diego::Runner::CannotCommunicateWithDiegoError.new('some-stop-error'))
+            allow(worker_process_runner).to receive(:stop).and_raise(Diego::Runner::CannotCommunicateWithDiegoError.new('some-stop-error'))
           end
 
           it 'raises an error and keeps the existing STARTED state' do
@@ -110,8 +154,8 @@ module VCAP::CloudController
 
         context 'when submitting the start request to the backend fails' do
           before do
-            allow(runner1).to receive(:start).and_raise(Diego::Runner::CannotCommunicateWithDiegoError.new('some-start-error'))
-            allow(runner2).to receive(:start).and_raise(Diego::Runner::CannotCommunicateWithDiegoError.new('some-start-error'))
+            allow(web_process_runner).to receive(:start).and_raise(Diego::Runner::CannotCommunicateWithDiegoError.new('some-start-error'))
+            allow(worker_process_runner).to receive(:start).and_raise(Diego::Runner::CannotCommunicateWithDiegoError.new('some-start-error'))
           end
 
           it 'raises an error and keeps the existing state' do
@@ -143,20 +187,20 @@ module VCAP::CloudController
 
         it 'changes the process states to STARTED' do
           AppRestart.restart(app: app, config: config, user_audit_info: user_audit_info)
-          expect(process1.reload.reload.state).to eq('STARTED')
-          expect(process2.reload.reload.state).to eq('STARTED')
+          expect(web_process.reload.reload.state).to eq('STARTED')
+          expect(worker_process.reload.reload.state).to eq('STARTED')
         end
 
         it 'does NOT attempt to stop running processes in the runtime' do
-          expect(runner1).to_not receive(:stop)
-          expect(runner2).to_not receive(:stop)
+          expect(web_process_runner).to_not receive(:stop)
+          expect(worker_process_runner).to_not receive(:stop)
 
           AppRestart.restart(app: app, config: config, user_audit_info: user_audit_info)
         end
 
         it 'starts running processes in the runtime' do
-          expect(runner1).to receive(:start).once
-          expect(runner2).to receive(:start).once
+          expect(web_process_runner).to receive(:start).once
+          expect(worker_process_runner).to receive(:start).once
 
           AppRestart.restart(app: app, config: config, user_audit_info: user_audit_info)
         end
@@ -199,8 +243,8 @@ module VCAP::CloudController
 
         context 'when submitting the start request to the backend fails' do
           before do
-            allow(runner1).to receive(:start).and_raise(Diego::Runner::CannotCommunicateWithDiegoError.new('some-start-error'))
-            allow(runner2).to receive(:start).and_raise(Diego::Runner::CannotCommunicateWithDiegoError.new('some-start-error'))
+            allow(web_process_runner).to receive(:start).and_raise(Diego::Runner::CannotCommunicateWithDiegoError.new('some-start-error'))
+            allow(worker_process_runner).to receive(:start).and_raise(Diego::Runner::CannotCommunicateWithDiegoError.new('some-start-error'))
           end
 
           it 'raises an error and keeps the existing state' do
