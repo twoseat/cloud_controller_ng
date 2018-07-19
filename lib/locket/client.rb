@@ -6,10 +6,42 @@ module Locket
     def initialize(owner, host, credentials)
       @service = CloudFoundry::Locket::Locket::Stub.new(host, credentials)
       @owner = owner
+      @threads = []
     end
 
     def start
-      lock_request = CloudFoundry::Locket::LockRequest.new(
+      threads << Thread.new do
+        loop do
+          begin
+            service.lock(request_lock)
+            @lock_acquired = true
+          rescue GRPC::BadStatus
+            @lock_acquired = false
+          end
+
+          sleep 1
+        end
+      end
+    end
+
+    def stop
+      threads.each(&:kill)
+    end
+
+    def lock_acquired?
+      lock_acquired
+    end
+
+    def with_lock
+      yield if lock_acquired?
+
+      sleep 1
+    end
+
+    private
+
+    def request_lock
+      CloudFoundry::Locket::LockRequest.new(
         {
           resource: {
             key: 'cc-deployment-updater',
@@ -19,17 +51,7 @@ module Locket
           ttl_in_seconds: 15,
         }
       )
-      service.lock(lock_request)
-      @lock_acquired = true
-    rescue GRPC::BadStatus
-      @lock_acquired = false
     end
-
-    def lock_acquired?
-      lock_acquired
-    end
-
-    private
 
     attr_reader :service, :owner, :lock_acquired
   end
