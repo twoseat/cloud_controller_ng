@@ -80,6 +80,9 @@ loggregator:
   router: "127.0.0.1:3456"
   internal_url: 'http://loggregator-trafficcontroller.service.cf.internal:8081'
 
+logcache:
+  internal_url: 'http://doppler.service.cf.internal:8080'
+
 doppler:
   url: 'wss://doppler.example.com:443'
 
