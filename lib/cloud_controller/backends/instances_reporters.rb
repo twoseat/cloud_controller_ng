@@ -41,7 +41,12 @@ module VCAP::CloudController
 
     def diego_stats_reporter
       @diego_stats_reporter ||= begin
-        Diego::InstancesStatsReporter.new(dependency_locator.bbs_instances_client, dependency_locator.traffic_controller_client)
+        client = if FeatureFlag.enabled?(:temporary_use_logcache)
+                   dependency_locator.logcache_client
+                 else
+                   dependency_locator.traffic_controller_client
+                 end
+        Diego::InstancesStatsReporter.new(dependency_locator.bbs_instances_client, client)
       end
     end
 
