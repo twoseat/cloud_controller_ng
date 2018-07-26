@@ -2,9 +2,13 @@ require 'multipart_parser/reader'
 require 'logcache/logcache_egress_services_pb'
 
 module Logcache
+  class Error < StandardError
+  end
+  class ResponseError < StandardError
+  end
+  class RequestError < StandardError
+  end
   class Client
-    class Error < StandardError
-    end
 
     def initialize(host:, port:, client_ca_path:, client_cert_path:, client_key_path:)
       client_ca = File.open(client_ca_path).read

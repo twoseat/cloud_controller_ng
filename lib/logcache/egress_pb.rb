@@ -18,7 +18,7 @@ Google::Protobuf::DescriptorPool.generated_pool.build do
     optional :descending, :bool, 6
   end
   add_message "logcache.v1.ReadResponse" do
-    optional :envelopes, :message, 1, "loggregator.v2.EnvelopeBatch"
+    optional :envelopes, :message, 1, "protologgregator.v2.EnvelopeBatch"
   end
   add_message "logcache.v1.MetaRequest" do
     optional :local_only, :bool, 1
