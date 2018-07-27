@@ -26,8 +26,8 @@ module Logcache
       let(:response_boundary) { SecureRandom.uuid }
       let(:response_body) do
         build_response_body(response_boundary, [
-          Protologgregator::V2::Envelope.new(origin: 'a', eventType: Protologgregator::V2::Envelope::EventType::ContainerMetric).encode.to_s,
-          Protologgregator::V2::Envelope.new(origin: 'b', eventType: Protologgregator::V2::Envelope::EventType::ContainerMetric).encode.to_s,
+          Loggregator::V2::Envelope.new(origin: 'a', eventType: Loggregator::V2::Envelope::EventType::ContainerMetric).encode.to_s,
+          Loggregator::V2::Envelope.new(origin: 'b', eventType: Loggregator::V2::Envelope::EventType::ContainerMetric).encode.to_s,
         ])
       end
       let(:response_status) { 200 }
@@ -42,8 +42,8 @@ module Logcache
 
       it 'returns an array of Envelopes' do
         expect(client.container_metrics(auth_token: auth_token, app_guid: 'example-app-guid')).to match_array([
-          Protologgregator::V2::Envelope.new(origin: 'a', eventType: Protologgregator::V2::Envelope::EventType::ContainerMetric),
-          Protologgregator::V2::Envelope.new(origin: 'b', eventType: Protologgregator::V2::Envelope::EventType::ContainerMetric),
+          Loggregator::V2::Envelope.new(origin: 'a', eventType: Loggregator::V2::Envelope::EventType::ContainerMetric),
+          Loggregator::V2::Envelope.new(origin: 'b', eventType: Loggregator::V2::Envelope::EventType::ContainerMetric),
         ])
         expect(a_request(:get, 'https://doppler.example.com:8080/v1/read/example-app-guid')).to have_been_made
       end
@@ -88,7 +88,7 @@ module Logcache
       context 'when a part cannot be decoded by ProtoBuf' do
         let(:response_body) do
           build_response_body(response_boundary, [
-            Protologgregator::V2::Envelope.new(origin: 'a', eventType: Protologgregator::V2::Envelope::EventType::ContainerMetric).encode.to_s,
+            Loggregator::V2::Envelope.new(origin: 'a', eventType: Loggregator::V2::Envelope::EventType::ContainerMetric).encode.to_s,
             'potato',
           ])
         end
