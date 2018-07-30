@@ -1,4 +1,6 @@
+
 require 'logcache/logcache_egress_services_pb'
+require 'logcache/v2/envelope_pb'
 require 'utils/multipart_parser_wrapper'
 
 module Logcache
@@ -8,7 +10,12 @@ module Logcache
   end
   class RequestError < StandardError
   end
+  class DecodeError < StandardError
+  end
   class Client
+    BOUNDARY_REGEXP = /boundary=(.+)/
+
+    attr_reader :service
 
     def initialize(host:, port:, client_ca_path:, client_cert_path:, client_key_path:)
       client_ca = File.open(client_ca_path).read
@@ -32,9 +39,9 @@ module Logcache
       boundary  = extract_boundary!(response.contenttype)
       parser    = VCAP::MultipartParserWrapper.new(body: response.body, boundary: boundary)
       until (next_part = parser.next_part).nil?
-        envelopes << protobuf_decode!(next_part, Models::Envelope)
+        envelopes << convert_to_container_metric(protobuf_decode!(next_part, Loggregator::V2::Envelope))
       end
-      envelopes
+      envelopes.compact
     end
 
     def with_request_error_handling(&blk)
@@ -70,6 +77,14 @@ module Logcache
       protobuf_decoder.decode(message)
     rescue => e
       raise DecodeError.new(e.message)
+    end
+
+    def convert_to_container_metric(envelope)
+      gauge = envelope['gauge']
+      return nil unless gauge
+      container_metric = ContainerMetric.new(gauge['instanceIndex']['value'], gauge['cpuPercentage']['value'], gauge['memoryBytes']['value'], \
+    gauge['diskBytes']['value'])
+      ContainerMetricHolder.new(container_metric)
     end
   end
 end
