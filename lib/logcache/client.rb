@@ -1,5 +1,5 @@
-require 'multipart_parser/reader'
 require 'logcache/logcache_egress_services_pb'
+require 'utils/multipart_parser_wrapper'
 
 module Logcache
   class Error < StandardError
@@ -30,7 +30,7 @@ module Logcache
 
       envelopes = []
       boundary  = extract_boundary!(response.contenttype)
-      parser    = MultipartParser.new(body: response.body, boundary: boundary)
+      parser    = VCAP::MultipartParserWrapper.new(body: response.body, boundary: boundary)
       until (next_part = parser.next_part).nil?
         envelopes << protobuf_decode!(next_part, Models::Envelope)
       end
@@ -70,48 +70,6 @@ module Logcache
       protobuf_decoder.decode(message)
     rescue => e
       raise DecodeError.new(e.message)
-    end
-
-    class MultipartParser
-      NEW_LINE = "\r\n".freeze
-
-      def initialize(body:, boundary:)
-        @body     = body
-        @boundary = boundary
-      end
-
-      def next_part
-        @chunks ||= parse(@body, @boundary)
-        @chunks.next
-      rescue StopIteration, ParseError
-        nil
-      end
-
-      private
-
-      def parse(body, boundary)
-        parts = []
-
-        reader = ::MultipartParser::Reader.new(boundary)
-
-        reader.on_part do |part|
-          p = []
-
-          part.on_data do |partial_data|
-            p << partial_data
-          end
-
-          parts << p
-        end
-
-        reader.write body
-
-        unless reader.ended?
-          raise ParseError.new('truncated multipart message')
-        end
-
-        parts.map(&:join).to_enum
-      end
     end
   end
 end
