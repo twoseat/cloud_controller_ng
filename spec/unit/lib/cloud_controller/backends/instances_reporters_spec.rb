@@ -118,6 +118,17 @@ module VCAP::CloudController
           instances_reporters.stats_for_app(app)
           expect(Diego::InstancesStatsReporter).to have_received(:new).with(bbs_instances_client, traffic_controller_client)
         end
+
+        context 'and then it is set to true' do
+          before do
+            FeatureFlag.find(name: 'temporary_use_logcache').update(enabled: true)
+          end
+
+          it 'uses the logcache' do
+            instances_reporters.stats_for_app(app)
+            expect(Diego::InstancesStatsReporter).to have_received(:new).with(bbs_instances_client, logcache_client)
+          end
+        end
       end
 
       context 'when the feature-flag temporary_use_logcache is not set' do

@@ -20,6 +20,10 @@ Google::Protobuf::DescriptorPool.generated_pool.build do
       optional :event, :message, 10, "loggregator.v2.Event"
     end
   end
+  # envelope: {
+  #   source_id: app_guid echoed back,
+  #    gauge: ...
+  # }
   add_message "loggregator.v2.EnvelopeBatch" do
     repeated :batch, :message, 1, "loggregator.v2.Envelope"
   end
@@ -46,6 +50,7 @@ Google::Protobuf::DescriptorPool.generated_pool.build do
   add_message "loggregator.v2.Gauge" do
     map :metrics, :string, :message, 1, "loggregator.v2.GaugeValue"
   end
+  # 'gauge': {'metrics': {'string': gaugeValue, 'string': gaugeValue, 'string': gaugeValue}}
   add_message "loggregator.v2.GaugeValue" do
     optional :unit, :string, 1
     optional :value, :double, 2

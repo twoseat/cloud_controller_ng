@@ -421,9 +421,9 @@ module CloudController
       uri = URI(url)
       Logcache::Client.new(host: uri.host,
                            port: uri.port,
-                           client_ca_path: config.get(:diego, :bbs, :ca_file),
-                           client_cert_path: config.get(:diego, :bbs, :cert_file),
-                           client_key_path: config.get(:diego, :bbs, :key_file))
+                           client_ca_path: config.get(:logcache, :ca_file),
+                           client_cert_path: config.get(:logcache, :cert_file),
+                           client_key_path: config.get(:logcache, :key_file))
     end
 
     def create_object_renderer(opts={})
