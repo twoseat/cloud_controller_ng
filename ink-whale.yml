@@ -1,0 +1,2461 @@
+addons:
+- exclude:
+    jobs:
+    - name: smoke_tests
+      release: cf-smoke-tests
+  include:
+    stemcell:
+    - os: ubuntu-trusty
+  jobs:
+  - name: loggregator_agent
+    properties:
+      loggregator:
+        tls:
+          agent:
+            cert: ((loggregator_tls_agent.certificate))
+            key: ((loggregator_tls_agent.private_key))
+          ca_cert: ((loggregator_ca.certificate))
+    release: loggregator-agent
+  name: loggregator_agent
+- include:
+    stemcell:
+    - os: ubuntu-trusty
+  jobs:
+  - name: bpm
+    release: bpm
+  name: bpm
+- include:
+    stemcell:
+    - os: ubuntu-trusty
+    - os: windows2012R2
+    - os: windows2016
+  jobs:
+  - name: bosh-dns-aliases
+    properties:
+      aliases:
+      - domain: _.cell.service.cf.internal
+        targets:
+        - deployment: cf
+          domain: bosh
+          instance_group: diego-cell
+          network: default
+          query: _
+        - deployment: cf
+          domain: bosh
+          instance_group: windows-cell
+          network: default
+          query: _
+        - deployment: cf
+          domain: bosh
+          instance_group: windows2016-cell
+          network: default
+          query: _
+        - deployment: cf
+          domain: bosh
+          instance_group: isolated-diego-cell
+          network: default
+          query: _
+      - domain: auctioneer.service.cf.internal
+        targets:
+        - deployment: cf
+          domain: bosh
+          instance_group: scheduler
+          network: default
+          query: '*'
+      - domain: bbs.service.cf.internal
+        targets:
+        - deployment: cf
+          domain: bosh
+          instance_group: diego-api
+          network: default
+          query: q-s4
+      - domain: bits.service.cf.internal
+        targets:
+        - deployment: cf
+          domain: bosh
+          instance_group: bits
+          network: default
+          query: '*'
+      - domain: blobstore.service.cf.internal
+        targets:
+        - deployment: cf
+          domain: bosh
+          instance_group: singleton-blobstore
+          network: default
+          query: '*'
+      - domain: cc-uploader.service.cf.internal
+        targets:
+        - deployment: cf
+          domain: bosh
+          instance_group: api
+          network: default
+          query: '*'
+      - domain: cloud-controller-ng.service.cf.internal
+        targets:
+        - deployment: cf
+          domain: bosh
+          instance_group: api
+          network: default
+          query: '*'
+      - domain: consul.service.cf.internal
+        targets:
+        - deployment: cf
+          domain: bosh
+          instance_group: consul
+          network: default
+          query: '*'
+      - domain: credhub.service.cf.internal
+        targets:
+        - deployment: cf
+          domain: bosh
+          instance_group: credhub
+          network: default
+          query: '*'
+      - domain: doppler.service.cf.internal
+        targets:
+        - deployment: cf
+          domain: bosh
+          instance_group: doppler
+          network: default
+          query: '*'
+      - domain: file-server.service.cf.internal
+        targets:
+        - deployment: cf
+          domain: bosh
+          instance_group: api
+          network: default
+          query: '*'
+      - domain: gorouter.service.cf.internal
+        targets:
+        - deployment: cf
+          domain: bosh
+          instance_group: router
+          network: default
+          query: '*'
+      - domain: locket.service.cf.internal
+        targets:
+        - deployment: cf
+          domain: bosh
+          instance_group: diego-api
+          network: default
+          query: '*'
+      - domain: loggregator-trafficcontroller.service.cf.internal
+        targets:
+        - deployment: cf
+          domain: bosh
+          instance_group: log-api
+          network: default
+          query: '*'
+      - domain: policy-server.service.cf.internal
+        targets:
+        - deployment: cf
+          domain: bosh
+          instance_group: api
+          network: default
+          query: '*'
+      - domain: reverse-log-proxy.service.cf.internal
+        targets:
+        - deployment: cf
+          domain: bosh
+          instance_group: log-api
+          network: default
+          query: '*'
+      - domain: routing-api.service.cf.internal
+        targets:
+        - deployment: cf
+          domain: bosh
+          instance_group: api
+          network: default
+          query: '*'
+      - domain: silk-controller.service.cf.internal
+        targets:
+        - deployment: cf
+          domain: bosh
+          instance_group: diego-api
+          network: default
+          query: '*'
+      - domain: sql-db.service.cf.internal
+        targets:
+        - deployment: cf
+          domain: bosh
+          instance_group: database
+          network: default
+          query: '*'
+      - domain: ssh-proxy.service.cf.internal
+        targets:
+        - deployment: cf
+          domain: bosh
+          instance_group: scheduler
+          network: default
+          query: '*'
+      - domain: tps.service.cf.internal
+        targets:
+        - deployment: cf
+          domain: bosh
+          instance_group: scheduler
+          network: default
+          query: '*'
+      - domain: uaa.service.cf.internal
+        targets:
+        - deployment: cf
+          domain: bosh
+          instance_group: uaa
+          network: default
+          query: '*'
+    release: bosh-dns-aliases
+  name: bosh-dns-aliases
+instance_groups:
+- azs:
+  - z1
+  instances: 1
+  jobs:
+  - name: smoke_tests
+    properties:
+      smoke_tests:
+        api: https://api.ink-whale.capi.land
+        apps_domain: ink-whale.capi.land
+        cf_dial_timeout_in_seconds: 300
+        org: cf_smoke_tests_org
+        password: ((cf_bosh_password))
+        skip_ssl_validation: true
+        space: cf_smoke_tests_space
+        user: bosh
+    release: cf-smoke-tests
+  lifecycle: errand
+  name: smoke-tests
+  networks:
+  - name: default
+  stemcell: default
+  update:
+    serial: true
+  vm_type: minimal
+- azs:
+  - z1
+  - z2
+  - z3
+  instances: 1
+  jobs:
+  - consumes:
+      consul_client:
+        from: consul_client_link
+      consul_common:
+        from: consul_common_link
+      consul_server:
+        from: consul_server_link
+    name: consul_agent
+    properties:
+      consul:
+        agent:
+          domain: cf.internal
+          mode: server
+        agent_cert: ((consul_agent.certificate))
+        agent_key: ((consul_agent.private_key))
+        ca_cert: ((consul_agent_ca.certificate))
+        encrypt_keys:
+        - ((consul_encrypt_key))
+        server_cert: ((consul_server.certificate))
+        server_key: ((consul_server.private_key))
+    provides:
+      consul_client:
+        as: consul_client_link
+        shared: true
+      consul_common:
+        as: consul_common_link
+        shared: true
+      consul_server:
+        as: consul_server_link
+        shared: true
+    release: consul
+  name: consul
+  networks:
+  - name: default
+  persistent_disk_type: 5GB
+  stemcell: default
+  update:
+    serial: true
+  vm_type: minimal
+- azs:
+  - z1
+  - z2
+  instances: 1
+  jobs:
+  - consumes:
+      consul_client:
+        from: consul_client_link
+      consul_common:
+        from: consul_common_link
+      consul_server: nil
+    name: consul_agent
+    release: consul
+  - name: nats
+    properties:
+      nats:
+        password: ((nats_password))
+        user: nats
+    provides:
+      nats:
+        as: nats
+        shared: true
+    release: nats
+  name: nats
+  networks:
+  - name: default
+  stemcell: default
+  vm_type: minimal
+- azs:
+  - z1
+  - z2
+  instances: 1
+  jobs:
+  - consumes:
+      consul_client:
+        from: consul_client_link
+      consul_common:
+        from: consul_common_link
+      consul_server: nil
+    name: consul_agent
+    release: consul
+  - name: adapter
+    properties:
+      scalablesyslog:
+        adapter:
+          logs:
+            addr: reverse-log-proxy.service.cf.internal:8082
+          tls:
+            ca: ((loggregator_ca.certificate))
+            cert: ((adapter_tls.certificate))
+            cn: ss-adapter
+            key: ((adapter_tls.private_key))
+        adapter_rlp:
+          tls:
+            ca: ((loggregator_ca.certificate))
+            cert: ((adapter_rlp_tls.certificate))
+            cn: reverselogproxy
+            key: ((adapter_rlp_tls.private_key))
+    release: cf-syslog-drain
+  name: adapter
+  networks:
+  - name: default
+  stemcell: default
+  vm_type: minimal
+- azs:
+  - z1
+  instances: 1
+  jobs:
+  - consumes:
+      consul_client:
+        from: consul_client_link
+      consul_common:
+        from: consul_common_link
+      consul_server: nil
+    name: consul_agent
+    properties:
+      consul:
+        agent:
+          services:
+            sql-db:
+              check:
+                http: http://localhost:1936
+                interval: 3s
+    release: consul
+  - name: mysql
+    properties:
+      cf_mysql:
+        mysql:
+          admin_password: ((cf_mysql_mysql_admin_password))
+          binlog_enabled: false
+          cluster_health:
+            password: ((cf_mysql_mysql_cluster_health_password))
+          galera_healthcheck:
+            db_password: ((cf_mysql_mysql_galera_healthcheck_password))
+            endpoint_password: ((cf_mysql_mysql_galera_healthcheck_endpoint_password))
+            endpoint_username: galera_healthcheck
+          port: 13306
+          seeded_databases:
+          - name: cloud_controller
+            password: ((cc_database_password))
+            username: cloud_controller
+          - name: diego
+            password: ((diego_database_password))
+            username: diego
+          - name: network_connectivity
+            password: ((network_connectivity_database_password))
+            username: network_connectivity
+          - name: network_policy
+            password: ((network_policy_database_password))
+            username: network_policy
+          - name: routing-api
+            password: ((routing_api_database_password))
+            username: routing-api
+          - name: uaa
+            password: ((uaa_database_password))
+            username: uaa
+          - name: locket
+            password: ((locket_database_password))
+            username: locket
+    release: cf-mysql
+  - name: proxy
+    properties:
+      cf_mysql:
+        proxy:
+          api_password: ((cf_mysql_proxy_api_password))
+    release: cf-mysql
+  migrated_from:
+  - name: mysql
+  - name: singleton-database
+  name: database
+  networks:
+  - name: default
+  persistent_disk_type: 10GB
+  stemcell: default
+  update:
+    serial: true
+  vm_type: small
+- azs:
+  - z1
+  - z2
+  instances: 1
+  jobs:
+  - consumes:
+      consul_client:
+        from: consul_client_link
+      consul_common:
+        from: consul_common_link
+      consul_server: nil
+    name: consul_agent
+    properties:
+      consul:
+        agent:
+          services:
+            silk-controller:
+              name: silk-controller
+    release: consul
+  - name: cfdot
+    properties:
+      tls:
+        ca_certificate: ((service_cf_internal_ca.certificate))
+        certificate: ((diego_rep_client.certificate))
+        private_key: ((diego_rep_client.private_key))
+    release: diego
+  - name: bbs
+    properties:
+      bpm:
+        enabled: true
+      diego:
+        bbs:
+          active_key_label: key-2016-06
+          auctioneer:
+            ca_cert: ((service_cf_internal_ca.certificate))
+            client_cert: ((diego_auctioneer_client.certificate))
+            client_key: ((diego_auctioneer_client.private_key))
+          ca_cert: ((service_cf_internal_ca.certificate))
+          encryption_keys:
+          - label: key-2016-06
+            passphrase: ((diego_bbs_encryption_keys_passphrase))
+          rep:
+            ca_cert: ((service_cf_internal_ca.certificate))
+            client_cert: ((diego_rep_client.certificate))
+            client_key: ((diego_rep_client.private_key))
+            require_tls: true
+          server_cert: ((diego_bbs_server.certificate))
+          server_key: ((diego_bbs_server.private_key))
+          sql:
+            db_driver: mysql
+            db_host: sql-db.service.cf.internal
+            db_password: ((diego_database_password))
+            db_port: 3306
+            db_schema: diego
+            db_username: diego
+      logging:
+        format:
+          timestamp: rfc3339
+      loggregator:
+        ca_cert: ((loggregator_ca.certificate))
+        cert: ((loggregator_tls_agent.certificate))
+        key: ((loggregator_tls_agent.private_key))
+        use_v2_api: true
+      set_kernel_parameters: false
+    release: diego
+  - name: silk-controller
+    properties:
+      ca_cert: ((silk_ca.certificate))
+      database:
+        host: sql-db.service.cf.internal
+        name: network_connectivity
+        password: ((network_connectivity_database_password))
+        port: 3306
+        type: mysql
+        username: network_connectivity
+      server_cert: ((silk_controller.certificate))
+      server_key: ((silk_controller.private_key))
+      silk_daemon:
+        ca_cert: ((silk_ca.certificate))
+        client_cert: ((silk_daemon.certificate))
+        client_key: ((silk_daemon.private_key))
+    release: silk
+  - name: locket
+    properties:
+      bpm:
+        enabled: true
+      diego:
+        locket:
+          sql:
+            db_driver: mysql
+            db_host: sql-db.service.cf.internal
+            db_password: ((locket_database_password))
+            db_port: 3306
+            db_schema: locket
+            db_username: locket
+      logging:
+        format:
+          timestamp: rfc3339
+      loggregator:
+        ca_cert: ((loggregator_ca.certificate))
+        cert: ((loggregator_tls_agent.certificate))
+        key: ((loggregator_tls_agent.private_key))
+        use_v2_api: true
+      set_kernel_parameters: false
+      tls:
+        ca_cert: ((service_cf_internal_ca.certificate))
+        cert: ((diego_locket_server.certificate))
+        key: ((diego_locket_server.private_key))
+    release: diego
+  migrated_from:
+  - name: diego-bbs
+  name: diego-api
+  networks:
+  - name: default
+  stemcell: default
+  update:
+    serial: true
+  vm_type: small
+- azs:
+  - z1
+  - z2
+  instances: 1
+  jobs:
+  - consumes:
+      consul_client:
+        from: consul_client_link
+      consul_common:
+        from: consul_common_link
+      consul_server: nil
+    name: consul_agent
+    properties:
+      consul:
+        agent:
+          services:
+            uaa: {}
+    release: consul
+  - name: uaa
+    properties:
+      bpm:
+        enabled: true
+      encryption:
+        active_key_label: default_key
+        encryption_keys:
+        - label: default_key
+          passphrase: ((uaa_default_encryption_passphrase))
+      login:
+        saml:
+          activeKeyId: key-1
+          keys:
+            key-1:
+              certificate: ((uaa_login_saml.certificate))
+              key: ((uaa_login_saml.private_key))
+              passphrase: ""
+      uaa:
+        admin:
+          client_secret: ((uaa_admin_client_secret))
+        clients:
+          cc-service-dashboards:
+            authorities: clients.read,clients.write,clients.admin
+            authorized-grant-types: client_credentials
+            scope: openid,cloud_controller_service_permissions.read
+            secret: ((uaa_clients_cc-service-dashboards_secret))
+          cc_routing:
+            authorities: routing.router_groups.read
+            authorized-grant-types: client_credentials
+            secret: ((uaa_clients_cc-routing_secret))
+          cc_service_key_client:
+            authorities: credhub.read,credhub.write
+            authorized-grant-types: client_credentials
+            secret: ((uaa_clients_cc_service_key_client_secret))
+          cf:
+            access-token-validity: 600
+            authorities: uaa.none
+            authorized-grant-types: password,refresh_token
+            override: true
+            refresh-token-validity: 2592000
+            scope: network.admin,network.write,cloud_controller.read,cloud_controller.write,openid,password.write,cloud_controller.admin,scim.read,scim.write,doppler.firehose,uaa.user,routing.router_groups.read,routing.router_groups.write,cloud_controller.admin_read_only,cloud_controller.global_auditor,perm.admin
+            secret: ""
+          cloud_controller_username_lookup:
+            authorities: scim.userids
+            authorized-grant-types: client_credentials
+            secret: ((uaa_clients_cloud_controller_username_lookup_secret))
+          doppler:
+            authorities: uaa.resource
+            authorized-grant-types: client_credentials
+            override: true
+            secret: ((uaa_clients_doppler_secret))
+          gorouter:
+            authorities: routing.routes.read
+            authorized-grant-types: client_credentials
+            secret: ((uaa_clients_gorouter_secret))
+          network-policy:
+            authorities: uaa.resource,cloud_controller.admin_read_only
+            authorized-grant-types: client_credentials
+            secret: ((uaa_clients_network_policy_secret))
+          routing_api_client:
+            authorities: routing.routes.write,routing.routes.read,routing.router_groups.read
+            authorized-grant-types: client_credentials
+            secret: ((uaa_clients_routing_api_client_secret))
+          ssh-proxy:
+            authorized-grant-types: authorization_code
+            autoapprove: true
+            override: true
+            redirect-uri: https://uaa.ink-whale.capi.land/login
+            scope: openid,cloud_controller.read,cloud_controller.write
+            secret: ((uaa_clients_ssh-proxy_secret))
+          tcp_emitter:
+            authorities: routing.routes.write,routing.routes.read
+            authorized-grant-types: client_credentials
+            secret: ((uaa_clients_tcp_emitter_secret))
+          tcp_router:
+            authorities: routing.routes.read
+            authorized-grant-types: client_credentials
+            secret: ((uaa_clients_tcp_router_secret))
+        jwt:
+          policy:
+            active_key_id: key-1
+            keys:
+              key-1:
+                signingKey: ((uaa_jwt_signing_key.private_key))
+        logging_level: INFO
+        scim:
+          users:
+          - groups:
+            - cloud_controller.admin
+            - doppler.firehose
+            - network.admin
+            - openid
+            - routing.router_groups.read
+            - routing.router_groups.write
+            - scim.read
+            - scim.write
+            name: admin
+            password: ((cf_admin_password))
+          - groups:
+            - cloud_controller.admin
+            - doppler.firehose
+            - openid
+            - routing.router_groups.read
+            - routing.router_groups.write
+            - scim.read
+            - scim.write
+            name: bosh
+            password: ((cf_bosh_password))
+        sslCertificate: ((uaa_ssl.certificate))
+        sslPrivateKey: ((uaa_ssl.private_key))
+        url: https://uaa.ink-whale.capi.land
+        zones:
+          internal:
+            hostnames:
+            - uaa.service.cf.internal
+      uaadb:
+        databases:
+        - name: uaa
+          tag: uaa
+        db_scheme: mysql
+        port: 3306
+        roles:
+        - name: uaa
+          password: ((uaa_database_password))
+          tag: admin
+    release: uaa
+  - name: route_registrar
+    properties:
+      route_registrar:
+        routes:
+        - health_check:
+            name: uaa-healthcheck
+            script_path: /var/vcap/jobs/uaa/bin/health_check
+          name: uaa
+          port: 8080
+          registration_interval: 10s
+          tags:
+            component: uaa
+          uris:
+          - uaa.ink-whale.capi.land
+          - '*.uaa.ink-whale.capi.land'
+          - login.ink-whale.capi.land
+          - '*.login.ink-whale.capi.land'
+    release: routing
+  - name: statsd_injector
+    properties:
+      loggregator:
+        tls:
+          ca_cert: ((loggregator_ca.certificate))
+          statsd_injector:
+            cert: ((loggregator_tls_statsdinjector.certificate))
+            key: ((loggregator_tls_statsdinjector.private_key))
+    release: statsd-injector
+  name: uaa
+  networks:
+  - name: default
+  stemcell: default
+  vm_type: minimal
+- azs:
+  - z1
+  instances: 1
+  jobs:
+  - consumes:
+      consul_client:
+        from: consul_client_link
+      consul_common:
+        from: consul_common_link
+      consul_server: nil
+    name: consul_agent
+    properties:
+      consul:
+        agent:
+          services:
+            blobstore: {}
+    release: consul
+  - name: blobstore
+    properties:
+      blobstore:
+        admin_users:
+        - password: ((blobstore_admin_users_password))
+          username: blobstore-user
+        secure_link:
+          secret: ((blobstore_secure_link_secret))
+        tls:
+          cert: ((blobstore_tls.certificate))
+          private_key: ((blobstore_tls.private_key))
+      bpm:
+        enabled: true
+      system_domain: ink-whale.capi.land
+    release: capi
+  - name: route_registrar
+    properties:
+      route_registrar:
+        routes:
+        - name: blobstore
+          port: 8080
+          registration_interval: 20s
+          tags:
+            component: blobstore
+          uris:
+          - blobstore.ink-whale.capi.land
+    release: routing
+  migrated_from:
+  - name: blobstore
+  name: singleton-blobstore
+  networks:
+  - name: default
+  persistent_disk_type: 100GB
+  stemcell: default
+  update:
+    serial: true
+  vm_type: small
+- azs:
+  - z1
+  - z2
+  instances: 1
+  jobs:
+  - consumes:
+      consul_client:
+        from: consul_client_link
+      consul_common:
+        from: consul_common_link
+      consul_server: nil
+    name: consul_agent
+    properties:
+      consul:
+        agent:
+          services:
+            cloud_controller_ng: {}
+            policy-server-internal:
+              name: policy-server
+            routing-api: {}
+    release: consul
+  - name: cloud_controller_ng
+    properties:
+      app_domains:
+      - ink-whale.capi.land
+      app_ssh:
+        host_key_fingerprint: ((diego_ssh_proxy_host_key.public_key_fingerprint))
+      bpm:
+        enabled: true
+      cc:
+        buildpacks:
+          blobstore_type: webdav
+          webdav_config:
+            blobstore_timeout: 5
+            ca_cert: ((service_cf_internal_ca.certificate))
+            password: ((blobstore_admin_users_password))
+            private_endpoint: https://blobstore.service.cf.internal:4443
+            public_endpoint: https://blobstore.ink-whale.capi.land
+            username: blobstore-user
+        bulk_api_password: ((cc_bulk_api_password))
+        database_encryption:
+          current_key_label: encryption_key_0
+          keys:
+            encryption_key_0: ((cc_db_encryption_key))
+        db_encryption_key: ((cc_db_encryption_key))
+        default_app_memory: 256
+        default_running_security_groups:
+        - public_networks
+        - dns
+        - load_balancer
+        - credhub
+        default_staging_security_groups:
+        - public_networks
+        - dns
+        - credhub
+        droplets:
+          blobstore_type: webdav
+          webdav_config:
+            blobstore_timeout: 5
+            ca_cert: ((service_cf_internal_ca.certificate))
+            password: ((blobstore_admin_users_password))
+            private_endpoint: https://blobstore.service.cf.internal:4443
+            public_endpoint: https://blobstore.ink-whale.capi.land
+            username: blobstore-user
+        install_buildpacks:
+        - name: staticfile_buildpack
+          package: staticfile-buildpack
+        - name: java_buildpack
+          package: java-buildpack
+        - name: ruby_buildpack
+          package: ruby-buildpack
+        - name: dotnet_core_buildpack
+          package: dotnet-core-buildpack
+        - name: nodejs_buildpack
+          package: nodejs-buildpack
+        - name: go_buildpack
+          package: go-buildpack
+        - name: python_buildpack
+          package: python-buildpack
+        - name: php_buildpack
+          package: php-buildpack
+        - name: binary_buildpack
+          package: binary-buildpack
+        internal_api_password: ((cc_internal_api_password))
+        mutual_tls:
+          ca_cert: ((service_cf_internal_ca.certificate))
+          private_key: ((cc_tls.private_key))
+          public_cert: ((cc_tls.certificate))
+        packages:
+          blobstore_type: webdav
+          webdav_config:
+            blobstore_timeout: 5
+            ca_cert: ((service_cf_internal_ca.certificate))
+            password: ((blobstore_admin_users_password))
+            private_endpoint: https://blobstore.service.cf.internal:4443
+            public_endpoint: https://blobstore.ink-whale.capi.land
+            username: blobstore-user
+        resource_pool:
+          blobstore_type: webdav
+          webdav_config:
+            blobstore_timeout: 5
+            ca_cert: ((service_cf_internal_ca.certificate))
+            password: ((blobstore_admin_users_password))
+            private_endpoint: https://blobstore.service.cf.internal:4443
+            public_endpoint: https://blobstore.ink-whale.capi.land
+            username: blobstore-user
+        security_group_definitions:
+        - name: public_networks
+          rules:
+          - destination: 0.0.0.0-9.255.255.255
+            protocol: all
+          - destination: 11.0.0.0-169.253.255.255
+            protocol: all
+          - destination: 169.255.0.0-172.15.255.255
+            protocol: all
+          - destination: 172.32.0.0-192.167.255.255
+            protocol: all
+          - destination: 192.169.0.0-255.255.255.255
+            protocol: all
+        - name: dns
+          rules:
+          - destination: 0.0.0.0/0
+            ports: "53"
+            protocol: tcp
+          - destination: 0.0.0.0/0
+            ports: "53"
+            protocol: udp
+        - name: load_balancer
+          rules:
+          - destination: 10.244.0.34
+            protocol: all
+        - name: credhub
+          rules:
+          - destination: 0.0.0.0/0
+            ports: "8844"
+            protocol: tcp
+        stacks:
+        - description: Cloud Foundry Linux-based filesystem
+          name: cflinuxfs2
+        staging_upload_password: ((cc_staging_upload_password))
+        staging_upload_user: staging_user
+        temporary_disable_deployments: false
+      ccdb:
+        databases:
+        - name: cloud_controller
+          tag: cc
+        db_scheme: mysql
+        port: 3306
+        roles:
+        - name: cloud_controller
+          password: ((cc_database_password))
+          tag: admin
+      router:
+        route_services_secret: ((router_route_services_secret))
+      routing_api:
+        enabled: true
+      ssl:
+        skip_cert_verify: true
+      system_domain: ink-whale.capi.land
+      uaa:
+        ca_cert: ((uaa_ca.certificate))
+        clients:
+          cc-service-dashboards:
+            secret: ((uaa_clients_cc-service-dashboards_secret))
+          cc_routing:
+            secret: ((uaa_clients_cc-routing_secret))
+          cc_service_key_client:
+            secret: ((uaa_clients_cc_service_key_client_secret))
+          cloud_controller_username_lookup:
+            secret: ((uaa_clients_cloud_controller_username_lookup_secret))
+        url: https://uaa.ink-whale.capi.land
+    provides:
+      cloud_controller:
+        as: cloud_controller
+        shared: true
+    release: capi
+  - name: binary-buildpack
+    release: binary-buildpack
+  - name: dotnet-core-buildpack
+    release: dotnet-core-buildpack
+  - name: go-buildpack
+    release: go-buildpack
+  - name: java-buildpack
+    release: java-buildpack
+  - name: nodejs-buildpack
+    release: nodejs-buildpack
+  - name: php-buildpack
+    release: php-buildpack
+  - name: python-buildpack
+    release: python-buildpack
+  - name: ruby-buildpack
+    release: ruby-buildpack
+  - name: staticfile-buildpack
+    release: staticfile-buildpack
+  - name: route_registrar
+    properties:
+      route_registrar:
+        routes:
+        - health_check:
+            name: api-health-check
+            script_path: /var/vcap/jobs/cloud_controller_ng/bin/cloud_controller_ng_health_check
+            timeout: 6s
+          name: api
+          port: 9022
+          registration_interval: 10s
+          tags:
+            component: CloudController
+          uris:
+          - api.ink-whale.capi.land
+        - name: policy-server
+          port: 4002
+          registration_interval: 20s
+          uris:
+          - api.ink-whale.capi.land/networking
+    release: routing
+  - name: statsd_injector
+    properties:
+      loggregator:
+        tls:
+          ca_cert: ((loggregator_ca.certificate))
+          statsd_injector:
+            cert: ((loggregator_tls_statsdinjector.certificate))
+            key: ((loggregator_tls_statsdinjector.private_key))
+    release: statsd-injector
+  - name: file_server
+    properties:
+      bpm:
+        enabled: true
+      logging:
+        format:
+          timestamp: rfc3339
+      loggregator:
+        ca_cert: ((loggregator_ca.certificate))
+        cert: ((loggregator_tls_agent.certificate))
+        key: ((loggregator_tls_agent.private_key))
+        use_v2_api: true
+      set_kernel_parameters: false
+    release: diego
+  - name: routing-api
+    properties:
+      routing_api:
+        locket:
+          api_location: locket.service.cf.internal:8891
+          ca_cert: ((service_cf_internal_ca.certificate))
+          client_cert: ((diego_locket_client.certificate))
+          client_key: ((diego_locket_client.private_key))
+        router_groups:
+        - name: default-tcp
+          reservable_ports: 1024-1123
+          type: tcp
+        sqldb:
+          host: sql-db.service.cf.internal
+          password: ((routing_api_database_password))
+          port: 3306
+          schema: routing-api
+          type: mysql
+          username: routing-api
+        system_domain: ink-whale.capi.land
+      uaa:
+        ca_cert: ((uaa_ca.certificate))
+        tls_port: 8443
+    release: routing
+  - name: policy-server
+    properties:
+      database:
+        host: sql-db.service.cf.internal
+        name: network_policy
+        password: ((network_policy_database_password))
+        port: 3306
+        type: mysql
+        username: network_policy
+      uaa_ca: ((uaa_ca.certificate))
+      uaa_client_secret: ((uaa_clients_network_policy_secret))
+    release: cf-networking
+  - name: policy-server-internal
+    properties:
+      ca_cert: ((network_policy_ca.certificate))
+      server_cert: ((network_policy_server.certificate))
+      server_key: ((network_policy_server.private_key))
+    release: cf-networking
+  - name: cc_uploader
+    properties:
+      bpm:
+        enabled: true
+      capi:
+        cc_uploader:
+          cc:
+            ca_cert: ((service_cf_internal_ca.certificate))
+            client_cert: ((cc_bridge_cc_uploader.certificate))
+            client_key: ((cc_bridge_cc_uploader.private_key))
+          mutual_tls:
+            ca_cert: ((service_cf_internal_ca.certificate))
+            server_cert: ((cc_bridge_cc_uploader_server.certificate))
+            server_key: ((cc_bridge_cc_uploader_server.private_key))
+    release: capi
+  name: api
+  networks:
+  - name: default
+  stemcell: default
+  vm_extensions:
+  - 50GB_ephemeral_disk
+  vm_type: small
+- azs:
+  - z1
+  - z2
+  instances: 1
+  jobs:
+  - consumes:
+      consul_client:
+        from: consul_client_link
+      consul_common:
+        from: consul_common_link
+      consul_server: nil
+    name: consul_agent
+    release: consul
+  - name: cloud_controller_worker
+    properties:
+      bpm:
+        enabled: true
+      cc:
+        buildpacks:
+          blobstore_type: webdav
+          webdav_config:
+            blobstore_timeout: 5
+            ca_cert: ((service_cf_internal_ca.certificate))
+            password: ((blobstore_admin_users_password))
+            private_endpoint: https://blobstore.service.cf.internal:4443
+            public_endpoint: https://blobstore.ink-whale.capi.land
+            username: blobstore-user
+        database_encryption:
+          current_key_label: encryption_key_0
+          keys:
+            encryption_key_0: ((cc_db_encryption_key))
+        db_encryption_key: ((cc_db_encryption_key))
+        droplets:
+          blobstore_type: webdav
+          webdav_config:
+            blobstore_timeout: 5
+            ca_cert: ((service_cf_internal_ca.certificate))
+            password: ((blobstore_admin_users_password))
+            private_endpoint: https://blobstore.service.cf.internal:4443
+            public_endpoint: https://blobstore.ink-whale.capi.land
+            username: blobstore-user
+        internal_api_password: ((cc_internal_api_password))
+        mutual_tls:
+          ca_cert: ((service_cf_internal_ca.certificate))
+          private_key: ((cc_tls.private_key))
+          public_cert: ((cc_tls.certificate))
+        packages:
+          blobstore_type: webdav
+          webdav_config:
+            blobstore_timeout: 5
+            ca_cert: ((service_cf_internal_ca.certificate))
+            password: ((blobstore_admin_users_password))
+            private_endpoint: https://blobstore.service.cf.internal:4443
+            public_endpoint: https://blobstore.ink-whale.capi.land
+            username: blobstore-user
+        resource_pool:
+          blobstore_type: webdav
+          webdav_config:
+            blobstore_timeout: 5
+            ca_cert: ((service_cf_internal_ca.certificate))
+            password: ((blobstore_admin_users_password))
+            private_endpoint: https://blobstore.service.cf.internal:4443
+            public_endpoint: https://blobstore.ink-whale.capi.land
+            username: blobstore-user
+        staging_upload_password: ((cc_staging_upload_password))
+        staging_upload_user: staging_user
+      ccdb:
+        databases:
+        - name: cloud_controller
+          tag: cc
+        db_scheme: mysql
+        port: 3306
+        roles:
+        - name: cloud_controller
+          password: ((cc_database_password))
+          tag: admin
+      routing_api:
+        enabled: true
+      ssl:
+        skip_cert_verify: true
+      system_domain: ink-whale.capi.land
+      uaa:
+        ca_cert: ((uaa_ca.certificate))
+        clients:
+          cc-service-dashboards:
+            secret: ((uaa_clients_cc-service-dashboards_secret))
+          cc_routing:
+            secret: ((uaa_clients_cc-routing_secret))
+    release: capi
+  name: cc-worker
+  networks:
+  - name: default
+  stemcell: default
+  vm_type: minimal
+- azs:
+  - z1
+  - z2
+  instances: 1
+  jobs:
+  - consumes:
+      consul_client:
+        from: consul_client_link
+      consul_common:
+        from: consul_common_link
+      consul_server: nil
+    name: consul_agent
+    properties:
+      consul:
+        agent:
+          services:
+            gorouter: {}
+    release: consul
+  - name: gorouter
+    properties:
+      router:
+        enable_ssl: true
+        route_services_secret: ((router_route_services_secret))
+        status:
+          password: ((router_status_password))
+          user: router-status
+        tls_pem:
+        - cert_chain: ((router_ssl.certificate))
+          private_key: ((router_ssl.private_key))
+        tracing:
+          enable_zipkin: true
+      routing_api:
+        enabled: true
+      uaa:
+        ca_cert: ((uaa_ca.certificate))
+        clients:
+          gorouter:
+            secret: ((uaa_clients_gorouter_secret))
+        ssl:
+          port: 8443
+    release: routing
+  - name: ssh_proxy
+    properties:
+      diego:
+        ssh_proxy:
+          bbs:
+            ca_cert: ((service_cf_internal_ca.certificate))
+            client_cert: ((diego_bbs_client.certificate))
+            client_key: ((diego_bbs_client.private_key))
+          enable_cf_auth: true
+          host_key: ((diego_ssh_proxy_host_key.private_key))
+          uaa_secret: ((uaa_clients_ssh-proxy_secret))
+        ssl:
+          skip_cert_verify: true
+      logging:
+        format:
+          timestamp: rfc3339
+      loggregator:
+        ca_cert: ((loggregator_ca.certificate))
+        cert: ((loggregator_tls_agent.certificate))
+        key: ((loggregator_tls_agent.private_key))
+        use_v2_api: true
+    release: diego
+  name: router
+  networks:
+  - name: default
+    static_ips:
+    - 10.244.0.34
+  stemcell: default
+  update:
+    serial: true
+  vm_extensions:
+  - ssh-proxy-and-router-lb
+  vm_type: minimal
+- azs:
+  - z1
+  - z2
+  instances: 1
+  jobs:
+  - consumes:
+      consul_client:
+        from: consul_client_link
+      consul_common:
+        from: consul_common_link
+      consul_server: nil
+    name: consul_agent
+    release: consul
+  - name: tcp_router
+    properties:
+      tcp_router:
+        oauth_secret: ((uaa_clients_tcp_router_secret))
+        router_group: default-tcp
+      uaa:
+        ca_cert: ((uaa_ca.certificate))
+        tls_port: 8443
+    release: routing
+  name: tcp-router
+  networks:
+  - name: default
+  stemcell: default
+  vm_extensions:
+  - cf-tcp-router-network-properties
+  vm_type: minimal
+- azs:
+  - z1
+  - z2
+  instances: 1
+  jobs:
+  - consumes:
+      consul_client:
+        from: consul_client_link
+      consul_common:
+        from: consul_common_link
+      consul_server: nil
+    name: consul_agent
+    release: consul
+  - name: cfdot
+    properties:
+      tls:
+        ca_certificate: ((service_cf_internal_ca.certificate))
+        certificate: ((diego_rep_client.certificate))
+        private_key: ((diego_rep_client.private_key))
+    release: diego
+  - name: auctioneer
+    properties:
+      bpm:
+        enabled: true
+      diego:
+        auctioneer:
+          bbs:
+            ca_cert: ((service_cf_internal_ca.certificate))
+            client_cert: ((diego_bbs_client.certificate))
+            client_key: ((diego_bbs_client.private_key))
+          ca_cert: ((service_cf_internal_ca.certificate))
+          rep:
+            ca_cert: ((service_cf_internal_ca.certificate))
+            client_cert: ((diego_rep_client.certificate))
+            client_key: ((diego_rep_client.private_key))
+            require_tls: true
+          server_cert: ((diego_auctioneer_server.certificate))
+          server_key: ((diego_auctioneer_server.private_key))
+      logging:
+        format:
+          timestamp: rfc3339
+      loggregator:
+        ca_cert: ((loggregator_ca.certificate))
+        cert: ((loggregator_tls_agent.certificate))
+        key: ((loggregator_tls_agent.private_key))
+        use_v2_api: true
+    release: diego
+  - name: cloud_controller_clock
+    properties:
+      bpm:
+        enabled: true
+      cc:
+        buildpacks:
+          blobstore_type: webdav
+          webdav_config:
+            blobstore_timeout: 5
+            ca_cert: ((service_cf_internal_ca.certificate))
+            password: ((blobstore_admin_users_password))
+            private_endpoint: https://blobstore.service.cf.internal:4443
+            public_endpoint: https://blobstore.ink-whale.capi.land
+            username: blobstore-user
+        database_encryption:
+          current_key_label: encryption_key_0
+          keys:
+            encryption_key_0: ((cc_db_encryption_key))
+        db_encryption_key: ((cc_db_encryption_key))
+        droplets:
+          blobstore_type: webdav
+          webdav_config:
+            blobstore_timeout: 5
+            ca_cert: ((service_cf_internal_ca.certificate))
+            password: ((blobstore_admin_users_password))
+            private_endpoint: https://blobstore.service.cf.internal:4443
+            public_endpoint: https://blobstore.ink-whale.capi.land
+            username: blobstore-user
+        internal_api_password: ((cc_internal_api_password))
+        mutual_tls:
+          ca_cert: ((service_cf_internal_ca.certificate))
+          private_key: ((cc_tls.private_key))
+          public_cert: ((cc_tls.certificate))
+        packages:
+          blobstore_type: webdav
+          webdav_config:
+            blobstore_timeout: 5
+            ca_cert: ((service_cf_internal_ca.certificate))
+            password: ((blobstore_admin_users_password))
+            private_endpoint: https://blobstore.service.cf.internal:4443
+            public_endpoint: https://blobstore.ink-whale.capi.land
+            username: blobstore-user
+        resource_pool:
+          blobstore_type: webdav
+          webdav_config:
+            blobstore_timeout: 5
+            ca_cert: ((service_cf_internal_ca.certificate))
+            password: ((blobstore_admin_users_password))
+            private_endpoint: https://blobstore.service.cf.internal:4443
+            public_endpoint: https://blobstore.ink-whale.capi.land
+            username: blobstore-user
+        staging_upload_password: ((cc_staging_upload_password))
+        staging_upload_user: staging_user
+      ccdb:
+        databases:
+        - name: cloud_controller
+          tag: cc
+        db_scheme: mysql
+        port: 3306
+        roles:
+        - name: cloud_controller
+          password: ((cc_database_password))
+          tag: admin
+      routing_api:
+        enabled: true
+      ssl:
+        skip_cert_verify: true
+      system_domain: ink-whale.capi.land
+      uaa:
+        ca_cert: ((uaa_ca.certificate))
+        clients:
+          cc-service-dashboards:
+            secret: ((uaa_clients_cc-service-dashboards_secret))
+          cc_routing:
+            secret: ((uaa_clients_cc-routing_secret))
+        ssl:
+          port: 8443
+    release: capi
+  - name: statsd_injector
+    properties:
+      loggregator:
+        tls:
+          ca_cert: ((loggregator_ca.certificate))
+          statsd_injector:
+            cert: ((loggregator_tls_statsdinjector.certificate))
+            key: ((loggregator_tls_statsdinjector.private_key))
+    release: statsd-injector
+  - name: tps
+    properties:
+      bpm:
+        enabled: true
+      capi:
+        tps:
+          bbs:
+            ca_cert: ((service_cf_internal_ca.certificate))
+            client_cert: ((diego_bbs_client.certificate))
+            client_key: ((diego_bbs_client.private_key))
+          cc:
+            ca_cert: ((service_cf_internal_ca.certificate))
+            client_cert: ((cc_bridge_tps.certificate))
+            client_key: ((cc_bridge_tps.private_key))
+          listener_enabled: false
+          watcher:
+            locket:
+              api_location: locket.service.cf.internal:8891
+    release: capi
+  - name: scheduler
+    properties:
+      scalablesyslog:
+        scheduler:
+          api:
+            url: https://cloud-controller-ng.service.cf.internal:9023
+          tls:
+            api:
+              ca: ((service_cf_internal_ca.certificate))
+              cert: ((scheduler_api_tls.certificate))
+              cn: cloud-controller-ng.service.cf.internal
+              key: ((scheduler_api_tls.private_key))
+            client:
+              adapter_cn: ss-adapter
+              ca: ((loggregator_ca.certificate))
+              cert: ((scheduler_client_tls.certificate))
+              key: ((scheduler_client_tls.private_key))
+    release: cf-syslog-drain
+  - name: cc_deployment_updater
+    properties:
+      cc:
+        db_encryption_key: ((cc_db_encryption_key))
+        mutual_tls:
+          ca_cert: ((service_cf_internal_ca.certificate))
+          private_key: ((cc_tls.private_key))
+          public_cert: ((cc_tls.certificate))
+      ccdb:
+        databases:
+        - name: cloud_controller
+          tag: cc
+        db_scheme: mysql
+        port: 3306
+        roles:
+        - name: cloud_controller
+          password: ((cc_database_password))
+          tag: admin
+    release: capi
+  migrated_from:
+  - name: cc-bridge
+  - name: cc-clock
+  - name: diego-brain
+  name: scheduler
+  networks:
+  - name: default
+  stemcell: default
+  update:
+    serial: true
+  vm_type: minimal
+- azs:
+  - z1
+  - z2
+  instances: 1
+  jobs:
+  - consumes:
+      consul_client:
+        from: consul_client_link
+      consul_common:
+        from: consul_common_link
+      consul_server: nil
+    name: consul_agent
+    properties:
+      consul:
+        agent:
+          services:
+            doppler:
+              name: doppler
+    release: consul
+  - name: doppler
+    properties:
+      doppler:
+        disable_announce: true
+      loggregator:
+        disable_syslog_drains: true
+        tls:
+          ca_cert: ((loggregator_ca.certificate))
+          doppler:
+            cert: ((loggregator_tls_doppler.certificate))
+            key: ((loggregator_tls_doppler.private_key))
+    provides:
+      doppler:
+        as: doppler
+        shared: true
+    release: loggregator
+  - name: log-cache
+    properties:
+      egress_port: 8080
+      health_addr: localhost:6060
+      tls:
+        ca_cert: ((log_cache.ca))
+        cert: ((log_cache.certificate))
+        key: ((log_cache.private_key))
+    provides:
+      log-cache:
+        shared: true
+    release: log-cache
+  - name: log-cache-gateway
+    properties:
+      gateway_addr: localhost:8081
+    release: log-cache
+  - name: log-cache-group-reader
+    properties:
+      port: 8084
+    release: log-cache
+  - consumes:
+      reverse_log_proxy:
+        from: reverse_log_proxy
+    name: log-cache-nozzle
+    properties:
+      logs_provider:
+        tls:
+          ca_cert: ((logs_provider.ca))
+          cert: ((logs_provider.certificate))
+          key: ((logs_provider.private_key))
+    release: log-cache
+  - name: log-cache-expvar-forwarder
+    properties:
+      counters:
+      - addr: http://localhost:6060/debug/vars
+        name: egress
+        source_id: log-cache
+        template: '{{.LogCache.Egress}}'
+      - addr: http://localhost:6060/debug/vars
+        name: ingress
+        source_id: log-cache
+        template: '{{.LogCache.Ingress}}'
+      - addr: http://localhost:6060/debug/vars
+        name: expired
+        source_id: log-cache
+        template: '{{.LogCache.Expired}}'
+      - addr: http://localhost:6060/debug/vars
+        name: dropped
+        source_id: log-cache
+        template: '{{.LogCache.Dropped}}'
+      - addr: http://localhost:6060/debug/vars
+        name: promql-timeout
+        source_id: log-cache
+        template: '{{.LogCache.PromQLTimeout}}'
+      - addr: http://localhost:6061/debug/vars
+        name: egress
+        source_id: log-cache-nozzle
+        template: '{{.Nozzle.Egress}}'
+      - addr: http://localhost:6061/debug/vars
+        name: ingress
+        source_id: log-cache-nozzle
+        template: '{{.Nozzle.Ingress}}'
+      - addr: http://localhost:6061/debug/vars
+        name: err
+        source_id: log-cache-nozzle
+        template: '{{.Nozzle.Err}}'
+      - addr: http://localhost:6061/debug/vars
+        name: dropped
+        source_id: log-cache-nozzle
+        template: '{{.Nozzle.Dropped}}'
+      gauges:
+      - addr: http://localhost:6060/debug/vars
+        name: cache-period
+        source_id: log-cache
+        template: '{{.LogCache.CachePeriod}}'
+      - addr: http://localhost:6060/debug/vars
+        name: store-size
+        source_id: log-cache
+        template: '{{.LogCache.StoreSize}}'
+      - addr: http://localhost:6060/debug/vars
+        name: total-system-memory
+        source_id: log-cache
+        template: '{{.LogCache.TotalSystemMemory}}'
+      - addr: http://localhost:6060/debug/vars
+        name: available-system-memory
+        source_id: log-cache
+        template: '{{.LogCache.AvailableSystemMemory}}'
+      - addr: http://localhost:6065/debug/vars
+        name: last-uaa-latency
+        source_id: log-cache-cf-auth-proxy
+        template: '{{.CFAuthProxy.LastUAALatency}}'
+      - addr: http://localhost:6065/debug/vars
+        name: last-capi-v3-apps-latency
+        source_id: log-cache-cf-auth-proxy
+        template: '{{.CFAuthProxy.LastCAPIV3AppsLatency}}'
+      - addr: http://localhost:6065/debug/vars
+        name: last-capi-v2-list-service-instances-latency
+        source_id: log-cache-cf-auth-proxy
+        template: '{{.CFAuthProxy.LastCAPIV2ListServiceInstancesLatency}}'
+      - addr: http://localhost:6065/debug/vars
+        name: last-capi-v4-log-access-latency
+        source_id: log-cache-cf-auth-proxy
+        template: '{{.CFAuthProxy.LastCAPIV4LogAccessLatency}}'
+      - addr: http://localhost:6065/debug/vars
+        name: last-capi-v2-service-instances-latency
+        source_id: log-cache-cf-auth-proxy
+        template: '{{.CFAuthProxy.LastCAPIV2ServiceInstancesLatency}}'
+    release: log-cache
+  - name: route_registrar
+    properties:
+      route_registrar:
+        routes:
+        - name: log-cache-reverse-proxy
+          port: 8083
+          registration_interval: 20s
+          uris:
+          - log-cache.ink-whale.capi.land
+          - '*.log-cache.ink-whale.capi.land'
+    release: routing
+  - name: log-cache-cf-auth-proxy
+    properties:
+      cc:
+        ca_cert: ((log_cache_tls_cc_auth_proxy.ca))
+        capi_internal_addr: https://cloud-controller-ng.service.cf.internal:9023
+        cert: ((log_cache_tls_cc_auth_proxy.certificate))
+        common_name: cloud-controller-ng.service.cf.internal
+        key: ((log_cache_tls_cc_auth_proxy.private_key))
+      proxy_port: 8083
+      uaa:
+        ca_cert: ((uaa_ca.certificate))
+        client_id: doppler
+        client_secret: ((uaa_clients_doppler_secret))
+        internal_addr: https://uaa.service.cf.internal:8443
+    release: log-cache
+  name: doppler
+  networks:
+  - name: default
+  stemcell: default
+  vm_type: minimal
+- azs:
+  - z1
+  - z2
+  instances: 1
+  jobs:
+  - consumes:
+      consul_client:
+        from: consul_client_link
+      consul_common:
+        from: consul_common_link
+      consul_server: nil
+    name: consul_agent
+    properties:
+      consul:
+        agent:
+          node_name_includes_id: true
+    release: consul
+  - name: cflinuxfs2-rootfs-setup
+    properties:
+      cflinuxfs2-rootfs:
+        trusted_certs: ((application_ca.certificate))
+    release: cflinuxfs2
+  - name: garden
+    properties:
+      garden:
+        cleanup_process_dirs_on_wait: true
+        debug_listen_address: 127.0.0.1:17019
+        default_container_grace_time: 0
+        deny_networks:
+        - 0.0.0.0/0
+        destroy_containers_on_start: true
+        network_plugin: /var/vcap/packages/runc-cni/bin/garden-external-networker
+        network_plugin_extra_args:
+        - --configFile=/var/vcap/jobs/garden-cni/config/adapter.json
+        persistent_image_list:
+        - /var/vcap/packages/cflinuxfs2/rootfs.tar
+      grootfs:
+        reserved_space_for_other_jobs_in_mb: 15360
+    release: garden-runc
+  - name: rep
+    properties:
+      bpm:
+        enabled: true
+      containers:
+        trusted_ca_certificates:
+        - ((application_ca.certificate))
+      diego:
+        executor:
+          instance_identity_ca_cert: ((diego_instance_identity_ca.certificate))
+          instance_identity_key: ((diego_instance_identity_ca.private_key))
+        rep:
+          evacuation_timeout_in_seconds: 0
+          preloaded_rootfses:
+          - cflinuxfs2:/var/vcap/packages/cflinuxfs2/rootfs.tar
+      enable_declarative_healthcheck: true
+      logging:
+        format:
+          timestamp: rfc3339
+      loggregator:
+        ca_cert: ((loggregator_ca.certificate))
+        cert: ((loggregator_tls_agent.certificate))
+        key: ((loggregator_tls_agent.private_key))
+        use_v2_api: true
+      set_kernel_parameters: false
+      tls:
+        ca_cert: ((service_cf_internal_ca.certificate))
+        cert: ((diego_rep_agent_v2.certificate))
+        key: ((diego_rep_agent_v2.private_key))
+    release: diego
+  - name: cfdot
+    properties:
+      tls:
+        ca_certificate: ((service_cf_internal_ca.certificate))
+        certificate: ((diego_rep_client.certificate))
+        private_key: ((diego_rep_client.private_key))
+    release: diego
+  - name: route_emitter
+    properties:
+      bpm:
+        enabled: true
+      diego:
+        route_emitter:
+          bbs:
+            ca_cert: ((service_cf_internal_ca.certificate))
+            client_cert: ((diego_bbs_client.certificate))
+            client_key: ((diego_bbs_client.private_key))
+          local_mode: true
+      logging:
+        format:
+          timestamp: rfc3339
+      loggregator:
+        ca_cert: ((loggregator_ca.certificate))
+        cert: ((loggregator_tls_agent.certificate))
+        key: ((loggregator_tls_agent.private_key))
+        use_v2_api: true
+      tcp:
+        enabled: true
+      uaa:
+        ca_cert: ((uaa_ca.certificate))
+        client_secret: ((uaa_clients_tcp_emitter_secret))
+    release: diego
+  - name: garden-cni
+    properties:
+      cni_config_dir: /var/vcap/jobs/silk-cni/config/cni
+      cni_plugin_dir: /var/vcap/packages/silk-cni/bin
+    release: cf-networking
+  - name: netmon
+    release: silk
+  - name: vxlan-policy-agent
+    properties:
+      ca_cert: ((network_policy_ca.certificate))
+      client_cert: ((network_policy_client.certificate))
+      client_key: ((network_policy_client.private_key))
+    release: silk
+  - name: silk-daemon
+    properties:
+      ca_cert: ((silk_ca.certificate))
+      client_cert: ((silk_daemon.certificate))
+      client_key: ((silk_daemon.private_key))
+    release: silk
+  - name: silk-cni
+    properties:
+      dns_servers:
+      - 169.254.0.2
+    release: silk
+  name: diego-cell
+  networks:
+  - name: default
+  stemcell: default
+  vm_extensions:
+  - 100GB_ephemeral_disk
+  vm_type: small-highmem
+- azs:
+  - z1
+  - z2
+  instances: 1
+  jobs:
+  - consumes:
+      consul_client:
+        from: consul_client_link
+      consul_common:
+        from: consul_common_link
+      consul_server: nil
+    name: consul_agent
+    properties:
+      consul:
+        agent:
+          services:
+            loggregator_trafficcontroller: {}
+            reverse_log_proxy: {}
+    release: consul
+  - consumes:
+      doppler:
+        from: doppler
+    name: loggregator_trafficcontroller
+    properties:
+      cc:
+        internal_service_hostname: cloud-controller-ng.service.cf.internal
+        mutual_tls:
+          ca_cert: ((service_cf_internal_ca.certificate))
+        tls_port: 9023
+      loggregator:
+        tls:
+          ca_cert: ((loggregator_ca.certificate))
+          cc_trafficcontroller:
+            cert: ((loggregator_tls_cc_tc.certificate))
+            key: ((loggregator_tls_cc_tc.private_key))
+          trafficcontroller:
+            cert: ((loggregator_tls_tc.certificate))
+            key: ((loggregator_tls_tc.private_key))
+        uaa:
+          client_secret: ((uaa_clients_doppler_secret))
+      ssl:
+        skip_cert_verify: true
+      system_domain: ink-whale.capi.land
+      uaa:
+        ca_cert: ((uaa_ca.certificate))
+        internal_url: https://uaa.service.cf.internal:8443
+    release: loggregator
+  - name: reverse_log_proxy
+    properties:
+      loggregator:
+        tls:
+          ca_cert: ((loggregator_ca.certificate))
+          reverse_log_proxy:
+            cert: ((loggregator_tls_rlp.certificate))
+            key: ((loggregator_tls_rlp.private_key))
+    provides:
+      reverse_log_proxy:
+        as: reverse_log_proxy
+        shared: true
+    release: loggregator
+  - name: route_registrar
+    properties:
+      route_registrar:
+        routes:
+        - name: loggregator
+          port: 8080
+          registration_interval: 20s
+          uris:
+          - loggregator.ink-whale.capi.land
+        - name: doppler
+          port: 8081
+          registration_interval: 20s
+          uris:
+          - doppler.ink-whale.capi.land
+          - '*.doppler.ink-whale.capi.land'
+    release: routing
+  name: log-api
+  networks:
+  - name: default
+  stemcell: default
+  update:
+    serial: true
+  vm_type: minimal
+manifest_version: v3.1.0
+name: cf
+releases:
+- name: binary-buildpack
+  sha1: 81089f514df25804bc5d82f520d36a5b4b1099cc
+  stemcell:
+    os: ubuntu-trusty
+    version: "3586.26"
+  url: https://storage.googleapis.com/cf-deployment-compiled-releases/binary-buildpack-1.0.21-ubuntu-trusty-3586.26-20180717-001257-181127583.tgz
+  version: 1.0.21
+- name: bpm
+  sha1: 5e6dbe919749da1b0e844e39f8c8c6dc320395e2
+  stemcell:
+    os: ubuntu-trusty
+    version: "3586.26"
+  url: https://storage.googleapis.com/cf-deployment-compiled-releases/bpm-0.9.0-ubuntu-trusty-3586.26-20180717-183629-856046742.tgz
+  version: 0.9.0
+- name: capi
+  sha1: 698c463393d64927b74343f5761a121a64aaa84b
+  stemcell:
+    os: ubuntu-trusty
+    version: "3586.26"
+  url: https://storage.googleapis.com/cf-deployment-compiled-releases/capi-1.62.0-ubuntu-trusty-3586.26-20180717-002205-396416878.tgz
+  version: 1.62.0
+- name: cf-mysql
+  sha1: 26a8ff9fadf4f91b470c6282653a225e6faded2a
+  stemcell:
+    os: ubuntu-trusty
+    version: "3586.26"
+  url: https://storage.googleapis.com/cf-deployment-compiled-releases/cf-mysql-36.15.0-ubuntu-trusty-3586.26-20180723-181113-659640793.tgz
+  version: 36.15.0
+- name: cf-networking
+  sha1: ee03dd7cd8fda85f2d1ae903fc6b2e8e89a8f2d3
+  stemcell:
+    os: ubuntu-trusty
+    version: "3586.26"
+  url: https://storage.googleapis.com/cf-deployment-compiled-releases/cf-networking-2.10.0-ubuntu-trusty-3586.26-20180720-170019-638334333.tgz
+  version: 2.10.0
+- name: cf-smoke-tests
+  sha1: 3b3ad78aa553c51a966fc418b2b3acaca92f66ce
+  stemcell:
+    os: ubuntu-trusty
+    version: "3586.26"
+  url: https://storage.googleapis.com/cf-deployment-compiled-releases/cf-smoke-tests-40.0.5-ubuntu-trusty-3586.26-20180717-001425-646332304.tgz
+  version: 40.0.5
+- name: cf-syslog-drain
+  sha1: 5b708ea45eb5e7e24dc845c5b8d9081746b12496
+  stemcell:
+    os: ubuntu-trusty
+    version: "3586.26"
+  url: https://storage.googleapis.com/cf-deployment-compiled-releases/cf-syslog-drain-7.0-ubuntu-trusty-3586.26-20180717-001802-847974631.tgz
+  version: "7.0"
+- name: cflinuxfs2
+  sha1: 80ee1dd9da7f82bb333bfcfde074e55b2980b295
+  stemcell:
+    os: ubuntu-trusty
+    version: "3586.26"
+  url: https://storage.googleapis.com/cf-deployment-compiled-releases/cflinuxfs2-1.227.0-ubuntu-trusty-3586.26-20180717-001455-211349769.tgz
+  version: 1.227.0
+- name: consul
+  sha1: 602734d048fdf4ac0d2714c6b5e44777509147a1
+  stemcell:
+    os: ubuntu-trusty
+    version: "3586.26"
+  url: https://storage.googleapis.com/cf-deployment-compiled-releases/consul-195-ubuntu-trusty-3586.26-20180717-001710-784758866.tgz
+  version: "195"
+- name: diego
+  sha1: 191158c35ebd98d503284a2769f4988c4735eb28
+  stemcell:
+    os: ubuntu-trusty
+    version: "3586.26"
+  url: https://storage.googleapis.com/cf-deployment-compiled-releases/diego-2.13.0-ubuntu-trusty-3586.26-20180717-231108-681840234.tgz
+  version: 2.13.0
+- name: dotnet-core-buildpack
+  sha1: 115262f455a0dc87358fd2302c3499d12355b0b6
+  stemcell:
+    os: ubuntu-trusty
+    version: "3586.26"
+  url: https://storage.googleapis.com/cf-deployment-compiled-releases/dotnet-core-buildpack-2.1.3-ubuntu-trusty-3586.26-20180717-001418-274055889.tgz
+  version: 2.1.3
+- name: garden-runc
+  sha1: 62503625ae57cf3c56d308bbb2dbdd8683eadbc7
+  stemcell:
+    os: ubuntu-trusty
+    version: "3586.26"
+  url: https://storage.googleapis.com/cf-deployment-compiled-releases/garden-runc-1.16.1-ubuntu-trusty-3586.26-20180730-142249-67568529.tgz
+  version: 1.16.1
+- name: go-buildpack
+  sha1: 51d884c1308e5fa4c3d24300ca428c9df2c63c3b
+  stemcell:
+    os: ubuntu-trusty
+    version: "3586.26"
+  url: https://storage.googleapis.com/cf-deployment-compiled-releases/go-buildpack-1.8.25-ubuntu-trusty-3586.26-20180717-001327-023756642.tgz
+  version: 1.8.25
+- name: java-buildpack
+  sha1: 8075b3eb19d9aa7722b06c1d4f557ac3e0a54667
+  stemcell:
+    os: ubuntu-trusty
+    version: "3586.26"
+  url: https://storage.googleapis.com/cf-deployment-compiled-releases/java-buildpack-4.13.1-ubuntu-trusty-3586.26-20180724-181701-521451772.tgz
+  version: 4.13.1
+- name: loggregator
+  sha1: 295413e2d47c44196a9b96e83ee648d7f4111872
+  stemcell:
+    os: ubuntu-trusty
+    version: "3586.26"
+  url: https://storage.googleapis.com/cf-deployment-compiled-releases/loggregator-103.0-ubuntu-trusty-3586.26-20180717-001746-357855105.tgz
+  version: "103.0"
+- name: nats
+  sha1: 8ed2024b081f3716246ffdd0b1bf84cf1e4bc39d
+  stemcell:
+    os: ubuntu-trusty
+    version: "3586.26"
+  url: https://storage.googleapis.com/cf-deployment-compiled-releases/nats-25-ubuntu-trusty-3586.26-20180720-190426-672075545.tgz
+  version: "25"
+- name: nodejs-buildpack
+  sha1: cf7ba53e7b89d795c806ad675a16ca20682d4762
+  stemcell:
+    os: ubuntu-trusty
+    version: "3586.26"
+  url: https://storage.googleapis.com/cf-deployment-compiled-releases/nodejs-buildpack-1.6.28-ubuntu-trusty-3586.26-20180717-001218-668074929.tgz
+  version: 1.6.28
+- name: php-buildpack
+  sha1: cc0978cd4ae23a737e15bed35b957ee42e375a2e
+  stemcell:
+    os: ubuntu-trusty
+    version: "3586.26"
+  url: https://storage.googleapis.com/cf-deployment-compiled-releases/php-buildpack-4.3.57-ubuntu-trusty-3586.26-20180717-001353-271265153.tgz
+  version: 4.3.57
+- name: python-buildpack
+  sha1: c3812aa0489c355a65648546c54f59ce867345a4
+  stemcell:
+    os: ubuntu-trusty
+    version: "3586.26"
+  url: https://storage.googleapis.com/cf-deployment-compiled-releases/python-buildpack-1.6.18-ubuntu-trusty-3586.26-20180717-001223-739115603.tgz
+  version: 1.6.18
+- name: routing
+  sha1: 2dcd94e0e62f4319c0c79485be6e278de625470d
+  stemcell:
+    os: ubuntu-trusty
+    version: "3586.26"
+  url: https://storage.googleapis.com/cf-deployment-compiled-releases/routing-0.179.0-ubuntu-trusty-3586.26-20180717-001809-518300209.tgz
+  version: 0.179.0
+- name: ruby-buildpack
+  sha1: 6a73fa4fed012b69d97ffe8d93c47748f2ce4928
+  stemcell:
+    os: ubuntu-trusty
+    version: "3586.26"
+  url: https://storage.googleapis.com/cf-deployment-compiled-releases/ruby-buildpack-1.7.21-ubuntu-trusty-3586.26-20180717-001304-809584421.tgz
+  version: 1.7.21
+- name: silk
+  sha1: 6fb8e6f8b954cc0cdb057038a8dea9b1f645e648
+  stemcell:
+    os: ubuntu-trusty
+    version: "3586.26"
+  url: https://storage.googleapis.com/cf-deployment-compiled-releases/silk-2.10.0-ubuntu-trusty-3586.26-20180720-171150-464321979.tgz
+  version: 2.10.0
+- name: staticfile-buildpack
+  sha1: 2e9206d1162fe2af2da0269c4993916007fd7b88
+  stemcell:
+    os: ubuntu-trusty
+    version: "3586.26"
+  url: https://storage.googleapis.com/cf-deployment-compiled-releases/staticfile-buildpack-1.4.29-ubuntu-trusty-3586.26-20180717-001337-302968719.tgz
+  version: 1.4.29
+- name: statsd-injector
+  sha1: 8b409821b8ca5a7dd8fe30c9900aa8a8638d1f24
+  stemcell:
+    os: ubuntu-trusty
+    version: "3586.26"
+  url: https://storage.googleapis.com/cf-deployment-compiled-releases/statsd-injector-1.3.0-ubuntu-trusty-3586.26-20180717-001556-510929274.tgz
+  version: 1.3.0
+- name: uaa
+  sha1: e8a697e523df2a1db7f344d87b258e711a477b0b
+  stemcell:
+    os: ubuntu-trusty
+    version: "3586.26"
+  url: https://storage.googleapis.com/cf-deployment-compiled-releases/uaa-60.2-ubuntu-trusty-3586.26-20180717-001815-763853638.tgz
+  version: "60.2"
+- name: loggregator-agent
+  sha1: e18cce9cff21f4a040e5029a3723962d62d77183
+  stemcell:
+    os: ubuntu-trusty
+    version: "3586.26"
+  url: https://storage.googleapis.com/cf-deployment-compiled-releases/loggregator-agent-2.0-ubuntu-trusty-3586.26-20180717-001637-40416663.tgz
+  version: "2.0"
+- name: log-cache
+  sha1: 1fe23607f73bdac69deed05ba6c24dd2bc7787c8
+  url: https://storage.googleapis.com/cf-deployment-compiled-releases/log-cache-1.4.1-ubuntu-trusty-3586.26-20180726-215719-977321907.tgz
+  version: 1.4.1
+- name: bosh-dns-aliases
+  sha1: f8e6337d5872fde5eed5f5eac5f42b16baa37cf8
+  url: https://storage.googleapis.com/cf-deployment-compiled-releases/bosh-dns-aliases-0.0.2-ubuntu-trusty-3586.26-20180719-221037-144366167.tgz
+  version: 0.0.2
+stemcells:
+- alias: default
+  os: ubuntu-trusty
+  version: latest
+update:
+  canaries: 1
+  canary_watch_time: 30000-1200000
+  max_in_flight: 1
+  serial: false
+  update_watch_time: 5000-1200000
+variables:
+- name: blobstore_admin_users_password
+  type: password
+- name: blobstore_secure_link_secret
+  type: password
+- name: cc_bulk_api_password
+  type: password
+- name: cc_db_encryption_key
+  type: password
+- name: cc_internal_api_password
+  type: password
+- name: cc_staging_upload_password
+  type: password
+- name: cf_mysql_mysql_admin_password
+  type: password
+- name: cf_mysql_mysql_cluster_health_password
+  type: password
+- name: cf_mysql_mysql_galera_healthcheck_endpoint_password
+  type: password
+- name: cf_mysql_mysql_galera_healthcheck_password
+  type: password
+- name: cf_mysql_proxy_api_password
+  type: password
+- name: cc_database_password
+  type: password
+- name: diego_database_password
+  type: password
+- name: uaa_database_password
+  type: password
+- name: routing_api_database_password
+  type: password
+- name: network_policy_database_password
+  type: password
+- name: network_connectivity_database_password
+  type: password
+- name: uaa_clients_network_policy_secret
+  type: password
+- name: uaa_default_encryption_passphrase
+  type: password
+- name: silk_ca
+  options:
+    common_name: silk-ca
+    is_ca: true
+  type: certificate
+- name: silk_controller
+  options:
+    ca: silk_ca
+    common_name: silk-controller.service.cf.internal
+    extended_key_usage:
+    - server_auth
+  type: certificate
+- name: silk_daemon
+  options:
+    ca: silk_ca
+    common_name: silk-daemon
+    extended_key_usage:
+    - client_auth
+  type: certificate
+- name: network_policy_ca
+  options:
+    common_name: networkPolicyCA
+    is_ca: true
+  type: certificate
+- name: network_policy_server
+  options:
+    ca: network_policy_ca
+    common_name: policy-server.service.cf.internal
+    extended_key_usage:
+    - server_auth
+  type: certificate
+- name: network_policy_client
+  options:
+    ca: network_policy_ca
+    common_name: clientName
+    extended_key_usage:
+    - client_auth
+  type: certificate
+- name: uaa_clients_routing_api_client_secret
+  type: password
+- name: uaa_clients_tcp_emitter_secret
+  type: password
+- name: nats_password
+  type: password
+- name: router_status_password
+  type: password
+- name: cf_admin_password
+  type: password
+- name: cf_bosh_password
+  type: password
+- name: router_route_services_secret
+  type: password
+- name: uaa_admin_client_secret
+  type: password
+- name: uaa_clients_cc-routing_secret
+  type: password
+- name: uaa_clients_cc-service-dashboards_secret
+  type: password
+- name: uaa_clients_cc_service_key_client_secret
+  type: password
+- name: uaa_clients_cloud_controller_username_lookup_secret
+  type: password
+- name: uaa_clients_doppler_secret
+  type: password
+- name: uaa_clients_gorouter_secret
+  type: password
+- name: uaa_clients_ssh-proxy_secret
+  type: password
+- name: uaa_clients_tcp_router_secret
+  type: password
+- name: diego_bbs_encryption_keys_passphrase
+  type: password
+- name: consul_encrypt_key
+  type: password
+- name: diego_ssh_proxy_host_key
+  type: ssh
+- name: uaa_jwt_signing_key
+  type: rsa
+- name: service_cf_internal_ca
+  options:
+    common_name: internalCA
+    is_ca: true
+  type: certificate
+- name: blobstore_tls
+  options:
+    ca: service_cf_internal_ca
+    common_name: blobstore.service.cf.internal
+  type: certificate
+- name: consul_agent_ca
+  options:
+    common_name: consulCA
+    is_ca: true
+  type: certificate
+- name: consul_agent
+  options:
+    alternative_names:
+    - 127.0.0.1
+    ca: consul_agent_ca
+    common_name: consul_agent
+    extended_key_usage:
+    - client_auth
+    - server_auth
+  type: certificate
+- name: consul_server
+  options:
+    ca: consul_agent_ca
+    common_name: server.dc1.cf.internal
+    extended_key_usage:
+    - client_auth
+    - server_auth
+  type: certificate
+- name: diego_auctioneer_client
+  options:
+    ca: service_cf_internal_ca
+    common_name: auctioneer client
+    extended_key_usage:
+    - client_auth
+  type: certificate
+- name: diego_auctioneer_server
+  options:
+    alternative_names:
+    - '*.auctioneer.service.cf.internal'
+    - auctioneer.service.cf.internal
+    ca: service_cf_internal_ca
+    common_name: auctioneer.service.cf.internal
+    extended_key_usage:
+    - server_auth
+  type: certificate
+- name: diego_bbs_client
+  options:
+    ca: service_cf_internal_ca
+    common_name: bbs client
+    extended_key_usage:
+    - client_auth
+  type: certificate
+- name: diego_bbs_server
+  options:
+    alternative_names:
+    - '*.bbs.service.cf.internal'
+    - bbs.service.cf.internal
+    ca: service_cf_internal_ca
+    common_name: bbs.service.cf.internal
+    extended_key_usage:
+    - server_auth
+    - client_auth
+  type: certificate
+- name: diego_rep_client
+  options:
+    ca: service_cf_internal_ca
+    common_name: rep client
+    extended_key_usage:
+    - client_auth
+  type: certificate
+- name: diego_rep_agent_v2
+  options:
+    alternative_names:
+    - '*.cell.service.cf.internal'
+    - cell.service.cf.internal
+    - 127.0.0.1
+    - localhost
+    ca: service_cf_internal_ca
+    common_name: cell.service.cf.internal
+    extended_key_usage:
+    - client_auth
+    - server_auth
+  type: certificate
+- name: loggregator_ca
+  options:
+    common_name: loggregatorCA
+    is_ca: true
+  type: certificate
+- name: loggregator_tls_statsdinjector
+  options:
+    ca: loggregator_ca
+    common_name: statsdinjector
+    extended_key_usage:
+    - client_auth
+  type: certificate
+- name: loggregator_tls_agent
+  options:
+    ca: loggregator_ca
+    common_name: metron
+    extended_key_usage:
+    - client_auth
+    - server_auth
+  type: certificate
+- name: loggregator_tls_doppler
+  options:
+    ca: loggregator_ca
+    common_name: doppler
+    extended_key_usage:
+    - client_auth
+    - server_auth
+  type: certificate
+- name: loggregator_tls_tc
+  options:
+    ca: loggregator_ca
+    common_name: trafficcontroller
+    extended_key_usage:
+    - client_auth
+    - server_auth
+  type: certificate
+- name: loggregator_tls_cc_tc
+  options:
+    ca: service_cf_internal_ca
+    common_name: trafficcontroller
+    extended_key_usage:
+    - client_auth
+  type: certificate
+- name: loggregator_tls_rlp
+  options:
+    ca: loggregator_ca
+    common_name: reverselogproxy
+    extended_key_usage:
+    - client_auth
+    - server_auth
+  type: certificate
+- name: adapter_rlp_tls
+  options:
+    ca: loggregator_ca
+    common_name: ss-adapter-rlp
+    extended_key_usage:
+    - client_auth
+    - server_auth
+  type: certificate
+- name: scheduler_api_tls
+  options:
+    ca: service_cf_internal_ca
+    common_name: ss-scheduler
+    extended_key_usage:
+    - client_auth
+    - server_auth
+  type: certificate
+- name: adapter_tls
+  options:
+    ca: loggregator_ca
+    common_name: ss-adapter
+    extended_key_usage:
+    - server_auth
+    - client_auth
+  type: certificate
+- name: scheduler_client_tls
+  options:
+    ca: loggregator_ca
+    common_name: ss-scheduler
+    extended_key_usage:
+    - client_auth
+  type: certificate
+- name: logs_provider
+  options:
+    ca: loggregator_ca
+    common_name: log-cache
+    extended_key_usage:
+    - client_auth
+    - server_auth
+  type: certificate
+- name: log_cache_ca
+  options:
+    common_name: log-cache
+    is_ca: true
+  type: certificate
+- name: log_cache
+  options:
+    alternative_names:
+    - log_cache
+    - log-cache
+    - logcache
+    ca: log_cache_ca
+    common_name: log-cache
+    extended_key_usage:
+    - client_auth
+    - server_auth
+  type: certificate
+- name: log_cache_tls_cc_auth_proxy
+  options:
+    ca: service_cf_internal_ca
+    common_name: log-cache
+    extended_key_usage:
+    - client_auth
+  type: certificate
+- name: router_ca
+  options:
+    common_name: routerCA
+    is_ca: true
+  type: certificate
+- name: router_ssl
+  options:
+    alternative_names:
+    - ink-whale.capi.land
+    - '*.ink-whale.capi.land'
+    ca: router_ca
+    common_name: routerSSL
+  type: certificate
+- name: uaa_ca
+  options:
+    common_name: uaaCA
+    is_ca: true
+  type: certificate
+- name: uaa_ssl
+  options:
+    alternative_names:
+    - uaa.service.cf.internal
+    ca: uaa_ca
+    common_name: uaa.service.cf.internal
+  type: certificate
+- name: uaa_login_saml
+  options:
+    ca: uaa_ca
+    common_name: uaa_login_saml
+  type: certificate
+- name: cc_tls
+  options:
+    ca: service_cf_internal_ca
+    common_name: cloud-controller-ng.service.cf.internal
+    extended_key_usage:
+    - client_auth
+    - server_auth
+  type: certificate
+- name: cc_bridge_tps
+  options:
+    ca: service_cf_internal_ca
+    common_name: tps_watcher
+    extended_key_usage:
+    - client_auth
+  type: certificate
+- name: cc_bridge_cc_uploader
+  options:
+    ca: service_cf_internal_ca
+    common_name: cc_uploader
+    extended_key_usage:
+    - client_auth
+  type: certificate
+- name: cc_bridge_cc_uploader_server
+  options:
+    ca: service_cf_internal_ca
+    common_name: cc-uploader.service.cf.internal
+    extended_key_usage:
+    - server_auth
+  type: certificate
+- name: diego_locket_server
+  options:
+    alternative_names:
+    - '*.locket.service.cf.internal'
+    - locket.service.cf.internal
+    ca: service_cf_internal_ca
+    common_name: locket.service.cf.internal
+    extended_key_usage:
+    - server_auth
+  type: certificate
+- name: diego_locket_client
+  options:
+    ca: service_cf_internal_ca
+    common_name: locket client
+    extended_key_usage:
+    - client_auth
+  type: certificate
+- name: locket_database_password
+  type: password
+- name: application_ca
+  options:
+    common_name: appRootCA
+    is_ca: true
+  type: certificate
+- name: diego_instance_identity_ca
+  options:
+    ca: application_ca
+    common_name: instanceIdentityCA
+    is_ca: true
+  type: certificate
