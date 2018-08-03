@@ -198,7 +198,14 @@ module VCAP::CloudController
           },
 
           logcache: {
-            internal_url: String,
+            host: String,
+            port: Integer,
+          },
+          
+          logcache_tls: {
+            key_file: String,
+            cert_file: String,
+            ca_file: String,
           },
 
           loggregator: {

@@ -2,18 +2,14 @@ require 'multipart_parser/reader'
 require 'logcache/logcache_egress_services_pb'
 
 module Logcache
-  class Error < StandardError
-  end
-  class ResponseError < StandardError
-  end
-  class RequestError < StandardError
-  end
   class Client
 
+    attr_reader :service
+    
     def initialize(host:, port:, client_ca_path:, client_cert_path:, client_key_path:)
-      client_ca = File.open(client_ca_path).read
-      client_key = File.open(client_key_path).read
-      client_cert = File.open(client_cert_path).read
+      client_ca = IO.read(client_ca_path)
+      client_key = IO.read(client_key_path)
+      client_cert = IO.read(client_cert_path)
 
       @service = Logcache::V1::Egress::Stub.new(
         "#{host}:#{port}",
@@ -22,27 +18,8 @@ module Logcache
     end
 
     def container_metrics(auth_token: nil, app_guid:)
-      response = with_request_error_handling do
-        service.read(build_read_request(app_guid))
-      end
-
-      validate_status!(response: response, statuses: [200])
-
-      envelopes = []
-      boundary  = extract_boundary!(response.contenttype)
-      parser    = MultipartParser.new(body: response.body, boundary: boundary)
-      until (next_part = parser.next_part).nil?
-        envelopes << protobuf_decode!(next_part, Models::Envelope)
-      end
-      envelopes
-    end
-
-    def with_request_error_handling(&blk)
-      tries ||= 3
-      yield
-    rescue => e
-      retry unless (tries -= 1).zero?
-      raise RequestError.new(e.message)
+      response = service.read(build_read_request(app_guid))
+      response
     end
 
     private
@@ -53,65 +30,6 @@ module Logcache
           source_id: source_id
         }
       )
-    end
-
-    def extract_boundary!(content_type)
-      match_data = BOUNDARY_REGEXP.match(content_type)
-      raise ResponseError.new('failed to find multipart boundary in Content-Type header') if match_data.nil?
-
-      match_data.captures.first
-    end
-
-    def validate_status!(response:, statuses:)
-      raise ResponseError.new("failed with status: #{response.status}, body: #{response.body}") unless statuses.include?(response.status)
-    end
-
-    def protobuf_decode!(message, protobuf_decoder)
-      protobuf_decoder.decode(message)
-    rescue => e
-      raise DecodeError.new(e.message)
-    end
-
-    class MultipartParser
-      NEW_LINE = "\r\n".freeze
-
-      def initialize(body:, boundary:)
-        @body     = body
-        @boundary = boundary
-      end
-
-      def next_part
-        @chunks ||= parse(@body, @boundary)
-        @chunks.next
-      rescue StopIteration, ParseError
-        nil
-      end
-
-      private
-
-      def parse(body, boundary)
-        parts = []
-
-        reader = ::MultipartParser::Reader.new(boundary)
-
-        reader.on_part do |part|
-          p = []
-
-          part.on_data do |partial_data|
-            p << partial_data
-          end
-
-          parts << p
-        end
-
-        reader.write body
-
-        unless reader.ended?
-          raise ParseError.new('truncated multipart message')
-        end
-
-        parts.map(&:join).to_enum
-      end
     end
   end
 end
