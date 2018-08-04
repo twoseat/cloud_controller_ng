@@ -57,6 +57,10 @@ module VCAP::CloudController
         end
       end
 
+      HEY NERDS - Above should collapse to DBConnectionOptions.build
+      Need to make a to_hash method AND you need to see if we can nuke get_connection below
+
+
       db = get_connection(opts, connection_options)
 
       if opts[:log_db_queries]
