@@ -1,10 +1,9 @@
 module VCAP::CloudController
   class DBConnectionOptions
-    class UnknownSchemeError < StandardError; end
+    attr_reader :sql_mode, :max_connections, :pool_timeout, :read_timeout,
+      :log_level, :log_db_queries, :after_connect, :sslrootcert, :sslmode, :database_parts
 
-    attr_reader :sql_mode, :max_connections, :pool_timeout, :read_timeout, :log_level, :log_db_queries, :after_connect, :sslrootcert, :sslmode
-
-    def initialize(opts={})
+    def initialize(opts = {})
       @sql_mode = [:strict_trans_tables, :strict_all_tables, :no_zero_in_date]
       @max_connections = opts[:max_connections]
       @pool_timeout = opts[:pool_timeout]
@@ -13,32 +12,49 @@ module VCAP::CloudController
       @log_db_queries = opts[:log_db_queries]
       @after_connect = after_connect
       @sslrootcert = opts[:ca_cert_path]
+      @database_parts = opts[:database_parts]
     end
 
-    def self.build(opts={})
-      options_class(opts).new(opts)
+    def self.database_parts_from_connection(connection_string)
+      uri = URI.parse(connection_string)
+      {
+        adapter: uri.scheme,
+        host: uri.host,
+        port: uri.port,
+        user: uri.user,
+        password: uri.password && CGI.unescape(uri.password),
+        database: uri.path.sub(%r{^/}, ''),
+      }
     end
 
-    private_class_method
-
-    def self.options_class(opts={})
-      potential_scheme = opts.dig(:database_parts, :adapter) || opts[:database]
-      if potential_scheme.start_with?('mysql')
-        return MySQLDBConnectionOptions
-      elsif potential_scheme.start_with?('postgres')
-        return PostgresDBConnectionOptions
-      else
-        raise UnknownSchemeError
+    def self.connection_from_database_parts(config)
+      parts = [config[:adapter], '://']
+      if config[:user]
+        parts << config[:user]
+        if config[:password]
+          parts << ':'
+          parts << CGI.escape(config[:password])
+        end
+        parts << '@'
       end
+      parts << config[:host]
+      if config[:port]
+        parts << ':'
+        parts << config[:port]
+      end
+      parts << '/'
+      parts << config[:database]
+      parts.join('')
     end
   end
 
   class PostgresDBConnectionOptions < DBConnectionOptions
-    def initialize(opts={})
+    def initialize(opts = {})
       @after_connect = proc do |connection|
         connection.exec("SET time zone 'UTC'")
       end
       @sslmode = opts[:ssl_verify_hostname] ? 'verify-full' : 'verify-ca'
+
       super
     end
   end
@@ -46,7 +62,7 @@ module VCAP::CloudController
   class MySQLDBConnectionOptions < DBConnectionOptions
     attr_reader :charset, :sslca, :sslverify, :sslmode
 
-    def initialize(opts={})
+    def initialize(opts = {})
       @sslca = opts[:ca_cert_path] if opts[:ca_cert_path]
       @charset = 'utf8'
 
@@ -62,7 +78,25 @@ module VCAP::CloudController
       else
         @sslmode = :verify_ca
       end
+
       super
+    end
+  end
+
+  class DBConnectionOptionsFactory
+    class UnknownSchemeError < StandardError;
+    end
+
+    def self.build(opts = {})
+      potential_scheme = opts.dig(:database_parts, :adapter)
+
+      if potential_scheme.start_with?('mysql')
+        return MySQLDBConnectionOptions.new(opts)
+      elsif potential_scheme.start_with?('postgres')
+        return PostgresDBConnectionOptions.new(opts)
+      else
+        raise UnknownSchemeError
+      end
     end
   end
 end
