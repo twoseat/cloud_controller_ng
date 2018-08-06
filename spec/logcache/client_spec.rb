@@ -4,10 +4,33 @@ require 'openssl'
 
 module Logcache
   RSpec.describe Client do
-    let(:doppler_host) { 'https://doppler.example.com:8080' }
+    let(:logcache_service) { instance_double(Logcache::V1::Egress::Stub, read:response_body) }
 
-    subject(:client) { Client.new(url: doppler_host) }
+    let(:host) { 'logcache.capi.land' }
+    let(:port) { '1234' }
+    let(:client_ca_path) { File.join(Paths::FIXTURES, 'certs/bbs_ca.crt') }
+    let(:client_cert_path) { File.join(Paths::FIXTURES, 'certs/bbs_client.crt') }
+    let(:client_key_path) { File.join(Paths::FIXTURES, 'certs/bbs_client.key') }
+    let(:credentials) { instance_double(GRPC::Core::ChannelCredentials) }
+    let(:client) do
+      Logcache::Client.new(host: host, port: port, client_ca_path: client_ca_path,
+        client_cert_path: client_cert_path, client_key_path: client_key_path)
+    end
     let(:expected_request_options) { { 'headers' => { 'Authorization' => 'bearer oauth-token' } } }
+
+    before do
+      client_ca = File.open(client_ca_path).read
+      client_key = File.open(client_key_path).read
+      client_cert = File.open(client_cert_path).read
+
+      allow(GRPC::Core::ChannelCredentials).to receive(:new).
+                    with(client_ca, client_key, client_cert).
+                    and_return(credentials)
+
+      allow(Logcache::V1::Egress::Stub).to receive(:new).
+        with("#{host}:#{port}", credentials).
+        and_return(logcache_service)
+    end
 
     def build_response_body(boundary, encoded_envelopes)
       body = []
@@ -22,144 +45,30 @@ module Logcache
     end
 
     describe '#container_metrics' do
-      let(:auth_token) { 'bearer oauth-token' }
       let(:response_boundary) { SecureRandom.uuid }
       let(:response_body) do
+        gaugeMap1 = {
+          'cpuPercentage' => Loggregator::V2::GaugeValue.new(unit:'percentage', value:10),
+          'memoryBytes' => Loggregator::V2::GaugeValue.new(unit:'bytes', value:20_000),
+          'diskBytes' => Loggregator::V2::GaugeValue.new(unit:'bytes', value:30_000_000),
+        }
+        gauge1 = Loggregator::V2::Gauge.new(metrics: gaugeMap1)
+        gaugeMap2 = {
+          'cpuPercentage' => Loggregator::V2::GaugeValue.new(unit:'percentage', value:11),
+          'memoryBytes' => Loggregator::V2::GaugeValue.new(unit:'bytes', value:20_001),
+          'diskBytes' => Loggregator::V2::GaugeValue.new(unit:'bytes', value:30_000_001),
+        }
+        gauge2 = Loggregator::V2::Gauge.new(metrics: gaugeMap2)
         build_response_body(response_boundary, [
-          Protologgregator::V2::Envelope.new(origin: 'a', eventType: Protologgregator::V2::Envelope::EventType::ContainerMetric).encode.to_s,
-          Protologgregator::V2::Envelope.new(origin: 'b', eventType: Protologgregator::V2::Envelope::EventType::ContainerMetric).encode.to_s,
+          Loggregator::V2::Envelope.encode(Loggregator::V2::Envelope.new(source_id: 'a', gauge: gauge1), ),
+          Loggregator::V2::Envelope.encode(Loggregator::V2::Envelope.new(source_id: 'b', gauge: gauge2)),
         ])
       end
-      let(:response_status) { 200 }
-      let(:response_headers) { { 'Content-Type' => "multipart/x-protobuf; boundary=#{response_boundary}" } }
       let(:app_guid) { 'example-app-guid' }
 
-      before do
-        stub_request(:get, "#{doppler_host}/v1/read/#{app_guid}").
-          with(expected_request_options).
-          to_return(status: response_status, body: response_body, headers: response_headers)
-      end
-
       it 'returns an array of Envelopes' do
-        expect(client.container_metrics(auth_token: auth_token, app_guid: 'example-app-guid')).to match_array([
-          Protologgregator::V2::Envelope.new(origin: 'a', eventType: Protologgregator::V2::Envelope::EventType::ContainerMetric),
-          Protologgregator::V2::Envelope.new(origin: 'b', eventType: Protologgregator::V2::Envelope::EventType::ContainerMetric),
-        ])
-        expect(a_request(:get, 'https://doppler.example.com:8080/v1/read/example-app-guid')).to have_been_made
-      end
-
-      context 'when it does not return successfully' do
-        let(:response_status) { 404 }
-        let(:response_body) { 'not found' }
-
-        it 'raises' do
-          expect { client.container_metrics(auth_token: auth_token, app_guid: 'example-app-guid') }.to raise_error(ResponseError, /status: 404, body: not found/)
-        end
-      end
-
-      context 'when it fails to make the request' do
-        before do
-          stub_request(:get, 'https://doppler.example.com:8080/v1/read/example-app-guid').to_raise(StandardError.new('error message'))
-        end
-
-        it 'raises' do
-          expect { client.container_metrics(auth_token: auth_token, app_guid: 'example-app-guid') }.to raise_error(RequestError, /error message/)
-        end
-      end
-
-      context 'when the response is not a valid multipart body' do
-        let(:response_body) { '' }
-
-        it 'returns an empty array' do
-          expect(client.container_metrics(auth_token: auth_token, app_guid: 'example-app-guid')).to be_empty
-        end
-      end
-
-      context 'when the response does not contain the boundary in the "Content-Type" header' do
-        let(:response_headers) { { 'Content-Type' => 'potato' } }
-
-        it 'raises' do
-          expect {
-            client.container_metrics(auth_token: auth_token, app_guid: 'example-app-guid')
-          }.to raise_error(ResponseError, 'failed to find multipart boundary in Content-Type header')
-        end
-      end
-
-      context 'when a part cannot be decoded by ProtoBuf' do
-        let(:response_body) do
-          build_response_body(response_boundary, [
-            Protologgregator::V2::Envelope.new(origin: 'a', eventType: Protologgregator::V2::Envelope::EventType::ContainerMetric).encode.to_s,
-            'potato',
-          ])
-        end
-
-        it 'raises' do
-          expect { client.container_metrics(auth_token: auth_token, app_guid: 'example-app-guid') }.to raise_error(DecodeError)
-        end
-      end
-    end
-  end
-
-  RSpec.describe Client::MultipartParser do
-    subject(:parser) { Client::MultipartParser.new(body: body, boundary: boundary) }
-    describe '#next_part' do
-      let(:body) do
-        [
-          "--#{boundary}",
-          "\r\n",
-          "\r\n",
-          first_part,
-          "\r\n",
-          "--#{boundary}",
-          "\r\n",
-          "\r\n",
-          second_part,
-          "\r\n",
-          "--#{boundary}--",
-        ].join('')
-      end
-      let(:boundary) { 'boundary-guid' }
-      let(:first_part) { "part one\r\n data" }
-      let(:second_part) { 'part two data' }
-
-      it 'can return the first part' do
-        expect(parser.next_part).to eq("part one\r\n data")
-      end
-
-      it 'can read more than one part' do
-        expect(parser.next_part).to eq("part one\r\n data")
-        expect(parser.next_part).to eq('part two data')
-      end
-
-      context 'when there are no parts left' do
-        it 'returns nil' do
-          expect(parser.next_part).to eq("part one\r\n data")
-          expect(parser.next_part).to eq('part two data')
-          expect(parser.next_part).to be_nil
-        end
-      end
-
-      context 'when there body contains no parts' do
-        let(:body) { "\r\n--#{boundary}--\r\n" }
-        it 'returns nil' do
-          expect(parser.next_part).to be_nil
-        end
-      end
-
-      context 'when the body is empty' do
-        let(:body) { '' }
-
-        it 'returns nil' do
-          expect(parser.next_part).to be_nil
-        end
-      end
-
-      context 'when the body is not a valid multipart response' do
-        let(:body) { 'potato' }
-
-        it 'returns nil' do
-          expect(parser.next_part).to be_nil
-        end
+        metrics = client.container_metrics(app_guid: 'example-app-guid')
+        expect(metrics.map {|envelope| envelope['source_id']}).to match_array(['a', 'b'])
       end
     end
   end

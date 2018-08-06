@@ -6,72 +6,77 @@
 require 'google/protobuf'
 
 Google::Protobuf::DescriptorPool.generated_pool.build do
-  add_message "protologgregator.v2.Envelope" do
+  add_message "loggregator.v2.Envelope" do
     optional :timestamp, :int64, 1
     optional :source_id, :string, 2
     optional :instance_id, :string, 8
-    map :deprecated_tags, :string, :message, 3, "protologgregator.v2.Value"
+    map :deprecated_tags, :string, :message, 3, "loggregator.v2.Value"
     map :tags, :string, :string, 9
     oneof :message do
-      optional :log, :message, 4, "protologgregator.v2.Log"
-      optional :counter, :message, 5, "protologgregator.v2.Counter"
-      optional :gauge, :message, 6, "protologgregator.v2.Gauge"
-      optional :timer, :message, 7, "protologgregator.v2.Timer"
-      optional :event, :message, 10, "protologgregator.v2.Event"
+      optional :log, :message, 4, "loggregator.v2.Log"
+      optional :counter, :message, 5, "loggregator.v2.Counter"
+      optional :gauge, :message, 6, "loggregator.v2.Gauge"
+      optional :timer, :message, 7, "loggregator.v2.Timer"
+      optional :event, :message, 10, "loggregator.v2.Event"
     end
   end
-  add_message "protologgregator.v2.EnvelopeBatch" do
-    repeated :batch, :message, 1, "protologgregator.v2.Envelope"
+  # envelope: {
+  #   source_id: app_guid echoed back,
+  #    gauge: ...
+  # }
+  add_message "loggregator.v2.EnvelopeBatch" do
+    repeated :batch, :message, 1, "loggregator.v2.Envelope"
   end
-  add_message "protologgregator.v2.Value" do
+  add_message "loggregator.v2.Value" do
     oneof :data do
       optional :text, :string, 1
       optional :integer, :int64, 2
       optional :decimal, :double, 3
     end
   end
-  add_message "protologgregator.v2.Log" do
+  add_message "loggregator.v2.Log" do
     optional :payload, :bytes, 1
-    optional :type, :enum, 2, "protologgregator.v2.Log.Type"
+    optional :type, :enum, 2, "loggregator.v2.Log.Type"
   end
-  add_enum "protologgregator.v2.Log.Type" do
+  add_enum "loggregator.v2.Log.Type" do
     value :OUT, 0
     value :ERR, 1
   end
-  add_message "protologgregator.v2.Counter" do
+  add_message "loggregator.v2.Counter" do
     optional :name, :string, 1
     optional :delta, :uint64, 2
     optional :total, :uint64, 3
   end
-  add_message "protologgregator.v2.Gauge" do
-    map :metrics, :string, :message, 1, "protologgregator.v2.GaugeValue"
+  add_message "loggregator.v2.Gauge" do
+    map :metrics, :string, :message, 1, "loggregator.v2.GaugeValue"
   end
-  add_message "protologgregator.v2.GaugeValue" do
+  # 'gauge': {'metrics': {'string': gaugeValue, 'string': gaugeValue, 'string': gaugeValue}}
+  add_message "loggregator.v2.GaugeValue" do
     optional :unit, :string, 1
     optional :value, :double, 2
   end
-  add_message "protologgregator.v2.Timer" do
+  add_message "loggregator.v2.Timer" do
     optional :name, :string, 1
     optional :start, :int64, 2
     optional :stop, :int64, 3
   end
-  add_message "protologgregator.v2.Event" do
+  add_message "loggregator.v2.Event" do
     optional :title, :string, 1
     optional :body, :string, 2
   end
 end
 
-module Protologgregator
+module Loggregator
   module V2
-    Envelope = Google::Protobuf::DescriptorPool.generated_pool.lookup("protologgregator.v2.Envelope").msgclass
-    EnvelopeBatch = Google::Protobuf::DescriptorPool.generated_pool.lookup("protologgregator.v2.EnvelopeBatch").msgclass
-    Value = Google::Protobuf::DescriptorPool.generated_pool.lookup("protologgregator.v2.Value").msgclass
-    Log = Google::Protobuf::DescriptorPool.generated_pool.lookup("protologgregator.v2.Log").msgclass
-    Log::Type = Google::Protobuf::DescriptorPool.generated_pool.lookup("protologgregator.v2.Log.Type").enummodule
-    Counter = Google::Protobuf::DescriptorPool.generated_pool.lookup("protologgregator.v2.Counter").msgclass
-    Gauge = Google::Protobuf::DescriptorPool.generated_pool.lookup("protologgregator.v2.Gauge").msgclass
-    GaugeValue = Google::Protobuf::DescriptorPool.generated_pool.lookup("protologgregator.v2.GaugeValue").msgclass
-    Timer = Google::Protobuf::DescriptorPool.generated_pool.lookup("protologgregator.v2.Timer").msgclass
-    Event = Google::Protobuf::DescriptorPool.generated_pool.lookup("protologgregator.v2.Event").msgclass
+    Envelope = Google::Protobuf::DescriptorPool.generated_pool.lookup("loggregator.v2.Envelope").msgclass
+    EnvelopeBatch = Google::Protobuf::DescriptorPool.generated_pool.lookup("loggregator.v2.EnvelopeBatch").msgclass
+    Value = Google::Protobuf::DescriptorPool.generated_pool.lookup("loggregator.v2.Value").msgclass
+    Log = Google::Protobuf::DescriptorPool.generated_pool.lookup("loggregator.v2.Log").msgclass
+    Log::Type = Google::Protobuf::DescriptorPool.generated_pool.lookup("loggregator.v2.Log.Type").enummodule
+    Counter = Google::Protobuf::DescriptorPool.generated_pool.lookup("loggregator.v2.Counter").msgclass
+    Gauge = Google::Protobuf::DescriptorPool.generated_pool.lookup("loggregator.v2.Gauge").msgclass
+    GaugeValue = Google::Protobuf::DescriptorPool.generated_pool.lookup("loggregator.v2.GaugeValue").msgclass
+    Timer = Google::Protobuf::DescriptorPool.generated_pool.lookup("loggregator.v2.Timer").msgclass
+    Event = Google::Protobuf::DescriptorPool.generated_pool.lookup("loggregator.v2.Event").msgclass
   end
 end

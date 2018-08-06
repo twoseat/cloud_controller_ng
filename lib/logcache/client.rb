@@ -1,4 +1,3 @@
-require 'multipart_parser/reader'
 require 'logcache/logcache_egress_services_pb'
 
 module Logcache
