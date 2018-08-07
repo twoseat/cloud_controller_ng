@@ -3,7 +3,6 @@ module VCAP::CloudController
     class UnknownSchemeError < StandardError
     end
     class << self
-
       def build(opts)
         potential_scheme = opts.dig(:database_parts, :adapter)
 
@@ -15,8 +14,7 @@ module VCAP::CloudController
           raise UnknownSchemeError
         end
 
-        adapter_options.merge!(opts[:database_parts])
-        adapter_options.merge!(
+        {
           connection_validation_timeout: opts[:connection_validation_timeout],
           log_db_queries: opts[:log_db_queries],
           log_level: opts[:log_level],
@@ -24,7 +22,9 @@ module VCAP::CloudController
           pool_timeout: opts[:pool_timeout],
           read_timeout: opts[:read_timeout],
           sql_mode: [:strict_trans_tables, :strict_all_tables, :no_zero_in_date],
-        ).compact
+        }.merge(opts[:database_parts]).
+          merge(adapter_options).
+          compact
       end
 
       private
@@ -56,7 +56,7 @@ module VCAP::CloudController
 
         if opts[:ca_cert_path]
           options[:sslrootcert] = opts[:ca_cert_path]
-          options[:sslmode] =  opts[:ssl_verify_hostname] ? 'verify-full' : 'verify-ca'
+          options[:sslmode] = opts[:ssl_verify_hostname] ? 'verify-full' : 'verify-ca'
         end
 
         options[:after_connect] = proc do |connection|

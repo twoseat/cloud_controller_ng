@@ -6,8 +6,8 @@ RSpec.describe VCAP::CloudController::DatabasePartsParser do
     context 'converts from a connection string' do
       it 'with a password containing no special characters' do
         parts = VCAP::CloudController::DatabasePartsParser.
-          database_parts_from_connection(
-            'mysql://user:p4ssw0rd@example.com:1234/databasename')
+                database_parts_from_connection(
+                  'mysql://user:p4ssw0rd@example.com:1234/databasename')
 
         expect(parts).to eq({
                               adapter: 'mysql',
@@ -21,8 +21,8 @@ RSpec.describe VCAP::CloudController::DatabasePartsParser do
 
       it 'with an escaped password value' do
         parts = VCAP::CloudController::DatabasePartsParser.
-          database_parts_from_connection(
-            'mysql://user:p4s%40sw0rd@example.com:1234/databasename')
+                database_parts_from_connection(
+                  'mysql://user:p4s%40sw0rd@example.com:1234/databasename')
 
         expect(parts).to eq({
                               adapter: 'mysql',
@@ -38,7 +38,6 @@ RSpec.describe VCAP::CloudController::DatabasePartsParser do
         uri = 'mysql://user:p4s sw0rd@example.com:1234/databasename'
         expect {
           VCAP::CloudController::DatabasePartsParser.database_parts_from_connection(uri)
-
         }.to raise_error(URI::InvalidURIError, "bad URI(is not URI?): #{uri}")
       end
     end
@@ -48,7 +47,7 @@ RSpec.describe VCAP::CloudController::DatabasePartsParser do
     context 'converts to a connection string' do
       it 'with a password containing no special characters' do
         connection_string = VCAP::CloudController::DatabasePartsParser.
-          connection_from_database_parts({
+                            connection_from_database_parts({
                                            adapter: 'mysql',
                                            host: 'example.com',
                                            port: 1234,
@@ -62,7 +61,7 @@ RSpec.describe VCAP::CloudController::DatabasePartsParser do
 
       it 'with an escaped password value' do
         connection_string = VCAP::CloudController::DatabasePartsParser.
-          connection_from_database_parts({
+                            connection_from_database_parts({
                                            adapter: 'mysql',
                                            host: 'example.com',
                                            port: 1234,

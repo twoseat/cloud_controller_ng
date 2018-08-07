@@ -2,12 +2,12 @@ require 'spec_helper'
 require 'cloud_controller/db_connection_options'
 
 RSpec.describe VCAP::CloudController::DBConnectionOptionsFactory do
-  let(:required_options) {{database_parts: {adapter: 'mysql'}}}
+  let(:required_options) { { database_parts: { adapter: 'mysql' } } }
 
   describe '.build' do
     it 'raises if the database_scheme is unsupported' do
       expect {
-        VCAP::CloudController::DBConnectionOptionsFactory.build(database_parts: {adapter: 'foo'})
+        VCAP::CloudController::DBConnectionOptionsFactory.build(database_parts: { adapter: 'foo' })
       }.to raise_error(VCAP::CloudController::DBConnectionOptionsFactory::UnknownSchemeError)
     end
 
@@ -22,56 +22,56 @@ RSpec.describe VCAP::CloudController::DBConnectionOptionsFactory do
     describe 'when the Cloud Controller config specifies generic options' do
       it 'sets the max connections' do
         db_connection_options = VCAP::CloudController::DBConnectionOptionsFactory.
-          build(required_options.merge(max_connections: 3000))
+                                build(required_options.merge(max_connections: 3000))
 
         expect(db_connection_options[:max_connections]).to eq(3000)
       end
 
       it 'sets the pool timeout' do
         db_connection_options = VCAP::CloudController::DBConnectionOptionsFactory.
-          build(required_options.merge(pool_timeout: 2000))
+                                build(required_options.merge(pool_timeout: 2000))
 
         expect(db_connection_options[:pool_timeout]).to eq(2000)
       end
 
       it 'sets the read timeout' do
         db_connection_options = VCAP::CloudController::DBConnectionOptionsFactory.
-          build(required_options.merge(read_timeout: 1000))
+                                build(required_options.merge(read_timeout: 1000))
         expect(db_connection_options[:read_timeout]).to eq(1000)
       end
 
       it 'sets the db log level' do
         db_connection_options = VCAP::CloudController::DBConnectionOptionsFactory.
-          build(required_options.merge(log_level: 'super-high'))
+                                build(required_options.merge(log_level: 'super-high'))
 
         expect(db_connection_options[:log_level]).to eq('super-high')
       end
 
       it 'sets the option for logging db queries' do
         db_connection_options = VCAP::CloudController::DBConnectionOptionsFactory.
-          build(required_options.merge(log_db_queries: true))
+                                build(required_options.merge(log_db_queries: true))
 
         expect(db_connection_options[:log_db_queries]).to eq(true)
       end
 
       it 'sets the connection_validation_timeout' do
         db_connection_options = VCAP::CloudController::DBConnectionOptionsFactory.
-          build(required_options.merge(connection_validation_timeout: 42))
+                                build(required_options.merge(connection_validation_timeout: 42))
 
         expect(db_connection_options[:connection_validation_timeout]).to eq(42)
       end
 
       it 'up-levels the database parts' do
         db_connection_options = VCAP::CloudController::DBConnectionOptionsFactory.
-          build(required_options.merge(
-            database_parts: {
-              adapter: 'mysql',
-              host: 'example.com',
-              port: 1234,
-              user: 'user',
-              password: 'p4ssw0rd',
-              database: 'databasename'
-            }
+                                build(required_options.merge(
+                                        database_parts: {
+                                          adapter: 'mysql',
+                                          host: 'example.com',
+                                          port: 1234,
+                                          user: 'user',
+                                          password: 'p4ssw0rd',
+                                          database: 'databasename'
+                                        }
           ))
 
         expect(db_connection_options).to include(
@@ -86,11 +86,11 @@ RSpec.describe VCAP::CloudController::DBConnectionOptionsFactory do
     end
 
     describe 'when the Cloud Controller Config specifies MySQL' do
-      let(:ssl_verify_hostname) {true}
+      let(:ssl_verify_hostname) { true }
       let(:mysql_options) do
         VCAP::CloudController::DBConnectionOptionsFactory.build(
           database_parts: {
-            adapter: 'mysql2'},
+            adapter: 'mysql2' },
           ca_cert_path: '/path/to/db_ca.crt',
           ssl_verify_hostname: ssl_verify_hostname
         )
@@ -113,7 +113,7 @@ RSpec.describe VCAP::CloudController::DBConnectionOptionsFactory do
 
         describe 'sslmode' do
           context 'when ssl_verify_hostname is truthy' do
-            let(:ssl_verify_hostname) {true}
+            let(:ssl_verify_hostname) { true }
 
             it 'sets the ssl verify options' do
               expect(mysql_options[:sslmode]).to eq(:verify_identity)
@@ -121,7 +121,7 @@ RSpec.describe VCAP::CloudController::DBConnectionOptionsFactory do
             end
           end
           context 'when ssl_verify_hostname is falsey' do
-            let(:ssl_verify_hostname) {false}
+            let(:ssl_verify_hostname) { false }
 
             it 'sets the sslmode to :verify-ca' do
               expect(mysql_options[:sslmode]).to eq(:verify_ca)
@@ -132,11 +132,11 @@ RSpec.describe VCAP::CloudController::DBConnectionOptionsFactory do
     end
 
     describe 'when the Cloud Controller Config specifies Postgres' do
-      let(:ssl_verify_hostname) {true}
+      let(:ssl_verify_hostname) { true }
       let(:postgres_options) do
         VCAP::CloudController::DBConnectionOptionsFactory.build(
           database_parts: {
-            adapter: 'postgres'},
+            adapter: 'postgres' },
           ca_cert_path: '/path/to/db_ca.crt',
           ssl_verify_hostname: ssl_verify_hostname
         )
@@ -155,14 +155,14 @@ RSpec.describe VCAP::CloudController::DBConnectionOptionsFactory do
 
         describe 'sslmode' do
           context 'when ssl_verify_hostname is truthy' do
-            let(:ssl_verify_hostname) {true}
+            let(:ssl_verify_hostname) { true }
 
             it 'sets the sslmode to "verify-full"' do
               expect(postgres_options[:sslmode]).to eq('verify-full')
             end
           end
           context 'when ssl_verify_hostname is falsey' do
-            let(:ssl_verify_hostname) {false}
+            let(:ssl_verify_hostname) { false }
 
             it 'sets the sslmode to "verify-ca"' do
               expect(postgres_options[:sslmode]).to eq('verify-ca')
