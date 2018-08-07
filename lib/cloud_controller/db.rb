@@ -1,4 +1,5 @@
 require 'cloud_controller/db_migrator'
+require 'cloud_controller/db_connection_options'
 
 module VCAP::CloudController
   class DB
@@ -20,54 +21,20 @@ module VCAP::CloudController
     #
     # @return [Sequel::Database]
     def self.connect(opts, logger)
-      connection_options = { sql_mode: [:strict_trans_tables, :strict_all_tables, :no_zero_in_date] }
-      [:max_connections, :pool_timeout, :read_timeout].each do |key|
-        connection_options[key] = opts[key] if opts[key]
-      end
+      connection_options = VCAP::CloudController::DBConnectionOptionsFactory.build(opts)
+      db = Sequel.connect(connection_options)
 
-      scheme = get_database_scheme(opts)
-
-      if opts[:ca_cert_path]
-        if scheme == 'mysql'
-          connection_options[:sslca] = opts[:ca_cert_path]
-          if opts[:ssl_verify_hostname]
-            connection_options[:sslmode] = :verify_identity
-            # Unclear why this second line is necessary:
-            # https://github.com/brianmario/mysql2/issues/879
-            connection_options[:sslverify] = true
-          else
-            connection_options[:sslmode] = :verify_ca
-          end
-        elsif scheme == 'postgres'
-          connection_options[:sslrootcert] = opts[:ca_cert_path]
-          connection_options[:sslmode] = opts[:ssl_verify_hostname] ? 'verify-full' : 'verify-ca'
-        end
-      end
-
-      if scheme == 'mysql'
-        connection_options[:charset] = 'utf8'
-      end
-
-      connection_options[:after_connect] = proc do |conn|
-        # time zone is a per connection setting, ensure it is set for each connection in the pool
-        if conn.class.to_s.match?(/mysql/i)
-          conn.query("SET time_zone = '+0:00'")
-        elsif conn.class.to_s.match?(/postgres/i)
-          conn.exec("SET time zone 'UTC'")
-        end
-      end
-
-      # connection_options = VCAP::CloudController::DBConnectionOptionsFactory.build(opts)
-      # db = Sequel.connect(connection_options)
-
-      db = get_connection(opts, connection_options)
-
-      if opts[:log_db_queries]
+      if connection_options[:log_db_queries]
         db.logger = logger
-        db.sql_log_level = opts[:log_level]
+        db.sql_log_level = connection_options[:log_level]
       end
       db.default_collate = 'utf8_bin' if db.database_type == :mysql
-      add_connection_validator_extension(db, opts)
+      db.extension(:connection_validator)
+
+      if connection_options[:connection_validation_timeout]
+        db.pool.connection_validation_timeout = connection_options[:connection_validation_timeout]
+      end
+
       db
     end
 
