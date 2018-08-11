@@ -7,9 +7,10 @@ To generate the two logcache egress*pb.rb files:
 ```
 #!/bin/bash
 
+
 go get github.com/golang/protobuf/{proto,protoc-gen-go}
 go get github.com/grpc-ecosystem/grpc-gateway/protoc-gen-grpc-gateway
-
+go get code.cloudfoundry.org/log-cache
 
 tmp_dir=$(mktemp -d)
 mkdir -p $tmp_dir/log-cache
@@ -17,6 +18,10 @@ mkdir -p $tmp_dir/log-cache
 trash_dir=$(mktemp -d)
 
 cp $GOPATH/src/code.cloudfoundry.org/log-cache/api/v1/*proto $tmp_dir/log-cache
+
+pushd $tmp_dir
+  git clone https://github.com/cloudfoundry/loggregator-api
+popd
 
 RUBY_OUT=$trash_dir/log-cache/ruby-out
 GRPC_OUT=$trash_dir/log-cache/grpc-out
@@ -31,10 +36,10 @@ grpc_tools_ruby_protoc \
     -I$GOPATH/src/github.com/grpc-ecosystem/grpc-gateway/third_party/googleapis \
     -I=/usr/local/include \
     -I=$tmp_dir/log-cache \
-    -I=$GOPATH/src/code.cloudfoundry.org/loggregator-api/.
+    -I=$tmp_dir/loggregator-api/.
 ```
 
-You want `$trash_dir/ruby-out/egress_pb.rb` and  `$trash_dir/grpc-out/egress_services_pb.rb`
+You want `$trash_dir/log-cache/ruby-out/egress_pb.rb` and  `$trash_dir/log-cache/grpc-out/egress_services_pb.rb`
 
 
 To generate the two v2/envelope_pb.rb file:

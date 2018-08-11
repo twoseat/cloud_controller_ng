@@ -6,6 +6,7 @@
 require 'google/protobuf'
 
 require 'logcache/v2/envelope_pb'
+require 'google/api/annotations_pb'
 
 Google::Protobuf::DescriptorPool.generated_pool.build do
   add_message "logcache.v1.ReadRequest" do

@@ -12,7 +12,8 @@ module Logcache
 
       @service = Logcache::V1::Egress::Stub.new(
         "#{host}:#{port}",
-        GRPC::Core::ChannelCredentials.new(client_ca, client_key, client_cert)
+        GRPC::Core::ChannelCredentials.new(client_ca, client_key, client_cert),
+        channel_args: {GRPC::Core::Channel::SSL_TARGET => "log_cache"}
       )
     end
 
@@ -26,7 +27,9 @@ module Logcache
     def build_read_request(source_id)
       Logcache::V1::ReadRequest.new(
         {
-          source_id: source_id
+          source_id: source_id,
+          limit: 1000,
+          descending: true
         }
       )
     end

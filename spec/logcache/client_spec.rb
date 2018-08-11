@@ -6,8 +6,8 @@ module Logcache
   RSpec.describe Client do
     let(:logcache_service) { instance_double(Logcache::V1::Egress::Stub, read:response_body) }
 
-    let(:host) { 'logcache.capi.land' }
-    let(:port) { '1234' }
+    let(:host) { 'doppler.service.cf.internal' }
+    let(:port) { '8080' }
     let(:client_ca_path) { File.join(Paths::FIXTURES, 'certs/bbs_ca.crt') }
     let(:client_cert_path) { File.join(Paths::FIXTURES, 'certs/bbs_client.crt') }
     let(:client_key_path) { File.join(Paths::FIXTURES, 'certs/bbs_client.key') }
