@@ -2,9 +2,8 @@ require 'logcache/logcache_egress_services_pb'
 
 module Logcache
   class Client
-
     attr_reader :service
-    
+
     def initialize(host:, port:, client_ca_path:, client_cert_path:, client_key_path:)
       client_ca = IO.read(client_ca_path)
       client_key = IO.read(client_key_path)
@@ -13,7 +12,7 @@ module Logcache
       @service = Logcache::V1::Egress::Stub.new(
         "#{host}:#{port}",
         GRPC::Core::ChannelCredentials.new(client_ca, client_key, client_cert),
-        channel_args: {GRPC::Core::Channel::SSL_TARGET => "log_cache"}
+        channel_args: { GRPC::Core::Channel::SSL_TARGET => 'log_cache' }
       )
     end
 

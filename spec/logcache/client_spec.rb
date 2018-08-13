@@ -4,14 +4,20 @@ require 'openssl'
 
 module Logcache
   RSpec.describe Client do
-    let(:logcache_service) { instance_double(Logcache::V1::Egress::Stub, read:response_body) }
+    let(:logcache_envelopes) { [42, :woof] }
+    let(:logcache_service) { instance_double(Logcache::V1::Egress::Stub, read:logcache_envelopes) }
 
     let(:host) { 'doppler.service.cf.internal' }
     let(:port) { '8080' }
-    let(:client_ca_path) { File.join(Paths::FIXTURES, 'certs/bbs_ca.crt') }
-    let(:client_cert_path) { File.join(Paths::FIXTURES, 'certs/bbs_client.crt') }
-    let(:client_key_path) { File.join(Paths::FIXTURES, 'certs/bbs_client.key') }
+    let(:client_ca_path) { File.join(Paths::FIXTURES, 'certs/log_cache_ca.crt') }
+    let(:client_cert_path) { File.join(Paths::FIXTURES, 'certs/log_cache.crt') }
+    let(:client_key_path) { File.join(Paths::FIXTURES, 'certs/log_cache.key') }
     let(:credentials) { instance_double(GRPC::Core::ChannelCredentials) }
+    let(:channel_arg_hash) do
+      {
+        channel_args: { GRPC::Core::Channel::SSL_TARGET => 'log_cache' }
+      }
+    end
     let(:client) do
       Logcache::Client.new(host: host, port: port, client_ca_path: client_ca_path,
         client_cert_path: client_cert_path, client_key_path: client_key_path)
@@ -26,50 +32,15 @@ module Logcache
       allow(GRPC::Core::ChannelCredentials).to receive(:new).
                     with(client_ca, client_key, client_cert).
                     and_return(credentials)
-
       allow(Logcache::V1::Egress::Stub).to receive(:new).
-        with("#{host}:#{port}", credentials).
+        with("#{host}:#{port}", credentials, channel_arg_hash).
         and_return(logcache_service)
     end
 
-    def build_response_body(boundary, encoded_envelopes)
-      body = []
-      encoded_envelopes.each do |env|
-        body << "--#{boundary}"
-        body << ''
-        body << env
-      end
-      body << "--#{boundary}--"
-
-      body.join("\r\n")
+    it 'can get some envelopes' do
+      expect(client.container_metrics(app_guid: 'my-app-guid')).to eq([42, :woof])
     end
 
-    describe '#container_metrics' do
-      let(:response_boundary) { SecureRandom.uuid }
-      let(:response_body) do
-        gaugeMap1 = {
-          'cpuPercentage' => Loggregator::V2::GaugeValue.new(unit:'percentage', value:10),
-          'memoryBytes' => Loggregator::V2::GaugeValue.new(unit:'bytes', value:20_000),
-          'diskBytes' => Loggregator::V2::GaugeValue.new(unit:'bytes', value:30_000_000),
-        }
-        gauge1 = Loggregator::V2::Gauge.new(metrics: gaugeMap1)
-        gaugeMap2 = {
-          'cpuPercentage' => Loggregator::V2::GaugeValue.new(unit:'percentage', value:11),
-          'memoryBytes' => Loggregator::V2::GaugeValue.new(unit:'bytes', value:20_001),
-          'diskBytes' => Loggregator::V2::GaugeValue.new(unit:'bytes', value:30_000_001),
-        }
-        gauge2 = Loggregator::V2::Gauge.new(metrics: gaugeMap2)
-        build_response_body(response_boundary, [
-          Loggregator::V2::Envelope.encode(Loggregator::V2::Envelope.new(source_id: 'a', gauge: gauge1), ),
-          Loggregator::V2::Envelope.encode(Loggregator::V2::Envelope.new(source_id: 'b', gauge: gauge2)),
-        ])
-      end
-      let(:app_guid) { 'example-app-guid' }
 
-      it 'returns an array of Envelopes' do
-        metrics = client.container_metrics(app_guid: 'example-app-guid')
-        expect(metrics.map {|envelope| envelope['source_id']}).to match_array(['a', 'b'])
-      end
-    end
   end
 end
