@@ -67,6 +67,5 @@ module TrafficController
       client.ssl_config.verify_mode = OpenSSL::SSL::VERIFY_NONE
       client
     end
-
   end
 end

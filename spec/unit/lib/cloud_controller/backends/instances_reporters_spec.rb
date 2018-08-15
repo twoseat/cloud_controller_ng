@@ -7,6 +7,7 @@ module VCAP::CloudController
     let(:bbs_instances_client) { instance_double(Diego::BbsInstancesClient) }
     let(:traffic_controller_client) { instance_double(::TrafficController::Client) }
     let(:logcache_client) { instance_double(::Logcache::Client) }
+    let(:tc_compatible_logcache_client) { Logcache::TrafficControllerDecorator.new(:logcache_client) }
 
     let(:diego_process) { ProcessModelFactory.make(diego: true) }
     let(:diego_instances_reporter) { instance_double(Diego::InstancesReporter) }
@@ -16,10 +17,11 @@ module VCAP::CloudController
       CloudController::DependencyLocator.instance.register(:bbs_instances_client, bbs_instances_client)
       CloudController::DependencyLocator.instance.register(:traffic_controller_client, traffic_controller_client)
       CloudController::DependencyLocator.instance.register(:logcache_client, logcache_client)
+      CloudController::DependencyLocator.instance.register(:traffic_controller_compatible_logcache_client, tc_compatible_logcache_client)
 
       allow(Diego::InstancesReporter).to receive(:new).with(bbs_instances_client).and_return(diego_instances_reporter)
       allow(Diego::InstancesStatsReporter).to receive(:new).with(bbs_instances_client, traffic_controller_client).and_return(diego_instances_stats_reporter)
-      allow(Diego::InstancesStatsReporter).to receive(:new).with(bbs_instances_client, logcache_client).and_return(diego_instances_stats_reporter)
+      allow(Diego::InstancesStatsReporter).to receive(:new).with(bbs_instances_client, tc_compatible_logcache_client).and_return(diego_instances_stats_reporter)
     end
 
     describe '#number_of_starting_and_running_instances_for_process' do
@@ -106,7 +108,7 @@ module VCAP::CloudController
         end
         it 'uses the logcache' do
           instances_reporters.stats_for_app(app)
-          expect(Diego::InstancesStatsReporter).to have_received(:new).with(bbs_instances_client, logcache_client)
+          expect(Diego::InstancesStatsReporter).to have_received(:new).with(bbs_instances_client, tc_compatible_logcache_client)
         end
       end
 
@@ -126,7 +128,7 @@ module VCAP::CloudController
 
           it 'uses the logcache' do
             instances_reporters.stats_for_app(app)
-            expect(Diego::InstancesStatsReporter).to have_received(:new).with(bbs_instances_client, logcache_client)
+            expect(Diego::InstancesStatsReporter).to have_received(:new).with(bbs_instances_client, tc_compatible_logcache_client)
           end
         end
       end

@@ -201,7 +201,7 @@ module VCAP::CloudController
             host: String,
             port: Integer,
           },
-          
+
           logcache_tls: {
             key_file: String,
             cert_file: String,

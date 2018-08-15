@@ -17,15 +17,13 @@ module Logcache
     end
 
     def container_metrics(auth_token: nil, app_guid:)
-      num_to_request = VCAP::CloudController::AppModel.find(guid: app_guid).web_process.instances
-      response = service.read(build_read_request(app_guid))
-      response
+      service.read(build_read_request(app_guid))
     end
 
     private
 
     def build_read_request(source_id)
-      num_to_request = [VCAP::CloudController::AppModel.find(guid: source_id).web_process.instances ** 2, 1000].min
+      num_to_request = [VCAP::CloudController::AppModel.find(guid: source_id).web_process.instances**2, 1000].min
       Logcache::V1::ReadRequest.new(
         {
           source_id: source_id,

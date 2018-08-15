@@ -11,7 +11,6 @@ module Logcache
     module Egress
       # The egress service is used to read data from the LogCache system.
       class Service
-
         include GRPC::GenericService
 
         self.marshal_class_method = :encode

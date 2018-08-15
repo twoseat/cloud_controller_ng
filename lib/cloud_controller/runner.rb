@@ -147,7 +147,7 @@ module VCAP::CloudController
     def setup_db
       db_logger = Steno.logger('cc.db')
       DB.load_models(@config.get(:db), db_logger)
-    end # ([^:])\bLoggregator\b
+    end
 
     def setup_loggregator_emitter
       if @config.get(:loggregator) && @config.get(:loggregator, :router)

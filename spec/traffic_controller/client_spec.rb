@@ -98,5 +98,4 @@ module TrafficController
       end
     end
   end
-
 end

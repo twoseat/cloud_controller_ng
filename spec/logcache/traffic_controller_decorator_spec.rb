@@ -12,8 +12,6 @@ RSpec.describe Logcache::TrafficControllerDecorator do
   let(:logcache_response) { Logcache::V1::ReadResponse.new(envelopes: envelopes) }
   let(:envelopes) { Loggregator::V2::EnvelopeBatch.new }
 
-
-
   describe 'converting from Logcache to TrafficController' do
     before do
       allow(wrapped_logcache_client).to receive(:container_metrics).and_return(logcache_response)

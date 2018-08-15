@@ -9,7 +9,7 @@ module Logcache
       return_array = Array.new(num_instances)
       logcache_response = @logcache_client.container_metrics(app_guid: app_guid)
 
-      envelopes = logcache_response.envelopes.batch.reject {|env| env.instance_id.to_i > num_instances}
+      envelopes = logcache_response.envelopes.batch.reject { |env| env.instance_id.to_i > num_instances }
       while envelopes.size > 0
         envelope = envelopes.shift
         new_envelope = {
@@ -27,7 +27,7 @@ module Logcache
         return_array[envelope.instance_id.to_i - 1] = TrafficController::Models::Envelope.new(
           containerMetric: TrafficController::Models::ContainerMetric.new(new_envelope)
         )
-        envelopes = envelopes.reject {|env| env.instance_id == envelope.instance_id}
+        envelopes = envelopes.reject { |env| env.instance_id == envelope.instance_id }
       end
       return_array.compact
     end

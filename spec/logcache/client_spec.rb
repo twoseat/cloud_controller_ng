@@ -5,7 +5,7 @@ require 'openssl'
 module Logcache
   RSpec.describe Client do
     let(:logcache_envelopes) { [42, :woof] }
-    let(:logcache_service) { instance_double(Logcache::V1::Egress::Stub, read:logcache_envelopes) }
+    let(:logcache_service) { instance_double(Logcache::V1::Egress::Stub, read: logcache_envelopes) }
 
     let(:host) { 'doppler.service.cf.internal' }
     let(:port) { '8080' }
@@ -20,7 +20,7 @@ module Logcache
     end
     let(:client) do
       Logcache::Client.new(host: host, port: port, client_ca_path: client_ca_path,
-        client_cert_path: client_cert_path, client_key_path: client_key_path)
+                           client_cert_path: client_cert_path, client_key_path: client_key_path)
     end
     let(:expected_request_options) { { 'headers' => { 'Authorization' => 'bearer oauth-token' } } }
 
@@ -30,17 +30,16 @@ module Logcache
       client_cert = File.open(client_cert_path).read
 
       allow(GRPC::Core::ChannelCredentials).to receive(:new).
-                    with(client_ca, client_key, client_cert).
-                    and_return(credentials)
+        with(client_ca, client_key, client_cert).
+        and_return(credentials)
       allow(Logcache::V1::Egress::Stub).to receive(:new).
         with("#{host}:#{port}", credentials, channel_arg_hash).
         and_return(logcache_service)
+      allow_any_instance_of(Logcache::Client).to receive(:build_read_request)
     end
 
     it 'can get some envelopes' do
       expect(client.container_metrics(app_guid: 'my-app-guid')).to eq([42, :woof])
     end
-
-
   end
 end

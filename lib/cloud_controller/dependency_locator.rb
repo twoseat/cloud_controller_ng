@@ -12,6 +12,7 @@ require 'cloud_controller/blob_sender/default_blob_sender'
 require 'cloud_controller/blob_sender/missing_blob_handler'
 require 'traffic_controller/client'
 require 'logcache/client'
+require 'logcache/traffic_controller_decorator'
 require 'cloud_controller/diego/task_recipe_builder'
 require 'cloud_controller/diego/app_recipe_builder'
 require 'cloud_controller/diego/bbs_apps_client'
@@ -93,6 +94,11 @@ module CloudController
 
     def logcache_client
       @dependencies[:logcache_client] || register(:logcache_client, build_logcache_client)
+    end
+
+    def traffic_controller_compatible_logcache_client
+      @dependencies[:traffic_controller_compatible_logcache_client] ||
+          register(:traffic_controller_compatible_logcache_client, Logcache::TrafficControllerDecorator.new(logcache_client))
     end
 
     def upload_handler
