@@ -36,7 +36,7 @@ module VCAP::CloudController
           next
         end
 
-        buildpack_install_jobs << VCAP::CloudController::Jobs::Runtime::BuildpackInstaller.new(buildpack_name, buildpack_file, buildpack_opts)
+        buildpack_install_jobs << VCAP::CloudController::Jobs::Runtime::BuildpackInstaller.plan(buildpack_name, buildpack_file, buildpack_opts)
       end
 
       run_canary(buildpack_install_jobs)
