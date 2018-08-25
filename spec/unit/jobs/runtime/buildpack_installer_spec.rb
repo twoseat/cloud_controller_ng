@@ -3,272 +3,98 @@ require 'spec_helper'
 module VCAP::CloudController
   module Jobs::Runtime
     RSpec.describe BuildpackInstaller, job_context: :worker do
-      let(:buildpack_name) {'mybuildpack'}
-
       let(:zipfile) {File.expand_path('../../../fixtures/good.zip', File.dirname(__FILE__))}
       let(:zipfile2) {File.expand_path('../../../fixtures/good_relative_paths.zip', File.dirname(__FILE__))}
 
-      let(:options) {{enabled: true, locked: false, position: 1}}
-
-      let(:job) {BuildpackInstaller.new(buildpack_name, "", zipfile, options, false)}
+      let(:new_buildpack_options) {{enabled: true, locked: true, position: 1}}
+      let(:job_options) {{name: 'mybuildpack', stack: 'mystack', file: zipfile, opts: new_buildpack_options,
+        action: VCAP::CloudController::Jobs::Runtime::BuildpackInstallerOptionsFactory::CREATE_BUILDPACK}}
+      let(:job) {BuildpackInstaller.new(job_options)}
 
       it 'is a valid job' do
         expect(job).to be_a_valid_job
       end
 
-      describe '.plan' do
-        let(:name) {buildpack_name}
-        let(:file) {zipfile}
-        let(:opts) {{}}
-
-        it 'returns a valid buildpack installer' do
-          expect(BuildpackInstaller.plan(name, file, opts)).to be_a_valid_job
-        end
-
-        context 'there is no matching buildpack record by name' do
-          it 'plans to create the record' do
-            job = BuildpackInstaller.plan(name, file, opts)
-
-            expect(job.action).to be BuildpackInstaller::CREATE_BUILDPACK
-          end
-        end
-
-        context 'there is an existing buildpack that matches by name' do
-          context 'when the buildpack record has a stack' do
-            let(:existing_stack) { Stack.make(name: 'existing stack') }
-            let!(:existing_buildpack) { Buildpack.make(name: name, stack: existing_stack.name, key: 'new_key') }
-
-            context 'and the buildpack zip has the same stack' do
-              before do
-                allow(VCAP::CloudController::Buildpacks::StackNameExtractor).to receive(:extract_from_file).
-                  with(file).and_return(existing_stack.name)
-              end
-
-              context 'and this buildpack is not in the plan' do
-                it 'plans on updating that record' do
-                  job = BuildpackInstaller.plan(name, file, opts, existing_plan: [])
-
-                  expect(job.action).to be BuildpackInstaller::UPGRADE_BUILDPACK
-                end
-              end
-
-              context 'and this buildpack is in the plan' do
-                it 'errors' do
-                  expect {
-                    BuildpackInstaller.plan(name, file, opts, existing_plan: [existing_buildpack])
-                  }.to raise_error(VCAP::CloudController::Jobs::Runtime::BuildpackInstaller::DuplicateInstallError)
-                end
-              end
-            end
-
-            context 'and the buildpack zip does not specify stack' do
-              before do
-                allow(VCAP::CloudController::Buildpacks::StackNameExtractor).to receive(:extract_from_file).
-                  with(file).and_return(nil)
-              end
-
-              it 'errors' do
-                expect {
-                  BuildpackInstaller.plan(name, file, opts)
-                }.to raise_error(VCAP::CloudController::Jobs::Runtime::BuildpackInstaller::StacklessBuildpackIncompatibilityError)
-              end
-            end
-          end
-
-          context 'when the buildpack record has a nil stack' do
-            let!(:existing_buildpack) {Buildpack.make(name: name, stack: nil, key: 'new_key')}
-
-            context 'and the buildpack zip does not specify stack' do
-              before do
-                allow(VCAP::CloudController::Buildpacks::StackNameExtractor).to receive(:extract_from_file).
-                  with(file).and_return(nil)
-              end
-
-              context 'and this buildpack is not in the plan' do
-                it 'plans on updating that record' do
-                  job = BuildpackInstaller.plan(name, file, opts, existing_plan: [])
-
-                  expect(job.action).to be BuildpackInstaller::UPGRADE_BUILDPACK
-                end
-              end
-
-              context 'and this buildpack is in the plan' do
-                it 'errors' do
-                  expect {
-                    BuildpackInstaller.plan(name, file, opts, existing_plan: [existing_buildpack])
-                  }.to raise_error(VCAP::CloudController::Jobs::Runtime::BuildpackInstaller::DuplicateInstallError)
-                end
-              end
-            end
-
-            context 'and the buildpack zip has a stack' do
-              before do
-                allow(VCAP::CloudController::Buildpacks::StackNameExtractor).to receive(:extract_from_file).
-                  with(file).and_return('manifest stack')
-              end
-
-              context 'and this buildpack is not in the plan' do
-                it 'plans on updating that record' do
-                  job = BuildpackInstaller.plan(name, file, opts, existing_plan: [])
-
-                  expect(job.action).to be BuildpackInstaller::UPGRADE_BUILDPACK
-                end
-              end
-              context 'and this buildpack is in the plan' do
-                it 'it plans on creating' do
-                  job = BuildpackInstaller.plan(name, file, opts, existing_plan: [existing_buildpack])
-
-                  expect(job.action).to be BuildpackInstaller::CREATE_BUILDPACK
-                end
-              end
-            end
-          end
-        end
-      end
-
       describe '#perform' do
-        context 'when the buildpack is enabled and unlocked' do
-          let(:options) {{locked: true}}
+        context 'when creating a buildpack' do
+          context 'when the requested stack does not exist' do
+            let(:job_options) {{name: 'mybuildpack', stack: 'mystack', file: zipfile, opts: new_buildpack_options,
+              action: VCAP::CloudController::Jobs::Runtime::BuildpackInstallerOptionsFactory::CREATE_BUILDPACK}}
 
-          context 'buildpack zip does not specify stack' do
-            it 'creates a new buildpack with nil stack' do
+            it 'creates a new buildpack with stack' do
               expect {
                 job.perform
               }.to change {Buildpack.count}.from(0).to(1)
 
               buildpack = Buildpack.first
               expect(buildpack).to_not be_nil
-              expect(buildpack.name).to eq(buildpack_name)
-              expect(buildpack.stack).to be_nil
+              expect(buildpack.name).to eq('mybuildpack')
+              expect(buildpack.stack).to eq('mystack')
               expect(buildpack.key).to start_with(buildpack.guid)
               expect(buildpack.filename).to end_with(File.basename(zipfile))
               expect(buildpack).to be_locked
             end
-
-            it 'updates an existing buildpack' do
-              buildpack1 = Buildpack.make(name: buildpack_name, key: 'new_key')
-
-              update_job = BuildpackInstaller.new(buildpack_name, zipfile2, {enabled: false})
-              update_job.perform
-
-              buildpack2 = Buildpack.find(name: buildpack_name)
-              expect(buildpack2).to_not be_nil
-              expect(buildpack2.enabled).to be false
-              expect(buildpack2.filename).to end_with(File.basename(zipfile2))
-              expect(buildpack2.key).to_not eql(buildpack1.key)
-            end
-
-            it 'does nothing if multiple buildpacks with same name' do
-              Stack.make(name: 'stack-1')
-              Stack.make(name: 'stack-2')
-              Buildpack.make(name: buildpack_name, stack: 'stack-1', filename: nil)
-              Buildpack.make(name: buildpack_name, stack: 'stack-2', filename: nil)
-
-              update_job = BuildpackInstaller.new(buildpack_name, zipfile2, {enabled: false})
-              expect {
-                update_job.perform
-              }.to_not change {Buildpack.count}
-
-              buildpack1 = Buildpack.find(name: buildpack_name, stack: 'stack-1')
-              expect(buildpack1).to_not be_nil
-              expect(buildpack1.filename).to be_nil
-
-              buildpack2 = Buildpack.find(name: buildpack_name, stack: 'stack-2')
-              expect(buildpack2).to_not be_nil
-              expect(buildpack2.filename).to be_nil
-            end
           end
 
-          context 'buildpack zip specifies stack' do
-            before {Stack.make(name: 'manifest-stack')}
-            let(:zipfile) do
-              path = Tempfile.new('bp-zip-with-stack').path
-              TestZip.create(path, 1, 1024) do |zipfile|
-                zipfile.get_output_stream('manifest.yml') do |f|
-                  f.write("---\nstack: manifest-stack\n")
-                end
-              end
-              path
-            end
-            after {FileUtils.rm(zipfile)}
+          context 'when the requested stack does exist' do
+            let!(:existing_stack) {Stack.make(name: 'mystack')}
+            let(:job_options) {{name: 'mybuildpack', stack: 'mystack', file: zipfile, opts: new_buildpack_options,
+              action: VCAP::CloudController::Jobs::Runtime::BuildpackInstallerOptionsFactory::CREATE_BUILDPACK}}
 
-            it 'creates a new buildpack with that stack' do
+            it 'does not create a new stack' do
+              expect {
+                job.perform
+              }.not_to change {Stack.count}
+            end
+
+            it 'creates a new buildpack with stack' do
               expect {
                 job.perform
               }.to change {Buildpack.count}.from(0).to(1)
 
               buildpack = Buildpack.first
               expect(buildpack).to_not be_nil
-              expect(buildpack.name).to eq(buildpack_name)
-              expect(buildpack.stack).to eq('manifest-stack')
+              expect(buildpack.name).to eq('mybuildpack')
+              expect(buildpack.stack).to eq('mystack')
               expect(buildpack.key).to start_with(buildpack.guid)
               expect(buildpack.filename).to end_with(File.basename(zipfile))
               expect(buildpack).to be_locked
             end
+          end
+        end
 
-            it 'updates an existing buildpack' do
-              buildpack1 = Buildpack.make(name: buildpack_name, stack: 'manifest-stack', key: 'new_key')
+        context 'when a buildpack should be upgraded' do
+          let(:new_buildpack_options) {{locked: true}}
+          let(:existing_stack) {Stack.make(name: 'stack-1')}
+          let(:existing_buildpack) {Buildpack.make(name: 'mybuildpack', stack: existing_stack.name, filename: nil, enabled: false)}
 
-              update_job = BuildpackInstaller.new(buildpack_name, zipfile, {enabled: false})
-              update_job.perform
+          let(:job_options) {{name: 'mybuildpack', stack: existing_stack.name, file: zipfile2, opts: new_buildpack_options,
+            upgrade_buildpack_guid: existing_buildpack.guid,
+            action: VCAP::CloudController::Jobs::Runtime::BuildpackInstallerOptionsFactory::UPGRADE_BUILDPACK}}
 
-              buildpack2 = Buildpack.find(name: buildpack_name)
-              expect(buildpack2).to_not be_nil
-              expect(buildpack2.enabled).to be false
-              expect(buildpack2.filename).to end_with(File.basename(zipfile))
-              expect(buildpack2.key).to_not eql(buildpack1.key)
-            end
+          it 'updates an existing buildpack' do
+            job.perform
 
-            it 'updates an existing buildpack with nil stack' do
-              buildpack1 = Buildpack.make(name: buildpack_name, stack: nil, key: 'new_key')
+            buildpack2 = Buildpack.find(name: 'mybuildpack', stack: existing_stack.name)
+            expect(buildpack2).to_not be_nil
+            expect(buildpack2.enabled).to be false
+            expect(buildpack2.filename).to end_with(File.basename(zipfile2))
+            expect(buildpack2.key).to_not eql(existing_buildpack.key)
+          end
 
-              update_job = BuildpackInstaller.new(buildpack_name, zipfile, {enabled: false})
-              update_job.perform
+          context 'but that buildpack exists and is locked' do
+            let(:existing_stack) {Stack.make(name: 'stack-1')}
+            let(:existing_buildpack) {Buildpack.make(name: 'lockedbuildpack', stack: existing_stack.name, locked: true)}
 
-              buildpack2 = Buildpack.find(name: buildpack_name)
-              expect(buildpack2).to_not be_nil
-              expect(buildpack2.enabled).to be false
-              expect(buildpack2.filename).to end_with(File.basename(zipfile))
-              expect(buildpack2.key).to_not eql(buildpack1.key)
-              expect(buildpack2.stack).to eql('manifest-stack')
-            end
+            it 'does not update a locked buildpack' do
+              job.perform
 
-            it 'creates a new buildpack if existing buildpacks have different stacks' do
-              Stack.make(name: 'stack-1')
-              Stack.make(name: 'stack-2')
-              Buildpack.make(name: buildpack_name, stack: 'stack-1', filename: nil)
-              Buildpack.make(name: buildpack_name, stack: 'stack-2', filename: nil)
-
-              update_job = BuildpackInstaller.new(buildpack_name, zipfile, {enabled: false})
-              expect {
-                update_job.perform
-              }.to change {Buildpack.count}.by(1)
-
-              buildpack1 = Buildpack.find(name: buildpack_name, stack: 'stack-1')
-              expect(buildpack1).to_not be_nil
-              expect(buildpack1.filename).to be_nil
-
-              buildpack2 = Buildpack.find(name: buildpack_name, stack: 'stack-2')
-              expect(buildpack2).to_not be_nil
-              expect(buildpack2.filename).to be_nil
-
-              buildpack3 = Buildpack.find(name: buildpack_name, stack: 'manifest-stack')
-              expect(buildpack3).to_not be_nil
-              expect(buildpack3.filename).to_not be_nil
+              buildpack2 = Buildpack.find(name: 'lockedbuildpack')
+              expect(buildpack2).to eql(existing_buildpack)
             end
           end
         end
 
-        context 'when the buildpack is locked' do
-          it 'fails to update a locked buildpack' do
-            buildpack = Buildpack.make(name: buildpack_name, locked: true)
-            update_job = BuildpackInstaller.new(buildpack_name, zipfile2, {enabled: false, locked: false})
-            update_job.perform
-
-            buildpack2 = Buildpack.find(name: buildpack_name)
-            expect(buildpack2).to eql(buildpack)
-          end
-        end
 
         it 'knows its job name' do
           expect(job.job_name_in_configuration).to equal(:buildpack_installer)
@@ -305,15 +131,25 @@ module VCAP::CloudController
             end
           end
 
-          context 'with an existing buildpack' do
-            let!(:buildpack) {Buildpack.make(name: buildpack_name, enabled: false)}
+          context 'with a new buildpack and stack' do
+            it 'does not create a new stack and re-raises the error' do
+              expect {
+                expect {
+                  job.perform
+                }.to raise_error(RuntimeError)
+              }.to_not change {Stack.count}
+            end
+          end
 
+          context 'with an existing buildpack' do
+            let(:existing_stack) {Stack.make(name: 'stack-1')}
+            let!(:existing_buildpack) {Buildpack.make(name: 'mybuildpack', stack: existing_stack.name)}
             it 'does not update any values on the buildpack and re-raises the error' do
               expect {
                 job.perform
               }.to raise_error(RuntimeError)
 
-              expect(Buildpack.find(name: buildpack_name)).to eql(buildpack)
+              expect(Buildpack.find(name: 'mybuildpack')).to eql(existing_buildpack)
             end
           end
         end
@@ -321,3 +157,16 @@ module VCAP::CloudController
     end
   end
 end
+
+=begin
+- fail cases:
+ - locked buildpack does nothing
+ - on upload error upgrade: 'plode
+ - on upload error create: clean up then 'plode
+ - caught exception handling
+
+- happy
+ - enabled/unlocked:
+    - create case
+    - upgrade case
+=end

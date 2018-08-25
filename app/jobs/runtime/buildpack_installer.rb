@@ -3,79 +3,40 @@ module VCAP::CloudController
     module Runtime
       class BuildpackInstaller < VCAP::CloudController::Jobs::CCJob
 
-        class InstallError < StandardError; end
-        class DuplicateInstallError < StandardError; end
-        class StacklessBuildpackIncompatibilityError < StandardError; end
-
-        CREATE_BUILDPACK = 'create'.freeze
-        UPGRADE_BUILDPACK = 'upgrade'.freeze
-
-        attr_accessor :buildpack_name, :buildpack_stack, :buildpack_file, :opts, :action
+        attr_accessor :name, :file, :opts, :guid_to_upgrade, :stack
 
         # private_class_method :new
-        def initialize(options)
-          @buildpack_name = options[:name]
-          @buildpack_stack = stack
-          @buildpack_file = file
-          @buildpack_opts = opts
-          @action = action
+        def initialize(job_options)
+          @name = job_options[:name]
+          @file = job_options[:file]
+          @opts = job_options[:opts]
+          @stack = job_options[:stack]
+          @guid_to_upgrade = job_options[:upgrade_buildpack_guid]
+          @action = job_options[:action]
         end
 
-
-        ## HEY NERDS!
-        #
-        - consider moving plan to an options factory so we can test all params before they go do BuildpackInstaller.new
-        - existing_plan becomes an instance variable on the factory
-
-        # plan is not threadsafe
-        def self.plan(name, file, opts, existing_plan: []) # this should be a set of some kind?
-          found_buildpacks = Buildpack.where(name: name).all
-          if found_buildpacks.empty?
-            return new(name, nil, file, opts, CREATE_BUILDPACK)
-          end
-
-          found_buildpack = found_buildpacks.first
-
-          detected_stack = VCAP::CloudController::Buildpacks::StackNameExtractor.extract_from_file(file)
-
-          # upgrading from nil, but we've already planned to upgrade the nil entry
-          if found_buildpack.stack.nil? && detected_stack && existing_plan.include?(found_buildpack)
-            return new(name, nil, file, opts, CREATE_BUILDPACK)
-          end
-
-          if existing_plan.include?(found_buildpack) && found_buildpack.stack == detected_stack
-            raise DuplicateInstallError.new
-          end
-
-          if detected_stack.nil? && found_buildpack.stack
-            raise StacklessBuildpackIncompatibilityError.new 'Existing buildpack must be upgraded with a buildpack that has a stack.'
-          end
-
-          return new(name, nil, file, opts, UPGRADE_BUILDPACK)
-        end
+        # perform refactor: make separate objs for upgrae/create and share upload & error code
 
         def perform #
           logger = Steno.logger('cc.background')
           logger.info "Installing buildpack #{name}"
 
-          buildpacks = find_existing_buildpacks
-          if buildpacks.count > 1
-            logger.error "Update failed: Unable to determine buildpack to update as there are multiple buildpacks named #{name} for different stacks."
-            return
-          end
+          buildpack = Buildpack.find(guid: guid_to_upgrade)
+          puts guid_to_upgrade
 
-          buildpack = buildpacks.first
+          # perhaps this behaviour belongs in the options factory?
           if buildpack&.locked
             logger.info "Buildpack #{name} locked, not updated"
             return
           end
 
           created = false
-          if buildpack.nil?
+          if buildpack.nil? # this should change
             buildpacks_lock = Locking[name: 'buildpacks']
             buildpacks_lock.db.transaction do
               buildpacks_lock.lock!
-              buildpack = Buildpack.create(name: name)
+              Stack.create(name: stack) if Stack.find(name: stack).nil? # wat do if fail to upload?
+              buildpack = Buildpack.create(name: name, stack: stack)
             end
             created = true
           end
@@ -107,20 +68,6 @@ module VCAP::CloudController
         def buildpack_uploader
           buildpack_blobstore = CloudController::DependencyLocator.instance.buildpack_blobstore
           UploadBuildpack.new(buildpack_blobstore)
-        end
-
-        private
-
-        def find_existing_buildpacks
-          stack = VCAP::CloudController::Buildpacks::StackNameExtractor.extract_from_file(file)
-          if stack.present?
-            buildpacks_by_stack = Buildpack.where(name: name, stack: stack)
-            return buildpacks_by_stack if buildpacks_by_stack.any?
-            return Buildpack.where(name: name, stack: nil)
-            # XTEAM: We were reconsidering whether or not we should overwrite buildpacks of unknown stack during install
-          end
-
-          Buildpack.where(name: name)
         end
       end
     end
