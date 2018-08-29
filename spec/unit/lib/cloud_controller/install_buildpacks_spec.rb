@@ -4,9 +4,9 @@ module VCAP::CloudController
   RSpec.describe InstallBuildpacks do
     describe 'installs buildpacks' do
       let(:installer) { InstallBuildpacks.new(TestConfig.config_instance) }
-      let(:job) { instance_double(Jobs::Runtime::BuildpackInstaller) }
-      let(:job2) { instance_double(Jobs::Runtime::BuildpackInstaller) }
-      let(:job3) { instance_double(Jobs::Runtime::BuildpackInstaller) }
+      let(:job) { instance_double(Jobs::Runtime::CreateBuildpackInstaller) }
+      let(:job2) { instance_double(Jobs::Runtime::CreateBuildpackInstaller) }
+      let(:job3) { instance_double(Jobs::Runtime::UpdateBuildpackInstaller) }
       let(:enqueuer) { instance_double(Jobs::Enqueuer) }
       let(:install_buildpack_config) do
         {
@@ -49,9 +49,9 @@ module VCAP::CloudController
               { 'name' => 'buildpack3', 'package' => 'myotherpkg2' },
             ]
 
-            expect(Jobs::Runtime::BuildpackInstaller).to receive(:new).with('buildpack1', 'abuildpack.zip', {}).and_return(job)
-            allow(Jobs::Runtime::BuildpackInstaller).to receive(:new).with('buildpack2', 'otherbp.zip', {}).and_return(job2)
-            allow(Jobs::Runtime::BuildpackInstaller).to receive(:new).with('buildpack3', 'otherbp2.zip', {}).and_return(job3)
+            expect(Jobs::Runtime::CreateBuildpackInstaller).to receive(:new).with(name: 'buildpack1', file: 'abuildpack.zip', options: {}).and_return(job)
+            allow(Jobs::Runtime::CreateBuildpackInstaller).to receive(:new).with(name: 'buildpack2', file: 'otherbp.zip', options: {}).and_return(job2)
+            allow(Jobs::Runtime::UpdateBuildpackInstaller).to receive(:new).with(name: 'buildpack3', file: 'otherbp2.zip', options:{}).and_return(job3)
             allow(Jobs::Enqueuer).to receive(:new).and_return(enqueuer)
           end
 
@@ -119,7 +119,7 @@ module VCAP::CloudController
         end
 
         it 'uses the file override' do
-          expect(Jobs::Runtime::BuildpackInstaller).to receive(:new).with('buildpack1', 'another.zip', {}).and_return(job)
+          expect(Jobs::Runtime::CreateBuildpackInstaller).to receive(:new).with(name: 'buildpack1', file: 'another.zip', options: {}).and_return(job)
           expect(job).to receive(:perform)
           expect(File).to receive(:file?).with('another.zip').and_return(true)
 
@@ -135,7 +135,7 @@ module VCAP::CloudController
         it 'succeeds when no package is specified' do
           TestConfig.config[:install_buildpacks][0].delete('package')
 
-          expect(Jobs::Runtime::BuildpackInstaller).to receive(:new).with('buildpack1', 'another.zip', {}).and_return(job)
+          expect(Jobs::Runtime::BuildpackInstaller).to receive(:new).with(name: 'buildpack1', file: 'another.zip', options: {}).and_return(job)
           expect(job).to receive(:perform)
           expect(File).to receive(:file?).with('another.zip').and_return(true)
 
@@ -180,8 +180,8 @@ module VCAP::CloudController
         end
 
         it 'passes optional attributes to the job' do
-          expect(Jobs::Runtime::BuildpackInstaller).to receive(:new).
-            with('buildpack1', 'abuildpack.zip', { enabled: true, locked: false, position: 5 }).and_return(job)
+          expect(Jobs::Runtime::CreateBuildpackInstaller).to receive(:new).
+            with(name: 'buildpack1', file: 'abuildpack.zip', options: { enabled: true, locked: false, position: 5 }).and_return(job)
           expect(Dir).to receive(:[]).with('/var/vcap/packages/mybuildpackpkg/*.zip').and_return(['abuildpack.zip'])
           expect(File).to receive(:file?).with('abuildpack.zip').and_return(true)
 

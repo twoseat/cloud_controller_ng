@@ -1,34 +1,33 @@
-
 module VCAP::CloudController
   module Jobs
     module Runtime
-      class BuildpackInstallerOptionsFactory
-        CREATE_BUILDPACK = 'create'.freeze
-        UPGRADE_BUILDPACK = 'upgrade'.freeze
-
-        class DuplicateInstallError < StandardError;
+      class BuildpackInstallerFactory
+        class DuplicateInstallError < StandardError
         end
-        class StacklessBuildpackIncompatibilityError < StandardError;
+        class StacklessBuildpackIncompatibilityError < StandardError
         end
 
-        def self.plan(name, file, opts, existing_plan: []) # this should be a set of some kind?
+        def initialize
+          @existing_plan = []
+        end
+
+        def plan(name, file, options)
           detected_stack = VCAP::CloudController::Buildpacks::StackNameExtractor.extract_from_file(file)
 
           found_buildpacks = Buildpack.where(name: name).all
           if found_buildpacks.empty?
-            return {
+            return VCAP::CloudController::Jobs::Runtime::CreateBuildpackInstaller.new({
               name: name,
               stack: detected_stack,
               file: file,
-              options: opts,
-              action: CREATE_BUILDPACK,
-            }
+              options: options
+            })
           end
 
           # this clearly not right but we need to test multiples to get the right behavior
           found_buildpack = found_buildpacks.first
 
-          if found_buildpack.stack == detected_stack && existing_plan.include?(found_buildpack)
+          if found_buildpack.stack == detected_stack && @existing_plan.include?(found_buildpack)
             raise DuplicateInstallError.new
           end
 
@@ -37,26 +36,28 @@ module VCAP::CloudController
           end
 
           # upgrading from nil, but we've already planned to upgrade the nil entry
-          if found_buildpack.stack.nil? && detected_stack && existing_plan.include?(found_buildpack)
-            return {
+          if found_buildpack.stack.nil? && detected_stack && @existing_plan.include?(found_buildpack)
+            return VCAP::CloudController::Jobs::Runtime::CreateBuildpackInstaller.new({
               name: name,
               stack: detected_stack,
               file: file,
-              options: opts,
-              action: CREATE_BUILDPACK,
-            }
+              options: options
+            })
           end
 
-          return {
+          @existing_plan << found_buildpack
+
+          VCAP::CloudController::Jobs::Runtime::UpdateBuildpackInstaller.new({
             name: name,
             stack: detected_stack,
             file: file,
-            options: opts,
-            upgrade_buildpack_guid: found_buildpack.guid,
-            action: UPGRADE_BUILDPACK,
-          }
+            options: options,
+            upgrade_buildpack_guid: found_buildpack.guid
+          })
+
         end
       end
     end
   end
 end
+

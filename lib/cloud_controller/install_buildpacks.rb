@@ -9,6 +9,8 @@ module VCAP::CloudController
     def install(buildpacks)
       return unless buildpacks
 
+      job_factory = VCAP::CloudController::Jobs::Runtime::BuildpackInstallerFactory.new()
+
       buildpack_install_jobs = []
 
       buildpacks.each do |bpack|
@@ -36,7 +38,11 @@ module VCAP::CloudController
           next
         end
 
-        buildpack_install_jobs << VCAP::CloudController::Jobs::Runtime::BuildpackInstaller.plan(buildpack_name, buildpack_file, buildpack_opts)
+        buildpack_install_jobs <<
+          job_factory.plan(
+            buildpack_name,
+            buildpack_file,
+            buildpack_opts)
       end
 
       run_canary(buildpack_install_jobs)
