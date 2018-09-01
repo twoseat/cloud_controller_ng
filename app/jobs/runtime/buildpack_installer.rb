@@ -10,7 +10,6 @@ module VCAP::CloudController
           @options = job_options[:options]
           @stack_name = job_options[:stack]
           @guid_to_upgrade = job_options[:upgrade_buildpack_guid]
-          @action = job_options[:action]
         end
 
         def max_attempts

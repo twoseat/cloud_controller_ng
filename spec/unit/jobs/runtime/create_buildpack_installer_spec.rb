@@ -15,10 +15,14 @@ module VCAP::CloudController
         expect(job).to be_a_valid_job
       end
 
+      it 'knows its job name' do
+        expect(job.job_name_in_configuration).to equal(:buildpack_installer)
+      end
+
       describe '#perform' do
         context 'when creating a buildpack' do
-          context 'when the requested stack does not exist' do
-            it 'creates a new buildpack with stack' do
+          shared_examples_for :creating_a_buildpack do
+            it 'creates a new buildpack with the requested stack' do
               expect {
                 job.perform
               }.to change { Buildpack.count }.from(0).to(1)
@@ -30,36 +34,30 @@ module VCAP::CloudController
               expect(buildpack.key).to start_with(buildpack.guid)
               expect(buildpack.filename).to end_with(File.basename(zipfile))
               expect(buildpack).to be_locked
+            end
+          end
+
+          context 'when the requested stack does not exist' do
+            it_behaves_like :creating_a_buildpack
+
+            it 'does create a new stack' do
+              expect {
+                job.perform
+              }.to change { Stack.count }.by(1)
             end
           end
 
           context 'when the requested stack does exist' do
             let!(:existing_stack) { Stack.make(name: stack_name) }
 
+            it_behaves_like :creating_a_buildpack
+
             it 'does not create a new stack' do
               expect {
                 job.perform
               }.not_to change { Stack.count }
             end
-
-            it 'creates a new buildpack with stack' do
-              expect {
-                job.perform
-              }.to change { Buildpack.count }.from(0).to(1)
-
-              buildpack = Buildpack.first
-              expect(buildpack).to_not be_nil
-              expect(buildpack.name).to eq('mybuildpack')
-              expect(buildpack.stack).to eq(stack_name)
-              expect(buildpack.key).to start_with(buildpack.guid)
-              expect(buildpack.filename).to end_with(File.basename(zipfile))
-              expect(buildpack).to be_locked
-            end
           end
-        end
-
-        it 'knows its job name' do
-          expect(job.job_name_in_configuration).to equal(:buildpack_installer)
         end
 
         context 'when the job raises an exception' do
@@ -83,7 +81,7 @@ module VCAP::CloudController
             allow_any_instance_of(UploadBuildpack).to receive(:upload_buildpack).and_raise
           end
 
-          context 'with a new buildpack and a new stack' do
+          shared_examples_for :it_does_not_change_the_db do
             it 'does not create a buildpack and re-raises the error' do
               expect {
                 expect {
@@ -101,22 +99,19 @@ module VCAP::CloudController
             end
           end
 
+          context 'with a new buildpack and a new stack' do
+            it_behaves_like :it_does_not_change_the_db
+          end
+
           context 'with a new buildpack and an existing stack' do
             let!(:existing_stack) { Stack.make(name: stack_name) }
 
-            it 'does not create a buildpack and re-raises the error' do
+            it_behaves_like :it_does_not_change_the_db
+
+            it 'does not delete the existing stack' do
               expect {
-                expect {
-                  job.perform
-                }.to raise_error(RuntimeError)
-              }.to_not change { Buildpack.count }
-            end
-            it 'does not delete the existing stack, does not create a new stack, and re-raises the error' do
-              expect {
-                expect {
-                  job.perform
-                }.to raise_error(RuntimeError)
-              }.to_not change { Stack.count }
+                job.perform
+              }.to raise_error(RuntimeError)
 
               expect(Stack.find(name: existing_stack.name)).to eq(existing_stack)
             end

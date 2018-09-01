@@ -23,6 +23,10 @@ module VCAP::CloudController
         expect(job).to be_a_valid_job
       end
 
+      it 'knows its job name' do
+        expect(job.job_name_in_configuration).to equal(:buildpack_installer)
+      end
+
       describe '#perform' do
         context 'when a buildpack should be updated' do
           let(:new_buildpack_options) { { locked: true } }
@@ -55,10 +59,6 @@ module VCAP::CloudController
               expect(buildpack2).to eql(existing_buildpack)
             end
           end
-        end
-
-        it 'knows its job name' do
-          expect(job.job_name_in_configuration).to equal(:buildpack_installer)
         end
 
         context 'when the job raises an exception' do
