@@ -3,10 +3,10 @@ require 'spec_helper'
 module VCAP::CloudController
   RSpec.describe InstallBuildpacks do
     describe 'installs buildpacks' do
-      let(:installer) {InstallBuildpacks.new(TestConfig.config_instance)}
+      let(:installer) { InstallBuildpacks.new(TestConfig.config_instance) }
 
-      let(:enqueuer) {instance_double(Jobs::Enqueuer)}
-      let(:job_factory) {instance_double(Jobs::Runtime::BuildpackInstallerFactory)}
+      let(:enqueuer) { instance_double(Jobs::Enqueuer) }
+      let(:job_factory) { instance_double(Jobs::Runtime::BuildpackInstallerFactory) }
       let(:install_buildpack_config) do
         {
           install_buildpacks: [
@@ -17,6 +17,9 @@ module VCAP::CloudController
           ]
         }
       end
+      let(:canary_job) { double(:canary_job, perform: nil) }
+      let(:enqueued_job1) { double(:enqueued_job1, perform: nil) }
+      let(:enqueued_job2) { double(:enqueued_job2, perform: nil) }
 
       before do
         TestConfig.override(install_buildpack_config)
@@ -27,12 +30,8 @@ module VCAP::CloudController
       end
 
       describe 'installing buildpacks' do
-        let(:canary_job) {double(:canary_job, perform: nil)}
-        let(:enqueued_job1) {double(:enqueued_job1, perform: nil)}
-        let(:enqueued_job2) {double(:enqueued_job2, perform: nil)}
-
         context 'where there are no buildpacks to install' do
-          let(:install_buildpack_config) {{install_buildpacks: []}}
+          let(:install_buildpack_config) { { install_buildpacks: [] } }
 
           it 'does nothing and does not raise any errors' do
             expect {
@@ -57,16 +56,15 @@ module VCAP::CloudController
               and_return(true)
 
             TestConfig.config[:install_buildpacks].concat [
-              {'name' => 'buildpack2', 'package' => 'myotherpkg'},
-              {'name' => 'buildpack3', 'package' => 'myotherpkg2'},
+              { 'name' => 'buildpack2', 'package' => 'myotherpkg' },
+              { 'name' => 'buildpack3', 'package' => 'myotherpkg2' },
             ]
 
-
-            buildpack1_fields = [{name: 'buildpack1', file: 'abuildpack.zip', options: {}}]
+            buildpack1_fields = [{ name: 'buildpack1', file: 'abuildpack.zip', stack: nil, options: {} }]
             allow(job_factory).to receive(:plan).with('buildpack1', buildpack1_fields).and_return([canary_job])
-            buildpack2_fields = [{name: 'buildpack2', file: 'otherbp.zip', options: {}}]
+            buildpack2_fields = [{ name: 'buildpack2', file: 'otherbp.zip', stack: nil, options: {} }]
             allow(job_factory).to receive(:plan).with('buildpack2', buildpack2_fields).and_return([enqueued_job1])
-            buildpack3_fields = [{name: 'buildpack3', file: 'otherbp2.zip', options: {}}]
+            buildpack3_fields = [{ name: 'buildpack3', file: 'otherbp2.zip', stack: nil, options: {} }]
             allow(job_factory).to receive(:plan).with('buildpack3', buildpack3_fields).and_return([enqueued_job2])
             allow(Jobs::Enqueuer).to receive(:new).and_return(enqueuer)
           end
@@ -138,7 +136,7 @@ module VCAP::CloudController
           # call install
           # verify that job_factory.plan was called with the right file
           expect(File).to receive(:file?).with('another.zip').and_return(true)
-          expect(job_factory).to receive(:plan).with('buildpack1', [{name: 'buildpack1', file: 'another.zip', options: {}}])
+          expect(job_factory).to receive(:plan).with('buildpack1', [{ name: 'buildpack1', file: 'another.zip', stack: nil, options: {} }])
 
           installer.install(TestConfig.config_instance.get(:install_buildpacks))
         end
@@ -152,7 +150,7 @@ module VCAP::CloudController
         it 'succeeds when no package is specified' do
           TestConfig.config[:install_buildpacks][0].delete('package')
           expect(File).to receive(:file?).with('another.zip').and_return(true)
-          expect(job_factory).to receive(:plan).with('buildpack1', [{name: 'buildpack1', file: 'another.zip', options: {}}])
+          expect(job_factory).to receive(:plan).with('buildpack1', [{ name: 'buildpack1', file: 'another.zip', stack: nil, options: {} }])
 
           installer.install(TestConfig.config_instance.get(:install_buildpacks))
         end
@@ -192,7 +190,7 @@ module VCAP::CloudController
         it 'has a valid config' do
           TestConfig.config[:nginx][:instance_socket] = 'mysocket'
 
-          expect {Config.new(TestConfig.config)}.not_to raise_error
+          expect { Config.new(TestConfig.config) }.not_to raise_error
         end
 
         it 'passes optional attributes to the job factory' do
@@ -205,19 +203,19 @@ module VCAP::CloudController
 
           expect(job_factory).to receive(:plan).
             with('buildpack1',
-              [{name: 'buildpack1',
-                file: 'abuildpack.zip',
-                options: {
+              [{ name: 'buildpack1',
+                 file: 'abuildpack.zip',
+                 stack: nil,
+                 options: {
                   enabled: true,
                   locked: false,
                   position: 5
-                }}]
+                } }]
             )
 
           installer.install(TestConfig.config_instance.get(:install_buildpacks))
 
           expect(installer.logger).to_not have_received(:error)
-
         end
       end
     end
