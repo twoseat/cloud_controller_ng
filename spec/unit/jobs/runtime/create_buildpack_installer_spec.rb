@@ -37,13 +37,18 @@ module VCAP::CloudController
             end
           end
 
-          context 'when the requested stack does not exist' do
+          context 'when the no stack is requested' do
+            let(:stack_name) { nil }
             it_behaves_like :creating_a_buildpack
+          end
 
-            it 'does create a new stack' do
+          context 'when the requested stack does not exist' do
+            let(:stack_name) { 'mystack' }
+
+            it 'raises an error' do
               expect {
                 job.perform
-              }.to change { Stack.count }.by(1)
+              }.to raise_error(Sequel::ValidationFailed)
             end
           end
 
@@ -51,16 +56,12 @@ module VCAP::CloudController
             let!(:existing_stack) { Stack.make(name: stack_name) }
 
             it_behaves_like :creating_a_buildpack
-
-            it 'does not create a new stack' do
-              expect {
-                job.perform
-              }.not_to change { Stack.count }
-            end
           end
         end
 
         context 'when the job raises an exception' do
+          let!(:existing_stack) { Stack.make(name: stack_name) }
+
           let(:error) { StandardError.new('same message') }
           let(:logger) { double(:logger) }
 
@@ -77,44 +78,26 @@ module VCAP::CloudController
         end
 
         context 'when uploading the buildpack fails' do
+          let!(:existing_stack) { Stack.make(name: stack_name) }
+
           before do
             allow_any_instance_of(UploadBuildpack).to receive(:upload_buildpack).and_raise
           end
 
-          shared_examples_for :it_does_not_change_the_db do
-            it 'does not create a buildpack and re-raises the error' do
-              expect {
-                expect {
-                  job.perform
-                }.to raise_error(RuntimeError)
-              }.to_not change { Buildpack.count }
-            end
-
-            it 'does not create a new stack and re-raises the error' do
-              expect {
-                expect {
-                  job.perform
-                }.to raise_error(RuntimeError)
-              }.to_not change { Stack.count }
-            end
-          end
-
-          context 'with a new buildpack and a new stack' do
-            it_behaves_like :it_does_not_change_the_db
-          end
-
-          context 'with a new buildpack and an existing stack' do
-            let!(:existing_stack) { Stack.make(name: stack_name) }
-
-            it_behaves_like :it_does_not_change_the_db
-
-            it 'does not delete the existing stack' do
+          it 'does not create a buildpack and re-raises the error' do
+            expect {
               expect {
                 job.perform
               }.to raise_error(RuntimeError)
+            }.to_not change { Buildpack.count }
+          end
 
-              expect(Stack.find(name: existing_stack.name)).to eq(existing_stack)
-            end
+          it 'does not create a new stack and re-raises the error' do
+            expect {
+              expect {
+                job.perform
+              }.to raise_error(RuntimeError)
+            }.to_not change { Stack.count }
           end
         end
       end

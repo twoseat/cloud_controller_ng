@@ -46,6 +46,7 @@ module VCAP::CloudController
       names = factory_options.collect { |o| o[:name] }
       names.each do |name|
         buildpacks = factory_options.find_all { |o| o[:name] == name }
+        puts "QQQ: #{buildpacks.inspect}"
         buildpack_install_jobs << job_factory.plan(name, buildpacks)
       end
 

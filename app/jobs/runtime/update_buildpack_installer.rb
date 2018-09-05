@@ -17,7 +17,7 @@ module VCAP::CloudController
           rescue
             raise
           end
-          buildpack.update(options)
+          buildpack.update(options.merge(stack: stack_name))
 
           logger.info "Buildpack #{name} updated"
         rescue => e

@@ -11,7 +11,6 @@ module VCAP::CloudController
           buildpacks_lock = Locking[name: 'buildpacks']
           buildpacks_lock.db.transaction do
             buildpacks_lock.lock!
-            new_stack = Stack.create(name: stack_name) if Stack.find(name: stack_name).nil?
             buildpack = Buildpack.create(name: name, stack: stack_name)
           end
           begin

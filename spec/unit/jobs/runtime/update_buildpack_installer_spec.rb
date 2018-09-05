@@ -9,7 +9,7 @@ module VCAP::CloudController
       let(:new_buildpack_options) { { enabled: true, locked: true, position: 1 } }
       let(:stack_name) { 'mystack' }
       let(:existing_stack) { Stack.make(name: 'existing-stack') }
-      let(:existing_buildpack) { Buildpack.make(name: 'mybuildpack', stack: existing_stack.name, filename: nil, enabled: false) }
+      let!(:existing_buildpack) { Buildpack.make(name: 'mybuildpack', stack: nil, filename: nil, enabled: false) }
       let(:job_options) { {
         name: 'mybuildpack',
         stack: stack_name,
@@ -40,13 +40,16 @@ module VCAP::CloudController
           }}
 
           it 'updates an existing buildpack' do
+            buildpack = Buildpack.find(name: 'mybuildpack')
+            expect(buildpack.stack).to be_nil
             job.perform
 
-            buildpack2 = Buildpack.find(name: 'mybuildpack', stack: existing_stack.name)
-            expect(buildpack2).to_not be_nil
-            expect(buildpack2.enabled).to be false
-            expect(buildpack2.filename).to end_with(File.basename(zipfile2))
-            expect(buildpack2.key).to_not eql(existing_buildpack.key)
+            buildpack.reload
+            expect(buildpack).to_not be_nil
+            expect(buildpack.enabled).to be false
+            expect(buildpack.filename).to end_with(File.basename(zipfile2))
+            expect(buildpack.key).to_not eql(existing_buildpack.key)
+            expect(buildpack.stack).to eq(existing_stack.name)
           end
 
           context 'but that buildpack exists and is locked' do
