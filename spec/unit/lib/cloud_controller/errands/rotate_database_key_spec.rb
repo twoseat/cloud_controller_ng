@@ -4,6 +4,7 @@ module VCAP::CloudController
   RSpec.describe RotateDatabaseKey do
     describe '#perform' do
       # Apps are an example of a single encrypted field
+      let(:historical_app) { AppModel.make }
       let(:app) { AppModel.make }
       let(:app_the_second) { AppModel.make }
       let(:app_new_key_label) { AppModel.make }
@@ -29,6 +30,10 @@ module VCAP::CloudController
       let(:database_encryption_keys) { { old: 'old-key', new: 'new-key' } }
 
       before do
+        # This app's encryption_key_label will be NULL
+        historical_app.environment_variables = env_vars
+        historical_app.save
+
         allow(Encryptor).to receive(:current_encryption_key_label) { 'old' }
         allow(Encryptor).to receive(:database_encryption_keys) { database_encryption_keys }
 
@@ -82,18 +87,23 @@ module VCAP::CloudController
       end
 
       it 'changes the key label of each model' do
+        expect(historical_app.encryption_key_label).to be_nil
         expect(app.encryption_key_label).to eq('old')
         expect(service_binding.encryption_key_label).to eq('old')
         expect(service_instance.encryption_key_label).to eq('old')
 
         RotateDatabaseKey.perform(batch_size: 1)
 
+        expect(historical_app.reload.encryption_key_label).to eq('new')
         expect(app.reload.encryption_key_label).to eq('new')
         expect(service_binding.reload.encryption_key_label).to eq('new')
         expect(service_instance.reload.encryption_key_label).to eq('new')
       end
 
       it 're-encrypts all encrypted fields with the new key for all rows' do
+        expect(Encryptor).to receive(:encrypt).
+          with(JSON.dump(env_vars), historical_app.salt).exactly(:twice)
+
         expect(Encryptor).to receive(:encrypt).
           with(JSON.dump(env_vars), app.salt).exactly(:twice)
 
@@ -112,6 +122,7 @@ module VCAP::CloudController
       it 'does not change the decrypted value' do
         RotateDatabaseKey.perform(batch_size: 1)
 
+        expect(historical_app.environment_variables).to eq(env_vars)
         expect(app.environment_variables).to eq(env_vars)
         expect(service_binding.credentials).to eq(credentials)
         expect(service_binding.volume_mounts).to eq(volume_mounts)
