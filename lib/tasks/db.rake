@@ -226,6 +226,7 @@ namespace :db do
     BackgroundJobEnvironment.new(RakeConfig.config).setup_environment do
       begin
         VCAP::CloudController::ValidateDatabaseKeys.can_decrypt_all_rows!(RakeConfig.config)
+        VCAP::CloudController::ValidateDatabaseKeys.validate_encryption_keys!(RakeConfig.config)
       rescue VCAP::CloudController::ValidateDatabaseKeys::DatabaseEncryptionKeyMissingError => e
         puts e.message
         exit 1

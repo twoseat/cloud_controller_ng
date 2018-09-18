@@ -191,5 +191,62 @@ module VCAP::CloudController
         end
       end
     end
+
+    describe '.validate_encryption_keys!' do
+      let(:label1) { 'encryption_key_label_1' }
+      let(:label2) { 'encryption_key_label_2' }
+      let(:label3) { 'encryption_key_label_3' }
+
+      let(:config) { Config.new(database_encryption_keys_config) }
+      let(:database_encryption_keys_config) do {
+        database_encryption: { keys:
+          {
+            label1.to_sym => 'secret_key1',
+            label2.to_sym => 'secret_key_2',
+            label3.to_sym => 'secret_key_3',
+          },
+          current_key_label: label2,
+        }
+      }
+      end
+
+      context 'when every key in the config can decrypt a sentinel value' do
+        before do
+          salt = Encryptor.generate_salt
+
+          encrypted_value = Encryptor.encrypt_raw('hello', 'secret_key1', salt)
+          EncryptionKeySentinelModel.create(
+            expected_value: sentinel_string,
+            encrypted_value: encrypted_value,
+            encryption_key_label: label_string,
+            salt: salt
+          )
+        end
+
+        it 'does not raise an error' do
+          expect {
+            ValidateDatabaseKeys.validate_encryption_keys!(config)
+          }.not_to raise_error
+        end
+
+        it 'trims sentinel values belonging to keys that no longer exist in the config' do
+
+        end
+      end
+
+      context 'when some keys in the config incorrectly decrypt a sentinel value' do
+        it 'does not raise an error' do
+          expect {
+            ValidateDatabaseKeys.validate_encryption_keys!
+          }.not_to raise_error
+        end
+
+        it 'trims sentinel values belonging to keys that no longer exist in the config' do
+
+        end
+      end
+
+
+    end
   end
 end

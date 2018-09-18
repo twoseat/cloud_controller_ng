@@ -1,3 +1,5 @@
+require 'cloud_controller/adjective_noun_generator'
+
 module VCAP::CloudController
   module Seeds
     class << self
@@ -154,6 +156,27 @@ module VCAP::CloudController
           else
             { 'name' => domain }
           end
+        end
+      end
+
+      def seed_encryption_key_sentinels(config)
+        encryption_keys = config.get(:database_encryption, :keys)
+        return unless encryption_keys.present?
+
+        adjective_noun_generator = AdjectiveNounGenerator.new
+        encryption_keys.each do |label, key|
+          label_string = label.to_s
+          next if EncryptionKeySentinelModel.where(encryption_key_label: label_string).present?
+
+          sentinel_string = adjective_noun_generator.generate
+          salt = Encryptor.generate_salt
+          encrypted_value = Encryptor.encrypt_raw(sentinel_string, key, salt)
+          EncryptionKeySentinelModel.create(
+            expected_value: sentinel_string,
+            encrypted_value: encrypted_value,
+            encryption_key_label: label_string,
+            salt: salt
+          )
         end
       end
 

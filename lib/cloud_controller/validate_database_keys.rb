@@ -1,6 +1,7 @@
 module VCAP::CloudController
   module ValidateDatabaseKeys
     class DatabaseEncryptionKeyMissingError < StandardError; end
+    class EncryptionKeySentinelMissingError < StandardError; end
 
     class << self
       def can_decrypt_all_rows!(config)
@@ -29,6 +30,20 @@ module VCAP::CloudController
         errors << missing_database_encryption_keys_message(missing_key_labels) if missing_key_labels.present?
 
         raise DatabaseEncryptionKeyMissingError.new(errors.join("\n")) if errors.present?
+      end
+
+      def validate_encryption_keys!(config)
+        encryption_keys = config.get(:database_encryption, :keys)
+        return unless encryption_keys.present?
+
+        encryption_keys.each do |label, key|
+          label_string = label.to_s
+          sentinel_model = EncryptionKeySentinelModel.find(encryption_key_label: label_string)
+          raise EncryptionKeySentinelMissingError unless sentinel_model.present?
+
+          decrypted_value = Encryptor.decrypt_raw(sentinel_model.encrypted_value, key, sentinel_model.salt)
+          raise StandardError unless decrypted_value == sentinel_model.expected_value
+        end
       end
 
       private
