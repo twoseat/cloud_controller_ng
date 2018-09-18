@@ -1,4 +1,5 @@
 require 'actions/process_restart'
+require 'cloud_controller/deployment_updater/deployment_manipulator'
 
 module VCAP::CloudController
   module DeploymentUpdater
@@ -17,36 +18,15 @@ module VCAP::CloudController
             logger.info("scaling #{deployments_to_scale.size} deployments")
             deployments_to_scale.each do |deployment|
               workpool.submit(deployment, logger) do |d, l|
-                begin
-                  scale_deployment(d, l)
-                rescue => e
-                  error_name = e.is_a?(CloudController::Errors::ApiError) ? e.name : e.class.name
-                  logger.error(
-                    'error-scaling-deployment',
-                    deployment_guid: d.guid,
-                    error: error_name,
-                    error_message: e.message,
-                    backtrace: e.backtrace.join("\n")
-                  )
-                end
+                DeploymentManipulator.new(d, l).scale
               end
             end
 
             logger.info("canceling #{deployments_to_cancel.size} deployments")
+
             deployments_to_cancel.each do |deployment|
               workpool.submit(deployment, logger) do |d, l|
-                begin
-                  cancel_deployment(d, l)
-                rescue => e
-                  error_name = e.is_a?(CloudController::Errors::ApiError) ? e.name : e.class.name
-                  logger.error(
-                    'error-canceling-deployment',
-                    deployment_guid: d.guid,
-                    error: error_name,
-                    error_message: e.message,
-                    backtrace: e.backtrace.join("\n")
-                  )
-                end
+                DeploymentManipulator.new(d, l).cancel
               end
             end
           ensure
@@ -71,17 +51,17 @@ module VCAP::CloudController
             return unless ready_to_scale?(deployment, logger)
 
             if deploying_web_process.instances < deployment.original_web_process_instance_count
-              scale_down(oldest_web_process)
+              scale_down_oldest_web_process(oldest_web_process)
               deploying_web_process.update(instances: deploying_web_process.instances + 1)
             else
               promote_deploying_web_process(deploying_web_process, oldest_web_process)
+
+              cleanup_interim_deployment_processes(deploying_web_process, app)
 
               restart_non_web_processes(app)
               deployment.update(state: DeploymentModel::DEPLOYED_STATE)
             end
           end
-
-          logger.info("ran-deployment-update-for-#{deployment.guid}")
         end
 
         def scale_down(webish_process)
@@ -116,14 +96,6 @@ module VCAP::CloudController
           end
         end
 
-        def ready_to_scale?(deployment, logger)
-          instances = instance_reporters.all_instances_for_app(deployment.deploying_web_process)
-          instances.all? { |_, val| val[:state] == VCAP::CloudController::Diego::LRP_RUNNING }
-        rescue CloudController::Errors::ApiError # the instances_reporter re-raises InstancesUnavailable as ApiError
-          logger.info("skipping-deployment-update-for-#{deployment.guid}")
-          false
-        end
-
         def instance_reporters
           CloudController::DependencyLocator.instance.instances_reporters
         end
@@ -133,6 +105,16 @@ module VCAP::CloudController
                                   process_type: deploying_web_process.type).map(&:destroy)
           deploying_web_process.update(type: ProcessTypes::WEB)
           oldest_web_process.destroy
+        end
+
+        def cleanup_interim_deployment_processes(deploying_web_process, app)
+          app.processes.select { |p| ProcessTypes.webish?(p.type) }.each do |webish_process|
+            next if webish_process.guid == deploying_web_process.guid
+            webish_process.destroy
+            if webish_process.type != 'web'
+              RouteMappingModel.where(app: webish_process.app, process_type: webish_process.type).map(&:destroy)
+            end
+          end
         end
 
         def restart_non_web_processes(app)

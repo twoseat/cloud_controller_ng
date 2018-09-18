@@ -4,6 +4,7 @@ require 'cloud_controller/deployment_updater/updater'
 module VCAP::CloudController
   RSpec.describe DeploymentUpdater::Updater do
     let(:a_day_ago) { Time.now - 1.day }
+    let(:an_hour_ago) { Time.now - 1.hour }
     let(:web_process) { ProcessModel.make(instances: 2, created_at: a_day_ago) }
     let!(:route_mapping) { RouteMappingModel.make(app: web_process.app, process_type: web_process.type) }
     let(:deploying_web_process) { ProcessModel.make(app: web_process.app, type: 'web-deployment-guid-1', instances: 5) }
@@ -84,6 +85,18 @@ module VCAP::CloudController
             )
           }
 
+          let!(:interim_deploying_web_process) {
+            ProcessModel.make(
+              app: web_process.app,
+              created_at: an_hour_ago,
+              type: 'web-deployment-guid-interim',
+              instances: 1,
+              guid: 'interim-guid'
+            )
+          }
+
+          let!(:interim_route_mapping) { RouteMappingModel.make(app: web_process.app, process_type: interim_deploying_web_process.type) }
+
           let!(:non_web_process1) { ProcessModel.make(app: the_best_app, instances: 2, type: 'worker') }
           let!(:non_web_process2) { ProcessModel.make(app: the_best_app, instances: 2, type: 'clock') }
 
@@ -98,7 +111,7 @@ module VCAP::CloudController
 
           it 'replaces the existing web process with the deploying_web_process' do
             deploying_web_process_guid = deploying_web_process.guid
-            expect(ProcessModel.map(&:type)).to match_array(['web', 'web-deployment-guid-1', 'worker', 'clock'])
+            expect(ProcessModel.map(&:type)).to match_array(['web', 'web-deployment-guid-interim', 'web-deployment-guid-1', 'worker', 'clock'])
 
             deployer.update
 
@@ -123,6 +136,16 @@ module VCAP::CloudController
 
             expect(RouteMappingModel.where(app: deploying_web_process.app,
                                            process_type: deploying_web_process.type)).to have(0).items
+          end
+
+          it 'cleans up any extra processes and route mappings from the deployment train' do
+            deployer.update
+            expect(ProcessModel.find(guid: interim_deploying_web_process.guid)).to be_nil
+            expect(RouteMappingModel.find(process_type: interim_deploying_web_process.type)).to be_nil
+            # Web process 4 instances -   3 - 2 - 1 - 0
+            # Deployment-1 webish-1 1 instance
+            # Deployment-2 webish-2 1 instance
+            # Deployment-3 webish-3 1 instance  - 2 - 3- 4
           end
 
           it 'puts the deployment into its finished DEPLOYED_STATE' do
@@ -303,9 +326,7 @@ module VCAP::CloudController
 
         before do
           allow(workpool).to receive(:submit).with(failing_deployment, logger).and_yield(failing_deployment, logger)
-
-          allow(deployer).to receive(:scale_deployment).with(deployment, logger).and_call_original
-          allow(deployer).to receive(:scale_deployment).with(failing_deployment, logger).and_raise(StandardError.new('Something real bad happened'))
+          allow(failing_deployment).to receive(:app).and_raise(StandardError.new('Something real bad happened'))
         end
 
         it 'logs the error' do
