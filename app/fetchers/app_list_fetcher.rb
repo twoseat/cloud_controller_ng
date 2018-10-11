@@ -28,6 +28,10 @@ module VCAP::CloudController
       if message.requested?(:guids)
         dataset = dataset.where(guid: message.guids)
       end
+      if message.requested?(:label_selector)
+        selected_guids = AppLabel.select_by(message.label_selector)
+        dataset = dataset.where(guid: selected_guids)
+      end
 
       dataset.eager(:processes)
     end
