@@ -40,6 +40,12 @@ GIT
   specs:
     spork (1.0.0rc4)
 
+PATH
+  remote: /Users/pivotal/workspace/treetopper
+  specs:
+    treetopper (0.2)
+      treetop (>= 1.2.6)
+
 GEM
   remote: https://rubygems.org/
   specs:
@@ -287,6 +293,7 @@ GEM
     parser (2.5.1.2)
       ast (~> 2.4.0)
     pg (1.0.0)
+    polyglot (0.3.5)
     posix-spawn (0.3.13)
     powerpack (0.1.2)
     protobuf (3.6.12)
@@ -426,6 +433,8 @@ GEM
     tilt (2.0.8)
     timecop (0.9.1)
     timeliness (0.3.8)
+    treetop (1.6.10)
+      polyglot (~> 0.3)
     tzinfo (1.2.5)
       thread_safe (~> 0.1)
     uber (0.1.0)
@@ -526,6 +535,7 @@ DEPENDENCIES
   talentbox-delayed_job_sequel (~> 4.3.0)
   thin
   timecop
+  treetopper!
   unf
   vcap-concurrency!
   vmstat (~> 2.0)

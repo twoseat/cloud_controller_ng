@@ -1,3 +1,5 @@
+require 'treetop'
+
 module VCAP::CloudController
   class AppLabel < Sequel::Model(:app_labels)
     # one_to_one :app_guid, class: 'VCAP::CloudController::AppModel', key: :guid, primary_key: :app_guid
@@ -15,9 +17,17 @@ module VCAP::CloudController
     end
     # [env: {production}, tier:{}]
     def self.select_by(label_selector)
-      and_parts = label_selector.split(/\s*,\s*/)
-      dataset = self.evaluate_and_parts(and_parts)
-      dataset.map(&:app_guid)
+      Treetop.load(File.join(__dir__,'selector.treetop'))
+      parser = SelectorParser.new
+
+      result = parser.parse(label_selector)
+      if result.nil?
+        puts parser.failure_reason
+        puts parser.failure_line
+        puts parser.failure_column
+      else
+        puts result
+      end
     end
 
     def self.evaluate_equal(label_key, label_value)
@@ -71,6 +81,7 @@ module VCAP::CloudController
 
     def self.tokenizer(input)
       token_pairs = input.scan(/(\w+|==|!=|[,\(\)=])|(.)/)
+      and_parts = input.scan(/(?:\(.*?\)|[^,])+/)
       if token_pairs.any? {|pair| pair.last}
         raise StandardError.new("Error in label_selector")
       end

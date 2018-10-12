@@ -64,7 +64,14 @@ RSpec.describe AppsV3Controller, type: :controller do
       end
 
       it 'handles a single set' do
-        get :index, params: { label_selector: 'environment in (production; testing)'}
+        get :index, params: { label_selector: 'environment in (production,testing),tier=backend'}
+        expect(response.status).to eq(200), response.body
+        resources = parsed_body['resources']
+        expect(resources.map{|x| x['guid']}).to match_array([app1.guid, app2.guid, app4.guid])
+      end
+
+      it 'handles excessive whitespace' do
+        get :index, params: { label_selector: ' environment   in ( production , testing ) , tier =backend '}
         expect(response.status).to eq(200), response.body
         resources = parsed_body['resources']
         expect(resources.map{|x| x['guid']}).to match_array([app1.guid, app2.guid, app4.guid])

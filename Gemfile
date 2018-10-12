@@ -97,4 +97,5 @@ group :development do
   gem 'roodi'
   gem 'ruby-debug-ide', '>= 0.7.0.beta4'
   gem 'spork', git: 'https://github.com/sporkrb/spork', ref: '224df49' # '~> 1.0rc'
+  gem 'treetopper', path: '/Users/pivotal/workspace/treetopper'
 end

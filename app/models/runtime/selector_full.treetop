@@ -1,0 +1,46 @@
+grammar Selector
+  rule selector_syntax
+    (requirement ',' selector_syntax) / requirement
+  end
+
+  rule requirement
+    key ( set_based_restriction / exact_match_restriction )
+  end
+
+  rule key
+    [\w]+
+  end
+
+  rule set_based_restriction
+    inclusion_exclusion value_set
+  end
+
+  rule inclusion_exclusion
+    inclusion / exclusion
+  end
+
+  rule exclusion
+    "notin"
+  end
+
+  rule inclusion
+    "in"
+  end
+
+  rule value_set
+    "(" values ")"
+  end
+
+  rule values
+    value / value "," values
+  end
+
+  rule value
+    [\w]+
+  end
+
+  rule exact_match_restriction
+   ( '=' / '==' / '!=' ) value
+  end
+end
+
