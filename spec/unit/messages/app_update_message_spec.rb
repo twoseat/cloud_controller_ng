@@ -148,6 +148,120 @@ module VCAP::CloudController
           end
         end
       end
+      describe 'metadata' do
+        context 'when labels are valid' do
+          let(:params) do
+            {
+              "metadata": {
+                "labels": {
+                  "potato": 'mashed',
+                }
+              }
+            }
+          end
+
+          it 'is valid' do
+            message = AppUpdateMessage.new(params)
+            expect(message).to be_valid
+          end
+
+          it 'builds a message with access to the labels' do
+            message = AppUpdateMessage.new(params)
+            expect(message.labels).to include("potato": 'mashed')
+            expect(message.labels.size).to equal(1)
+          end
+        end
+
+        context 'when labels are not a hash' do
+          let(:params) do
+            {
+              "metadata": {
+                "labels": 'potato',
+              }
+            }
+          end
+          it 'is invalid' do
+            message = AppUpdateMessage.new(params)
+            expect(message).not_to be_valid
+            expect(message.errors_on(:metadata)).to include("'labels' is not a hash")
+          end
+        end
+
+        context 'when label keys are invalid' do
+          context 'when the key contains one invalid character' do
+            it 'loops through and tries each bad character' do
+              (32.chr..126.chr).to_a.reject { |c| /[\w\-\.\_]/.match(c) }.each do |c|
+                params = {
+                  "metadata": {
+                    "labels": {
+                      'potato' + c => 'mashed',
+                      c => 'fried'
+                    }
+                  }
+                }
+                message = AppUpdateMessage.new(params)
+                expect(message).not_to be_valid
+                expect(message.errors_on(:metadata)).to include("label key 'potato#{c}' contains invalid characters")
+              end
+            end
+          end
+
+          context 'when the first or last letter is not alphanumeric' do
+            let(:params) do
+              {
+                "metadata": {
+                  "labels": {
+                    '-a' => 'value1',
+                    'a-' => 'value2',
+                    '-' => 'value3',
+                    '.a' => 'value5',
+                    _a: 'value4',
+                  }
+                }
+              }
+            end
+            it 'is invalid' do
+              message = AppUpdateMessage.new(params)
+              expect(message).not_to be_valid
+              expect(message.errors_on(:metadata)).to include("label key '-a' starts or ends with invalid characters")
+            end
+          end
+
+          context 'when the label key is exactly 63 characters' do
+            let(:params) do
+              {
+                "metadata": {
+                  "labels": {
+                    'a' * AppUpdateMessage::MAX_LABEL_SIZE => 'value2',
+                  }
+                }
+              }
+            end
+            it 'is valid' do
+              message = AppUpdateMessage.new(params)
+              expect(message).to be_valid
+            end
+          end
+
+          context 'when the label key is greater than 63 characters' do
+            let(:params) do
+              {
+                "metadata": {
+                  "labels": {
+                    'b' * (AppUpdateMessage::MAX_LABEL_SIZE + 1) => 'value3',
+                  }
+                }
+              }
+            end
+            it 'is invalid' do
+              message = AppUpdateMessage.new(params)
+              expect(message).not_to be_valid
+              expect(message.errors_on(:metadata)).to include("label key '#{'b' * 8}...' is greater than #{AppUpdateMessage::MAX_LABEL_SIZE} characters")
+            end
+          end
+        end
+        context 'when label values are invalid'
+      end
     end
   end
 end

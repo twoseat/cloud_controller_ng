@@ -114,6 +114,29 @@ module VCAP::CloudController::Validators
     end
   end
 
+  class MetadataValidator < ActiveModel::Validator
+    def validate(record)
+      metadata = record.metadata
+      labels = metadata[:labels]
+      return unless labels
+      unless labels.is_a? Hash
+        record.errors.add(:metadata, "'labels' is not a hash")
+        return
+      end
+      labels.keys.each do |key|
+        if /[^\w\-\.\_]/.match?(key)
+          record.errors.add(:metadata, "label key '#{key}' contains invalid characters")
+        elsif !/\A(?=\w).*\w\z/.match?(key)
+          record.errors.add(:metadata, "label key '#{key}' starts or ends with invalid characters")
+        end
+
+        if key.size > VCAP::CloudController::AppUpdateMessage::MAX_LABEL_SIZE
+          record.errors.add(:metadata, "label key '#{key[0...8]}...' is greater than #{VCAP::CloudController::AppUpdateMessage::MAX_LABEL_SIZE} characters")
+        end
+      end
+    end
+  end
+
   class RelationshipValidator < ActiveModel::Validator
     def validate(record)
       if !record.relationships.is_a?(Hash)
