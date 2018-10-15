@@ -1,6 +1,7 @@
 require 'active_model'
 require 'utils/uri_utils'
 require 'models/helpers/health_check_types'
+require 'cloud_controller/domain_decorator'
 
 module VCAP::CloudController::Validators
   module StandaloneValidator
@@ -123,16 +124,47 @@ module VCAP::CloudController::Validators
         record.errors.add(:metadata, "'labels' is not a hash")
         return
       end
-      labels.keys.each do |key|
-        if /[^\w\-\.\_]/.match?(key)
-          record.errors.add(:metadata, "label key '#{key}' contains invalid characters")
-        elsif !/\A(?=\w).*\w\z/.match?(key)
-          record.errors.add(:metadata, "label key '#{key}' starts or ends with invalid characters")
+      labels.each do |full_key, value|
+        full_key = full_key.to_s
+        key = full_key
+        if full_key.include?('/')
+          namespace, key = full_key.split('/')
+
+          if full_key.count('/') > 1
+            record.errors.add(:metadata, "label key has more than one '/'")
+          end
+
+          if !CloudController::DomainDecorator::DOMAIN_REGEX.match(namespace)
+            record.errors.add(:metadata, "label namespace '#{namespace}' must be in valid dns format")
+          elsif namespace.size > VCAP::CloudController::AppUpdateMessage::MAX_NAMESPACE_SIZE
+            record.errors.add(:metadata, "label namespace '#{namespace[0...8]}...' is greater than #{VCAP::CloudController::AppUpdateMessage::MAX_NAMESPACE_SIZE} characters")
+          end
         end
 
-        if key.size > VCAP::CloudController::AppUpdateMessage::MAX_LABEL_SIZE
-          record.errors.add(:metadata, "label key '#{key[0...8]}...' is greater than #{VCAP::CloudController::AppUpdateMessage::MAX_LABEL_SIZE} characters")
+        if key.nil? || key.size == 0
+          record.errors.add(:metadata, 'label key cannot be empty string')
+        else
+          validate_label_key_or_value(key, 'key', record)
         end
+
+        validate_label_key_or_value(value, 'value', record)
+      end
+    end
+
+    private
+
+    VALID_CHAR_REGEX = /[^\w\-\.\_]/
+    ALPHANUMERIC_START_END_REGEX = /\A(?=[a-zA-Z\d]).*[a-zA-Z\d]\z/
+
+    def validate_label_key_or_value(key_or_value, type, record)
+      if VALID_CHAR_REGEX.match?(key_or_value)
+        record.errors.add(:metadata, "label #{type} '#{key_or_value}' contains invalid characters")
+      elsif !ALPHANUMERIC_START_END_REGEX.match?(key_or_value)
+        record.errors.add(:metadata, "label #{type} '#{key_or_value}' starts or ends with invalid characters")
+      end
+
+      if key_or_value.size > VCAP::CloudController::AppUpdateMessage::MAX_LABEL_SIZE
+        record.errors.add(:metadata, "label #{type} '#{key_or_value[0...8]}...' is greater than #{VCAP::CloudController::AppUpdateMessage::MAX_LABEL_SIZE} characters")
       end
     end
   end

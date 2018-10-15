@@ -6,6 +6,7 @@ module VCAP::CloudController
     register_allowed_keys [:name, :lifecycle, :metadata]
 
     MAX_LABEL_SIZE = 63
+    MAX_NAMESPACE_SIZE = 253
 
     attr_reader :app
 

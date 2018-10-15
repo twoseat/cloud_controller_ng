@@ -155,6 +155,9 @@ module VCAP::CloudController
               "metadata": {
                 "labels": {
                   "potato": 'mashed',
+                  "p_otato": 'mashed',
+                  "p.otato": 'mashed',
+                  "p-otato": 'mashed',
                 }
               }
             }
@@ -168,7 +171,10 @@ module VCAP::CloudController
           it 'builds a message with access to the labels' do
             message = AppUpdateMessage.new(params)
             expect(message.labels).to include("potato": 'mashed')
-            expect(message.labels.size).to equal(1)
+            expect(message.labels).to include("p_otato": 'mashed')
+            expect(message.labels).to include("p.otato": 'mashed')
+            expect(message.labels).to include("p-otato": 'mashed')
+            expect(message.labels.size).to equal(4)
           end
         end
 
@@ -187,10 +193,10 @@ module VCAP::CloudController
           end
         end
 
-        context 'when label keys are invalid' do
+        describe 'invalid keys' do
           context 'when the key contains one invalid character' do
-            it 'loops through and tries each bad character' do
-              (32.chr..126.chr).to_a.reject { |c| /[\w\-\.\_]/.match(c) }.each do |c|
+            (32.chr..126.chr).to_a.reject { |c| %r([\w\-\.\_\/]).match(c) }.each do |c|
+              it "is invalid for character '#{c}'" do
                 params = {
                   "metadata": {
                     "labels": {
@@ -202,11 +208,12 @@ module VCAP::CloudController
                 message = AppUpdateMessage.new(params)
                 expect(message).not_to be_valid
                 expect(message.errors_on(:metadata)).to include("label key 'potato#{c}' contains invalid characters")
+                expect(message.errors_on(:metadata)).to include("label key '#{c}' contains invalid characters")
               end
             end
           end
 
-          context 'when the first or last letter is not alphanumeric' do
+          context 'when the first or last letter of the key is not alphanumeric' do
             let(:params) do
               {
                 "metadata": {
@@ -215,7 +222,7 @@ module VCAP::CloudController
                     'a-' => 'value2',
                     '-' => 'value3',
                     '.a' => 'value5',
-                    _a: 'value4',
+                    '_a': 'value4',
                   }
                 }
               }
@@ -224,6 +231,10 @@ module VCAP::CloudController
               message = AppUpdateMessage.new(params)
               expect(message).not_to be_valid
               expect(message.errors_on(:metadata)).to include("label key '-a' starts or ends with invalid characters")
+              expect(message.errors_on(:metadata)).to include("label key 'a-' starts or ends with invalid characters")
+              expect(message.errors_on(:metadata)).to include("label key '-' starts or ends with invalid characters")
+              expect(message.errors_on(:metadata)).to include("label key '.a' starts or ends with invalid characters")
+              expect(message.errors_on(:metadata)).to include("label key '_a' starts or ends with invalid characters")
             end
           end
 
@@ -259,8 +270,193 @@ module VCAP::CloudController
               expect(message.errors_on(:metadata)).to include("label key '#{'b' * 8}...' is greater than #{AppUpdateMessage::MAX_LABEL_SIZE} characters")
             end
           end
+
+          context 'when the label key is an empty string' do
+            let(:params) do
+              {
+                "metadata": {
+                  "labels": {
+                    '' => 'value3',
+                    'example.com/': 'empty'
+                  }
+                }
+              }
+            end
+            it 'is invalid' do
+              message = AppUpdateMessage.new(params)
+              expect(message).not_to be_valid
+              expect(message.errors_on(:metadata)).to contain_exactly('label key cannot be empty string', 'label key cannot be empty string')
+            end
+          end
         end
-        context 'when label values are invalid'
+
+        describe 'label key namespaces' do
+          context 'when the key has a valid prefix' do
+            let(:key_with_long_domain) { (('a' * 61) + '.sub-part.' + ('b' * 61) + '.com/release').to_sym }
+            let(:params) do
+              {
+                "metadata": {
+                  "labels": {
+                    'example.com/potato': 'mashed',
+                    key_with_long_domain => 'stable',
+                    'capi.ci.cf-app.com/dashboard' => 'green',
+                  }
+                }
+              }
+            end
+
+            it 'is valid' do
+              message = AppUpdateMessage.new(params)
+              puts message.errors_on(:metadata)
+              expect(message).to be_valid
+              expect(message.labels).to include('example.com/potato': 'mashed')
+              expect(message.labels).to include(key_with_long_domain.to_sym => 'stable')
+              expect(message.labels).to include('capi.ci.cf-app.com/dashboard': 'green')
+              expect(message.labels.size).to equal(3)
+            end
+          end
+
+          context 'when the key has more than one prefix' do
+            let(:params) do
+              {
+                "metadata": {
+                  "labels": {
+                    'example.com/capi/tests': 'failing'
+                  }
+                }
+              }
+            end
+            it 'is invalid' do
+              message = AppUpdateMessage.new(params)
+              expect(message).not_to be_valid
+              expect(message.errors_on(:metadata)).to contain_exactly("label key has more than one '/'")
+            end
+          end
+        end
+
+        context 'when the namespace is not a valid domain' do
+          let(:params) do
+            {
+              "metadata": {
+                "labels": {
+                  '-a/key1' => 'value1',
+                  'a%a.com/key2' => 'value2',
+                  'a..com/key3' => 'value3',
+                  'onlycom/key4' => 'value5',
+                }
+              }
+            }
+          end
+          it 'is invalid' do
+            message = AppUpdateMessage.new(params)
+            expect(message).not_to be_valid
+            expect(message.errors_on(:metadata)).to include("label namespace '-a' must be in valid dns format")
+            expect(message.errors_on(:metadata)).to include("label namespace 'a%a.com' must be in valid dns format")
+            expect(message.errors_on(:metadata)).to include("label namespace 'a..com' must be in valid dns format")
+            expect(message.errors_on(:metadata)).to include("label namespace 'onlycom' must be in valid dns format")
+          end
+        end
+
+        context 'when the namespace is too long' do
+          let(:long_domain) do
+            ['a', 'b', 'c', 'd', 'e'].map { |c| c * 61 }.join('.')
+          end
+
+          let(:params) do
+            {
+              "metadata": {
+                "labels": {
+                  long_domain + '/key' => 'value1',
+                }
+              }
+            }
+          end
+
+          it 'is invalid' do
+            message = AppUpdateMessage.new(params)
+            expect(message).not_to be_valid
+            expect(message.errors_on(:metadata)).to contain_exactly("label namespace 'aaaaaaaa...' is greater than 253 characters")
+          end
+        end
+
+        describe 'invalid label values' do
+          context 'when the values contains one invalid character' do
+            (32.chr..126.chr).to_a.reject { |c| /[\w\-\.\_]/.match(c) }.each do |c|
+              it "is invalid for character '#{c}'" do
+                params = {
+                  "metadata": {
+                    "labels": {
+                      'potato' => 'mashed' + c,
+                      'release' => c
+                    }
+                  }
+                }
+                message = AppUpdateMessage.new(params)
+                expect(message).not_to be_valid
+                expect(message.errors_on(:metadata)).to include("label value 'mashed#{c}' contains invalid characters")
+                expect(message.errors_on(:metadata)).to include("label value '#{c}' contains invalid characters")
+              end
+            end
+          end
+        end
+
+        context 'when the first or last letter of the value is not alphanumeric' do
+          let(:params) do
+            {
+              "metadata": {
+                "labels": {
+                  'key1' => '-a',
+                  'key2' => 'a-',
+                  'key3' => '-',
+                  'key4' => '.a',
+                  'key5' => '_a',
+                }
+              }
+            }
+          end
+          it 'is invalid' do
+            message = AppUpdateMessage.new(params)
+            expect(message).not_to be_valid
+            expect(message.errors_on(:metadata)).to include("label value '-a' starts or ends with invalid characters")
+            expect(message.errors_on(:metadata)).to include("label value 'a-' starts or ends with invalid characters")
+            expect(message.errors_on(:metadata)).to include("label value '-' starts or ends with invalid characters")
+            expect(message.errors_on(:metadata)).to include("label value '.a' starts or ends with invalid characters")
+            expect(message.errors_on(:metadata)).to include("label value '_a' starts or ends with invalid characters")
+          end
+        end
+
+        context 'when the label value is exactly 63 characters' do
+          let(:params) do
+            {
+              "metadata": {
+                "labels": {
+                  'key' => 'a' * AppUpdateMessage::MAX_LABEL_SIZE,
+                }
+              }
+            }
+          end
+          it 'is valid' do
+            message = AppUpdateMessage.new(params)
+            expect(message).to be_valid
+          end
+        end
+
+        context 'when the label value is greater than 63 characters' do
+          let(:params) do
+            {
+              "metadata": {
+                "labels": {
+                  'key' => 'b' * (AppUpdateMessage::MAX_LABEL_SIZE + 1),
+                }
+              }
+            }
+          end
+          it 'is invalid' do
+            message = AppUpdateMessage.new(params)
+            expect(message).not_to be_valid
+            expect(message.errors_on(:metadata)).to include("label value '#{'b' * 8}...' is greater than #{AppUpdateMessage::MAX_LABEL_SIZE} characters")
+          end
+        end
       end
     end
   end
