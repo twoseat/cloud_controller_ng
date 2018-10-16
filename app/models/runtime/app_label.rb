@@ -1,6 +1,10 @@
 module VCAP::CloudController
   class AppLabel < Sequel::Model(:app_labels)
-    # one_to_one :app_guid, class: 'VCAP::CloudController::AppModel', key: :guid, primary_key: :app_guid
+    many_to_one :app,
+      class: 'VCAP::CloudController::AppModel',
+      key: :app_guid,
+      primary_key: :guid,
+      without_guid_generation: true
 
     def validate
       validates_presence :app_guid
@@ -9,43 +13,49 @@ module VCAP::CloudController
       #validates_format /\A([\w\-]+|\*)\z/, :label_value if label_value
     end
 
-    def self.select_by_og(label_selector)
-      label_key, label_value  = label_selector.split(/\s*,\s*/).first.split(/\s*==?\s*/)
-      self.select(:app_guid).where(label_key: label_key, label_value: label_value).map(&:app_guid)
-    end
-    # [env: {production}, tier:{}]
     def self.select_by(label_selector)
-      and_parts = label_selector.split(/\s*,\s*/)
+      and_parts = label_selector.scan(/(?:\(.*?\)|[^,])+/)
       dataset = self.evaluate_and_parts(and_parts)
       dataset.map(&:app_guid)
     end
 
     def self.evaluate_equal(label_key, label_value)
-      self.select(:app_guid).where(label_key: label_key, label_value: label_value)
+      self.evaluate_in_set(label_key, label_value)
     end
 
     def self.evaluate_not_equal(label_key, label_value)
-      # self.except(self.evaluate_equal(label_key, label_value)).all
-      self.select(:app_guid).except(self.select(:app_guid).where(label_key: label_key, label_value: label_value))
+      self.select(:app_guid).except(self.evaluate_equal(label_key, label_value))
     end
 
-    def self.evaluate_in_set(part)
+    def self.evaluate_in_set(label_key, set)
+      self.select(:app_guid).where(label_key: label_key, label_value: split_set(set))
     end
 
-    def self.evaluate_not_in_set(part)
+    def self.evaluate_not_in_set(label_key, set)
+      self.select(:app_guid).except(self.evaluate_in_set(label_key, set))
+    end
+
+    def self.evaluate_existence(label_key, _)
+      self.select(:app_guid).where(label_key: label_key)
+    end
+
+    def self.evaluate_negated_existence(label_key, _)
+      self.select(:app_guid).except(self.evaluate_existence(label_key, _))
     end
 
     def self.evaluate_and_parts(parts)
-      name_re = /\w[-\w\._\/]*\w?/
+      name_re = /\w[-\w\._\/]*\w/
       table = [
-        { ptn: /(#{name_re})\s*==?\s*(.*)/, method: :evaluate_equal},
-        { ptn: /(#{name_re})\s*!=\s*(.*)/, method: :evaluate_not_equal},
-        { ptn: /(#{name_re})\s* in \s*\((.*)\)$/, method: :evaluate_in_set}, # This doesn't work!
-        { ptn: /(#{name_re})\s* notin \s*\((.*)\)$/, method: :evaluate_not_in_set}, # This doesn't work either
+        { pattern: /(#{name_re})\s*==?\s*(.*)/, method: :evaluate_equal},
+        { pattern: /(#{name_re})\s*!=\s*(.*)/, method: :evaluate_not_equal},
+        { pattern: /(#{name_re})\s* in \s*\((.*)\)$/, method: :evaluate_in_set},
+        { pattern: /(#{name_re})\s* notin \s*\((.*)\)$/, method: :evaluate_not_in_set},
+        { pattern: /^(#{name_re})$/, method: :evaluate_existence},
+        { pattern: /^!(#{name_re})$/, method: :evaluate_negated_existence},
       ]
       parts.inject(nil) {| dataset, current_part |
         our_match = nil
-        entry = table.find{|t| our_match = t[:ptn].match(current_part)}
+        entry = table.find{|t| our_match = t[:pattern].match(current_part)}
         if !entry
           raise StandardError.new("awp you fool")
         end
@@ -58,23 +68,10 @@ module VCAP::CloudController
       }
     end
 
-    def self.parse(input)
-      tokens = tokenizer(input)
-      parts = []
-      in_set = false
-      tokens.each do |token|
+    private
 
-
-      end
-
-    end
-
-    def self.tokenizer(input)
-      token_pairs = input.scan(/(\w+|==|!=|[,\(\)=])|(.)/)
-      if token_pairs.any? {|pair| pair.last}
-        raise StandardError.new("Error in label_selector")
-      end
-      token_pairs.map(&:first)
+    def self.split_set(set)
+      set.split(',').map { |v| v.strip }
     end
   end
 end
