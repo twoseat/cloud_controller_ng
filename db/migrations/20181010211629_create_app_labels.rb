@@ -7,7 +7,7 @@ Sequel.migration do
       String :label_key, null: false, case_insensitive: false
       String :label_value, null: true, case_insensitive: false
 
-      index :app_guid
+      index :app_guid, unique: false
       index [:label_key, :label_value], unique: false
     end
   end

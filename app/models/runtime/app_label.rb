@@ -16,6 +16,7 @@ module VCAP::CloudController
     def self.select_by(label_selector)
       and_parts = label_selector.scan(/(?:\(.*?\)|[^,])+/)
       dataset = self.evaluate_and_parts(and_parts)
+      puts dataset.sql
       dataset.map(&:app_guid)
     end
 

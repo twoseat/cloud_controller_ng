@@ -1,6 +1,10 @@
 require 'spec_helper'
 require 'rails_helper'
 
+RSpec.configure do |c|
+  c.filter_run_when_matching :focus
+end
+
 RSpec.describe AppsV3Controller, type: :controller do
   describe '#index' do
     before do
