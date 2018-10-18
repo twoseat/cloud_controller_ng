@@ -1,4 +1,27 @@
 require 'treetop'
+module LabelSelector
+  class Selector < Treetop::Runtime::SyntaxNode
+    def to_array
+      self.elements[0].to_array
+    end
+  end
+
+  class Requirement < Treetop::Runtime::SyntaxNode
+    def operator
+      exact_match_restriction&.operator
+    end
+  end
+  class Key < Treetop::Runtime::SyntaxNode
+  end
+  class Value < Treetop::Runtime::SyntaxNode
+  end
+  class Comparator < Treetop::Runtime::SyntaxNode
+  end
+  class InclusionExclusion < Treetop::Runtime::SyntaxNode
+  end
+  class Values < Treetop::Runtime::SyntaxNode
+  end
+end
 
 module VCAP::CloudController
   class AppLabel < Sequel::Model(:app_labels)
@@ -18,7 +41,7 @@ module VCAP::CloudController
     # [env: {production}, tier:{}]
     def self.select_by(label_selector)
       Treetop.load(File.join(__dir__,'selector.treetop'))
-      parser = SelectorParser.new
+      parser = LabelSelectorParser.new
 
       result = parser.parse(label_selector)
       if result.nil?

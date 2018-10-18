@@ -1,18 +1,20 @@
-grammar Selector
-  rule selector_syntax
-    ( requirement [\s]* ',' selector_syntax ) / requirement
+grammar LabelSelector
+  rule selector
+    ( requirement [\s]* ',' selector ) <Selector>
+    /
+    requirement
   end
 
   rule requirement
-    key (exact_match_restriction / set_based_restriction)
+    key (exact_match_restriction / set_based_restriction) <Requirement>
   end
 
   rule key
-    [\s]* [\w∞]+
+    [\s]* [\w]+ <Key>
   end
 
   rule value
-    [\s]* [\w£]+ [\s]*
+    [\s]* [\w]+ [\s]* <Value>
   end
 
   rule exact_match_restriction
@@ -20,7 +22,7 @@ grammar Selector
   end
 
   rule comparator
-   [\s]* ('=' / '==' / '!=')
+   [\s]* ('=' / '==' / '!=') <Comparator>
   end
 
   rule set_based_restriction
@@ -28,15 +30,7 @@ grammar Selector
   end
 
   rule inclusion_exclusion
-    inclusion / exclusion
-  end
-
-  rule exclusion
-    "notin"
-  end
-
-  rule inclusion
-    "in"
+    'in' / 'notin' <InclusionExclusion>
   end
 
   rule value_set
@@ -44,7 +38,7 @@ grammar Selector
   end
 
   rule values
-    ( value "," values ) / value
+    ( value "," values ) / value <Values>
   end
 end
 
