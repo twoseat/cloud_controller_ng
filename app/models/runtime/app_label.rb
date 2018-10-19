@@ -25,7 +25,7 @@ module VCAP::CloudController
     end
 
     def self.evaluate_not_equal(label_key, label_value)
-      self.select(:app_guid).except(self.evaluate_equal(label_key, label_value))
+      self.evaluate_not_in_set(label_key, label_value)
     end
 
     def self.evaluate_in_set(label_key, set)
@@ -33,7 +33,7 @@ module VCAP::CloudController
     end
 
     def self.evaluate_not_in_set(label_key, set)
-      self.select(:app_guid).except(self.evaluate_in_set(label_key, set))
+      self.select(:app_guid).where(Sequel.~(label_key: label_key, label_value: split_set(set)))
     end
 
     def self.evaluate_existence(label_key, _)

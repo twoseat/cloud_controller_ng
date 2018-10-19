@@ -10,6 +10,7 @@ module VCAP::CloudController
       column_name = "#{table_name}__#{order_by}".to_sym
       sequel_order = order_direction == 'asc' ? Sequel.asc(column_name) : Sequel.desc(column_name)
       query = sequel_dataset.extension(:pagination).paginate(page, per_page).order(sequel_order)
+      puts query.sql
 
       PaginatedResult.new(query.all, query.pagination_record_count, pagination_options)
     end

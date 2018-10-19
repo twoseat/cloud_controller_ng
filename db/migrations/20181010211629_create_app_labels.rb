@@ -1,14 +1,15 @@
 Sequel.migration do
   change do
-    create_table :app_labels do
+    create_table(:app_labels) do
       VCAP::Migration.common(self)
+      String :app_guid, size: 255
+      String :prefix, size: 253
+      String :label_key, size: 63
+      String :label_value, size: 63
 
-      String :app_guid, null: false
-      String :label_key, null: false, case_insensitive: false
-      String :label_value, null: true, case_insensitive: false
-
-      index :app_guid, unique: false
-      index [:label_key, :label_value], unique: false
+      foreign_key [:app_guid], :apps, key: :guid, name: :fk_app_labels_app_guid
+      index [:app_guid], name: :fk_app_labels_app_guid_index
+      index [:prefix, :label_key, :label_value], name: :app_labels_compound_index
     end
   end
 end
