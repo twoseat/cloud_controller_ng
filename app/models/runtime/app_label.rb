@@ -16,7 +16,8 @@ module VCAP::CloudController
     def self.select_by(label_selector)
       and_parts = label_selector.scan(/(?:\(.*?\)|[^,])+/)
       dataset = self.evaluate_and_parts(and_parts)
-      puts dataset.sql
+      # puts dataset.sql
+      # puts dataset.explain
       dataset.map(&:app_guid)
     end
 
@@ -29,19 +30,19 @@ module VCAP::CloudController
     end
 
     def self.evaluate_in_set(label_key, set)
-      self.select(:app_guid).where(label_key: label_key, label_value: split_set(set))
+      self.select(:app_guid).where(prefix: nil, label_key: label_key, label_value: split_set(set))
     end
 
     def self.evaluate_not_in_set(label_key, set)
-      self.select(:app_guid).where(Sequel.~(label_key: label_key, label_value: split_set(set)))
+      self.select(:app_guid).exclude(app_guid: self.evaluate_in_set(label_key, set))
     end
 
     def self.evaluate_existence(label_key, _)
-      self.select(:app_guid).where(label_key: label_key)
+      self.select(:app_guid).where(prefix: nil, label_key: label_key)
     end
 
     def self.evaluate_negated_existence(label_key, _)
-      self.select(:app_guid).except(self.evaluate_existence(label_key, _))
+      self.select(:app_guid).exclude(app_guid: self.evaluate_existence(label_key, _))
     end
 
     def self.evaluate_and_parts(parts)
@@ -58,13 +59,13 @@ module VCAP::CloudController
         our_match = nil
         entry = table.find{|t| our_match = t[:pattern].match(current_part)}
         if !entry
-          raise StandardError.new("awp you fool")
+          raise StandardError.new("we didn't match any of the requirement patterns")
         end
         ds = self.send(entry[:method], our_match[1], our_match[2])
         if dataset.nil?
           ds
         else
-          dataset.intersect(ds)
+          dataset.natural_join(ds)
         end
       }
     end

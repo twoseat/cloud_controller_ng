@@ -20,8 +20,8 @@ RSpec.describe AppsV3Controller, type: :controller, isolation: :truncation do
     let(:accumulated_results) { [] }
     let(:specific_app) { VCAP::CloudController::AppModel.make }
 
-    output = "#{Dir.home}/workspace/pyence/data/postgres-3column0.csv"
-    num_iters = 8
+    output = "#{Dir.home}/workspace/pyence/data/mysql-big-no-trick.csv"
+    num_iters = 11
     (1..num_iters).each do |j|
       describe "#{10 * (2 ** j)} app instances" do
 
@@ -50,12 +50,12 @@ RSpec.describe AppsV3Controller, type: :controller, isolation: :truncation do
 
           perfs = Benchmark.bmbm do |bm|
             bm.report('inequality +cardinality') do
-              get :index, params: { label_selector: "chargeback_code!=#{chargeback_code},miss=true", page: 1, per_page:1 }
+              get :index, params: { label_selector: "chargeback_code!=#{chargeback_code}", page: 1, per_page:1 }
               #puts parsed_body['resources']
             end
 
             bm.report('equality +cardinality') do
-              get :index, params: { label_selector: "chargeback_code=#{chargeback_code},miss=true", page: 1, per_page:1 }
+              get :index, params: { label_selector: "chargeback_code=#{chargeback_code}", page: 1, per_page:1 }
               #puts parsed_body['resources']
             end
             bm.report('equality miss +cardinality') do # IS SLOW
@@ -65,22 +65,22 @@ RSpec.describe AppsV3Controller, type: :controller, isolation: :truncation do
 
 
             bm.report('!existence --cardinality') do # IS SLOW
-              get :index, params: { label_selector: '!tier,miss=true', page: 1, per_page:1 }
+              get :index, params: { label_selector: '!tier', page: 1, per_page:1 }
               #puts parsed_body['resources']
             end
 
             bm.report('existence --cardinality') do
-              get :index, params: { label_selector: 'tier,miss=true', page: 1, per_page:1 }
+              get :index, params: { label_selector: 'tier', page: 1, per_page:1 }
               #puts parsed_body['resources']
             end
 
             bm.report('notin -cardinality') do # IS SLOW
-              get :index, params: { label_selector: 'environment notin (test, dev),miss=true', page: 1, per_page:1 }
+              get :index, params: { label_selector: 'environment notin (test, dev)', page: 1, per_page:1 }
               #puts parsed_body['resources']
             end
 
             bm.report('in -cardinality') do
-              get :index, params: { label_selector: 'environment in (test, dev),miss=true', page: 1, per_page:1 }
+              get :index, params: { label_selector: 'environment in (test, dev)', page: 1, per_page:1 }
               #puts parsed_body['resources']
             end
 

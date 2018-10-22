@@ -35,7 +35,7 @@ RSpec.describe AppsV3Controller, type: :controller do
         expect(resources.map{|x| x['guid']}).to match_array([app1.guid, app2.guid])
       end
 
-      fit 'handles a single !=' do
+      it 'handles a single !=' do
         get :index, params: { label_selector: 'environment!=production'}
         expect(response.status).to eq(200), response.body
         resources = parsed_body['resources']
