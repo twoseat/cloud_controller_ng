@@ -13,20 +13,21 @@ RSpec.describe AppsV3Controller, type: :controller, isolation: :truncation do
       puts accumulated_results.join("\n")
     end
 
-    let(:initial_apps) { 10 }
-    let(:growth_factor) { 2 }
-    let(:envs) { %w(dev test prod) }
-    let(:tiers) { %w(backend frontend) }
-    let(:accumulated_results) { [] }
-    let(:specific_app) { VCAP::CloudController::AppModel.make }
+    let(:initial_apps) {10}
+    let(:growth_factor) {2}
+    let(:envs) {%w(dev test prod)}
+    let(:tiers) {%w(backend frontend)}
+    let(:accumulated_results) {[]}
+    let(:specific_app) {VCAP::CloudController::AppModel.make}
 
-    output = "#{Dir.home}/workspace/pyence/data/mysql-big-no-trick.csv"
+    output = "#{Dir.home}/workspace/pyence/data/mysql-bm0.csv"
     num_iters = 11
+    pagesize = 1
     (1..num_iters).each do |j|
       describe "#{10 * (2 ** j)} app instances" do
 
-        let(:number_of_apps) { initial_apps * (growth_factor ** j) }
-        let(:cb_codes) { Array.new(number_of_apps / 3).fill{ || SecureRandom.uuid } }
+        let(:number_of_apps) {initial_apps * (growth_factor ** j)}
+        let(:cb_codes) {Array.new(number_of_apps / 3).fill {|| SecureRandom.uuid}}
         before do
           VCAP::CloudController::AppModel.db.transaction do
             number_of_apps.times do |i|
@@ -47,52 +48,51 @@ RSpec.describe AppsV3Controller, type: :controller, isolation: :truncation do
 
         it 'measures performance' do
           chargeback_code = cb_codes.sample
-
-          perfs = Benchmark.bmbm do |bm|
+          perfs = Benchmark.bm do |bm|
             bm.report('inequality +cardinality') do
-              get :index, params: { label_selector: "chargeback_code!=#{chargeback_code}", page: 1, per_page:1 }
+              get :index, params: {label_selector: "chargeback_code!=#{chargeback_code}", page: 1, per_page: pagesize}
               #puts parsed_body['resources']
             end
 
             bm.report('equality +cardinality') do
-              get :index, params: { label_selector: "chargeback_code=#{chargeback_code}", page: 1, per_page:1 }
+              get :index, params: {label_selector: "chargeback_code=#{chargeback_code}", page: 1, per_page: pagesize}
               #puts parsed_body['resources']
             end
             bm.report('equality miss +cardinality') do # IS SLOW
-              get :index, params: { label_selector: "chargeback_code=#{SecureRandom.uuid}", page: 1, per_page:1 }
+              get :index, params: {label_selector: "chargeback_code=#{SecureRandom.uuid}", page: 1, per_page: pagesize}
               #puts parsed_body['resources']
             end
 
 
             bm.report('!existence --cardinality') do # IS SLOW
-              get :index, params: { label_selector: '!tier', page: 1, per_page:1 }
+              get :index, params: {label_selector: '!tier', page: 1, per_page: pagesize}
               #puts parsed_body['resources']
             end
 
             bm.report('existence --cardinality') do
-              get :index, params: { label_selector: 'tier', page: 1, per_page:1 }
+              get :index, params: {label_selector: 'tier', page: 1, per_page: pagesize}
               #puts parsed_body['resources']
             end
 
             bm.report('notin -cardinality') do # IS SLOW
-              get :index, params: { label_selector: 'environment notin (test, dev)', page: 1, per_page:1 }
+              get :index, params: {label_selector: 'environment notin (test, dev)', page: 1, per_page: pagesize}
               #puts parsed_body['resources']
             end
 
             bm.report('in -cardinality') do
-              get :index, params: { label_selector: 'environment in (test, dev)', page: 1, per_page:1 }
+              get :index, params: {label_selector: 'environment in (test, dev)', page: 1, per_page: pagesize}
               #puts parsed_body['resources']
             end
 
             bm.report('specific composite') do
-              get :index, params: { label_selector: "environment=prod,tier=backend,chargeback_code=#{@specific_cb_code}", page: 1, per_page:1 }
+              get :index, params: {label_selector: "environment=prod,tier=backend,chargeback_code=#{@specific_cb_code}", page: 1, per_page: pagesize}
               #puts parsed_body['resources']
             end
           end
           app_count = VCAP::CloudController::AppModel.count
           number_of_labels = VCAP::CloudController::AppLabel.count
-          perfs.map { |perf| accumulated_results << "#{perf.label},#{app_count},#{number_of_labels},#{perf.real}" }
-          open(output, 'a') { |f|
+          perfs.map {|perf| accumulated_results << "#{perf.label},#{app_count},#{number_of_labels},#{perf.real}"}
+          open(output, 'a') {|f|
             f.puts "hue,app_count,label_count,duration" if File.zero?(output)
             f.puts accumulated_results
           }

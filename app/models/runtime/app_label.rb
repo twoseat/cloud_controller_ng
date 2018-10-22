@@ -13,12 +13,12 @@ module VCAP::CloudController
       #validates_format /\A([\w\-]+|\*)\z/, :label_value if label_value
     end
 
-    def self.select_by(label_selector)
+    def self.select_by(dataset, label_selector)
       and_parts = label_selector.scan(/(?:\(.*?\)|[^,])+/)
-      dataset = self.evaluate_and_parts(and_parts)
+      result_ds = self.evaluate_and_parts(and_parts)
       # puts dataset.sql
       # puts dataset.explain
-      dataset.map(&:app_guid)
+      dataset.join(result_ds, app_guid: :guid)
     end
 
     def self.evaluate_equal(label_key, label_value)
