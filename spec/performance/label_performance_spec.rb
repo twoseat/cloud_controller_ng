@@ -20,11 +20,11 @@ RSpec.describe AppsV3Controller, type: :controller, isolation: :truncation do
     let(:accumulated_results) {[]}
     let(:specific_app) {VCAP::CloudController::AppModel.make}
 
-    output = "#{Dir.home}/workspace/pyence/data/mysql-bm0.csv"
-    num_iters = 11
+    output = "#{Dir.home}/workspace/pyence/data/postgres-linearx0.csv"
+    num_iters = 15
     pagesize = 1
-    (1..num_iters).each do |j|
-      describe "#{10 * (2 ** j)} app instances" do
+    (0..num_iters).each do |j|
+      describe "#{5000 + (1000 * j)} app instances" do
 
         let(:number_of_apps) {initial_apps * (growth_factor ** j)}
         let(:cb_codes) {Array.new(number_of_apps / 3).fill {|| SecureRandom.uuid}}
@@ -48,7 +48,7 @@ RSpec.describe AppsV3Controller, type: :controller, isolation: :truncation do
 
         it 'measures performance' do
           chargeback_code = cb_codes.sample
-          perfs = Benchmark.bm do |bm|
+          perfs = Benchmark.bmbm do |bm|
             bm.report('inequality +cardinality') do
               get :index, params: {label_selector: "chargeback_code!=#{chargeback_code}", page: 1, per_page: pagesize}
               #puts parsed_body['resources']
