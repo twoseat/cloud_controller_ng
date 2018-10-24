@@ -8,19 +8,17 @@ and start the new version of the application.
 ## Enabling Deployments
 
 Your cloudfoundry deployment must be using capi-release `0.168.0` or later.
+On your computer, you must be using cf cli version `6.40.0` or later.
 Additionally, the `cc_deployment_updater` must be deployed. 
-See this [temporary ops file](https://github.com/cloudfoundry/capi-ci/blob/f5a555f635bb5d0f5c6d8d64503ebf4dbd751247/cf-deployment-operations/temporary/add-deployment-updater.yml).
+See this [temporary ops file](https://github.com/cloudfoundry/cf-deployment/blob/master/operations/experimental/add-deployment-updater.yml) and the [external-db](https://github.com/cloudfoundry/cf-deployment/blob/master/operations/experimental/add-deployment-updater-external-db.yml) and [postgres](https://github.com/cloudfoundry/cf-deployment/blob/master/operations/experimental/add-deployment-updater-postgres.yml) variants.
 
+## Deploying an App with Zero Downtime
 
-## Deploying an Application with Zero Downtime
-
-Zero-downtime push will soon be an experimental command in the cf cli: `cf v3-zdt-push`.
-To get this command, you may need to [compile your own cli](https://github.com/cloudfoundry/cli/blob/master/.github/CONTRIBUTING.md#building-the-cf-binary).
-It should be in the next cli release after `6.39.1`
-
-
+***PM Notes: this section should describe the order of CLI commands to deploy and update an app with zero downtime***
 
 ## Under the Hood
+
+***PM Notes: we should keep this section focused on what the behaviors of this operation are. No need to elaborate on e.g. curl commands for creating deployments.***
 
 `cf v3-zdt-push` has two steps relevant to this feature:
 1. Create a droplet
