@@ -53,13 +53,15 @@ If you run `cf app` on your application, you will see a `web` process and a `web
    1. Mark the deployment as `DEPLOYED`
 
 
-## Bailing Out
+## Cancelling a Zero-Downtime Deployment
 
 To stop a deployment, they can be [canceled](http://v3-apidocs.cloudfoundry.org/version/3.58.0/index.html#cancel-a-deployment)
 
 ```sh
 cf curl v3/deployments/:deployment_guid/actions/cancel"
 ``` 
+
+***PM Notes: should include the CLI command for canceling a deployment, instead of the curl command***
 
 This will revert the application to the state it was before the deployment started.
 This involves scaling up the original web process, removing any deployment artifacts,
