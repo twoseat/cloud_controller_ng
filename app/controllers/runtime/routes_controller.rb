@@ -44,7 +44,7 @@ module VCAP::CloudController
 
       if e.errors.on(:port) == [:port_taken]
         port_taken_error_message = "Port #{attributes['port']} is not available on this domain's router group. " \
-          'Try a different port, request an random port, or ' \
+          'Try a different port, request a random port, or ' \
           'use a domain of a different router group.'
 
         return CloudController::Errors::ApiError.new_from_details('RoutePortTaken', port_taken_error_message)
